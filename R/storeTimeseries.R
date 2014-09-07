@@ -7,18 +7,21 @@
 #' 
 #' @author Matthias Bannert
 #' @param series an object of class ts or zoo
-#' @param connect a connection object created by dbConnect, defaults to an con object named con
+#' @param connect character name of the PostgreSQL connection object.
 #' @param tkey optional character string to specify an explicit time series primary key for the database. Defaults to NULL and uses the name of the R time series object as a key. Note that keys need to be unique in the database. 
 #' @param tbl character string denoting the name of the main time series table in the PostgreSQL database.
+#' @param lookup_env environment to look in for timeseries. Defaults to .GobalEnv.
+#' This option is particularly important when running storeTimeseries within loop like operations.
 #' @param overwrite logical, whether time series should be overwritten in case a non-unique primary key is provided. Defaults to TRUE.
-#' @examples
-#' ts1 <- ts(rnorm(100),start = c(1990,1),frequency = 4)
-#' storeTimeseries(ts1)
-storeTimeseries <- function(series,connect = con,
+storeTimeseries <- function(series,connect = "con",
                    tbl = "timeseries_main",
                    lookup_env = .GlobalEnv,
                    overwrite = T){
-#   # add key
+  # Because we cannot really use a global binding to 
+  # the postgreSQL connection object which does not exist at the time
+  # of compilation, we use the character name of the object here. 
+  connect <- get(connect)
+  #   # add key
 #   if(is.null(tkey)){
 #     ts_key <- deparse(substitute(series))
 #   } else {

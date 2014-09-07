@@ -7,13 +7,13 @@
 #' 
 #' @author Matthias Bannert
 #' @param series character representation of the key of the time series
-#' @param connect a connection object, defaults to looking for a connection object called con. 
+#' @param connect character name of the PostgreSQL connection object
 #' @param tbl character string denoting the name of the main time series table in the PostgreSQL database.
-#' @examples
-#' ts1 <- ts(rnorm(100),start = c(1990,1),frequency = 4)
-#' storeTimeseries(ts1)
-#' readTimeseries("ts1")
-readTimeseries <- function(series,connect = con,tbl = "timeseries_main"){
+readTimeseries <- function(series,connect = "con",tbl = "timeseries_main"){
+  # Because we cannot really use a global binding to 
+  # the postgreSQL connection object which does not exist at the time
+  # of compilation, we use the character name of the object here. 
+  connect <- get(connect)
   # extract data from hstore 
   sql_statement_data <- sprintf("SELECT (each(ts_data)).key, (each(ts_data)).value FROM %s WHERE ts_key = '%s'",tbl,series)
   # get freq

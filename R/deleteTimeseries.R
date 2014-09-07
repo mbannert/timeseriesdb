@@ -8,16 +8,19 @@
 #' 
 #' @author Matthias Bannert
 #' @param series character name of the series that should be deleted
-#' @param connect a PostgreSQL connection object
+#' @param connect character name of the PostgreSQL connection object
 #' @param rollback logical if TRUE the rollback functionality is enabled. Defaults
 #' to TRUE. 
-#' @examples
-#' #' ts1 <- ts(rnorm(100),start = c(1990,1),frequency = 4)
-#' storeTimeseries(ts1)
-#' deleteTimeseries("ts1")
+#' @param tbl character name of the table that holds the timeseries in the database. 
+#' Defaults to 'timeseries_main'.
 #' @export
-deleteTimeseries <- function(series,connect = con,rollback = T,
+deleteTimeseries <- function(series,connect = "con",rollback = T,
                              tbl = "timeseries_main"){
+  # Because we cannot really use a global binding to 
+  # the postgreSQL connection object which does not exist at the time
+  # of compilation, we use the character name of the object here. 
+  connect <- get(connect)
+  
   # Store the timeseries that should be deleted in a 
   # separate environment to enable rollbacks
   # because SQL is pretty direct and immediately deletes the series

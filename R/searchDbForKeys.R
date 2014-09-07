@@ -5,11 +5,14 @@
 #' 
 #' @author Matthias Bannert
 #' @param ... character string patterns. 
-#' @param connect a connection object, defaults to an object called 'con'.
+#' @param connect character name of the PostgreSQL connection object.
 #' @param tbl character representation of the name of the main timeseries
 #' table. Defaults to 'timeseries_main'
-searchDbForKeys <- function(...,connect = con,tbl = "timeseries_main"){
-  
+searchDbForKeys <- function(...,connect = "con",tbl = "timeseries_main"){
+  # Because we cannot really use a global binding to 
+  # the postgreSQL connection object which does not exist at the time
+  # of compilation, we use the character name of the object here. 
+  connect <- get(connect)
   # private add_tag function, might want to add it as a 
   # public function
   add_tag <- function(x,open,close){
@@ -33,11 +36,8 @@ searchDbForKeys <- function(...,connect = con,tbl = "timeseries_main"){
   
 }
 
-#' @return \code{NULL}
-#'
-#' @method print rs
-#' @S3method print rs
-print.rs <- function(x) {
+#' @export
+print.rs <- function(x, ...) {
   cat("The following keys fit the search pattern: \n")
   print(x$keys)
   cat("Select for fetching from Database: \n")

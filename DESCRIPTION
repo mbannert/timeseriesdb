@@ -1,0 +1,17 @@
+Package: timeseriesdb
+Title: Store and Organize Time Series in a Database
+Description: R package to store and organize time series in a simple but
+    powerful relational database using PostgreSQL. The timeseriesdb package
+    suggests a simple but yet powerful database structure to store a large
+    amount of time series in a relational PostgreSQL database. The package
+    provides an interface to the R user to create, update and delete time
+    series. Also, useRs can search the database using R. I plan to extend
+    comprehensive support for storing and querying multi-lingual meta
+    information in the future.
+Version: 0.1
+Authors@R: 'Matthias Bannert <bannert@kof.ethz.ch> [aut, cre]'
+Depends:
+    R (>= 3.0.0),RPostgreSQL
+License: GPL-2
+LazyData: true
+Maintainer: 'Matthias Bannert' <bannert@kof.ethz.ch>

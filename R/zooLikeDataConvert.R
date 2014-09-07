@@ -6,6 +6,8 @@
 #' like 2005-07-01.
 #'
 #' @param x object of class ts
+#' @param offset numeric defaults to 0. See the zoo package for more information.
+#' @param ... optional arguments. 
 #' @rdname zooLikeDateConvert
 #' @name zooLikeDateconvert
 #' 
