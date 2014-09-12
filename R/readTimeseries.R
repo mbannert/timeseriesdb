@@ -25,8 +25,18 @@ readTimeseries <- function(series,connect = "con",tbl = "timeseries_main"){
   # find start date first
   out$key <- as.Date(out$key)
   start_date <- min(out$key)
-  year <- as.numeric(format(as.Date(start_date), "%Y")) 
-  period <- as.numeric(format(as.Date(start_date), "%m"))
+  year <- as.numeric(format(as.Date(start_date), "%Y"))
+  
+  # check whether it's quarterly or monthly time series 
+  # in order to return a proper period when converting it to a YYYY-mm-dd format.
+  if (freq == 4){
+    period <- (as.numeric(format(as.Date(start_date), "%m")) -1) / 3 + 1
+   } else if(freq == 12) {
+    period <- as.numeric(format(as.Date(start_date), "%m"))
+   } else {
+    stop("Not a standard frequency.")
+   }
+   
   # return a time series object
   ts(as.numeric(out$value),
      start =c(year,period),
