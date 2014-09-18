@@ -3,11 +3,11 @@
 \alias{storeTimeseries}
 \title{Write an R Time Series to a PostgreSQL database}
 \usage{
-storeTimeseries(series, connect = "con", tbl = "timeseries_main",
-  lookup_env = .GlobalEnv, overwrite = T)
+storeTimeseries(series, ts_key = NULL, connect = "con",
+  tbl = "timeseries_main", lookup_env = .GlobalEnv, overwrite = T)
 }
 \arguments{
-\item{series}{an object of class ts or zoo}
+\item{series}{character name of an object of class ts}
 
 \item{connect}{character name of the PostgreSQL connection object.}
 
