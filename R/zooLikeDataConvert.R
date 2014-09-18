@@ -13,6 +13,7 @@
 #' 
 #' @author Achim Zeileis, Gabor Grothendieck, Jeffrey A. Ryan,
 #' Felix Andrews
+#' @export
 zooLikeDateConvert <- function (x, offset = 0, ...) 
 {
   time.x <- unclass(time(x)) + offset

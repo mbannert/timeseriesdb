@@ -13,6 +13,7 @@
 #' @param lookup_env environment to look in for timeseries. Defaults to .GobalEnv.
 #' This option is particularly important when running storeTimeseries within loop like operations.
 #' @param overwrite logical, whether time series should be overwritten in case a non-unique primary key is provided. Defaults to TRUE.
+#' @export
 storeTimeseries <- function(series,connect = "con",
                    tbl = "timeseries_main",
                    lookup_env = .GlobalEnv,

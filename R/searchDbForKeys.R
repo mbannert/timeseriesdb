@@ -8,6 +8,7 @@
 #' @param connect character name of the PostgreSQL connection object.
 #' @param tbl character representation of the name of the main timeseries
 #' table. Defaults to 'timeseries_main'
+#' @export
 searchDbForKeys <- function(...,connect = "con",tbl = "timeseries_main"){
   # Because we cannot really use a global binding to 
   # the postgreSQL connection object which does not exist at the time

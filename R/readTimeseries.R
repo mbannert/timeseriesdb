@@ -9,6 +9,7 @@
 #' @param series character representation of the key of the time series
 #' @param connect character name of the PostgreSQL connection object
 #' @param tbl character string denoting the name of the main time series table in the PostgreSQL database.
+#' @export
 readTimeseries <- function(series,connect = "con",tbl = "timeseries_main"){
   # Because we cannot really use a global binding to 
   # the postgreSQL connection object which does not exist at the time

@@ -10,6 +10,7 @@
 #' @param envir environment to assign fetched time series to. If not specified a list of time series is returned. Defaults to NULL.
 #' Defaults to timeseries_main.
 #' 'con' in the global environment.
+#' @export
 fetchSelectedResults <- function(result_set,connect = "con", envir = NULL,
                                  tbl = "timeseries_main"){
   # Because we cannot really use a global binding to 
