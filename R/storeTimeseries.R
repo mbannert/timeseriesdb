@@ -6,7 +6,7 @@
 #' designed to store a larger amount of time series. This function uses INSERT INTO instead of the more convenient dbWritetable for performance reasons
 #' 
 #' @author Matthias Bannert
-#' @param series an object of class ts or zoo
+#' @param series character name of an object of class ts 
 #' @param connect character name of the PostgreSQL connection object.
 #' @param tkey optional character string to specify an explicit time series primary key for the database. Defaults to NULL and uses the name of the R time series object as a key. Note that keys need to be unique in the database. 
 #' @param tbl character string denoting the name of the main time series table in the PostgreSQL database.
@@ -14,10 +14,11 @@
 #' This option is particularly important when running storeTimeseries within loop like operations.
 #' @param overwrite logical, whether time series should be overwritten in case a non-unique primary key is provided. Defaults to TRUE.
 #' @export
-storeTimeseries <- function(series,connect = "con",
-                   tbl = "timeseries_main",
-                   lookup_env = .GlobalEnv,
-                   overwrite = T){
+storeTimeseries <- function(series,ts_key = NULL,
+                            connect = "con",
+                            tbl = "timeseries_main",
+                            lookup_env = .GlobalEnv,
+                            overwrite = T){
   # Because we cannot really use a global binding to 
   # the postgreSQL connection object which does not exist at the time
   # of compilation, we use the character name of the object here. 
@@ -36,6 +37,11 @@ storeTimeseries <- function(series,connect = "con",
   md_generated_on <- Sys.time()
   md_generated_by <- Sys.getenv("USER")
   
+  # an additional key provides to opportunity to read time series key from 
+  # from an attribute
+  if(!is.null(ts_key)) series <- ts_key
+  
+
   # Overwrite existing time series using an inserting statement
   if(overwrite){
     dbGetQuery(con,sprintf("DELETE FROM %s WHERE ts_key = '%s'",tbl,series))
