@@ -5,22 +5,26 @@
 #' After reading the information from the database a standard
 #' R time series object of class 'ts' is built and returned. 
 #' 
-#' @author Matthias Bannert
+#' @author Matthias Bannert, Gabriel Bucur
 #' @param series character representation of the key of the time series
 #' @param connect character name of the PostgreSQL connection object
-#' @param tbl character string denoting the name of the main time series table in the PostgreSQL database.
+#' @param tbl character string denoting the name of the main time series table
+#' in the PostgreSQL database.
+#' @param meta_unlocalized logical look for unlocalized meta information in the database. Defaults to FALSE
+#' @param meta_localized look for localized meta information: either "no", "all", or specific country abbreviation. defaults to "no". 
 #' @export
-readTimeseries <- function(series,connect = "con",tbl = "timeseries_main"){
+readTimeseries <- function(series,con, meta_unlocalized = F,
+                           meta_localized = F,tbl = "timeseries_main"){
   # Because we cannot really use a global binding to 
   # the postgreSQL connection object which does not exist at the time
   # of compilation, we use the character name of the object here. 
-  connect <- get(connect)
+  
   # extract data from hstore 
   sql_statement_data <- sprintf("SELECT (each(ts_data)).key, (each(ts_data)).value FROM %s WHERE ts_key = '%s'",tbl,series)
   # get freq
   sql_statement_freq <- sprintf("SELECT ts_frequency FROM %s WHERE ts_key = '%s'",tbl,series)
-  freq <- dbGetQuery(connect,sql_statement_freq)
-  out <- dbGetQuery(connect,sql_statement_data)
+  freq <- dbGetQuery(con,sql_statement_freq)
+  out <- dbGetQuery(con,sql_statement_data)
   
   # create R time series object
   # find start date first

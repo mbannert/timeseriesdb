@@ -5,7 +5,7 @@
 #' created first. The parent R Package of this functions suggests a database structure
 #' designed to store a larger amount of time series. This function uses INSERT INTO instead of the more convenient dbWritetable for performance reasons
 #' 
-#' @author Matthias Bannert
+#' @author Matthias Bannert, Gabriel Bucur
 #' @param series character name of an object of class ts 
 #' @param connect character name of the PostgreSQL connection object.
 #' @param tkey optional character string to specify an explicit time series primary key for the database. Defaults to NULL and uses the name of the R time series object as a key. Note that keys need to be unique in the database. 
@@ -15,21 +15,21 @@
 #' @param overwrite logical, whether time series should be overwritten in case a non-unique primary key is provided. Defaults to TRUE.
 #' @export
 storeTimeseries <- function(series,ts_key = NULL,
-                            connect = "con",
+                            con,
                             tbl = "timeseries_main",
                             lookup_env = .GlobalEnv,
                             overwrite = T){
   # Because we cannot really use a global binding to 
   # the postgreSQL connection object which does not exist at the time
   # of compilation, we use the character name of the object here. 
-  connect <- get(connect)
+  # connect <- get(connect,envir = parent.frame())
   #   # add key
-#   if(is.null(tkey)){
-#     ts_key <- deparse(substitute(series))
-#   } else {
-#     stopifnot(is.character(tkey))
-#     ts_key <- tkey
-#   }
+  #   if(is.null(tkey)){
+  #     ts_key <- deparse(substitute(series))
+  #   } else {
+  #     stopifnot(is.character(tkey))
+  #     ts_key <- tkey
+  #   }
   
   # collect information for insert query
   ts_data <- createHstore(get(series,envir = lookup_env))
@@ -41,7 +41,7 @@ storeTimeseries <- function(series,ts_key = NULL,
   # from an attribute
   if(!is.null(ts_key)) series <- ts_key
   
-
+  
   # Overwrite existing time series using an inserting statement
   if(overwrite){
     dbGetQuery(con,sprintf("DELETE FROM %s WHERE ts_key = '%s'",tbl,series))
