@@ -1,3 +1,7 @@
+#' Read Meta Information From the Database Given a Time Series Key
+#' 
+#' This function is not really operational yet. WARNING
+#' 
 #' @param connect character string name of a database connection object. 
 #' @param series character string time series key
 #' @param meta_fixed logical should non-translatable data be queried? defaults to  to FALSE. Gets information such as legacy key or frequency. 
