@@ -44,11 +44,11 @@ storeTimeseries <- function(series,ts_key = NULL,
   
   # Overwrite existing time series using an inserting statement
   if(overwrite){
-    dbGetQuery(con,sprintf("DELETE FROM %s WHERE ts_key = '%s'",tbl,series))
+
+    sql_query <- sprintf("INSERT INTO %s (ts_key,ts_data,ts_frequency,md_generated_on,md_generated_by) VALUES ('%s','%s',%s,'%s','%s')",
+                       tbl,series,ts_data,ts_freq,md_generated_on,md_generated_by)
   }
   
-  sql_query <- sprintf("INSERT INTO %s (ts_key,ts_data,ts_frequency,md_generated_on,md_generated_by) VALUES ('%s','%s',%s,'%s','%s')",
-                       tbl,series,ts_data,ts_freq,md_generated_on,md_generated_by)
   # Print proper success notification to console
   if(is.null(dbGetQuery(con,sql_query))){
     print("Data inserted.")
