@@ -1,6 +1,6 @@
 Package: timeseriesdb
 Title: Store and Organize Time Series in a Database
-Description:An R package to store and organize time series in a simple but
+Description: An R package to store and organize time series in a simple but
     powerful relational database using PostgreSQL. The timeseriesdb package
     suggests a simple yet powerful database structure to store a large
     amount of time series in a relational PostgreSQL database. The package

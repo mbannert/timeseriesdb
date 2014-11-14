@@ -4,7 +4,8 @@
 #' It returns an hstore object that can be inserted to a PostgreSQL database relation field of type hstore. 
 #' @author Matthias Bannert
 #' @title Create Hstore
-#' @param x a time series object or two column data frame.
+#' @param x a time series object, a two column data frame or object of S3 class
+#' miro (meta information for R objects).
 #' @param ... optional arguments, e.g. position of the key col and
 #' pasition of the value col in a data.frame.
 #' @examples
@@ -35,10 +36,50 @@ createHstore.data.frame <- function(x,...){
   
   paste(sprintf('"%s"=>"%s"',
                 as.character(x[,key_pos]),
-                as.character(x[,value_pos]),
+                as.character(x[,value_pos])),
         collapse=",")
-        )
 }
+
+
+
+#' @rdname createHstore
+#' @export
+createHstore.list <- function(x,...){
+  # check if list is more than 2 dim
+  if(depth(x) != 1) stop('Only key-value pairs are accepted,
+                         this list has too many dimensions!') 
+  
+  if(is.null(names(x))) stop('Only named lists are accepted.')
+  
+  paste(sprintf('"%s"=>"%s"',
+                names(x),
+                as.character(unlist(x))),
+        colliapse=",")
+}
+
+
+#' @rdname createHstore
+#' @export
+createHstore.miro <- function(x,...){
+  if(is.null(names(x))) stop('Language needs to be
+                             specified by name the
+                             key value pair list!')
+  
+  if(depth(x) != 2) stop('input is not proper
+                         Meta Information for R Object!')
+  
+  l <- length(names(x))
+  
+  lapply(x,createHstore)
+  
+}
+
+
+
+
+
+
+
 
 
 

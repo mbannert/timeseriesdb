@@ -2,6 +2,8 @@
 \name{createHstore}
 \alias{createHstore}
 \alias{createHstore.data.frame}
+\alias{createHstore.list}
+\alias{createHstore.miro}
 \alias{createHstore.ts}
 \title{Create Hstore}
 \usage{
@@ -10,9 +12,14 @@ createHstore(x, ...)
 \method{createHstore}{ts}(x, ...)
 
 \method{createHstore}{data.frame}(x, ...)
+
+\method{createHstore}{list}(x, ...)
+
+\method{createHstore}{miro}(x, ...)
 }
 \arguments{
-\item{x}{a time series object or two column data frame.}
+\item{x}{a time series object, a two column data frame or object of S3 class
+miro (meta information for R objects).}
 
 \item{...}{optional arguments, e.g. position of the key col and
 pasition of the value col in a data.frame.}
