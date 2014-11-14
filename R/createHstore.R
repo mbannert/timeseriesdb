@@ -28,8 +28,8 @@ createHstore.ts <- function(x,...){
 #' @export
 createHstore.data.frame <- function(x,...){
   # only allow to cols because its KEY => VALUE
-  if(!exists == 'key_pos') key_pos <- 1
-  if(!exists == 'value_pos') value_pos <- 2
+  if(!exists('key_pos')) key_pos <- 1
+  if(!exists('value_pos')) value_pos <- 2
   
   stopifnot(ncol(x) == 2)
   
