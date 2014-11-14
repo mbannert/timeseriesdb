@@ -9,14 +9,14 @@ readTimeseries(series, con, meta_unlocalized = F, meta_localized = F,
 \arguments{
 \item{series}{character representation of the key of the time series}
 
+\item{con}{a PostgreSQL connection object}
+
 \item{meta_unlocalized}{logical look for unlocalized meta information in the database. Defaults to FALSE}
 
 \item{meta_localized}{look for localized meta information: either "no", "all", or specific country abbreviation. defaults to "no".}
 
 \item{tbl}{character string denoting the name of the main time series table
 in the PostgreSQL database.}
-
-\item{connect}{character name of the PostgreSQL connection object}
 }
 \description{
 This function reads a time series from a postgres database,

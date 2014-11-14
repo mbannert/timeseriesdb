@@ -9,7 +9,7 @@ createHstore(x, ...)
 
 \method{createHstore}{ts}(x, ...)
 
-\method{createHstore}{data.frame}(x, key = 1, value = 2)
+\method{createHstore}{data.frame}(x, ...)
 }
 \arguments{
 \item{x}{a time series object or two column data frame.}

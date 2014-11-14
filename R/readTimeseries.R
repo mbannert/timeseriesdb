@@ -7,7 +7,7 @@
 #' 
 #' @author Matthias Bannert, Gabriel Bucur
 #' @param series character representation of the key of the time series
-#' @param connect character name of the PostgreSQL connection object
+#' @param con a PostgreSQL connection object
 #' @param tbl character string denoting the name of the main time series table
 #' in the PostgreSQL database.
 #' @param meta_unlocalized logical look for unlocalized meta information in the database. Defaults to FALSE

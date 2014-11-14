@@ -2,13 +2,7 @@
 
 S3method(createHstore,data.frame)
 S3method(createHstore,ts)
-S3method(print,rs)
 export(createHstore)
-export(deleteTimeseries)
-export(fetchSelectedResults)
 export(readTimeseries)
-export(rollback)
-export(searchDbForKeys)
-export(selectResults)
 export(storeTimeseries)
 export(zooLikeDateConvert)

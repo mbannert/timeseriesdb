@@ -7,8 +7,8 @@
 #' 
 #' @author Matthias Bannert, Gabriel Bucur
 #' @param series character name of an object of class ts 
-#' @param connect character name of the PostgreSQL connection object.
-#' @param tkey optional character string to specify an explicit time series primary key for the database. Defaults to NULL and uses the name of the R time series object as a key. Note that keys need to be unique in the database. 
+#' @param con a PostgreSQL connection object.
+#' @param ts_key optional character string to specify an explicit time series primary key for the database. Defaults to NULL and uses the name of the R time series object as a key. Note that keys need to be unique in the database. 
 #' @param tbl character string denoting the name of the main time series table in the PostgreSQL database.
 #' @param lookup_env environment to look in for timeseries. Defaults to .GobalEnv.
 #' This option is particularly important when running storeTimeseries within loop like operations.

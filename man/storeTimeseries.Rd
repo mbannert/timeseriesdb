@@ -9,16 +9,16 @@ storeTimeseries(series, ts_key = NULL, con, tbl = "timeseries_main",
 \arguments{
 \item{series}{character name of an object of class ts}
 
+\item{ts_key}{optional character string to specify an explicit time series primary key for the database. Defaults to NULL and uses the name of the R time series object as a key. Note that keys need to be unique in the database.}
+
+\item{con}{a PostgreSQL connection object.}
+
 \item{tbl}{character string denoting the name of the main time series table in the PostgreSQL database.}
 
 \item{lookup_env}{environment to look in for timeseries. Defaults to .GobalEnv.
 This option is particularly important when running storeTimeseries within loop like operations.}
 
 \item{overwrite}{logical, whether time series should be overwritten in case a non-unique primary key is provided. Defaults to TRUE.}
-
-\item{connect}{character name of the PostgreSQL connection object.}
-
-\item{tkey}{optional character string to specify an explicit time series primary key for the database. Defaults to NULL and uses the name of the R time series object as a key. Note that keys need to be unique in the database.}
 }
 \description{
 This function writes time series object into a relational PostgreSQL database make use
