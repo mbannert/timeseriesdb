@@ -6,7 +6,7 @@
 #' designed to store a larger amount of time series. This function uses INSERT INTO instead of the more convenient dbWritetable for performance reasons
 #' 
 #' @author Matthias Bannert, Gabriel Bucur
-#' @param series object of class ts 
+#' @param series character name of a time series, S3 class ts
 #' @param con a PostgreSQL connection object.
 #' @param ts_key optional character string to specify an explicit time series primary key for the database. Defaults to NULL and uses the name of the R time series object as a key. Note that keys need to be unique in the database. 
 #' @param tbl character string denoting the name of the main time series table in the PostgreSQL database.

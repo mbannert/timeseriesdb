@@ -70,7 +70,9 @@ createHstore.miro <- function(x,...){
   
   l <- length(names(x))
   
-  lapply(x,createHstore)
+  out <- lapply(x,createHstore)
+  class(out) <- c('list_of_hstores','list')
+  out
   
 }
 
