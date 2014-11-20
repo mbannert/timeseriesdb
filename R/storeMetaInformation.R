@@ -12,7 +12,7 @@
 storeMetaInformation <- function(series,
                                  con = options()$TIMESERIESDB_CON,
                                  tbl = 'meta_data_localized',
-                                 lookup_env = 'meta',
+                                 lookup_env = 'meta_data_localized',
                                  overwrite = T){
   
   if(is.null(con)) stop('Default TIMESERIESDB_CON not set in options() or no proper connection given to the con argument.')
