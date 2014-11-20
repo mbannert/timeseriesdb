@@ -27,12 +27,15 @@ storeMetaInformation <- function(series,
   if(overwrite){
     
     
-    lapply(names(hstore_list),function(x){
+    out <- lapply(names(hstore_list),function(x){
       sql_query <- sprintf("INSERT INTO %s (ts_key,locale_info,meta_data) VALUES 
                          ('%s','%s','%s')",tbl,series,x,hstore_list[[x]])
-    if(is.null(dbGetQuery(con,sql_query))) cat(x,' meta information successfully written.')
+      if(is.null(dbGetQuery(con,sql_query))) paste0(x,' meta information successfully written.')
     }
     )
+    
+    out
+    
   }  
   
 }
