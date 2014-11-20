@@ -13,8 +13,14 @@
 #' @param meta_unlocalized logical look for unlocalized meta information in the database. Defaults to FALSE
 #' @param meta_localized look for localized meta information: either "no", "all", or specific country abbreviation. defaults to "no". 
 #' @export
-readTimeSeries <- function(series,con, meta_unlocalized = F,
+readTimeSeries <- function(series,
+                           con = options()$TIMESERIESDB_CON,
+                           meta_unlocalized = F,
                            meta_localized = F,tbl = "timeseries_main"){
+  
+  if(is.null(con)) stop('Default TIMESERIESDB_CON not set in options() or no proper connection given to the con argument.')
+  
+  
   # Because we cannot really use a global binding to 
   # the postgreSQL connection object which does not exist at the time
   # of compilation, we use the character name of the object here. 

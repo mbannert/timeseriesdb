@@ -9,10 +9,14 @@
 #' @param lookup_env name of the R environment in which to look for meta information objects
 #' @param overwrite logical, TRUE
 #' @export
-storeMetaInformation <- function(series,con,
+storeMetaInformation <- function(series,
+                                 con = options()$TIMESERIESDB_CON,
                                  tbl = 'meta_data_localized',
                                  lookup_env = 'meta',
                                  overwrite = T){
+  
+  if(is.null(con)) stop('Default TIMESERIESDB_CON not set in options() or no proper connection given to the con argument.')
+  
   # get an object from the meta environment
   mi <- get(series,envir = get(lookup_env))
   

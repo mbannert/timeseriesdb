@@ -3,8 +3,8 @@
 \alias{readTimeSeries}
 \title{Read Time Series From PostgreSQL database}
 \usage{
-readTimeSeries(series, con, meta_unlocalized = F, meta_localized = F,
-  tbl = "timeseries_main")
+readTimeSeries(series, con = options()$TIMESERIESDB_CON,
+  meta_unlocalized = F, meta_localized = F, tbl = "timeseries_main")
 }
 \arguments{
 \item{series}{character representation of the key of the time series}

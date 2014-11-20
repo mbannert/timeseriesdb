@@ -3,7 +3,8 @@
 \alias{readMetaInformation}
 \title{Read Meta Information from a Time Series Database}
 \usage{
-readMetaInformation(series, con, overwrite, type = "localized")
+readMetaInformation(series, con = options()$TIMESERIESDB_CON, overwrite,
+  type = "localized")
 }
 \arguments{
 \item{series}{character name of a time series object.}

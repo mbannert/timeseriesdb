@@ -9,8 +9,11 @@
 #' @param type character representation of type of meta information, defaults to
 #' localized.
 #' @export 
-readMetaInformation <- function(series,con,overwrite,type = "localized"){
+readMetaInformation <- function(series,
+                                con = options()$TIMESERIESDB_CON,
+                                overwrite,type = "localized"){
   
+  if(is.null(con)) stop('Default TIMESERIESDB_CON not set in options() or no proper connection given to the con argument.')
   
   
   if(type == 'localized'){

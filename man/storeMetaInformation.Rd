@@ -3,8 +3,8 @@
 \alias{storeMetaInformation}
 \title{Store Meta Information to the Database}
 \usage{
-storeMetaInformation(series, con, tbl = "meta_data_localized",
-  lookup_env = "meta", overwrite = T)
+storeMetaInformation(series, con = options()$TIMESERIESDB_CON,
+  tbl = "meta_data_localized", lookup_env = "meta", overwrite = T)
 }
 \arguments{
 \item{series}{a character name of an time series object}

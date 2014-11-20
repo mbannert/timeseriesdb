@@ -3,8 +3,8 @@
 \alias{storeTimeSeries}
 \title{Write an R Time Series to a PostgreSQL database}
 \usage{
-storeTimeSeries(series, con, ts_key = NULL, tbl = "timeseries_main",
-  lookup_env = .GlobalEnv, overwrite = T)
+storeTimeSeries(series, con = options()$TIMESERIESDB_CON, ts_key = NULL,
+  tbl = "timeseries_main", lookup_env = .GlobalEnv, overwrite = T)
 }
 \arguments{
 \item{series}{character name of a time series, S3 class ts}

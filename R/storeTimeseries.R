@@ -14,10 +14,14 @@
 #' This option is particularly important when running storeTimeseries within loop like operations.
 #' @param overwrite logical, whether time series should be overwritten in case a non-unique primary key is provided. Defaults to TRUE.
 #' @export
-storeTimeSeries <- function(series,con,ts_key = NULL,
+storeTimeSeries <- function(series,
+                            con = options()$TIMESERIESDB_CON,
+                            ts_key = NULL,
                             tbl = "timeseries_main",
                             lookup_env = .GlobalEnv,
                             overwrite = T){
+  if(is.null(con)) stop('Default TIMESERIESDB_CON not set in options() or no proper connection given to the con argument.')
+  
   # Because we cannot really use a global binding to 
   # the postgreSQL connection object which does not exist at the time
   # of compilation, we use the character name of the object here. 
