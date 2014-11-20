@@ -3,15 +3,15 @@
 \alias{storeTimeSeries}
 \title{Write an R Time Series to a PostgreSQL database}
 \usage{
-storeTimeSeries(series, ts_key = NULL, con, tbl = "timeseries_main",
+storeTimeSeries(series, con, ts_key = NULL, tbl = "timeseries_main",
   lookup_env = .GlobalEnv, overwrite = T)
 }
 \arguments{
 \item{series}{character name of a time series, S3 class ts}
 
-\item{ts_key}{optional character string to specify an explicit time series primary key for the database. Defaults to NULL and uses the name of the R time series object as a key. Note that keys need to be unique in the database.}
-
 \item{con}{a PostgreSQL connection object.}
+
+\item{ts_key}{optional character string to specify an explicit time series primary key for the database. Defaults to NULL and uses the name of the R time series object as a key. Note that keys need to be unique in the database.}
 
 \item{tbl}{character string denoting the name of the main time series table in the PostgreSQL database.}
 
