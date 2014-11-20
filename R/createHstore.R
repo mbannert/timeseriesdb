@@ -54,7 +54,7 @@ createHstore.list <- function(x,...){
   paste(sprintf('"%s"=>"%s"',
                 names(x),
                 as.character(unlist(x))),
-        colliapse=",")
+        collapse=",")
 }
 
 
