@@ -34,7 +34,7 @@ storeMetaInformation <- function(series,
     }
     )
     
-    out
+    paste0(unlist(out),collapse = "\n")
     
   }  
   
