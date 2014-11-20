@@ -14,7 +14,7 @@
 #' This option is particularly important when running storeTimeseries within loop like operations.
 #' @param overwrite logical, whether time series should be overwritten in case a non-unique primary key is provided. Defaults to TRUE.
 #' @export
-storeTimeseries <- function(series,ts_key = NULL,
+storeTimeSeries <- function(series,ts_key = NULL,
                             con,
                             tbl = "timeseries_main",
                             lookup_env = .GlobalEnv,

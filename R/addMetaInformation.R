@@ -12,7 +12,7 @@
 #' @param overwrite logical should existing meta information be overwritten inside
 #' the environment?
 #' @export
-add_mi <- function(series,map_list,
+addMetaInformation <- function(series,map_list,
                    meta_env = 'meta_localized',
                    overwrite = T){
   # sanity check

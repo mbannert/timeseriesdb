@@ -30,7 +30,7 @@ readMetaInformation <- function(series,con,overwrite,type = "localized"){
     })
     
     
-    add_mi(series,res_list,overwrite = overwrite)
+    addMetaInformation(series,res_list,overwrite = overwrite)
     
     
     
