@@ -4,7 +4,8 @@
 \title{Store Meta Information to the Database}
 \usage{
 storeMetaInformation(series, con = options()$TIMESERIESDB_CON,
-  tbl = "meta_data_localized", lookup_env = "meta", overwrite = T)
+  tbl = "meta_data_localized", lookup_env = "meta_data_localized",
+  overwrite = T)
 }
 \arguments{
 \item{series}{a character name of an time series object}

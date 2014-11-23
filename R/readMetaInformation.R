@@ -8,17 +8,19 @@
 #' @param overwrite logical should data be overwritten
 #' @param type character representation of type of meta information, defaults to
 #' localized.
+#' @param tbl character name of the table that contains the
+#' localized meta information
 #' @export 
 readMetaInformation <- function(series,
                                 con = options()$TIMESERIESDB_CON,
-                                overwrite,type = "localized"){
+                                overwrite,type = "localized",
+                                tbl = 'meta_data_localized'){
   
   if(is.null(con)) stop('Default TIMESERIESDB_CON not set in options() or no proper connection given to the con argument.')
   
   
   if(type == 'localized'){
     meta_env = 'meta_localized'
-    tbl = 'meta_data_localized'
     sql_statement <- sprintf("SELECT (each(meta_data)).key,
                              (each(meta_data)).value,
                              locale_info FROM %s WHERE ts_key = '%s'",
@@ -32,12 +34,8 @@ readMetaInformation <- function(series,
       li
     })
     
-    
-    addMetaInformation(series,res_list,overwrite = overwrite)
-    
-    
-    
-    
+    # returns an environment of class meta_env
+    addMetaInformation(series,res_list,overwrite = overwrite)    
   }
 }
 
