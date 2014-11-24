@@ -10,17 +10,18 @@
 #' localized.
 #' @param tbl character name of the table that contains the
 #' localized meta information
+#' @param meta_env character name of the environment that holds the localized meta information. 
 #' @export 
 readMetaInformation <- function(series,
                                 con = options()$TIMESERIESDB_CON,
                                 overwrite,type = "localized",
-                                tbl = 'meta_data_localized'){
+                                tbl = 'meta_data_localized',
+                                meta_env = 'meta_localized'){
   
   if(is.null(con)) stop('Default TIMESERIESDB_CON not set in options() or no proper connection given to the con argument.')
   
   
   if(type == 'localized'){
-    meta_env = 'meta_localized'
     sql_statement <- sprintf("SELECT (each(meta_data)).key,
                              (each(meta_data)).value,
                              locale_info FROM %s WHERE ts_key = '%s'",
