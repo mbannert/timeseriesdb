@@ -20,7 +20,7 @@ getMeta <- function(series, lang, con = options()$TIMESERIESDB_CON,
                              (each(meta_data)).value
                            FROM %s WHERE ts_key = '%s' AND locale_info = '%s'",
                            tbl,ts,lang)
-  res <- dbGetQuery(con,sql_statement)
+  res <- DBI::dbGetQuery(con,sql_statement)
   ll <- as.list(res$value)
   names(ll) <- res$key
   ll

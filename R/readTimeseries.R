@@ -29,8 +29,8 @@ readTimeSeries <- function(series,
   sql_statement_data <- sprintf("SELECT (each(ts_data)).key, (each(ts_data)).value FROM %s WHERE ts_key = '%s'",tbl,series)
   # get freq
   sql_statement_freq <- sprintf("SELECT ts_frequency FROM %s WHERE ts_key = '%s'",tbl,series)
-  freq <- dbGetQuery(con,sql_statement_freq)
-  out <- dbGetQuery(con,sql_statement_data)
+  freq <- DBI::dbGetQuery(con,sql_statement_freq)
+  out <- DBI::dbGetQuery(con,sql_statement_data)
   
   # create R time series object
   # find start date first

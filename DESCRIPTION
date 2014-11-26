@@ -4,16 +4,15 @@ Description: An R package to store and organize time series and their
     multi-lingual meta information in a database. The timeseriesdb package
     suggests a simple yet powerful database structure to store a large amount
     of time series in a relational PostgreSQL database. The package provides an
-    interface to the R user to create, update and delete time series. Also,
-    useRs can search the database using R. I plan to extend comprehensive
-    support for storing and querying multi-lingual meta information in the
-    future.
+    interface to the R user to create, update and delete time series.
 Version: 0.1
 Authors@R: 'Matthias Bannert <bannert@kof.ethz.ch> [aut, cre]'
 Depends:
     R (>= 3.0.0)
 Suggests:
     RPostgreSQL
+Imports:
+    DBI
 License: GPL-2
 LazyData: true
 Maintainer: 'Matthias Bannert' <bannert@kof.ethz.ch>

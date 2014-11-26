@@ -14,6 +14,6 @@ deleteTimeSeries <- function(series,con,
                              tbl_main = 'timeseries_main'){
   sql_statement <- sprintf("DELETE FROM %s WHERE ts_key ='%s' CASCADE",
                            tbl_main, series)
-  if(is.null(dbGetQuery(con,sql_statement))) sprintf('Time series %s deleted.',series)
+  if(is.null(DBI::dbGetQuery(con,sql_statement))) sprintf('Time series %s deleted.',series)
   
 }

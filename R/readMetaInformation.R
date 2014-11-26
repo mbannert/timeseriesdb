@@ -26,7 +26,7 @@ readMetaInformation <- function(series,
                              (each(meta_data)).value,
                              locale_info FROM %s WHERE ts_key = '%s'",
                              tbl,series)
-    res <- dbGetQuery(con,sql_statement)
+    res <- DBI::dbGetQuery(con,sql_statement)
     res_list <- split(res,factor(res$locale_info))
     res_list <- lapply(res_list,function(x){
       nms <- x$key

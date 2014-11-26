@@ -53,7 +53,7 @@ storeTimeSeries <- function(series,
   }
   
   # Print proper success notification to console
-  if(is.null(dbGetQuery(con,sql_query))){
+  if(is.null(DBI::dbGetQuery(con,sql_query))){
     print("Data inserted.")
   } 
   

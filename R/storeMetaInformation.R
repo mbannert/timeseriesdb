@@ -31,7 +31,7 @@ storeMetaInformation <- function(series,
       sql_query <- sprintf("INSERT INTO %s (ts_key,locale_info,meta_data) VALUES 
                          ('%s','%s','%s')",tbl,series,x,hstore_list[[x]])
       # return proper status messages for every lang
-      if(is.null(dbGetQuery(con,sql_query))){
+      if(is.null(DBI::dbGetQuery(con,sql_query))){
         paste0(x,' meta information successfully written.')
       } else{
         paste0(x,' meta information fail.')
