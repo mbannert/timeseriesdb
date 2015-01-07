@@ -6,22 +6,19 @@
 #' @param series character name of a time series object.
 #' @param con PostgreSQL connection object
 #' @param overwrite logical should data be overwritten
-#' @param type character representation of type of meta information, defaults to
-#' localized.
+#' @param localized logical should localized meta information be read, defaults to TRUE.
 #' @param tbl character name of the table that contains the
 #' localized meta information
-#' @param meta_env character name of the environment that holds the localized meta information. 
 #' @export 
 readMetaInformation <- function(series,
                                 con = options()$TIMESERIESDB_CON,
-                                overwrite,type = "localized",
-                                tbl = 'meta_data_localized',
-                                meta_env = 'meta_localized'){
+                                overwrite,localized = T,
+                                tbl = 'meta_data_localized'){
   
   if(is.null(con)) stop('Default TIMESERIESDB_CON not set in options() or no proper connection given to the con argument.')
   
   
-  if(type == 'localized'){
+  if(localized){
     sql_statement <- sprintf("SELECT (each(meta_data)).key,
                              (each(meta_data)).value,
                              locale_info FROM %s WHERE ts_key = '%s'",
@@ -37,6 +34,23 @@ readMetaInformation <- function(series,
     
     # returns an environment of class meta_env
     addMetaInformation(series,res_list,overwrite = overwrite)    
+  } else {
+    sql_statement <- sprintf("SELECT
+                             md_generated_by,
+                             md_resource_last_update,
+                             md_coverage_temp
+                             FROM %s WHERE ts_key= '%s'",
+                             tbl,series)
+    
+    sql_statement_hstore <- sprintf("SELECT 
+                             (each(meta_data)).key,
+                             (each(meta_data)).value
+                             FROM %s WHERE ts_key = '%s'"
+                                   ,tbl,series)
+    res_list <- list()
+    res_list$fixed <- DBI::dbGetQuery(con,sql_statement)
+    res_list$flexible <- DBI::dbGetQuery(con,sql_statement_hstore)
+    addMetaInformation(series,res_list,overwrite = overwrite, meta_env = tbl)    
   }
 }
 

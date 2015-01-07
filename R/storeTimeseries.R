@@ -10,6 +10,7 @@
 #' @param con a PostgreSQL connection object.
 #' @param ts_key optional character string to specify an explicit time series primary key for the database. Defaults to NULL and uses the name of the R time series object as a key. Note that keys need to be unique in the database. 
 #' @param tbl character string denoting the name of the main time series table in the PostgreSQL database.
+#' @param md_unlocal character string denoting the name of the table that holds unlocalized meta information.
 #' @param lookup_env environment to look in for timeseries. Defaults to .GobalEnv.
 #' This option is particularly important when running storeTimeseries within loop like operations.
 #' @param overwrite logical, whether time series should be overwritten in case a non-unique primary key is provided. Defaults to TRUE.
@@ -18,6 +19,7 @@ storeTimeSeries <- function(series,
                             con = options()$TIMESERIESDB_CON,
                             ts_key = NULL,
                             tbl = "timeseries_main",
+                            md_unlocal = 'meta_data_unlocalized',
                             lookup_env = .GlobalEnv,
                             overwrite = T){
   if(is.null(con)) stop('Default TIMESERIESDB_CON not set in options() or no proper connection given to the con argument.')
@@ -35,10 +37,14 @@ storeTimeSeries <- function(series,
   #   }
   
   # collect information for insert query
-  ts_data <- createHstore(get(series,envir = lookup_env))
+  ts_obj <- get(series,envir = lookup_env)
+  ts_data <- createHstore(ts_obj)
   ts_freq <- frequency(get(series,envir = lookup_env))
-  md_generated_on <- Sys.time()
+  md_resource_last_update <- Sys.time()
   md_generated_by <- Sys.getenv("USER")
+  md_coverage_temp <- sprintf('%s to %s',
+                           min(zooLikeDateConvert(ts_obj)),
+                           max(zooLikeDateConvert(ts_obj)))
   
   # an additional key provides to opportunity to read time series key from 
   # from an attribute
@@ -48,13 +54,25 @@ storeTimeSeries <- function(series,
   # Overwrite existing time series using an inserting statement
   if(overwrite){
 
-    sql_query <- sprintf("INSERT INTO %s (ts_key,ts_data,ts_frequency,md_generated_on,md_generated_by) VALUES ('%s','%s',%s,'%s','%s')",
-                       tbl,series,ts_data,ts_freq,md_generated_on,md_generated_by)
+    sql_query <- sprintf("INSERT INTO %s (ts_key,ts_data,ts_frequency) VALUES ('%s','%s',%s)",
+                       tbl,series,ts_data,ts_freq)
+    
+    sql_query_md <- sprintf("INSERT INTO %s (ts_key,md_generated_by,md_resource_last_update,md_coverage_temp) VALUES ('%s','%s','%s','%s')",
+                            md_unlocal,
+                            series,
+                            md_generated_by,
+                            md_resource_last_update,
+                            md_coverage_temp)
   }
   
   # Print proper success notification to console
   if(is.null(DBI::dbGetQuery(con,sql_query))){
     print("Data inserted.")
-  } 
+  }
+  
+  if(is.null(DBI::dbGetQuery(con,sql_query_md))){
+    print("Meta information inserted.")
+  }
+  
   
 }

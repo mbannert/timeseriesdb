@@ -4,7 +4,8 @@
 \title{Write an R Time Series to a PostgreSQL database}
 \usage{
 storeTimeSeries(series, con = options()$TIMESERIESDB_CON, ts_key = NULL,
-  tbl = "timeseries_main", lookup_env = .GlobalEnv, overwrite = T)
+  tbl = "timeseries_main", md_unlocal = "meta_data_unlocalized",
+  lookup_env = .GlobalEnv, overwrite = T)
 }
 \arguments{
 \item{series}{character name of a time series, S3 class ts}
@@ -14,6 +15,8 @@ storeTimeSeries(series, con = options()$TIMESERIESDB_CON, ts_key = NULL,
 \item{ts_key}{optional character string to specify an explicit time series primary key for the database. Defaults to NULL and uses the name of the R time series object as a key. Note that keys need to be unique in the database.}
 
 \item{tbl}{character string denoting the name of the main time series table in the PostgreSQL database.}
+
+\item{md_unlocal}{character string denoting the name of the table that holds unlocalized meta information.}
 
 \item{lookup_env}{environment to look in for timeseries. Defaults to .GobalEnv.
 This option is particularly important when running storeTimeseries within loop like operations.}

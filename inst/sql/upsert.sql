@@ -1,5 +1,5 @@
 # Hat tip to Charles Clavadetscher for helping out
-# moving this update / insert operations to the 
+# moving these update / insert operations to the 
 # database level
 
 create or replace function upsert_timeseries_tables()
@@ -15,9 +15,7 @@ begin
         else
           update timeseries_main
           set ts_data = new.ts_data,
-          ts_frequency = new.ts_frequency,
-          md_generated_on = new.md_generated_on,
-          md_generated_by = new.md_generated_by
+          ts_frequency = new.ts_frequency
           where ts_key = new.ts_key;
           return null;
         end if;
@@ -43,7 +41,10 @@ begin
           return new;
         else
           update meta_data_unlocalized
-          set meta_data = new.meta_data
+          set meta_data = new.meta_data,
+          md_generated_by = new.md_generated_by,
+          md_resource_last_update = new.md_resource_last_update,
+          md_coverage_temp = new.md_coverage_temp
           where ts_key = new.ts_key;
           return null;
         end if;
