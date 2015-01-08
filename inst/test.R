@@ -67,7 +67,7 @@ storeMetaInformation('ts1',tbl = 'meta_data_unlocalized',
 meta_data_unlocalized$ts1
 
 
-readMetaInformation('ts1',localized = F,tbl = "meta_data_unlocalized")
+test2 <- readMetaInformation('ts1',localized = F,tbl = "meta_data_unlocalized",overwrite = T)
 
 
 
