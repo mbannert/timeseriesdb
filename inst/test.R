@@ -22,7 +22,7 @@ options('TIMESERIESDB_CON' = pg_con)
 
 storeTimeSeries('ts1')
 
-meta_data_localized <- readMetaInformation('ts1',con)
+meta_data_localized <- readMetaInformation('ts1')
 
 
 
@@ -47,5 +47,32 @@ meta_data_localized$ts1
 
 ￼￼
 storeMetaInformation('ts1',lookup_env = 'meta_data_localized',con = con)
+
+meta_data_localized$ts1
+
+
+# unlocalized meta information
+dict_ul <- list()
+dict_ul$flexible <- list('coverage_spatial' = 'CH',
+                'source' = 'test')
+
+
+meta_data_unlocalized <- new.env()
+
+addMetaInformation('ts1',dict_ul,meta_env = 'meta_data_unlocalized')
+
+storeMetaInformation('ts1',tbl = 'meta_data_unlocalized',
+                     lookup_env = 'meta_data_unlocalized',localized = F)
+
+meta_data_unlocalized$ts1
+
+
+readMetaInformation('ts1',localized = F,tbl = "meta_data_unlocalized")
+
+
+
+
+
+
 
 

@@ -5,7 +5,7 @@
 \usage{
 storeMetaInformation(series, con = options()$TIMESERIESDB_CON,
   tbl = "meta_data_localized", lookup_env = "meta_data_localized",
-  overwrite = T)
+  overwrite = T, localized = T)
 }
 \arguments{
 \item{series}{a character name of an time series object}
@@ -17,6 +17,8 @@ storeMetaInformation(series, con = options()$TIMESERIESDB_CON,
 \item{lookup_env}{name of the R environment in which to look for meta information objects}
 
 \item{overwrite}{logical, TRUE}
+
+\item{localized}{logical is meta information localized. Defaults to TRUE.}
 }
 \description{
 This function stores meta information to the database for a given time series.

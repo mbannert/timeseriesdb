@@ -4,8 +4,7 @@
 \title{Read Meta Information from a Time Series Database}
 \usage{
 readMetaInformation(series, con = options()$TIMESERIESDB_CON, overwrite,
-  type = "localized", tbl = "meta_data_localized",
-  meta_env = "meta_localized")
+  localized = T, tbl = "meta_data_localized")
 }
 \arguments{
 \item{series}{character name of a time series object.}
@@ -14,13 +13,10 @@ readMetaInformation(series, con = options()$TIMESERIESDB_CON, overwrite,
 
 \item{overwrite}{logical should data be overwritten}
 
-\item{type}{character representation of type of meta information, defaults to
-localized.}
+\item{localized}{logical should localized meta information be read, defaults to TRUE.}
 
 \item{tbl}{character name of the table that contains the
 localized meta information}
-
-\item{meta_env}{character name of the environment that holds the localized meta information.}
 }
 \description{
 This function reads meta information from timeseriesdb package PostgreSQL
