@@ -5,7 +5,7 @@
 \usage{
 storeMetaInformation(series, con = options()$TIMESERIESDB_CON,
   tbl = "meta_data_localized", lookup_env = "meta_data_localized",
-  overwrite = T, localized = T)
+  locale = "de", overwrite = T, localized = T)
 }
 \arguments{
 \item{series}{a character name of an time series object}
@@ -15,6 +15,8 @@ storeMetaInformation(series, con = options()$TIMESERIESDB_CON,
 \item{tbl}{name of the meta information table, defaults to localized meta data: meta_data_localized. Alternatively choose meta_data_unlocalized if you are not translating meta information.}
 
 \item{lookup_env}{name of the R environment in which to look for meta information objects}
+
+\item{locale}{character locale fo the metainformation. Defaults to Germen 'de'. See also \code{\link{readMetaInformation}}.}
 
 \item{overwrite}{logical, TRUE}
 

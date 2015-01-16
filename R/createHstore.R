@@ -58,25 +58,6 @@ createHstore.list <- function(x,...){
 }
 
 
-#' @rdname createHstore
-#' @export
-createHstore.miro <- function(x,...){
-  if(is.null(names(x))) stop('Language needs to be
-                             specified by name the
-                             key value pair list!')
-  
-  if(depth(x) != 2) stop('input is not proper
-                         Meta Information for R Object!')
-  
-  l <- length(names(x))
-  
-  out <- lapply(x,createHstore)
-  class(out) <- c('list_of_hstores','list')
-  out
-  
-}
-
-
 
 
 

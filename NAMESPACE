@@ -2,7 +2,6 @@
 
 S3method(createHstore,data.frame)
 S3method(createHstore,list)
-S3method(createHstore,miro)
 S3method(createHstore,ts)
 S3method(print,meta_env)
 export(addMetaInformation)

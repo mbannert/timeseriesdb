@@ -3,7 +3,6 @@
 \alias{createHstore}
 \alias{createHstore.data.frame}
 \alias{createHstore.list}
-\alias{createHstore.miro}
 \alias{createHstore.ts}
 \title{Create Hstore}
 \usage{
@@ -14,8 +13,6 @@ createHstore(x, ...)
 \method{createHstore}{data.frame}(x, ...)
 
 \method{createHstore}{list}(x, ...)
-
-\method{createHstore}{miro}(x, ...)
 }
 \arguments{
 \item{x}{a time series object, a two column data frame or object of S3 class
