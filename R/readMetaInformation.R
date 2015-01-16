@@ -6,32 +6,29 @@
 #' @param series character name of a time series object.
 #' @param con PostgreSQL connection object
 #' @param overwrite logical should data be overwritten
-#' @param localized logical should localized meta information be read, defaults to TRUE.
+#' @param locale character denoting the locale of the meta information that is queried.
+#' defaults to 'de' for German. At the KOF Swiss Economic Institute meta information should be available
+#' als in English 'en', French 'fr' and Italian 'it'. Set the locale to NULL to query unlocalized meta information. 
 #' @param tbl character name of the table that contains the
 #' localized meta information
 #' @export 
 readMetaInformation <- function(series,
                                 con = options()$TIMESERIESDB_CON,
-                                overwrite,localized = T,
+                                overwrite,locale = 'de',
                                 tbl = 'meta_data_localized'){
   
   if(is.null(con)) stop('Default TIMESERIESDB_CON not set in options() or no proper connection given to the con argument.')
   
   
-  if(localized){
+  if(!is.null(locale)){
     sql_statement <- sprintf("SELECT (each(meta_data)).key,
-                             (each(meta_data)).value,
-                             locale_info FROM %s WHERE ts_key = '%s'",
-                             tbl,series)
+                             (each(meta_data)).value
+                             FROM %s WHERE ts_key = '%s' AND locale_info = '%s'",
+                             tbl,series,locale)
     res <- DBI::dbGetQuery(con,sql_statement)
-    res_list <- split(res,factor(res$locale_info))
-    res_list <- lapply(res_list,function(x){
-      nms <- x$key
-      li <- as.list(x$value)
-      names(li) <- nms
-      li
-    })
-    
+    res_list <- as.list(res$value)
+    names(res_list) <- res$key
+        
     # returns an environment of class meta_env
     addMetaInformation(series,res_list,overwrite = overwrite)    
   } else {

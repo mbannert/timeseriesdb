@@ -4,7 +4,7 @@
 \title{Read Meta Information from a Time Series Database}
 \usage{
 readMetaInformation(series, con = options()$TIMESERIESDB_CON, overwrite,
-  localized = T, tbl = "meta_data_localized")
+  locale = "de", tbl = "meta_data_localized")
 }
 \arguments{
 \item{series}{character name of a time series object.}
@@ -13,7 +13,9 @@ readMetaInformation(series, con = options()$TIMESERIESDB_CON, overwrite,
 
 \item{overwrite}{logical should data be overwritten}
 
-\item{localized}{logical should localized meta information be read, defaults to TRUE.}
+\item{locale}{character denoting the locale of the meta information that is queried.
+defaults to 'de' for German. At the KOF Swiss Economic Institute meta information should be available
+als in English 'en', French 'fr' and Italian 'it'. Set the locale to NULL to query unlocalized meta information.}
 
 \item{tbl}{character name of the table that contains the
 localized meta information}
