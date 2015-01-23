@@ -1,0 +1,41 @@
+#' Concatenate Time Series and Resolve Overlap Automatically
+#' 
+#' Resolve overlap determines which of two ts class time series is
+#' reaching further and arranges the two series into first and second 
+#' series accordingly. Both time series are concatenated to one
+#' if both series had the same frequency. 
+#'
+#' @param ts1 ts time series, typically the older series
+#' @param ts2 ts time series, typically the younger series
+#' @export
+resolveOverlap <- function(ts1,ts2){
+  stopifnot(is.ts(ts1))
+  stopifnot(is.ts(ts2))
+  # check which time series is supposed to be 
+  # first and second
+  if(max(time(ts2)) > max(time(ts1))){
+    first <- ts1
+    second <- ts2
+  } else if(max(time(ts1)) > max(time(ts2))){
+    first <- ts2
+    second <- ts1
+  } else{
+    stop('Cannot resolve overlap automatically, both 
+         time series reach until the same period.')
+  }
+  
+  stopifnot(frequency(first) == frequency(second))
+  # stop if there is no overlap
+  if(max(time(first)) < min(time(second))){
+    stop('no overlap in time series.')
+  }
+  # check overlap
+  min_second <- min(time(second))
+  pos_first <- which(time(first) == min_second)
+  first_chunk <- first[1:(pos_first-1)]
+  ts(c(first_chunk,second),
+     frequency = frequency(first),
+     start = c(1990,1))
+  
+}
+
