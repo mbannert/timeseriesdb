@@ -17,11 +17,10 @@ readMetaInformation(series, con = options()$TIMESERIESDB_CON, overwrite,
 defaults to 'de' for German. At the KOF Swiss Economic Institute meta information should be available
 als in English 'en', French 'fr' and Italian 'it'. Set the locale to NULL to query unlocalized meta information.}
 
-\item{tbl}{character name of the table that contains the
-localized meta information}
+\item{tbl}{character name of the table that contains meta information. Defaults to 'meta_data_localized'. If choose meta 'meta_data_unlocalized' when locale is set to NULL.}
 }
 \description{
-This function reads meta information from timeseriesdb package PostgreSQL
+This function reads meta information from a timeseriesdb package PostgreSQL
 database and puts into a meta information environment.
 }
 

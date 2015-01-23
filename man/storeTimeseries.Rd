@@ -5,7 +5,7 @@
 \usage{
 storeTimeSeries(series, con = options()$TIMESERIESDB_CON, ts_key = NULL,
   tbl = "timeseries_main", md_unlocal = "meta_data_unlocalized",
-  lookup_env = .GlobalEnv, overwrite = T)
+  md_legacy_key = NULL, lookup_env = .GlobalEnv, overwrite = T)
 }
 \arguments{
 \item{series}{character name of a time series, S3 class ts}

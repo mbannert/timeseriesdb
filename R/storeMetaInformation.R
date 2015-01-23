@@ -8,16 +8,15 @@
 #' @param tbl name of the meta information table, defaults to localized meta data: meta_data_localized. Alternatively choose meta_data_unlocalized if you are not translating meta information.
 #' @param lookup_env name of the R environment in which to look for meta information objects
 #' @param locale character locale fo the metainformation. Defaults to Germen 'de'. See also \code{\link{readMetaInformation}}.
-#' @param overwrite logical, TRUE
-#' @param localized logical is meta information localized. Defaults to TRUE.
+#' If locale is set to NULL unlocalized meta is updated. Make sure to change tbl to 'meta_data_unlocalized'.
+#' @param overwrite logical, defaults to TRUE.
 #' @export
 storeMetaInformation <- function(series,
                                  con = options()$TIMESERIESDB_CON,
                                  tbl = 'meta_data_localized',
                                  lookup_env = 'meta_data_localized',
                                  locale = 'de',
-                                 overwrite = T,
-                                 localized = T){
+                                 overwrite = T){
   
   if(is.null(con)) stop('Default TIMESERIESDB_CON not set in options() or no proper connection given to the con argument.')
   
@@ -29,12 +28,13 @@ storeMetaInformation <- function(series,
   
   # lapply a write hstore to db
   if(overwrite){
-      if(localized){
+      if(!is.null(locale)){
         sql_query <- sprintf("INSERT INTO %s
 (ts_key,locale_info,meta_data) VALUES 
                              ('%s','%s','%s')",
                              tbl,series,locale,hstore)
       } else {
+        if(tbl != 'meta_data_unlocalized') warning('Locale is set to NULL and tbl is not set to meta_data_unlocalized.')
         sql_query <- sprintf("UPDATE %s SET meta_data = '%s' WHERE ts_key = '%s'",
                              tbl,hstore,series)
       }

@@ -1,6 +1,6 @@
 #' Read Meta Information from a Time Series Database
 #' 
-#' This function reads meta information from timeseriesdb package PostgreSQL
+#' This function reads meta information from a timeseriesdb package PostgreSQL
 #' database and puts into a meta information environment. 
 #' 
 #' @param series character name of a time series object.
@@ -9,8 +9,7 @@
 #' @param locale character denoting the locale of the meta information that is queried.
 #' defaults to 'de' for German. At the KOF Swiss Economic Institute meta information should be available
 #' als in English 'en', French 'fr' and Italian 'it'. Set the locale to NULL to query unlocalized meta information. 
-#' @param tbl character name of the table that contains the
-#' localized meta information
+#' @param tbl character name of the table that contains meta information. Defaults to 'meta_data_localized'. If choose meta 'meta_data_unlocalized' when locale is set to NULL. 
 #' @export 
 readMetaInformation <- function(series,
                                 con = options()$TIMESERIESDB_CON,
@@ -32,10 +31,13 @@ readMetaInformation <- function(series,
     # returns an environment of class meta_env
     addMetaInformation(series,res_list,overwrite = overwrite)    
   } else {
+    # sanity check
+    if(tbl != 'meta_data_unlocalized') warning('DB table is not set to unlocalized, though locale is NULL!')
     sql_statement <- sprintf("SELECT
                              md_generated_by,
                              md_resource_last_update,
-                             md_coverage_temp
+                             md_coverage_temp,
+                             md_legacy_key,
                              FROM %s WHERE ts_key= '%s'",
                              tbl,series)
     
