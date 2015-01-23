@@ -4,16 +4,12 @@
 \title{Read Time Series From PostgreSQL database}
 \usage{
 readTimeSeries(series, con = options()$TIMESERIESDB_CON,
-  meta_unlocalized = F, meta_localized = F, tbl = "timeseries_main")
+  tbl = "timeseries_main")
 }
 \arguments{
 \item{series}{character representation of the key of the time series}
 
 \item{con}{a PostgreSQL connection object}
-
-\item{meta_unlocalized}{logical look for unlocalized meta information in the database. Defaults to FALSE}
-
-\item{meta_localized}{look for localized meta information: either "no", "all", or specific country abbreviation. defaults to "no".}
 
 \item{tbl}{character string denoting the name of the main time series table
 in the PostgreSQL database.}
