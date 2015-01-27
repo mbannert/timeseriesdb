@@ -47,6 +47,10 @@ storeTimeSeries <- function(series,
                            min(zooLikeDateConvert(ts_obj)),
                            max(zooLikeDateConvert(ts_obj)))
   
+  # if md_legacy_key is actually NULL we need a char representation of NULL 
+  # in order to work in the SQL query. 
+  if(is.null(md_legacy_key)) md_legacy_key <- 'NULL'
+  
   # an additional key provides to opportunity to read time series key from 
   # from an attribute
   if(!is.null(ts_key)) series <- ts_key
