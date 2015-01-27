@@ -36,7 +36,7 @@
 #' ts1 <- ts(rnorm(50),start = c(1990,1),frequency = 4)            
 #' ts2 <- ts(1:100,start = c(1990,1),frequency = 4)
 #' resolveOverlap(ts1,ts2)
-resolveOverlap <- function(ts1,ts2,keep_ts=T){
+resolveOverlap <- function(ts1,ts2,keep_ts2=T){
   stopifnot(is.ts(ts1))
   stopifnot(is.ts(ts2))
   stopifnot(frequency(ts1) == frequency(ts2))
