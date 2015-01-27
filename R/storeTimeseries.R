@@ -49,7 +49,7 @@ storeTimeSeries <- function(series,
   
   # if md_legacy_key is actually NULL we need a char representation of NULL 
   # in order to work in the SQL query. 
-  if(is.null(md_legacy_key)){
+  if(is.null(md_legacy_key) || md_legacy_key == ''){
     md_legacy_key <- 'NULL'
   } else{
     md_legacy_key <- sprintf("'%s'",md_legacy_key)
