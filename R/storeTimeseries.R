@@ -42,7 +42,7 @@ storeTimeSeries <- function(series,
   ts_data <- createHstore(ts_obj)
   ts_freq <- frequency(get(series,envir = lookup_env))
   md_resource_last_update <- Sys.time()
-  md_generated_by <- Sys.getenv("USER")
+  md_generated_by <- Sys.info()[["user"]] # this one works on Unix and Windows
   md_coverage_temp <- sprintf('%s to %s',
                            min(zooLikeDateConvert(ts_obj)),
                            max(zooLikeDateConvert(ts_obj)))
