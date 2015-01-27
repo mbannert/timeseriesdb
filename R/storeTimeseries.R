@@ -50,12 +50,16 @@ storeTimeSeries <- function(series,
   # if md_legacy_key is actually NULL we need a char representation of NULL 
   # in order to work in the SQL query. 
   if(is.null(md_legacy_key)){
-    md_legacy_key <- ''
-  } 
+    md_legacy_key <- 'NULL'
+  } else{
+    md_legacy_key <- sprintf("'%s'",md_legacy_key)
+  }
   
   # an additional key provides to opportunity to read time series key from 
   # from an attribute
-  if(!is.null(ts_key)) series <- ts_key
+  if(!is.null(ts_key)){
+    series <- ts_key
+  } 
   
   
   # Overwrite existing time series using an inserting statement
@@ -64,7 +68,7 @@ storeTimeSeries <- function(series,
     sql_query <- sprintf("INSERT INTO %s (ts_key,ts_data,ts_frequency) VALUES ('%s','%s',%s)",
                        tbl,series,ts_data,ts_freq)
     
-    sql_query_md <- sprintf("INSERT INTO %s (ts_key,md_generated_by,md_resource_last_update,md_coverage_temp,md_legacy_key) VALUES ('%s','%s','%s','%s','%s')",
+    sql_query_md <- sprintf("INSERT INTO %s (ts_key,md_generated_by,md_resource_last_update,md_coverage_temp,md_legacy_key) VALUES ('%s','%s','%s','%s',%s)",
                             md_unlocal,
                             series,
                             md_generated_by,
