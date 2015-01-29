@@ -15,20 +15,21 @@ The following should do the job.
 
 ```
 library(devtools)
-install_github("timeseriesdb","mbannert")
+install_github('mbannert/timeseriesdb')
 ```
 
 ## Database
 If you do not have a PostgreSQL that contains a table called 'timeseries_main' with the proper columns, you can use the createTable.sql script in inst/sql
-or copy&paste the SQL snippet from here:
+
+## CASCADE ON DELETE
+By default PostgreSQL tables don't cascade on delete. That means if you delete a row in a main table you could not do so unless the corresponding row in a table referenced by foreign key is delete before. This happens for good reasons. But in the case of unlocalized meta information you want to delete unlocalized meta information when your original series is deleted. That's why the latest version of the createTable.sql uses cascade on DELETE.You can drop this constraint by dropping the foreign key and adding a new one. However, adding cascade on delete after creating the table works like: 
 
 ```
-CREATE TABLE timeseries_main (ts_key varchar primary key, 
-                              ts_data hstore, 
-                              ts_frequency timestamptz,
-                              md_generated_by varchar,
-                              md_generated_on varchar);
+alter table meta_data_unlocalized add constraint meta_data_unlocalized_fkey foreign key(fid) references timeseries_main (ts_key) on delete cascade
+
 ```
+
+
 
 ## Hstore Extension
 hstore is an extension to PostgreSQL that needs to be loaded once before you can start creating tables that contain hstore data type. 
