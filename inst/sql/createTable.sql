@@ -6,7 +6,6 @@ CREATE TABLE meta_data_unlocalized (ts_key varchar,
                                     md_generated_by varchar,
                                     md_resource_last_update timestamptz,
                                     md_coverage_temp varchar,
-                                    md_legacy_key varchar,
                                     meta_data hstore,
                                     primary key (ts_key),
                                     foreign key (ts_key) references timeseries_main (ts_key) on delete cascade

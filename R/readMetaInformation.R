@@ -37,15 +37,13 @@ readMetaInformation <- function(series,
                              md_generated_by,
                              md_resource_last_update,
                              md_coverage_temp,
-                             md_legacy_key,
                              FROM %s WHERE ts_key= '%s'",
                              tbl,series)
     
     sql_statement_hstore <- sprintf("SELECT 
                              (each(meta_data)).key,
                              (each(meta_data)).value
-                             FROM %s WHERE ts_key = '%s'"
-                                   ,tbl,series)
+                             FROM %s WHERE ts_key = '%s'",tbl,series)
     res_list <- list()
     res_list$fixed <- DBI::dbGetQuery(con,sql_statement)
     res_list$flexible <- DBI::dbGetQuery(con,sql_statement_hstore)
