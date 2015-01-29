@@ -26,6 +26,11 @@ addMetaInformation <- function(series,map_list,
   # meta informaiton for R objects.
   class(map_list) <- c('miro','list')
   
+  # remove empty elements from a list 
+  # this can be important for generically
+  # created meta information
+  map_list[map_list == ''] <- NULL
+    
   if(is.null(meta_env)){
     meta_env <- new.env()
     meta_env[[series]] <- map_list
