@@ -60,7 +60,7 @@ storeTimeSeries <- function(series,
     sql_query <- sprintf("INSERT INTO %s (ts_key,ts_data,ts_frequency) VALUES ('%s','%s',%s)",
                        tbl,series,ts_data,ts_freq)
     
-    sql_query_md <- sprintf("INSERT INTO %s (ts_key,md_generated_by,md_resource_last_update,md_coverage_temp,md_legacy_key) VALUES ('%s','%s','%s','%s')",
+    sql_query_md <- sprintf("INSERT INTO %s (ts_key,md_generated_by,md_resource_last_update,md_coverage_temp) VALUES ('%s','%s','%s','%s')",
                             md_unlocal,
                             series,
                             md_generated_by,
