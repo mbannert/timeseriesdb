@@ -30,16 +30,22 @@ addMetaInformation <- function(series,map_list,
   # this can be important for generically
   # created meta information
   map_list[map_list == ''] <- NULL
+  if(length(map_list) == 0) map_list <- NULL
     
   if(is.null(meta_env)){
     meta_env <- new.env()
-    meta_env[[series]] <- map_list
+    if(!is.null(map_list)){
+      meta_env[[series]] <- map_list
+    }
+    
   } else {
     # if environment exists we need to check
     # whether the object exists and if so
     # whether it needs be overwritten
     if(overwrite || is.null(meta_env)){
-      meta_env[[series]] <- map_list
+      if(!is.null(map_list)){
+        meta_env[[series]] <- map_list
+      }
     } else {
       stop('Meta Information unchanged. \n
           Set overwrite to T or choose other meta environment.')
