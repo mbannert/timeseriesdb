@@ -3,7 +3,7 @@
 \alias{resolveOverlap}
 \title{Concatenate Time Series and Resolve Overlap Automatically}
 \usage{
-resolveOverlap(ts1, ts2, keep_ts = T)
+resolveOverlap(ts1, ts2, keep_ts2 = T)
 }
 \arguments{
 \item{ts1}{ts time series, typically the older series}

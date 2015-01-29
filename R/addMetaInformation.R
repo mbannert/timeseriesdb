@@ -7,13 +7,13 @@
 #' 
 #' @param series character name key of 
 #' @param map_list list to represent key value mapping. Could also be of class miro. 
-#' @param meta_env name of the environment that holds the meta
-#' environment. Defaults to meta_localized.
+#' @param meta_env an environment that already holds meta information and should be extended. 
+#' Defaults to NULL in which case it creates and returns a new environment.
 #' @param overwrite logical should existing meta information be overwritten inside
 #' the environment?
 #' @export
 addMetaInformation <- function(series,map_list,
-                   meta_env = 'meta_localized',
+                   meta_env = NULL,
                    overwrite = T){
   # sanity check
   stopifnot(is.list(map_list))
@@ -26,26 +26,22 @@ addMetaInformation <- function(series,map_list,
   # meta informaiton for R objects.
   class(map_list) <- c('miro','list')
   
-  if(!exists(meta_env,envir = .GlobalEnv)) {
-    meta <- new.env()
-    meta[[series]] <- map_list
-    assign(meta_env,meta,envir = environment())
+  if(is.null(meta_env)){
+    meta_env <- new.env()
+    meta_env[[series]] <- map_list
   } else {
     # if environment exists we need to check
     # whether the object exists and if so
     # whether it needs be overwritten
-    if(overwrite){
-      meta <- get(meta_env)
-      meta[[series]] <- map_list
+    if(overwrite || is.null(meta_env)){
+      meta_env[[series]] <- map_list
     } else {
       stop('Meta Information unchanged. \n
-          Set overwrite to T or choose other meta name.')
+          Set overwrite to T or choose other meta environment.')
     }
   }
   
-  
-  out <- get(meta_env,environment())
-  class(out) <- c('meta_env','environment')
-  out
+  class(meta_env) <- c('meta_env','environment')
+  meta_env
 }
 

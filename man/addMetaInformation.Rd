@@ -3,16 +3,15 @@
 \alias{addMetaInformation}
 \title{Add Meta Information to R Environments}
 \usage{
-addMetaInformation(series, map_list, meta_env = "meta_localized",
-  overwrite = T)
+addMetaInformation(series, map_list, meta_env = NULL, overwrite = T)
 }
 \arguments{
 \item{series}{character name key of}
 
 \item{map_list}{list to represent key value mapping. Could also be of class miro.}
 
-\item{meta_env}{name of the environment that holds the meta
-environment. Defaults to meta_localized.}
+\item{meta_env}{an environment that already holds meta information and should be extended.
+Defaults to NULL in which case it creates and returns a new environment.}
 
 \item{overwrite}{logical should existing meta information be overwritten inside
 the environment?}
