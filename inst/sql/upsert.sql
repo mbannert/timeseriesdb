@@ -44,8 +44,7 @@ begin
           set meta_data = new.meta_data,
           md_generated_by = new.md_generated_by,
           md_resource_last_update = new.md_resource_last_update,
-          md_coverage_temp = new.md_coverage_temp,
-          md_legacy_key = new.md_legacy_key
+          md_coverage_temp = new.md_coverage_temp
           where ts_key = new.ts_key;
           return null;
         end if;

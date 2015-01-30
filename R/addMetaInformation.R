@@ -9,12 +9,15 @@
 #' @param map_list list to represent key value mapping. Could also be of class miro. 
 #' @param meta_env an environment that already holds meta information and should be extended. 
 #' Defaults to NULL in which case it creates and returns a new environment.
-#' @param overwrite logical should existing meta information be overwritten inside
-#' the environment?
+#' @param overwrite_objects logical should the entire existing meta information be overwritten inside
+#' the environment? Defaults to FALSE
+#' @param overwrite_elements logical should single matching elements of a meta information objectes be overwritten. 
+#' Defaults to TRUE. 
 #' @export
 addMetaInformation <- function(series,map_list,
                    meta_env = NULL,
-                   overwrite = T){
+                   overwrite_objects = F,
+                   overwrite_elements = T){
   # sanity check
   stopifnot(is.list(map_list))
   # check if environment exists, 
@@ -36,19 +39,28 @@ addMetaInformation <- function(series,map_list,
     meta_env <- new.env()
     if(!is.null(map_list)){
       meta_env[[series]] <- map_list
-    }
-    
+    }    
   } else {
     # if environment exists we need to check
     # whether the object exists and if so
     # whether it needs be overwritten
-    if(overwrite || is.null(meta_env)){
+    if(overwrite_objects){
       if(!is.null(map_list)){
         meta_env[[series]] <- map_list
       }
     } else {
-      stop('Meta Information unchanged. \n
-          Set overwrite to T or choose other meta environment.')
+      if(!is.null(meta_env[[series]])){
+        
+        # elements that are not in the current list should be 
+        # attached
+        elements_in_old <- (names(map_list) %in% names(meta_env[[series]]))
+        new_elements <- map_list[!elements_in_old]
+        meta_env[[series]] <- c(meta_env[[series]],new_elements)
+        
+        if(overwrite_elements & length(map_list[elements_in_old]) != 0){
+          meta_env[[series]][names(map_list[elements_in_old])] <- map_list[elements_in_old]    
+        }
+      }
     }
   }
   

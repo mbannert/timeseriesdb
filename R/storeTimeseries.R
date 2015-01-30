@@ -14,6 +14,7 @@
 #' @param lookup_env environment to look in for timeseries. Defaults to .GobalEnv.
 #' This option is particularly important when running storeTimeseries within loop like operations.
 #' @param overwrite logical, whether time series should be overwritten in case a non-unique primary key is provided. Defaults to TRUE.
+#' @param quiet logical, should function be executed quietly when no errors are given back bei the db. Defaults to TRUE.
 #' @export
 storeTimeSeries <- function(series,
                             con = options()$TIMESERIESDB_CON,
@@ -21,7 +22,8 @@ storeTimeSeries <- function(series,
                             tbl = "timeseries_main",
                             md_unlocal = 'meta_data_unlocalized',
                             lookup_env = .GlobalEnv,
-                            overwrite = T){
+                            overwrite = T,
+                            quiet = T){
   if(is.null(con)) stop('Default TIMESERIESDB_CON not set in options() or no proper connection given to the con argument.')
   
   # Because we cannot really use a global binding to 
@@ -68,14 +70,18 @@ storeTimeSeries <- function(series,
                             md_coverage_temp)
   }
   
-  # Print proper success notification to console
-  if(is.null(DBI::dbGetQuery(con,sql_query))){
-    print("Data inserted.")
-  }
+  d_return <- DBI::dbGetQuery(con,sql_query)
+  md_return <- DBI::dbGetQuery(con,sql_query_md)
   
-  if(is.null(DBI::dbGetQuery(con,sql_query_md))){
-    print("Meta information inserted.")
-  }
-  
+  if(!quiet){
+    # Print proper success notification to console
+    if(is.null(d_return)){
+      print("Data inserted.")
+    }
+    
+    if(is.null(md_return)){
+      print("Meta information inserted.")
+    }
+  } 
   
 }
