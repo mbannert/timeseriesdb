@@ -39,7 +39,7 @@ storeMetaInformation <- function(series,
         if(tbl != 'meta_data_unlocalized') warning('Locale is set to NULL and tbl is not set to meta_data_unlocalized.')
         # use coalesce to avoid crashing when meta_data is NULL
         # concat all the hstore parts, use hstore function from PostgreSQL
-        sql_query <- sprintf("UPDATE %s set meta_data = coalesce(meta_data,'')||%s WHERE ts_key '%s'",
+        sql_query <- sprintf("UPDATE %s set meta_data = coalesce(meta_data,'')||%s WHERE ts_key = '%s'",
                              tbl,hstore,series)
         
       }
