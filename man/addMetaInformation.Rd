@@ -3,7 +3,8 @@
 \alias{addMetaInformation}
 \title{Add Meta Information to R Environments}
 \usage{
-addMetaInformation(series, map_list, meta_env = NULL, overwrite = T)
+addMetaInformation(series, map_list, meta_env = NULL, overwrite_objects = F,
+  overwrite_elements = T)
 }
 \arguments{
 \item{series}{character name key of}
@@ -13,8 +14,11 @@ addMetaInformation(series, map_list, meta_env = NULL, overwrite = T)
 \item{meta_env}{an environment that already holds meta information and should be extended.
 Defaults to NULL in which case it creates and returns a new environment.}
 
-\item{overwrite}{logical should existing meta information be overwritten inside
-the environment?}
+\item{overwrite_objects}{logical should the entire existing meta information be overwritten inside
+the environment? Defaults to FALSE}
+
+\item{overwrite_elements}{logical should single matching elements of a meta information objectes be overwritten.
+Defaults to TRUE.}
 }
 \description{
 This function adds meta information to environments that

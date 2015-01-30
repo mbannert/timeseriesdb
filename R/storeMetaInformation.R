@@ -24,19 +24,24 @@ storeMetaInformation <- function(series,
   mi <- get(series,envir = get(lookup_env))
   
   # creata a list of hstores
-  hstore <- createHstore(mi)
+  
   
   # lapply a write hstore to db
   if(overwrite){
       if(!is.null(locale)){
+        hstore <- createHstore(mi)
         sql_query <- sprintf("INSERT INTO %s
 (ts_key,locale_info,meta_data) VALUES 
                              ('%s','%s','%s')",
                              tbl,series,locale,hstore)
       } else {
+        hstore <- createHstore(mi,fct = T)
         if(tbl != 'meta_data_unlocalized') warning('Locale is set to NULL and tbl is not set to meta_data_unlocalized.')
-        sql_query <- sprintf("UPDATE %s SET meta_data = '%s' WHERE ts_key = '%s'",
+        # use coalesce to avoid crashing when meta_data is NULL
+        # concat all the hstore parts, use hstore function from PostgreSQL
+        sql_query <- sprintf("UPDATE %s set meta_data = coalesce(meta_data,'')||%s WHERE ts key '%s'",
                              tbl,hstore,series)
+        
       }
       
       # return proper status messages for every lang

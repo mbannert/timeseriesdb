@@ -6,7 +6,9 @@
 #' @title Create Hstore
 #' @param x a time series object, a two column data frame or object of S3 class
 #' miro (meta information for R objects).
-#' @param ... optional arguments, e.g. position of the key col and
+#' @param ... optional arguments, fct = TRUE create text expressions of hstore function calls.
+#' also for data.frames key_pos and value_pos could be given if they are different from 1 and 2. 
+#'  e.g. position of the key col and
 #' pasition of the value col in a data.frame.
 #' @examples
 #' ts1 <- ts(rnorm(100),start = c(1990,1),frequency = 4)
@@ -45,18 +47,26 @@ createHstore.data.frame <- function(x,...){
 #' @rdname createHstore
 #' @export
 createHstore.list <- function(x,...){
+  dot_args <- list(...)
   # check if list is more than 2 dim
   if(depth(x) != 1) stop('Only key-value pairs are accepted,
                          this list has too many dimensions!') 
   
   if(is.null(names(x))) stop('Only named lists are accepted.')
   
-  paste(sprintf('"%s"=>"%s"',
-                names(x),
-                as.character(unlist(x))),
-        collapse=",")
+  if(dot_args$fct){
+    paste(sprintf('hstore("%s","%s")',
+                  names(x),
+                  as.character(unlist(x))),
+          collapse="||")
+  } else {
+    paste(sprintf('"%s"=>"%s"',
+                  names(x),
+                  as.character(unlist(x))),
+          collapse=",")
+  }
+  
 }
-
 
 
 

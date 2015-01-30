@@ -5,7 +5,7 @@
 \usage{
 storeTimeSeries(series, con = options()$TIMESERIESDB_CON, ts_key = NULL,
   tbl = "timeseries_main", md_unlocal = "meta_data_unlocalized",
-  md_legacy_key = NULL, lookup_env = .GlobalEnv, overwrite = T)
+  lookup_env = .GlobalEnv, overwrite = T, quiet = T)
 }
 \arguments{
 \item{series}{character name of a time series, S3 class ts}
@@ -22,6 +22,8 @@ storeTimeSeries(series, con = options()$TIMESERIESDB_CON, ts_key = NULL,
 This option is particularly important when running storeTimeseries within loop like operations.}
 
 \item{overwrite}{logical, whether time series should be overwritten in case a non-unique primary key is provided. Defaults to TRUE.}
+
+\item{quiet}{logical, should function be executed quietly when no errors are given back bei the db. Defaults to TRUE.}
 }
 \description{
 This function writes time series object into a relational PostgreSQL database make use

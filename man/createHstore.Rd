@@ -18,7 +18,9 @@ createHstore(x, ...)
 \item{x}{a time series object, a two column data frame or object of S3 class
 miro (meta information for R objects).}
 
-\item{...}{optional arguments, e.g. position of the key col and
+\item{...}{optional arguments, fct = TRUE create text expressions of hstore function calls.
+also for data.frames key_pos and value_pos could be given if they are different from 1 and 2.
+ e.g. position of the key col and
 pasition of the value col in a data.frame.}
 }
 \description{
