@@ -55,7 +55,7 @@ createHstore.list <- function(x,...){
   if(is.null(names(x))) stop('Only named lists are accepted.')
   
   if(dot_args$fct){
-    paste(sprintf('hstore("%s","%s")',
+    paste(sprintf("hstore('%s','%s')",
                   names(x),
                   as.character(unlist(x))),
           collapse="||")
@@ -67,12 +67,4 @@ createHstore.list <- function(x,...){
   }
   
 }
-
-
-
-
-
-
-
-
 
