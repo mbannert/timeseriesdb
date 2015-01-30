@@ -23,7 +23,7 @@ searchKVP <- function(key,value,con = options()$TIMESERIESDB_CON,
 lookForKey <- function(key,con = options()$TIMESERIESDB_CON,
                        hstore = 'meta_data',tbl = 'meta_data_unlocalized'){
   if(is.null(con)) stop('Default TIMESERIESDB_CON not set in options() or no proper connection given to the con argument.')
-  sql_query <- sprintf("SELECT ts_key FROM %s WHERE %s ? %s",tbl,hstore,key)
+  sql_query <- sprintf("SELECT ts_key FROM %s WHERE %s ? '%s'",tbl,hstore,key)
   result <- dbGetQuery(con,sql_query)
   result$ts_key
 }

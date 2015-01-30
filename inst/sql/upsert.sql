@@ -41,8 +41,7 @@ begin
           return new;
         else
           update meta_data_unlocalized
-          set meta_data = new.meta_data,
-          md_generated_by = new.md_generated_by,
+          set md_generated_by = new.md_generated_by,
           md_resource_last_update = new.md_resource_last_update,
           md_coverage_temp = new.md_coverage_temp
           where ts_key = new.ts_key;

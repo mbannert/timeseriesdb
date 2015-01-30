@@ -15,6 +15,6 @@ CREATE TABLE meta_data_localized (ts_key varchar,
                                   locale_info varchar, 
                                   meta_data hstore,
                                   primary key (ts_key, locale_info),
-                                  foreign key (ts_key) references timeseries_main (ts_key)
+                                  foreign key (ts_key) references timeseries_main (ts_key) on delete cascade
                                   );
 
