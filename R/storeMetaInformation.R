@@ -55,6 +55,5 @@ storeMetaInformation <- function(series,
       } else{
         paste0(locale,' meta information fail.')
       }
-  }
 }
 
