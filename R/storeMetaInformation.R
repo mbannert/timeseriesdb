@@ -10,13 +10,15 @@
 #' @param locale character locale fo the metainformation. Defaults to Germen 'de'. See also \code{\link{readMetaInformation}}.
 #' If locale is set to NULL unlocalized meta is updated. Make sure to change tbl to 'meta_data_unlocalized'.
 #' @param overwrite logical, defaults to FALSE.
+#' @param quiet logical, should there be console output for every query result ? Defaults to FALSE.
 #' @export
 storeMetaInformation <- function(series,
                                  con = options()$TIMESERIESDB_CON,
                                  tbl = 'meta_data_localized',
                                  lookup_env = 'meta_data_localized',
                                  locale = 'de',
-                                 overwrite = F){
+                                 overwrite = F,
+                                 quiet = F){
   
   if(is.null(con)) stop('Default TIMESERIESDB_CON not set in options() or no proper connection given to the con argument.')
   
@@ -49,11 +51,16 @@ storeMetaInformation <- function(series,
       }       
       }
       
+      query_return <- DBI::dbGetQuery(con,sql_query)
+  
       # return proper status messages for every lang
-      if(is.null(DBI::dbGetQuery(con,sql_query))){
-        paste0(locale,' meta information successfully written.')
-      } else{
-        paste0(locale,' meta information fail.')
-      }
+  if(!quiet){
+    if(is.null(query_return)){
+      paste0(locale,' meta information successfully written.')
+    } else{
+      paste0(locale,' meta information fail.')
+    }
+  }
+    
 }
 
