@@ -28,6 +28,7 @@ searchKVP <- function(key,value,con = options()$TIMESERIESDB_CON,
 }
 
 
+#' @rdname searchHstore
 #' @export
 lookForKey <- function(key,con = options()$TIMESERIESDB_CON,
                        hstore = 'meta_data',tbl = 'meta_data_unlocalized',
@@ -40,7 +41,9 @@ lookForKey <- function(key,con = options()$TIMESERIESDB_CON,
   and <- ''
   if(!is.null(where)) and <- paste0(" AND ",where)
   
-  sql_query <- sprintf("SELECT ts_key FROM %s WHERE %s ? '%s'%s",tbl,hstore,key,where)
+  sql_query <- sprintf("SELECT ts_key,%s->'%s' AS %s
+                       FROM %s WHERE %s ? '%s'%s",hstore,key,hstore,
+                       tbl,hstore,key,where)
   result <- dbGetQuery(con,sql_query)
   result$ts_key
 }
