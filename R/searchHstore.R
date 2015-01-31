@@ -45,6 +45,6 @@ lookForKey <- function(key,con = options()$TIMESERIESDB_CON,
                        FROM %s WHERE %s ? '%s'%s",hstore,key,hstore,
                        tbl,hstore,key,where)
   result <- dbGetQuery(con,sql_query)
-  result$ts_key
+  result
 }
   
