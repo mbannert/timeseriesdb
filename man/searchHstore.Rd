@@ -22,7 +22,7 @@ lookForKey(key, con = options()$TIMESERIESDB_CON, hstore = "meta_data",
 \item{tbl}{name of the table to be queried. defaults to  'meta_data_localized'}
 
 \item{where}{character restrict the SQL query by an additional where clause. Defaults to NULL.
-E.g.: ts_key LIKE '%ch%'.}
+E.g.: ts_key LIKE ...}
 }
 \description{
 Search hstore key value in PostgreSQL. Very handsome when crawling the database by meta informaiton.

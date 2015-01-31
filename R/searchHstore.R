@@ -9,7 +9,7 @@
 #' @param hstore name of the hstore column
 #' @param tbl name of the table to be queried. defaults to  'meta_data_localized'
 #' @param where character restrict the SQL query by an additional where clause. Defaults to NULL.
-#' E.g.: ts_key LIKE '%ch%'.
+#' E.g.: ts_key LIKE ...
 #' @rdname searchHstore
 #' @export
 searchKVP <- function(key,value,con = options()$TIMESERIESDB_CON,
