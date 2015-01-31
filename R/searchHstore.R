@@ -42,7 +42,7 @@ lookForKey <- function(key,con = options()$TIMESERIESDB_CON,
   if(!is.null(where)) and <- paste0(" AND ",where)
   
   sql_query <- sprintf("SELECT ts_key,%s->'%s' AS %s
-                       FROM %s WHERE %s ? '%s'%s",hstore,key,hstore,
+                       FROM %s WHERE %s ? '%s'%s",hstore,key,key,
                        tbl,hstore,key,where)
   result <- dbGetQuery(con,sql_query)
   result
