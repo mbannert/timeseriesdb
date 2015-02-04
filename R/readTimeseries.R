@@ -22,7 +22,8 @@ readTimeSeries <- function(series,con = options()$TIMESERIESDB_CON,
   # of compilation, we use the character name of the object here. 
   
   # extract data from hstore 
-  sql_statement_data <- sprintf("SELECT (each(ts_data)).key, (each(ts_data)).value FROM %s WHERE ts_key = '%s'",tbl,series)
+  sql_statement_data <- sprintf("SELECT ((each(ts_data)).key)::date,
+                                (each(ts_data)).value FROM %s WHERE ts_key = '%s'",tbl,series)
   # get freq
   sql_statement_freq <- sprintf("SELECT ts_frequency FROM %s WHERE ts_key = '%s'",tbl,series)
   freq <- DBI::dbGetQuery(con,sql_statement_freq)
