@@ -21,35 +21,67 @@ readTimeSeries <- function(series,con = options()$TIMESERIESDB_CON,
   # the postgreSQL connection object which does not exist at the time
   # of compilation, we use the character name of the object here. 
   
-  # extract data from hstore 
-  sql_statement_data <- sprintf("SELECT ((each(ts_data)).key)::date,
-                                (each(ts_data)).value FROM %s WHERE ts_key = '%s'",tbl,series)
+  sql_statement_data <- sprintf("SELECT ts_key,((each(ts_data)).key)::date,
+                                ((each(ts_data)).value)::varchar
+                                FROM %s
+                                WHERE ts_key 
+                                IN (%s)",tbl,
+                                paste(paste0("'",series,"'"),collapse=","))
+  
+#   # extract data from hstore 
+#   sql_statement_data <- sprintf("SELECT ((each(ts_data)).key)::date,
+#                                 (each(ts_data)).value FROM %s WHERE ts_key = '%s'",tbl,series)
   # get freq
-  sql_statement_freq <- sprintf("SELECT ts_frequency FROM %s WHERE ts_key = '%s'",tbl,series)
-  freq <- DBI::dbGetQuery(con,sql_statement_freq)
-  out <- DBI::dbGetQuery(con,sql_statement_data)
+  sql_statement_freq <- sprintf("SELECT ts_key,ts_frequency FROM %s WHERE ts_key 
+                                IN (%s)",tbl,
+                                paste(paste0("'",series,"'"),collapse=","))
+  dt_freq <- data.table(DBI::dbGetQuery(con,sql_statement_freq))
+   setkeyv(dt_freq,"ts_key")
+ dt <- data.table(DBI::dbGetQuery(con,sql_statement_data))
+   setkeyv(dt,c("ts_key","key"))
+#   
+ dt[,key := as.Date(key)]
+# 
+  #   out_list <- split(out,factor(out$ts_key))
+
+  out_list <- apply(dt_freq,1,function(s){
   
-  # create R time series object
-  # find start date first
-  out$key <- as.Date(out$key)
-  start_date <- min(out$key)
-  year <- as.numeric(format(as.Date(start_date), "%Y"))
-  
-  # check whether it's quarterly or monthly time series 
-  # in order to return a proper period when converting it to a YYYY-mm-dd format.
-  if (freq == 4){
-    period <- (as.numeric(format(as.Date(start_date), "%m")) -1) / 3 + 1
-   } else if(freq == 12) {
-    period <- as.numeric(format(as.Date(start_date), "%m"))
-   } else {
-    stop("Not a standard frequency.")
-   }
-   
-  # return a time series object
-  ts(as.numeric(out$value),
-     start =c(year,period),
-     frequency = as.numeric(freq))
-  
-  
+  #out_list <- lapply(series,function(s){
+    
+
+     sdt <- dt[ts_key == s[1]]
+     start_date <- min(sdt$key)
+     year <- as.numeric(format(start_date, "%Y"))
+     freq <- as.numeric(s[2])
+    if (freq == 4){
+      period <- (as.numeric(format(start_date, "%m")) -1) / 3 + 1
+    } else if(freq == 12) {
+      period <- as.numeric(format(start_date, "%m"))
+    } else {
+      stop("Not a standard frequency.")
+    }
+    ts(as.numeric(sdt$value),
+       start =c(year,period),
+       frequency = as.numeric(freq))
+  })  
+
+  names(out_list) <- series
+  out_list
 }
 
+library(timeseriesdb)
+x <- dbSendQuery(con,"SELECT ts_key,ts_data FROM timeseries_main LIMIT 10")
+test <- dbFetch(x)
+test$ts_data
+
+y <- dbSendQuery(con,"SELECT ts_key,ts_frequency FROM timeseries_main LIMIT 20")
+dbListResults(con)
+
+
+rm(series)
+s <- dbGetQuery(con,"SELECT ts_key FROM timeseries_main LIMIT 5000")$ts_key
+Rprof()
+system.time({test2 <- readTimeSeries(s,con)})
+Rprof(NULL)
+summaryRprof()
+undebug(strptime)
