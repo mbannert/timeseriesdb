@@ -4,11 +4,11 @@
 \alias{readTimeSeries}
 \title{Read Time Series From PostgreSQL database}
 \usage{
-readTimeSeries(series, con = options()$TIMESERIESDB_CON,
+readTimeSeries(series, con = Sys.getenv("TIMESERIESDB_CON"),
   tbl = "timeseries_main")
 }
 \arguments{
-\item{series}{character representation of the key of the time series}
+\item{series}{character vector of series names.}
 
 \item{con}{a PostgreSQL connection object}
 

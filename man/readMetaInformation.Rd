@@ -4,7 +4,7 @@
 \alias{readMetaInformation}
 \title{Read Meta Information from a Time Series Database}
 \usage{
-readMetaInformation(series, con = options()$TIMESERIESDB_CON, overwrite,
+readMetaInformation(series, con = Sys.getenv("TIMESERIESDB_CON"), overwrite,
   locale = "de", tbl = "meta_data_localized")
 }
 \arguments{

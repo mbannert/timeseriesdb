@@ -4,7 +4,7 @@
 \alias{getMeta}
 \title{Quickly Handle Meta Information}
 \usage{
-getMeta(series, lang, con = options()$TIMESERIESDB_CON,
+getMeta(series, lang, con = Sys.getenv("TIMESERIESDB_CON"),
   tbl = "meta_data_localized")
 }
 \arguments{

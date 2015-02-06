@@ -13,7 +13,7 @@
 #' @param quiet logical, should there be console output for every query result ? Defaults to FALSE.
 #' @export
 storeMetaInformation <- function(series,
-                                 con = options()$TIMESERIESDB_CON,
+                                 con = Sys.getenv("TIMESERIESDB_CON"),
                                  tbl = 'meta_data_localized',
                                  lookup_env = 'meta_data_localized',
                                  locale = 'de',
