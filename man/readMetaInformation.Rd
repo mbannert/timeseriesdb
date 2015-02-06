@@ -4,21 +4,26 @@
 \alias{readMetaInformation}
 \title{Read Meta Information from a Time Series Database}
 \usage{
-readMetaInformation(series, con = Sys.getenv("TIMESERIESDB_CON"), overwrite,
-  locale = "de", tbl = "meta_data_localized")
+readMetaInformation(series, con = Sys.getenv("TIMESERIESDB_CON"),
+  locale = "de", tbl = "meta_data_localized", overwrite_objects = F,
+  overwrite_elements = T, meta_env = NULL)
 }
 \arguments{
 \item{series}{character name of a time series object.}
 
 \item{con}{PostgreSQL connection object}
 
-\item{overwrite}{logical should data be overwritten}
-
 \item{locale}{character denoting the locale of the meta information that is queried.
 defaults to 'de' for German. At the KOF Swiss Economic Institute meta information should be available
 als in English 'en', French 'fr' and Italian 'it'. Set the locale to NULL to query unlocalized meta information.}
 
-\item{tbl}{character name of the table that contains meta information. Defaults to 'meta_data_localized'. If choose meta 'meta_data_unlocalized' when locale is set to NULL.}
+\item{tbl}{character name of the table that contains meta information. Defaults to 'meta_data_localized'. Choose meta 'meta_data_unlocalized' when locale is set to NULL.}
+
+\item{overwrite_objects}{logical should the entire object for a key be overwritten. Defaults to FALSE.}
+
+\item{overwrite_elements}{logical should single elements inside the environment be overwritten. Defaults to TRUE.}
+
+\item{meta_env}{environment to which the meta information should be added. Defaults to NULL. In this case an environment will be returned. If you run this function in a loop best create an empty environment before the loop or apply call and pass the environment to this function. By doing so new elements will be added to the environment.}
 }
 \description{
 This function reads meta information from a timeseriesdb package PostgreSQL

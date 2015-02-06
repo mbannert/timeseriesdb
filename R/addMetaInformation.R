@@ -60,6 +60,8 @@ addMetaInformation <- function(series,map_list,
         if(overwrite_elements & length(map_list[elements_in_old]) != 0){
           meta_env[[series]][names(map_list[elements_in_old])] <- map_list[elements_in_old]    
         }
+      } else {
+        meta_env[[series]] <- map_list
       }
     }
   }

@@ -5,16 +5,21 @@
 #' 
 #' @param series character name of a time series object.
 #' @param con PostgreSQL connection object
-#' @param overwrite logical should data be overwritten
+#' @param overwrite_objects logical should the entire object for a key be overwritten. Defaults to FALSE.
+#' @param overwrite_elements logical should single elements inside the environment be overwritten. Defaults to TRUE.
 #' @param locale character denoting the locale of the meta information that is queried.
 #' defaults to 'de' for German. At the KOF Swiss Economic Institute meta information should be available
 #' als in English 'en', French 'fr' and Italian 'it'. Set the locale to NULL to query unlocalized meta information. 
-#' @param tbl character name of the table that contains meta information. Defaults to 'meta_data_localized'. If choose meta 'meta_data_unlocalized' when locale is set to NULL. 
+#' @param tbl character name of the table that contains meta information. Defaults to 'meta_data_localized'. Choose meta 'meta_data_unlocalized' when locale is set to NULL. 
+#' @param meta_env environment to which the meta information should be added. Defaults to NULL. In this case an environment will be returned. If you run this function in a loop best create an empty environment before the loop or apply call and pass the environment to this function. By doing so new elements will be added to the environment. 
 #' @export 
 readMetaInformation <- function(series,
                                 con = Sys.getenv("TIMESERIESDB_CON"),
-                                overwrite,locale = 'de',
-                                tbl = 'meta_data_localized'){
+                                locale = 'de',
+                                tbl = 'meta_data_localized',
+                                overwrite_objects = F,
+                                overwrite_elements = T,
+                                meta_env = NULL){
   
   if(class(con) != "PostgreSQLConnection") stop('Default TIMESERIESDB_CON not set in Sys.getenv or no proper connection given to the con argument. con is not a PostgreSQLConnection obj.')
   
@@ -36,7 +41,7 @@ readMetaInformation <- function(series,
     sql_statement <- sprintf("SELECT
                              md_generated_by,
                              md_resource_last_update,
-                             md_coverage_temp,
+                             md_coverage_temp
                              FROM %s WHERE ts_key= '%s'",
                              tbl,series)
     
@@ -47,7 +52,9 @@ readMetaInformation <- function(series,
     res_list <- list()
     res_list$fixed <- DBI::dbGetQuery(con,sql_statement)
     res_list$flexible <- DBI::dbGetQuery(con,sql_statement_hstore)
-    addMetaInformation(series,res_list,overwrite = overwrite, meta_env = tbl)    
+    addMetaInformation(series,res_list,overwrite_objects =  overwrite_objects,
+                       overwrite_elements = overwrite_elements,
+                       meta_env = meta_env)    
   }
 }
 
