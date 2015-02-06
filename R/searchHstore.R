@@ -15,7 +15,7 @@
 searchKVP <- function(key,value,con = Sys.getenv("TIMESERIESDB_CON"),
                       hstore = 'meta_data',tbl = 'meta_data_unlocalized',
                       where = NULL){
-  if(is.null(con)) stop('Default TIMESERIESDB_CON not set.  Use Sys.getenv to set it')
+  if(class(con) != "PostgreSQLConnection") stop('Default TIMESERIESDB_CON not set in Sys.getenv or no proper connection given to the con argument. con is not a PostgreSQLConnection obj.')
   
   # optional AND 
   # Emulate sql's coalesce for dummies here 
@@ -33,7 +33,7 @@ searchKVP <- function(key,value,con = Sys.getenv("TIMESERIESDB_CON"),
 lookForKey <- function(key,con = Sys.getenv("TIMESERIESDB_CON"),
                        hstore = 'meta_data',tbl = 'meta_data_unlocalized',
                        where = NULL){
-  if(is.null(con)) stop('Default TIMESERIESDB_CON not set. Use Sys.setenv to set it.')
+  if(class(con) != "PostgreSQLConnection") stop('Default TIMESERIESDB_CON not set in Sys.getenv or no proper connection given to the con argument. con is not a PostgreSQLConnection obj.')
   
   # optional AND 
   # Emulate sql's coalesce for dummies here 

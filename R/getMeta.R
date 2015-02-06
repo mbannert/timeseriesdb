@@ -14,7 +14,7 @@
 #' @export
 getMeta <- function(series, lang, con = Sys.getenv("TIMESERIESDB_CON"),
                     tbl = 'meta_data_localized'){
-  if(!exists('con')) stop('No standard TIMESERIESDB_CON set. Quick handle operators need standard connection. Use Sys.getenv to set TIMESERIESDB_CON.')
+  if(class(con) != "PostgreSQLConnection") stop('Default TIMESERIESDB_CON not set in Sys.getenv or no proper connection given to the con argument. con is not a PostgreSQLConnection obj.')
   ts <- deparse(substitute(series))
   sql_statement <- sprintf("SELECT (each(meta_data)).key,
                              (each(meta_data)).value

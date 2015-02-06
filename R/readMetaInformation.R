@@ -16,7 +16,7 @@ readMetaInformation <- function(series,
                                 overwrite,locale = 'de',
                                 tbl = 'meta_data_localized'){
   
-  if(is.null(con)) stop('Default TIMESERIESDB_CON not set. Use Sys.getenv to set it.')
+  if(class(con) != "PostgreSQLConnection") stop('Default TIMESERIESDB_CON not set in Sys.getenv or no proper connection given to the con argument. con is not a PostgreSQLConnection obj.')
   
   
   if(!is.null(locale)){

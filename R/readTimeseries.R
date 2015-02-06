@@ -14,7 +14,7 @@
 readTimeSeries <- function(series,con = Sys.getenv("TIMESERIESDB_CON"),
                            tbl = "timeseries_main"){
   
-  if(con == "") stop('Default TIMESERIESDB_CON not set in Sys.getenv or no proper connection given to the con argument.')
+  if(class(con) != "PostgreSQLConnection") stop('Default TIMESERIESDB_CON not set in Sys.getenv or no proper connection given to the con argument. con is not a PostgreSQLConnection obj.')
   
   
   # Because we cannot really use a global binding to 

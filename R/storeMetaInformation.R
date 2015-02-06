@@ -20,7 +20,7 @@ storeMetaInformation <- function(series,
                                  overwrite = F,
                                  quiet = F){
   
-  if(is.null(con)) stop('Default TIMESERIESDB_CON not set in options() or no proper connection given to the con argument.')
+  if(class(con) != "PostgreSQLConnection") stop('Default TIMESERIESDB_CON not set in Sys.getenv or no proper connection given to the con argument. con is not a PostgreSQLConnection obj.')
   
   # get an object from the meta environment
   mi <- get(series,envir = get(lookup_env))
