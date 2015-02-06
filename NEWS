@@ -1,0 +1,19 @@
+timeseriesdb v0.2 (Release date: )
+==============
+* changed upsert behavior to not affected unlocalized meta information on insert of new series
+* improved NULL handling
+* added SQL transaction utils
+* quiet execution of Meta Information Storage
+* fixed issues with quotes
+* added hstore lookup function
+* function to concatenate overlapping series
+* function to set attributes to each element of a list
+* improved read process for bulk reading to use single query instead of looping
+* improve store process
+* exported print method
+
+
+
+timeseriesdb v0.1 (Release date: 2014-11-26)
+==============
+* initial realease 
