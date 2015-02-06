@@ -12,10 +12,10 @@
 #' E.g.: ts_key LIKE ...
 #' @rdname searchHstore
 #' @export
-searchKVP <- function(key,value,con = options()$TIMESERIESDB_CON,
+searchKVP <- function(key,value,con = Sys.getenv("TIMESERIESDB_CON"),
                       hstore = 'meta_data',tbl = 'meta_data_unlocalized',
                       where = NULL){
-  if(is.null(con)) stop('Default TIMESERIESDB_CON not set in options() or no proper connection given to the con argument.')
+  if(is.null(con)) stop('Default TIMESERIESDB_CON not set.  Use Sys.getenv to set it')
   
   # optional AND 
   # Emulate sql's coalesce for dummies here 
@@ -30,10 +30,10 @@ searchKVP <- function(key,value,con = options()$TIMESERIESDB_CON,
 
 #' @rdname searchHstore
 #' @export
-lookForKey <- function(key,con = options()$TIMESERIESDB_CON,
+lookForKey <- function(key,con = Sys.getenv("TIMESERIESDB_CON"),
                        hstore = 'meta_data',tbl = 'meta_data_unlocalized',
                        where = NULL){
-  if(is.null(con)) stop('Default TIMESERIESDB_CON not set in options() or no proper connection given to the con argument.')
+  if(is.null(con)) stop('Default TIMESERIESDB_CON not set. Use Sys.setenv to set it.')
   
   # optional AND 
   # Emulate sql's coalesce for dummies here 

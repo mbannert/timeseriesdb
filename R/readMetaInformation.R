@@ -12,11 +12,11 @@
 #' @param tbl character name of the table that contains meta information. Defaults to 'meta_data_localized'. If choose meta 'meta_data_unlocalized' when locale is set to NULL. 
 #' @export 
 readMetaInformation <- function(series,
-                                con = options()$TIMESERIESDB_CON,
+                                con = Sys.getenv("TIMESERIESDB_CON"),
                                 overwrite,locale = 'de',
                                 tbl = 'meta_data_localized'){
   
-  if(is.null(con)) stop('Default TIMESERIESDB_CON not set in options() or no proper connection given to the con argument.')
+  if(is.null(con)) stop('Default TIMESERIESDB_CON not set. Use Sys.getenv to set it.')
   
   
   if(!is.null(locale)){

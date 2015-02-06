@@ -12,9 +12,9 @@
 #' @param con connection object, defaults to object set by options().
 #' @param tbl character name of the table that contains the meta information. 
 #' @export
-getMeta <- function(series, lang, con = options()$TIMESERIESDB_CON,
+getMeta <- function(series, lang, con = Sys.getenv("TIMESERIESDB_CON"),
                     tbl = 'meta_data_localized'){
-  if(!exists('con')) stop('No standard TIMESERIESDB_CON set. Quick handle operators need standard connection. Use options() to set TIMESERIESDB_CON.')
+  if(!exists('con')) stop('No standard TIMESERIESDB_CON set. Quick handle operators need standard connection. Use Sys.getenv to set TIMESERIESDB_CON.')
   ts <- deparse(substitute(series))
   sql_statement <- sprintf("SELECT (each(meta_data)).key,
                              (each(meta_data)).value

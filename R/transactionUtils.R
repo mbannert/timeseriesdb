@@ -6,19 +6,19 @@
 #' @param con PostgreSQL connection object.
 #' @rdname transactionUtils
 #' @export
-beginTransaction <- function(con = options()$TIMESERIESDB_CON){
-  if(is.null(con)) stop('Default TIMESERIESDB_CON not set in options() or no proper connection given to the con argument.')
+beginTransaction <- function(con = Sys.getenv("TIMESERIESDB_CON")){
+  if(is.null(con)) stop('Default TIMESERIESDB_CON not set. Use Sys.setenv to set it.')
   if(is.null(DBI::dbGetQuery(con,'BEGIN'))) print('BEGIN')
 }
 
 #' @export
-commitTransaction <- function(con = options()$TIMESERIESDB_CON){
-  if(is.null(con)) stop('Default TIMESERIESDB_CON not set in options() or no proper connection given to the con argument.')
+commitTransaction <- function(con = Sys.getenv("TIMESERIESDB_CON")){
+  if(is.null(con)) stop('Default TIMESERIESDB_CON not set. Use Sys.setenv to set it.')
   if(is.null(DBI::dbGetQuery(con,'COMMIT'))) print('COMMIT')
 }
 
 #' @export
-rollbackTransaction <- function(con = options()$TIMESERIESDB_CON){
-  if(is.null(con)) stop('Default TIMESERIESDB_CON not set in options() or no proper connection given to the con argument.')
+rollbackTransaction <- function(con = Sys.getenv("TIMESERIESDB_CON")){
+  if(is.null(con)) stop('Default TIMESERIESDB_CON not set. Use Sys.setenv to set it.')
   if(is.null(DBI::dbGetQuery(con,'COMMIT'))) print('ROLLBACK')
 }
