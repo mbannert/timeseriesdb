@@ -17,14 +17,14 @@
 #' @param quiet logical, should function be executed quietly when no errors are given back bei the db. Defaults to TRUE.
 #' @export
 storeTimeSeries <- function(series,
-                            con = get(Sys.getenv("TIMESERIESDB_CON")),
+                            con,
                             ts_key = NULL,
                             tbl = "timeseries_main",
                             md_unlocal = 'meta_data_unlocalized',
                             lookup_env = .GlobalEnv,
                             overwrite = T,
                             quiet = T){
-  if(class(con) != "PostgreSQLConnection") stop('Default TIMESERIESDB_CON not set in Sys.getenv or no proper connection given to the con argument. con is not a PostgreSQLConnection obj.')
+  
   # Because we cannot really use a global binding to 
   # the postgreSQL connection object which does not exist at the time
   # of compilation, we use the character name of the object here. 

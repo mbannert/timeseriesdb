@@ -4,7 +4,7 @@
 \alias{beginTransaction}
 \title{Convenience Wrapper to SQL classics for BEGIN,COMMIT, ROLLBACK}
 \usage{
-beginTransaction(con = Sys.getenv("TIMESERIESDB_CON"))
+beginTransaction(con)
 }
 \arguments{
 \item{con}{PostgreSQL connection object.}

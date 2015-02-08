@@ -4,9 +4,9 @@
 \alias{storeTimeSeries}
 \title{Write an R Time Series to a PostgreSQL database}
 \usage{
-storeTimeSeries(series, con = Sys.getenv("TIMESERIESDB_CON"), ts_key = NULL,
-  tbl = "timeseries_main", md_unlocal = "meta_data_unlocalized",
-  lookup_env = .GlobalEnv, overwrite = T, quiet = T)
+storeTimeSeries(series, con, ts_key = NULL, tbl = "timeseries_main",
+  md_unlocal = "meta_data_unlocalized", lookup_env = .GlobalEnv,
+  overwrite = T, quiet = T)
 }
 \arguments{
 \item{series}{character name of a time series, S3 class ts}

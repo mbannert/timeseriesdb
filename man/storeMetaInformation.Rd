@@ -4,9 +4,9 @@
 \alias{storeMetaInformation}
 \title{Store Meta Information to the Database}
 \usage{
-storeMetaInformation(series, con = Sys.getenv("TIMESERIESDB_CON"),
-  tbl = "meta_data_localized", lookup_env = "meta_data_localized",
-  locale = "de", overwrite = F, quiet = F)
+storeMetaInformation(series, con, tbl = "meta_data_localized",
+  lookup_env = "meta_data_localized", locale = "de", overwrite = F,
+  quiet = F)
 }
 \arguments{
 \item{series}{a character name of an time series object}

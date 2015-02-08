@@ -14,14 +14,14 @@
 #' @param meta_env environment to which the meta information should be added. Defaults to NULL. In this case an environment will be returned. If you run this function in a loop best create an empty environment before the loop or apply call and pass the environment to this function. By doing so new elements will be added to the environment. 
 #' @export 
 readMetaInformation <- function(series,
-                                con = get(Sys.getenv("TIMESERIESDB_CON")),
+                                con,
                                 locale = 'de',
                                 tbl = 'meta_data_localized',
                                 overwrite_objects = F,
                                 overwrite_elements = T,
                                 meta_env = NULL){
   
-  if(class(con) != "PostgreSQLConnection") stop('Default TIMESERIESDB_CON not set in Sys.getenv or no proper connection given to the con argument. con is not a PostgreSQLConnection obj.')
+  
   
   
   if(!is.null(locale)){

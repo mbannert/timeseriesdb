@@ -4,9 +4,8 @@
 \alias{readMetaInformation}
 \title{Read Meta Information from a Time Series Database}
 \usage{
-readMetaInformation(series, con = Sys.getenv("TIMESERIESDB_CON"),
-  locale = "de", tbl = "meta_data_localized", overwrite_objects = F,
-  overwrite_elements = T, meta_env = NULL)
+readMetaInformation(series, con, locale = "de", tbl = "meta_data_localized",
+  overwrite_objects = F, overwrite_elements = T, meta_env = NULL)
 }
 \arguments{
 \item{series}{character name of a time series object.}

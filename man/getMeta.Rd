@@ -4,15 +4,14 @@
 \alias{getMeta}
 \title{Quickly Handle Meta Information}
 \usage{
-getMeta(series, lang, con = Sys.getenv("TIMESERIESDB_CON"),
-  tbl = "meta_data_localized")
+getMeta(series, lang, con, tbl = "meta_data_localized")
 }
 \arguments{
 \item{series}{an R time series object}
 
 \item{lang}{character name of the language of the meta information. Typically 'de', 'it', 'fr' or 'en'.}
 
-\item{con}{connection object, defaults to object set by options().}
+\item{con}{connection object}
 
 \item{tbl}{character name of the table that contains the meta information.}
 }

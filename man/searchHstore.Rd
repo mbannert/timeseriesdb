@@ -5,11 +5,11 @@
 \alias{searchKVP}
 \title{Search Key-Value Pairs, look for existing keys in an Hstore}
 \usage{
-searchKVP(key, value, con = Sys.getenv("TIMESERIESDB_CON"),
+searchKVP(key, value, con = get(Sys.getenv("TIMESERIESDB_CON")),
   hstore = "meta_data", tbl = "meta_data_unlocalized", where = NULL)
 
-lookForKey(key, con = Sys.getenv("TIMESERIESDB_CON"), hstore = "meta_data",
-  tbl = "meta_data_unlocalized", where = NULL)
+lookForKey(key, con = get(Sys.getenv("TIMESERIESDB_CON")),
+  hstore = "meta_data", tbl = "meta_data_unlocalized", where = NULL)
 }
 \arguments{
 \item{key}{character}
