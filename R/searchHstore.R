@@ -22,7 +22,7 @@ searchKVP <- function(key,value,con = get(Sys.getenv("TIMESERIESDB_CON")),
   # cause sprintf doesn't like NULL either
   if(!is.null(where)) and <- paste0(" AND ",where)
   
-  sql_query <- sprintf("SELECT ts_key FROM %s WHERE %s->'%s'='%s'%s",tbl,hstore,key,value)
+  sql_query <- sprintf("SELECT ts_key FROM %s WHERE %s->'%s'='%s'",tbl,hstore,key,value)
   result <- dbGetQuery(con,sql_query)
   result$ts_key
 }
