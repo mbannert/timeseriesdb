@@ -12,7 +12,7 @@
 #' E.g.: ts_key LIKE ...
 #' @rdname searchHstore
 #' @export
-searchKVP <- function(key,value,con = Sys.getenv("TIMESERIESDB_CON"),
+searchKVP <- function(key,value,con = get(Sys.getenv("TIMESERIESDB_CON")),
                       hstore = 'meta_data',tbl = 'meta_data_unlocalized',
                       where = NULL){
   if(class(con) != "PostgreSQLConnection") stop('Default TIMESERIESDB_CON not set in Sys.getenv or no proper connection given to the con argument. con is not a PostgreSQLConnection obj.')
@@ -30,7 +30,7 @@ searchKVP <- function(key,value,con = Sys.getenv("TIMESERIESDB_CON"),
 
 #' @rdname searchHstore
 #' @export
-lookForKey <- function(key,con = Sys.getenv("TIMESERIESDB_CON"),
+lookForKey <- function(key,con = get(Sys.getenv("TIMESERIESDB_CON")),
                        hstore = 'meta_data',tbl = 'meta_data_unlocalized',
                        where = NULL){
   if(class(con) != "PostgreSQLConnection") stop('Default TIMESERIESDB_CON not set in Sys.getenv or no proper connection given to the con argument. con is not a PostgreSQLConnection obj.')

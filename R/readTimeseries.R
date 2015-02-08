@@ -11,7 +11,7 @@
 #' @param tbl character string denoting the name of the main time series table
 #' in the PostgreSQL database.
 #' @export
-readTimeSeries <- function(series,con = Sys.getenv("TIMESERIESDB_CON"),
+readTimeSeries <- function(series,con = get(Sys.getenv("TIMESERIESDB_CON")),
                            tbl = "timeseries_main"){
   
   if(class(con) != "PostgreSQLConnection") stop('Default TIMESERIESDB_CON not set in Sys.getenv or no proper connection given to the con argument. con is not a PostgreSQLConnection obj.')

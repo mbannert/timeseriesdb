@@ -17,7 +17,7 @@
 #' @param quiet logical, should function be executed quietly when no errors are given back bei the db. Defaults to TRUE.
 #' @export
 storeTimeSeries <- function(series,
-                            con = Sys.getenv("TIMESERIESDB_CON"),
+                            con = get(Sys.getenv("TIMESERIESDB_CON")),
                             ts_key = NULL,
                             tbl = "timeseries_main",
                             md_unlocal = 'meta_data_unlocalized',
