@@ -63,6 +63,11 @@ readTimeSeries <- function(series,con,
     start_date <- min(sdt$key)
     year <- as.numeric(format(start_date, "%Y"))
     freq <- as.numeric(dt_freq[ts_key == s,ts_frequency])
+    # this shoudl work, but it's not tested yet
+    # introduce this asap
+#     if (freq == 1){
+#       period <- NULL
+#     }
     if (freq == 4){
       period <- (as.numeric(format(start_date, "%m")) -1) / 3 + 1
     } else if(freq == 12) {
