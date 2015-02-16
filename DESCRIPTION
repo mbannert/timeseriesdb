@@ -8,9 +8,7 @@ Description: An R package to store and organize time series and their
 Version: 0.1
 Authors@R: 'Matthias Bannert <bannert@kof.ethz.ch> [aut, cre]'
 Depends:
-    R (>= 3.0.0),data.table (>= 1.9.4)
-Suggests:
-    RPostgreSQL
+    R (>= 3.0.0),data.table (>= 1.9.4), DBI, RPostgreSQL
 Imports:
     DBI
 License: GPL-2
