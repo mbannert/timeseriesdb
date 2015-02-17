@@ -9,8 +9,7 @@ Version: 0.1
 Authors@R: 'Matthias Bannert <bannert@kof.ethz.ch> [aut, cre]'
 Depends:
     R (>= 3.0.0),data.table (>= 1.9.4), DBI, RPostgreSQL
-Imports:
-    DBI
+Imports: DBI, RPostgreSQL, data.table
 License: GPL-2
 LazyData: true
 Maintainer: 'Matthias Bannert' <bannert@kof.ethz.ch>

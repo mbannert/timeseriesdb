@@ -3,7 +3,6 @@
 \docType{methods}
 \name{dbIsValid}
 \alias{dbIsValid}
-\alias{dbIsValid,PostgreSQLConnection-method}
 \title{Check whether an PostgreSQL object is valid or not.}
 \usage{
 \S4method{dbIsValid}{PostgreSQLConnection}(dbObj)
