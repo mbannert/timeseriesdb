@@ -22,7 +22,8 @@ getListDepth <- function(this) ifelse(is.list(this), 1L + max(sapply(this, depth
 #' @param dbObj a PostgreSQLConnection connection object. Check if the connection has expired.
 #' @return A logical scalar.
 #' @name dbIsValid
-#' @rdname dbIsValid 
+#' @rdname dbIsValid
+#' @importFrom DBI dbIsValid 
 #' @export
 setMethod("dbIsValid", "PostgreSQLConnection", function(dbObj) {
   isValid <- tryCatch({dbGetInfo(dbObj)},
