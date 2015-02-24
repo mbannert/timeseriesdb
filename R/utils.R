@@ -8,7 +8,7 @@
 #' @details Hat tip to flodel at stackoverflow for suggesting this light weight way analyze depth of a nested list. Further complexity needs to be added to cover the fact that data.frame are lists, too. A more sophisticated recursive function can be found in the gatveys2 package.
 #' @references http://stackoverflow.com/questions/13432863/determine-level-of-nesting-in-r
 #' @export
-getListDepth <- function(this) ifelse(is.list(this), 1L + max(sapply(this, depth)), 0L)
+getListDepth <- function(this) ifelse(is.list(this), 1L + max(sapply(this, getListDepth)), 0L)
 
 
 

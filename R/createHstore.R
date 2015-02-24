@@ -49,7 +49,7 @@ createHstore.data.frame <- function(x,...){
 createHstore.list <- function(x,...){
   dot_args <- list(...)
   # check if list is more than 2 dim
-  if(depth(x) != 1) stop('Only key-value pairs are accepted,
+  if(getListDepth(x) != 1) stop('Only key-value pairs are accepted,
                          this list has too many dimensions!') 
   
   if(is.null(names(x))) stop('Only named lists are accepted.')
