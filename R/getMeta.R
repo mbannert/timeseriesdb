@@ -11,11 +11,13 @@
 #' @param lang character name of the language of the meta information. Typically 'de', 'it', 'fr' or 'en'.
 #' @param con connection object, defaults to object set by options().
 #' @param tbl character name of the table that contains the meta information. 
+#' @param schema SQL schema name. Defaults to 'timeseries'.
 #' @export
-getMeta <- function(series, lang, con = Sys.getenv("TIMESERIESDB_CON"),
-                    tbl = 'meta_data_localized'){
-  if(!exists('con')) stop('No standard TIMESERIESDB_CON set. Quick handle operators need standard connection. Use Sys.getenv to set TIMESERIESDB_CON.')
+getMeta <- function(series, lang, con),
+                    tbl = 'meta_data_localized',
+                    schema = 'timeseries'){
   ts <- deparse(substitute(series))
+  tbl <- paste(schema,tbl,sep=".")
   sql_statement <- sprintf("SELECT (each(meta_data)).key,
                              (each(meta_data)).value
                            FROM %s WHERE ts_key = '%s' AND locale_info = '%s'",

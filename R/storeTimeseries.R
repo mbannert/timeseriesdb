@@ -15,16 +15,18 @@
 #' This option is particularly important when running storeTimeseries within loop like operations.
 #' @param overwrite logical, whether time series should be overwritten in case a non-unique primary key is provided. Defaults to TRUE.
 #' @param quiet logical, should function be executed quietly when no errors are given back bei the db. Defaults to TRUE.
+#' @param schema SQL schema name. Defaults to timeseries. 
 #' @export
 storeTimeSeries <- function(series,
-                            con = Sys.getenv("TIMESERIESDB_CON"),
+                            con,
                             ts_key = NULL,
                             tbl = "timeseries_main",
                             md_unlocal = 'meta_data_unlocalized',
                             lookup_env = .GlobalEnv,
                             overwrite = T,
-                            quiet = T){
-  if(is.null(con)) stop('Default TIMESERIESDB_CON not set. Use Sys.getenv to set it.')
+                            quiet = T,
+                            schema = 'timeseries'){
+  
   
   # Because we cannot really use a global binding to 
   # the postgreSQL connection object which does not exist at the time
@@ -37,7 +39,10 @@ storeTimeSeries <- function(series,
   #     stopifnot(is.character(tkey))
   #     ts_key <- tkey
   #   }
+
   
+  tbl <- paste(schema,tbl,sep = '.')
+    
   # collect information for insert query
   ts_obj <- get(series,envir = lookup_env)
   ts_data <- createHstore(ts_obj)

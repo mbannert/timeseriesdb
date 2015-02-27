@@ -10,14 +10,15 @@
 #' defaults to 'de' for German. At the KOF Swiss Economic Institute meta information should be available
 #' als in English 'en', French 'fr' and Italian 'it'. Set the locale to NULL to query unlocalized meta information. 
 #' @param tbl character name of the table that contains meta information. Defaults to 'meta_data_localized'. If choose meta 'meta_data_unlocalized' when locale is set to NULL. 
+#' @param schema SQL schema name. Defaults to timeseries.
 #' @export 
 readMetaInformation <- function(series,
-                                con = Sys.getenv("TIMESERIESDB_CON"),
+                                con,
                                 overwrite,locale = 'de',
-                                tbl = 'meta_data_localized'){
+                                tbl = 'meta_data_localized',
+                                schema = 'timeseries'){
   
-  if(is.null(con)) stop('Default TIMESERIESDB_CON not set. Use Sys.getenv to set it.')
-  
+  tbl = paste(schema,tbl,sep='.')
   
   if(!is.null(locale)){
     sql_statement <- sprintf("SELECT (each(meta_data)).key,

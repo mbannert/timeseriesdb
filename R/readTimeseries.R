@@ -10,16 +10,18 @@
 #' @param con a PostgreSQL connection object
 #' @param tbl character string denoting the name of the main time series table
 #' in the PostgreSQL database.
+#' @param schema SQL schema name. Defaults to timeseries.
 #' @export
-readTimeSeries <- function(series,con = Sys.getenv("TIMESERIESDB_CON"),
-                           tbl = "timeseries_main"){
-  
-  if(con == "") stop('Default TIMESERIESDB_CON not set in Sys.getenv or no proper connection given to the con argument.')
-  
-  
+readTimeSeries <- function(series,con,
+                           tbl = "timeseries_main",
+                           schema = "timeseries"
+                           ){
+
   # Because we cannot really use a global binding to 
   # the postgreSQL connection object which does not exist at the time
   # of compilation, we use the character name of the object here. 
+  
+  tbl <- paste(schema,tbl,sep=".")
   
   sql_statement_data <- sprintf("SELECT ts_key,((each(ts_data)).key)::date,
                                 ((each(ts_data)).value)::varchar

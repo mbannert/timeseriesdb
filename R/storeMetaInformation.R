@@ -11,16 +11,17 @@
 #' If locale is set to NULL unlocalized meta is updated. Make sure to change tbl to 'meta_data_unlocalized'.
 #' @param overwrite logical, defaults to FALSE.
 #' @param quiet logical, should there be console output for every query result ? Defaults to FALSE.
+#' @param schema SQL schema name, defaults to 'timeseries'.
 #' @export
 storeMetaInformation <- function(series,
-                                 con = Sys.getenv("TIMESERIESDB_CON"),
+                                 con,
                                  tbl = 'meta_data_localized',
                                  lookup_env = 'meta_data_localized',
                                  locale = 'de',
                                  overwrite = F,
-                                 quiet = F){
+                                 quiet = F,
+                                 schema = 'timeseries'){
   
-  if(is.null(con)) stop('Default TIMESERIESDB_CON not set in options() or no proper connection given to the con argument.')
   
   # get an object from the meta environment
   mi <- get(series,envir = get(lookup_env))
