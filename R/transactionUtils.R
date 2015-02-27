@@ -7,7 +7,6 @@
 #' @rdname transactionUtils
 #' @export
 beginTransaction <- function(con){
-  if(class(con) != "PostgreSQLConnection") stop('Default TIMESERIESDB_CON not set in Sys.getenv or no proper connection given to the con argument. con is not a PostgreSQLConnection obj.')
   if(is.null(DBI::dbGetQuery(con,'BEGIN'))) print('BEGIN')
 }
 

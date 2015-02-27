@@ -9,13 +9,17 @@
 #' @param hstore name of the hstore column
 #' @param tbl name of the table to be queried. defaults to  'meta_data_localized'
 #' @param where character restrict the SQL query by an additional where clause. Defaults to NULL.
+#' @param schema SQL schema name. defaults to timeseries.
 #' E.g.: ts_key LIKE ...
 #' @rdname searchHstore
 #' @export
 searchKVP <- function(key,value,con = get(Sys.getenv("TIMESERIESDB_CON")),
                       hstore = 'meta_data',tbl = 'meta_data_unlocalized',
-                      where = NULL){
-  if(class(con) != "PostgreSQLConnection") stop('Default TIMESERIESDB_CON not set in Sys.getenv or no proper connection given to the con argument. con is not a PostgreSQLConnection obj.')
+                      where = NULL,
+                      schema = 'timeseries'){
+
+  tbl <- paste(schema,tbl,sep='.')
+  
   
   # optional AND 
   # Emulate sql's coalesce for dummies here 
@@ -32,8 +36,10 @@ searchKVP <- function(key,value,con = get(Sys.getenv("TIMESERIESDB_CON")),
 #' @export
 lookForKey <- function(key,con = get(Sys.getenv("TIMESERIESDB_CON")),
                        hstore = 'meta_data',tbl = 'meta_data_unlocalized',
-                       where = NULL){
-  if(class(con) != "PostgreSQLConnection") stop('Default TIMESERIESDB_CON not set in Sys.getenv or no proper connection given to the con argument. con is not a PostgreSQLConnection obj.')
+                       where = NULL,
+                       schema = 'timeseries'){
+  
+  tbl <- paste(schema,tbl,sep=".")
   
   # optional AND 
   # Emulate sql's coalesce for dummies here 

@@ -11,6 +11,7 @@
 #' If locale is set to NULL unlocalized meta is updated. Make sure to change tbl to 'meta_data_unlocalized'.
 #' @param overwrite logical, defaults to FALSE.
 #' @param quiet logical, should there be console output for every query result ? Defaults to FALSE.
+#' @param schema SQL schema name, defaults to 'timeseries'.
 #' @export
 storeMetaInformation <- function(series,
                                  con,
@@ -18,9 +19,14 @@ storeMetaInformation <- function(series,
                                  lookup_env = 'meta_data_localized',
                                  locale = 'de',
                                  overwrite = F,
-                                 quiet = F){
+                                 quiet = F,
+                                 schema = 'timeseries'){
   
+<<<<<<< HEAD
     
+=======
+  
+>>>>>>> speedup
   # get an object from the meta environment
   mi <- get(series,envir = get(lookup_env))
   

@@ -12,6 +12,7 @@
 #' als in English 'en', French 'fr' and Italian 'it'. Set the locale to NULL to query unlocalized meta information. 
 #' @param tbl character name of the table that contains meta information. Defaults to 'meta_data_localized'. Choose meta 'meta_data_unlocalized' when locale is set to NULL. 
 #' @param meta_env environment to which the meta information should be added. Defaults to NULL. In this case an environment will be returned. If you run this function in a loop best create an empty environment before the loop or apply call and pass the environment to this function. By doing so new elements will be added to the environment. 
+#' @param schema SQL schema name. Defaults to timeseries.
 #' @export 
 readMetaInformation <- function(series,
                                 con,
@@ -19,10 +20,11 @@ readMetaInformation <- function(series,
                                 tbl = 'meta_data_localized',
                                 overwrite_objects = F,
                                 overwrite_elements = T,
-                                meta_env = NULL){
+                                meta_env = NULL,
+                                schema = 'timeseries'){
   
   
-  
+  tbl = paste(schema,tbl,sep='.')
   
   if(!is.null(locale)){
     sql_statement <- sprintf("SELECT (each(meta_data)).key,
