@@ -43,6 +43,7 @@ storeTimeSeries <- function(series,
 
   
   tbl <- paste(schema,tbl,sep = '.')
+  md_unlocal <- paste(schema,md_unlocal,sep = ".")
     
   # collect information for insert query
   ts_obj <- get(series,envir = lookup_env)

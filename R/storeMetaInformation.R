@@ -24,6 +24,8 @@ storeMetaInformation <- function(series,
   # get an object from the meta environment
   mi <- get(series,envir = get(lookup_env))
   
+  tbl <- paste(schema,tbl,sep=".")
+  
   # creata a list of hstores
   
   
