@@ -5,7 +5,8 @@
 \title{Read Meta Information from a Time Series Database}
 \usage{
 readMetaInformation(series, con, locale = "de", tbl = "meta_data_localized",
-  overwrite_objects = F, overwrite_elements = T, meta_env = NULL)
+  overwrite_objects = F, overwrite_elements = T, meta_env = NULL,
+  schema = "timeseries")
 }
 \arguments{
 \item{series}{character name of a time series object.}
@@ -23,6 +24,8 @@ als in English 'en', French 'fr' and Italian 'it'. Set the locale to NULL to que
 \item{overwrite_elements}{logical should single elements inside the environment be overwritten. Defaults to TRUE.}
 
 \item{meta_env}{environment to which the meta information should be added. Defaults to NULL. In this case an environment will be returned. If you run this function in a loop best create an empty environment before the loop or apply call and pass the environment to this function. By doing so new elements will be added to the environment.}
+
+\item{schema}{SQL schema name. Defaults to timeseries.}
 }
 \description{
 This function reads meta information from a timeseriesdb package PostgreSQL

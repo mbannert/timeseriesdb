@@ -21,12 +21,6 @@ storeMetaInformation <- function(series,
                                  overwrite = F,
                                  quiet = F,
                                  schema = 'timeseries'){
-  
-<<<<<<< HEAD
-    
-=======
-  
->>>>>>> speedup
   # get an object from the meta environment
   mi <- get(series,envir = get(lookup_env))
   

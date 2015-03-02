@@ -4,7 +4,8 @@
 \alias{deleteTimeSeries}
 \title{Delete Time Series from the database}
 \usage{
-deleteTimeSeries(series, con, tbl_main = "timeseries_main")
+deleteTimeSeries(series, con, tbl_main = "timeseries_main",
+  schema = "timeseries")
 }
 \arguments{
 \item{series}{character name of the timeseries}
@@ -13,6 +14,8 @@ deleteTimeSeries(series, con, tbl_main = "timeseries_main")
 
 \item{tbl_main}{character name of the table that contains the
 main time series catalog. Defaults to 'timeseries_main'.}
+
+\item{schema}{SQL schema name. Defaults to 'timeseries'.}
 }
 \description{
 This function deletes time series AND their metainformation from the

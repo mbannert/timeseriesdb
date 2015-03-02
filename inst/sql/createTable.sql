@@ -18,3 +18,6 @@ CREATE TABLE meta_data_localized (ts_key varchar,
                                   foreign key (ts_key) references timeseries_main (ts_key) on delete cascade
                                   );
 
+CREATE VIEW v_timeseries_json AS SELECT timeseries_main.ts_key,
+    row_to_json(timeseries_main.*) AS ts_json_records
+   FROM timeseries_main;

@@ -58,6 +58,5 @@
   return(ts_list)
 }
 
-readTimeSeries()
 
 

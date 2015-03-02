@@ -12,7 +12,7 @@
 #' @param tbl character name of the table that contains the meta information. 
 #' @param schema SQL schema name. Defaults to 'timeseries'.
 #' @export
-getMeta <- function(series, lang, con),
+getMeta <- function(series, lang, con,
                     tbl = 'meta_data_localized',
                     schema = 'timeseries'){
   ts <- deparse(substitute(series))

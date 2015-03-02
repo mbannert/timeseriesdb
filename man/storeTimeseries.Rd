@@ -6,7 +6,7 @@
 \usage{
 storeTimeSeries(series, con, ts_key = NULL, tbl = "timeseries_main",
   md_unlocal = "meta_data_unlocalized", lookup_env = .GlobalEnv,
-  overwrite = T, quiet = T)
+  overwrite = T, quiet = T, schema = "timeseries")
 }
 \arguments{
 \item{series}{character name of a time series, S3 class ts}
@@ -25,6 +25,8 @@ This option is particularly important when running storeTimeseries within loop l
 \item{overwrite}{logical, whether time series should be overwritten in case a non-unique primary key is provided. Defaults to TRUE.}
 
 \item{quiet}{logical, should function be executed quietly when no errors are given back bei the db. Defaults to TRUE.}
+
+\item{schema}{SQL schema name. Defaults to timeseries.}
 }
 \description{
 This function writes time series object into a relational PostgreSQL database make use

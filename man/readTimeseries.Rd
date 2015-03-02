@@ -4,19 +4,22 @@
 \alias{readTimeSeries}
 \title{Read Time Series From PostgreSQL database}
 \usage{
-readTimeSeries(series, con, tbl = "timeseries_main")
+readTimeSeries(series, con, tbl = "v_timeseries_json",
+  schema = "timeseries")
 }
 \arguments{
 \item{series}{character vector of series names.}
 
 \item{con}{a PostgreSQL connection object}
 
-\item{tbl}{character string denoting the name of the main time series table
-in the PostgreSQL database.}
+\item{tbl}{character string denoting the name of the view
+containing the json records.}
+
+\item{schema}{SQL schema name. Defaults to timeseries.}
 }
 \description{
 This function reads a time series from a postgres database,
-that key value pair storage (hstore), to archive time series.
+that uses key value pair storage (hstore), to archive time series.
 After reading the information from the database a standard
 R time series object of class 'ts' is built and returned.
 }

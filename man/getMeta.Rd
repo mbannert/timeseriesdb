@@ -4,7 +4,8 @@
 \alias{getMeta}
 \title{Quickly Handle Meta Information}
 \usage{
-getMeta(series, lang, con, tbl = "meta_data_localized")
+getMeta(series, lang, con, tbl = "meta_data_localized",
+  schema = "timeseries")
 }
 \arguments{
 \item{series}{an R time series object}
@@ -14,6 +15,8 @@ getMeta(series, lang, con, tbl = "meta_data_localized")
 \item{con}{connection object}
 
 \item{tbl}{character name of the table that contains the meta information.}
+
+\item{schema}{SQL schema name. Defaults to 'timeseries'.}
 }
 \description{
 Sometimes reading the entire meta description for all language or

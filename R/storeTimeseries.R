@@ -24,13 +24,10 @@ storeTimeSeries <- function(series,
                             md_unlocal = 'meta_data_unlocalized',
                             lookup_env = .GlobalEnv,
                             overwrite = T,
-<<<<<<< HEAD
-                            quiet = T){
-=======
                             quiet = T,
                             schema = 'timeseries'){
   
->>>>>>> speedup
+
   
   # Because we cannot really use a global binding to 
   # the postgreSQL connection object which does not exist at the time

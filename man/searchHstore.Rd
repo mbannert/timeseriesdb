@@ -6,10 +6,12 @@
 \title{Search Key-Value Pairs, look for existing keys in an Hstore}
 \usage{
 searchKVP(key, value, con = get(Sys.getenv("TIMESERIESDB_CON")),
-  hstore = "meta_data", tbl = "meta_data_unlocalized", where = NULL)
+  hstore = "meta_data", tbl = "meta_data_unlocalized", where = NULL,
+  schema = "timeseries")
 
 lookForKey(key, con = get(Sys.getenv("TIMESERIESDB_CON")),
-  hstore = "meta_data", tbl = "meta_data_unlocalized", where = NULL)
+  hstore = "meta_data", tbl = "meta_data_unlocalized", where = NULL,
+  schema = "timeseries")
 }
 \arguments{
 \item{key}{character}
@@ -22,7 +24,9 @@ lookForKey(key, con = get(Sys.getenv("TIMESERIESDB_CON")),
 
 \item{tbl}{name of the table to be queried. defaults to  'meta_data_localized'}
 
-\item{where}{character restrict the SQL query by an additional where clause. Defaults to NULL.
+\item{where}{character restrict the SQL query by an additional where clause. Defaults to NULL.}
+
+\item{schema}{SQL schema name. defaults to timeseries.
 E.g.: ts_key LIKE ...}
 }
 \description{

@@ -6,7 +6,7 @@
 \usage{
 storeMetaInformation(series, con, tbl = "meta_data_localized",
   lookup_env = "meta_data_localized", locale = "de", overwrite = F,
-  quiet = F)
+  quiet = F, schema = "timeseries")
 }
 \arguments{
 \item{series}{a character name of an time series object}
@@ -23,6 +23,8 @@ If locale is set to NULL unlocalized meta is updated. Make sure to change tbl to
 \item{overwrite}{logical, defaults to FALSE.}
 
 \item{quiet}{logical, should there be console output for every query result ? Defaults to FALSE.}
+
+\item{schema}{SQL schema name, defaults to 'timeseries'.}
 }
 \description{
 This function stores meta information to the database for a given time series.
