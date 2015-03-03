@@ -1,5 +1,5 @@
 Package: timeseriesdb
-Title: Store and Organize Time Series in a Database
+Title: Store and Manage Time Series in a Database
 Description: An R package to store and organize time series and their
     multi-lingual meta information in a database. The timeseriesdb package
     suggests a simple yet powerful database structure to store a large amount
@@ -8,7 +8,9 @@ Description: An R package to store and organize time series and their
 Version: 0.1
 Authors@R: 'Matthias Bannert <bannert@kof.ethz.ch> [aut, cre]'
 Depends:
-    R (>= 3.0.0),data.table (>= 1.9.4), RPostgreSQL
+    R (>= 3.0.0), RPostgreSQL
+Imports: RJSONIO, DBI 
+Date: 2015-04-02
 License: GPL-2
 LazyData: true
 Maintainer: 'Matthias Bannert' <bannert@kof.ethz.ch>
