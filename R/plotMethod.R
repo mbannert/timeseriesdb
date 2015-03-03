@@ -8,9 +8,10 @@
 #' 
 #' @param x a list of time series. Object should be of class tslist. 
 #' @param ... parameters than can simply by passed on tot the plot function
+#' @param use_legend logical. Should legend be used. Defaults to TRUE. Useful to switch of if so many time series are drawn that they are hard to distinguish anyway. 
 #' @export plot.tslist
 #' @rdname plotMethods
-plot.tslist <- function(x,...){
+plot.tslist <- function(x,...,use_legend = T){
   stopifnot(is.list(x))
   if(!(length(x) > 1)){
     return(plot(x[[1]]))
@@ -42,7 +43,10 @@ plot.tslist <- function(x,...){
   li_m_first <- x[-1]
   
   # configure canvas, to have sufficient space for the legend here... 
-  par(mar=c(3.1, 3.1, 3.1, 15.1), xpd=TRUE)
+  if(use_legend){
+    par(mar=c(3.1, 3.1, 3.1, 15.1), xpd=TRUE)  
+  }
+  
   
   
   
@@ -60,6 +64,9 @@ plot.tslist <- function(x,...){
   # run the expression to add lines to the existing plot
   eval(parse(text = lines_expr))  
   # Add legend to top right, outside plot region
-  legend("topright", legend = names(x),
-         fill = seq_along(x),cex = 0.6,inset=c(-.32,0),xpd = T,bty = "n")
+  if(use_legend){
+    legend("topright", legend = names(x),
+           fill = seq_along(x),cex = 0.6,inset=c(-.32,0),xpd = T,bty = "n")
+  }
+  
 }
