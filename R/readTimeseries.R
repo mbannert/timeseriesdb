@@ -54,5 +54,6 @@ readTimeSeries <- function(series,con,tbl = "v_timeseries_json",
                         frequency = freq))
   })
   names(out_li) <- nms
+  class(out_li) <- append(class(out_li),"tslist")
   return(out_li)
 }
