@@ -4,35 +4,32 @@
 \alias{storeTimeSeries}
 \title{Write an R Time Series to a PostgreSQL database}
 \usage{
-storeTimeSeries(series, con, ts_key = NULL, tbl = "timeseries_main",
+storeTimeSeries(series, con, li = NULL, tbl = "timeseries_main",
   md_unlocal = "meta_data_unlocalized", lookup_env = .GlobalEnv,
-  overwrite = T, quiet = T, schema = "timeseries")
+  overwrite = T, schema = "timeseries")
 }
 \arguments{
-\item{series}{character name of a time series, S3 class ts}
+\item{series}{character name of a time series, S3 class ts. When used with lists it is convenient to set series to names(li). Note that the series name needs to be unique in the database!}
 
 \item{con}{a PostgreSQL connection object.}
 
-\item{ts_key}{optional character string to specify an explicit time series primary key for the database. Defaults to NULL and uses the name of the R time series object as a key. Note that keys need to be unique in the database.}
+\item{li}{list of time series. Defaults to NULL to no break legacy calls that use lookup environments.}
 
 \item{tbl}{character string denoting the name of the main time series table in the PostgreSQL database.}
 
 \item{md_unlocal}{character string denoting the name of the table that holds unlocalized meta information.}
 
-\item{lookup_env}{environment to look in for timeseries. Defaults to .GobalEnv.
-This option is particularly important when running storeTimeseries within loop like operations.}
-
-\item{overwrite}{logical, whether time series should be overwritten in case a non-unique primary key is provided. Defaults to TRUE.}
-
-\item{quiet}{logical, should function be executed quietly when no errors are given back bei the db. Defaults to TRUE.}
+\item{lookup_env}{environment to look in for timeseries. Defaults to .GobalEnv.}
 
 \item{schema}{SQL schema name. Defaults to timeseries.}
+
+\item{ovewrite}{logical should existing records (same primary key) be overwritten? Defaults to TRUE.}
 }
 \description{
 This function writes time series object into a relational PostgreSQL database make use
 of PostgreSQL own 'key'=>'value' storage called hstore. The schema and database needs to
 created first. The parent R Package of this functions suggests a database structure
-designed to store a larger amount of time series. This function uses INSERT INTO instead of the more convenient dbWritetable for performance reasons
+designed to store a larger amount of time series. This function uses INSERT INTO instead of the more convenient dbWritetable for performance reasons. DO NOT USE THIS FUNCTIONS IN LOOPS OR LAPPLY! This function can handle a set of time series on it's own and is much faster than looping over a list. Non-unique primary keys are overwritten !
 }
 \author{
 Matthias Bannert, Gabriel Bucur

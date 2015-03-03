@@ -1,6 +1,6 @@
-# Hat tip to Charles Clavadetscher for helping out
-# moving these update / insert operations to the 
-# database level
+/* Hat tip to Charles Clavadetscher for helping out
+moving these update / insert operations to the 
+database level */
 
 create or replace function upsert_timeseries_tables()
 returns trigger
