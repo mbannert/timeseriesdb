@@ -39,7 +39,7 @@ plot.tslist <- function(x,...,use_legend = T){
   max_value_value <- max_value[which.max(max_value)]
   
   # length of the list, plot the first elements
-  l <- length(li)
+  l <- length(x)
   li_m_first <- x[-1]
   
   # configure canvas, to have sufficient space for the legend here... 

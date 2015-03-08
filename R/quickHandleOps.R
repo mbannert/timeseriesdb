@@ -1,3 +1,13 @@
+
+#' Search the Database by Keys
+#' 
+#' Quick handle operator to search the database by keys. All time series whose key fit 
+#' the regular expression which was handed to the operator are returned in a list. 
+#' 
+#' @param conObj PostgreSQL Connection object.
+#' @param regexp character regular expression pattern. 
+#' @rdname quickHandleOps
+#' @export
 "%k%" <- function(conObj,regexp){
   
   # get time series keys that suit the regexp
@@ -8,6 +18,8 @@
   ts_list <- readTimeSeries(keys,conObj)
   return(ts_list)
 }
+
+
 
 
 "%l%" <- function(conObj,regexp){
