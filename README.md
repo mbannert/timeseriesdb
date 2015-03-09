@@ -21,8 +21,11 @@ install_github('mbannert/timeseriesdb')
 It can be very convenient to set a default database connection when using the same instance of **timeseriesdb**
 most of the time. This can be done by adding the following to ~/.Renviron (for the user) or globally to the same file in R_HOME. 
 
+```
 TIMESERIESDB_NAME = "sandbox"  # or whatever dbname you use
 TIMESERIESDB_HOST = "localhost" # typically your remote host. 
+```
+
 
 If you do so and your dbuser is the same as your system user `createConObj` does not need any argument to connect. 
 
