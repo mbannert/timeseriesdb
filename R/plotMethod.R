@@ -9,9 +9,10 @@
 #' @param x a list of time series. Object should be of class tslist. 
 #' @param ... parameters than can simply by passed on tot the plot function
 #' @param use_legend logical. Should legend be used. Defaults to TRUE. Useful to switch of if so many time series are drawn that they are hard to distinguish anyway. 
+#' @param shiny_legend logical, is plot used in context of a shiny app? Defaults to FALSE.
 #' @export plot.tslist
 #' @rdname plotMethods
-plot.tslist <- function(x,...,use_legend = T){
+plot.tslist <- function(x,...,use_legend = T,shiny_legend = F){
   stopifnot(is.list(x))
   if(!(length(x) > 1)){
     return(plot(x[[1]]))
@@ -44,7 +45,12 @@ plot.tslist <- function(x,...,use_legend = T){
   
   # configure canvas, to have sufficient space for the legend here... 
   if(use_legend){
-    par(mar=c(3.1, 3.1, 3.1, 15.1), xpd=TRUE)  
+    if(shiny_legend){
+      par(mar=c(8.1+(length(x)*0.2), 3.1, 3.1, 3.1), xpd=TRUE)  
+    } else {
+      par(mar=c(3.1, 3.1, 3.1, 10.1), xpd=TRUE)    
+    }
+    
   }
   
   
@@ -65,8 +71,14 @@ plot.tslist <- function(x,...,use_legend = T){
   eval(parse(text = lines_expr))  
   # Add legend to top right, outside plot region
   if(use_legend){
-    legend("topright", legend = names(x),
-           fill = seq_along(x),cex = 0.6,inset=c(-.32,0),xpd = T,bty = "n")
+    if(shiny_legend){
+      legend("bottomleft", legend = names(x),
+             fill = seq_along(x),cex = 0.9,inset=c(0,-.40-(length(names(x))*.04)),xpd = T,bty = "o",bg = "white")  
+    } else {
+      legend("topright", legend = names(x),
+             fill = seq_along(x),cex = 0.6,inset=c(-.32,0),xpd = T,bty = "n")  
+    }
+    
   }
   
 }

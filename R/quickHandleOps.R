@@ -1,4 +1,3 @@
-
 #' Search the Database by Keys
 #' 
 #' Quick handle operator to search the database by keys. All time series whose key fit 
@@ -20,55 +19,36 @@
 }
 
 
-
-
-"%l%" <- function(conObj,regexp){
+#' Create Custom Quick Handle Operators For Unlocalized Meta Information
+#' 
+#' Create '%letter%' style operator to conveniently access meta data by hstore keys. 
+#' This function creates a new function operator for a particular key. Name the function 
+#' operator style to get the most out of it.
+#' 
+#' @param key character name of the key inside the hstore. 
+#' @export
+#' @rdname quickHandleOps
+createMetaDataHandle <- function(key){
+  
   sql_query <- sprintf("SELECT ts_key,
-                       meta_data->'legacy_key' AS legacy_key
-                       FROM meta_data_unlocalized WHERE meta_data->'legacy_key' ~ '%s'",
-                       regexp)
+                        meta_data->'%s' AS %s
+                        FROM meta_data_unlocalized WHERE meta_data->'%s' ~ '",
+                        key,key,key)
   
-  key_df <- dbGetQuery(conObj,sql_query)
-  nms <- key_df$legacy_key
-  
-  
-  ts_list <- readTimeSeries(key_df$ts_key,conObj)
-  names(ts_list) <- nms
-  return(ts_list)
-}
+  sql_query <- paste0(sql_query,"%s'")
 
-
-"%a%" <- function(conObj,regexp){
-  sql_query <- sprintf("SELECT ts_key,
-                       meta_data->'alias' AS alias
-                       FROM meta_data_unlocalized WHERE meta_data->'alias' ~ '%s'",
-                       regexp)
+  fct <- sprintf("
+            function(conObj,regexp){
+            sql_query <- sprintf(\"%s\",regexp)
+            
+            key_df <- dbGetQuery(conObj,sql_query)
+            nms <- key_df$legacy_key
+            
+            ts_list <- readTimeSeries(key_df$ts_key,conObj)
+            names(ts_list) <- nms
+            return(ts_list)
+  }",sql_query)
   
-  key_df <- dbGetQuery(conObj,sql_query)
-  nms <- key_df$legacy_key
+  eval(parse(text = fct))
+}  
   
-  
-  ts_list <- readTimeSeries(key_df$ts_key,conObj)
-  names(ts_list) <- nms
-  return(ts_list)
-}
-
-
-"%h%" <- function(conObj,regexp){
-  Sys.getenv("LOOKUP")
-  sql_query <- sprintf("SELECT ts_key,
-                       meta_data->'alias' AS alias
-                       FROM meta_data_unlocalized WHERE meta_data->'alias' ~ '%s'",
-                       regexp)
-  
-  key_df <- dbGetQuery(conObj,sql_query)
-  nms <- key_df$legacy_key
-  
-  
-  ts_list <- readTimeSeries(key_df$ts_key,conObj)
-  names(ts_list) <- nms
-  return(ts_list)
-}
-
-
-

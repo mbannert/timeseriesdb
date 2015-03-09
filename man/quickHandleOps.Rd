@@ -2,17 +2,26 @@
 % Please edit documentation in R/quickHandleOps.R
 \name{\%k\%}
 \alias{\%k\%}
+\alias{createMetaDataHandle}
 \title{Search the Database by Keys}
 \usage{
 conObj \%k\% regexp
+
+createMetaDataHandle(key)
 }
 \arguments{
 \item{conObj}{PostgreSQL Connection object.}
 
 \item{regexp}{character regular expression pattern.}
+
+\item{key}{character name of the key inside the hstore.}
 }
 \description{
 Quick handle operator to search the database by keys. All time series whose key fit
 the regular expression which was handed to the operator are returned in a list.
+
+Create '%letter%' style operator to conveniently access meta data by hstore keys.
+This function creates a new function operator for a particular key. Name the function
+operator style to get the most out of it.
 }
 

@@ -9,7 +9,7 @@ also of class tslist which makes it very convenient to plot timeseries,
 directly out of the database. This function gets automatically the right ranges
 for the axes to plot all values and dates in contained in the list.}
 \usage{
-\method{plot}{tslist}(x, ..., use_legend = T)
+\method{plot}{tslist}(x, ..., use_legend = T, shiny_legend = F)
 }
 \arguments{
 \item{x}{a list of time series. Object should be of class tslist.}
@@ -17,6 +17,8 @@ for the axes to plot all values and dates in contained in the list.}
 \item{...}{parameters than can simply by passed on tot the plot function}
 
 \item{use_legend}{logical. Should legend be used. Defaults to TRUE. Useful to switch of if so many time series are drawn that they are hard to distinguish anyway.}
+
+\item{shiny_legend}{logical, is plot used in context of a shiny app? Defaults to FALSE.}
 }
 \description{
 Plot a list of Time Series

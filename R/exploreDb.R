@@ -16,13 +16,40 @@ exploreDb <- function(con){
     # UI PART FOR SHINY APP -----------------------------------------------
     ui = fluidPage(
       
+      tags$head(
+        tags$style(HTML("
+                        @import url('//fonts.googleapis.com/css?family=Lato|Cabin:400,700');
+                        
+                        h1 {
+                        font-family: 'Lato';
+                        font-weight: 500;
+                        line-height: 1.1;
+                        color: #A2C3C9;
+                        }
+                        
+                        select {
+                        width:400px !important;
+                        height:150px !important;
+                        }
+
+                        input[type='text']{
+                        width:400px !important;
+                        }
+
+
+
+                        "))
+        ),
+      tags$h1("timeseriesdb Data Explorer"),
+      uiOutput("search_type"),
       tags$form(
         textInput("key", "search for Key", "")
         , br()
         , actionButton("button1", "Search timeseriesdb")
       ),
-      
-      
+      radioButtons("legend", "Use legend?",
+                   c("Yes" = "yes",
+                     "No" = "no")),
       uiOutput("choices"),
       plotOutput("plot")
       
@@ -34,8 +61,17 @@ exploreDb <- function(con){
       
       keys <- reactive({
         if(input$key != ""){
-          keys <- con %k% input$key # double check this
-          keys
+          
+          
+          if(input$search_type == "ts_key"){
+            keys <- con %k% input$key # double check this
+            keys  
+          } else{
+            "%m%" <- createMetaDataHandle(input$search_type)
+            keys <- con %m% input$key
+            keys
+          }
+          
         } else {
           NULL
         }
@@ -55,6 +91,21 @@ exploreDb <- function(con){
         
       })
       
+      output$search_type <- renderUI({
+        md_keys <- dbGetQuery(con,"SELECT DISTINCT k FROM 
+                   (SELECT skeys(meta_data) as k 
+                   FROM meta_data_unlocalized) as dt;")$k
+        
+        names(md_keys) <- md_keys
+        st_keys <- c(c("Main ts_key" = "ts_key"),md_keys)
+        
+        radioButtons("search_type", "Search Type",
+                     st_keys)
+        
+        
+      })
+      
+      
       output$plot <- renderPlot({
         # li <- readTimeSeries(input$key,con)
         if(is.null(input$in5)) return(NULL)
@@ -62,12 +113,9 @@ exploreDb <- function(con){
         li <- isolate(keys())
         li <- li[input$in5]
         class(li) <- append(class(li),"tslist")
-        plot(li)    
-        
-        
-        
-        
-        
+        plot(li,use_legend = ifelse(input$legend == "yes",T,F),
+             shiny_legend = T)    
+
       })
       
       
