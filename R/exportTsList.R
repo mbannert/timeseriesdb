@@ -16,8 +16,8 @@ exportTsList <- function(tl,fname = NULL){
   })
   
   tsdf <- do.call("rbind",out_list)
-  if(is.null(fname)) fname <- "timeseriesdb_export_"
-  fname <- paste0(fname,gsub("-","_",Sys.Date()),".csv")
+#   if(is.null(fname)) fname <- "timeseriesdb_export_"
+#   fname <- paste0(fname,gsub("-","_",Sys.Date()),".csv")
   write.csv2(tsdf,file = fname,row.names = F)
   
 }

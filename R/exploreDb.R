@@ -32,8 +32,13 @@ exploreDb <- function(con){
                     column(2,radioButtons("legend", "Use legend?",
                                           c("Yes" = "yes",
                                             "No" = "no"))),
-                    column(7,uiOutput("choices")),
-                    column(3,tags$h2("Export"))
+                    column(6,uiOutput("choices")),
+                    column(4,tags$h2("Export"),
+                           radioButtons("wide", "Use wide format?",
+                                        c("Yes" = "yes",
+                                          "No" = "no")),
+                           downloadButton('download', 'Download')
+                           )
                   )
                   ),
       tabPanel("Time Series Sets"),
@@ -132,6 +137,22 @@ exploreDb <- function(con){
 
       })
       
+      # Download Handler ------------------------------------
+      output$download <- downloadHandler(
+        filename = function(){paste0("test.csv")}, #input$fname,
+        content = function(file){
+          # write.table(isolate(keys())[[1]],file)
+          # don't forget to change separator
+          exportTsList(isolate(keys())[input$in5],fname = file) 
+        }
+          
+          
+          )
+      
+      
+      
+      
+      
       
     },
     options=list(launch.browser = T)
@@ -139,6 +160,8 @@ exploreDb <- function(con){
   
   
 }
+
+
 
 
 
