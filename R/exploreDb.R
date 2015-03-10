@@ -12,6 +12,7 @@ exploreDb <- function(con){
   
   if(!dbIsValid(con)) stop("Database connection is not valid. Can't start exploring data.")
   
+  
   shinyApp(
     # UI PART FOR SHINY APP -----------------------------------------------
     ui = fluidPage(
@@ -71,6 +72,8 @@ exploreDb <- function(con){
             keys <- con %m% input$key
             keys
           }
+          
+          
           
         } else {
           NULL

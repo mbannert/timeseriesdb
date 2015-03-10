@@ -76,7 +76,7 @@ plot.tslist <- function(x,...,use_legend = T,shiny_legend = F){
              fill = seq_along(x),cex = 0.9,inset=c(0,-.40-(length(names(x))*.04)),xpd = T,bty = "o",bg = "white")  
     } else {
       legend("topright", legend = names(x),
-             fill = seq_along(x),cex = 0.6,inset=c(-.32,0),xpd = T,bty = "n")  
+             fill = seq_along(x),cex = 0.6,inset=c(-.4,0),xpd = T,bty = "n")  
     }
     
   }
