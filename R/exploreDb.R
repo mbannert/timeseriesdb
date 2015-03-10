@@ -15,45 +15,51 @@ exploreDb <- function(con){
   
   shinyApp(
     # UI PART FOR SHINY APP -----------------------------------------------
-    ui = fluidPage(
-      
-      tags$head(
-        tags$style(HTML("
-                        @import url('//fonts.googleapis.com/css?family=Lato|Cabin:400,700');
-                        
-                        h1 {
-                        font-family: 'Lato';
-                        font-weight: 500;
-                        line-height: 1.1;
-                        color: #A2C3C9;
-                        }
-                        
-                        select {
-                        width:400px !important;
-                        height:150px !important;
-                        }
-
-                        input[type='text']{
-                        width:400px !important;
-                        }
-
-
-
-                        "))
-        ),
-      tags$h1("timeseriesdb Data Explorer"),
-      uiOutput("search_type"),
-      tags$form(
-        textInput("key", "search for Key", "")
-        , br()
-        , actionButton("button1", "Search timeseriesdb")
-      ),
-      radioButtons("legend", "Use legend?",
-                   c("Yes" = "yes",
-                     "No" = "no")),
-      uiOutput("choices"),
-      plotOutput("plot")
-      
+    ui = navbarPage("timeseriesdb Data Explorer",
+      tabPanel("Build Query",
+                  tags$h2("Step 1: Search by Key"),
+                  uiOutput("search_type"),
+                  tags$form(
+                    textInput("key", "search for Key", "")
+                    , br()
+                    , actionButton("button1", "Search timeseriesdb")
+                  ),
+                  textOutput("hits")     
+                  ),
+      tabPanel("Plot and Export",
+                  plotOutput("plot"),
+                  fluidRow(
+                    column(2,radioButtons("legend", "Use legend?",
+                                          c("Yes" = "yes",
+                                            "No" = "no"))),
+                    column(7,uiOutput("choices")),
+                    column(3,tags$h2("Export"))
+                  )
+                  ),
+      tabPanel("Time Series Sets"),
+      header = 
+          tags$style(HTML("
+                          @import url('//fonts.googleapis.com/css?family=Lato|Cabin:400,700');
+                          
+                          h2 {
+                          font-family: 'Lato';
+                          font-weight: 500;
+                          line-height: 1.1;
+                          color: #A2C3C9;
+                          }
+                          
+                          select {
+                          width:400px !important;
+                          height:150px !important;
+                          }
+                          
+                          input[type='text']{
+                          width:400px !important;
+                          }
+                          
+                          
+                          
+                          "))
     ),
     
     # SERVER PART FOR SHINY APP -----------------------------------------------    
@@ -106,6 +112,11 @@ exploreDb <- function(con){
                      st_keys)
         
         
+      })
+      
+      output$hits <- renderText({
+        input$button1
+        paste0(length(isolate(keys()))," hits. Switch to the plot tab to select time series immediately from search results.")
       })
       
       
