@@ -42,13 +42,16 @@ createMetaDataHandle <- function(key){
             sql_query <- sprintf(\"%s\",regexp)
             
             key_df <- dbGetQuery(conObj,sql_query)
-            nms <- key_df$legacy_key
             
             ts_list <- readTimeSeries(key_df$ts_key,conObj)
-            names(ts_list) <- nms
+            names(ts_list) <- key_df[match(names(ts_list), key_df$ts_key),'%s']
             return(ts_list)
-  }",sql_query)
+  }",sql_query,key)
   
   eval(parse(text = fct))
 }  
   
+
+
+
+

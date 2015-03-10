@@ -62,6 +62,8 @@ plot.tslist <- function(x,...,use_legend = T,shiny_legend = F){
        xlab = "",
        ylab = "")
   
+  
+  
   # create expression (which is technically a string)
   lines_expr <- sprintf("lines(x$%s,col=%s,lwd=%s)",
                         names(x),
@@ -72,11 +74,23 @@ plot.tslist <- function(x,...,use_legend = T,shiny_legend = F){
   # Add legend to top right, outside plot region
   if(use_legend){
     if(shiny_legend){
-      legend("bottomleft", legend = names(x),
-             fill = seq_along(x),cex = 0.9,inset=c(0,-.40-(length(names(x))*.04)),xpd = T,bty = "o",bg = "white")  
+      plot_ymin <- par('usr')[3]
+      plot_ymax <- par('usr')[4]
+      legend(x = as.numeric(min_date_value,"%Y"),
+             y = plot_ymin - (plot_ymax - plot_ymin)*.15,
+             legend = names(x),
+             fill = seq_along(x),
+             cex = 0.9,
+             # inset=c(0,-.40-(length(names(x))*.04)),
+             xpd = T,
+             bty = "o",bg = "white")  
     } else {
-      legend("topright", legend = names(x),
-             fill = seq_along(x),cex = 0.6,inset=c(-.4,0),xpd = T,bty = "n")  
+      legend(x = as.numeric(max_date_value,"%Y")+.5,
+             y = max_value_value,
+             legend = names(x),
+             fill = seq_along(x),cex = 0.6,
+             inset=c(-.4,0),
+             xpd = T,bty = "n")  
     }
     
   }
