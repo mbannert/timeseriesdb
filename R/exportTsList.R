@@ -4,8 +4,9 @@
 #' 
 #' @param tl list of time series
 #' @param fname character file name. If set to NULL a standard file name chunk + Sys.Date is used.
+#' @param cast logical. Should the resulting data.frame be cast to wide format? Defaults to TRUE
 #' @export
-exportTsList <- function(tl,fname = NULL){
+exportTsList <- function(tl,fname = NULL,cast = T){
   library(xts)
   tl <- lapply(tl,as.xts)
   out_list <- lapply(names(tl),function(x){
@@ -18,6 +19,11 @@ exportTsList <- function(tl,fname = NULL){
   tsdf <- do.call("rbind",out_list)
 #   if(is.null(fname)) fname <- "timeseriesdb_export_"
 #   fname <- paste0(fname,gsub("-","_",Sys.Date()),".csv")
-  write.csv2(tsdf,file = fname,row.names = F)
+  #write.csv2(tsdf,file = fname,row.names = F)
+#  reshape2::dcast(tsdf)
+  if(cast){
+    tsdf <- reshape2::dcast(tsdf,time ~ series)
+  }
   
+  write.csv2(tsdf,file = fname,row.names = F)              
 }
