@@ -16,34 +16,41 @@ exploreDb <- function(con){
   shinyApp(
     # UI PART FOR SHINY APP -----------------------------------------------
     ui = navbarPage("timeseriesdb Data Explorer",
-      tabPanel("Build Query",
-                  tags$h2("Step 1: Search by Key"),
-                  uiOutput("search_type"),
-                  tags$form(
-                    textInput("key", "search for Key", "")
-                    , br()
-                    , actionButton("button1", "Search timeseriesdb")
-                  ),
-                  textOutput("hits")     
-                  ),
-      tabPanel("Plot and Export",
-                  plotOutput("plot"),
-                  fluidRow(
-                    column(2,radioButtons("legend", "Use legend?",
-                                          c("Yes" = "yes",
-                                            "No" = "no"))),
-                    column(6,uiOutput("choices")),
-                    column(4,tags$h2("Export"),
-                           radioButtons("wide", "Use wide format?",
-                                        c("Yes" = "yes",
-                                          "No" = "no")),
-                           downloadButton('download', 'Download')
-                           )
-                  )
-                  ),
-      tabPanel("Time Series Sets"),
-      header = 
-          tags$style(HTML("
+                    tabPanel("Build Query",
+                             tags$h2("Step 1: Search by Key"),
+                             uiOutput("search_type"),
+                             tags$form(
+                               textInput("key", "search for Key", "")
+                               , br()
+                               , actionButton("button1", "Search timeseriesdb")
+                             ),
+                             textOutput("hits")     
+                    ),
+                    tabPanel("Plot and Export",
+                             plotOutput("plot"),
+                             fluidRow(
+                               column(2,radioButtons("legend", "Use legend?",
+                                                     c("Yes" = "yes",
+                                                       "No" = "no"))),
+                               column(6,uiOutput("choices")),
+                               column(4,tags$h2("Export"),
+                                      radioButtons("wide", "Use wide format?",
+                                                   c("Yes" = "yes",
+                                                     "No" = "no")),
+                                      downloadButton('download', 'Download')
+                               )
+                             )
+                    ),
+                    tabPanel("Time Series Sets",
+                             tags$form(
+                               textInput("set_name", "Give a set name", "")
+                               , br()
+                               , actionButton("button2", "Store the time series set")
+                             ),
+                             textOutput("store_set") 
+                    ),
+                    header = 
+                      tags$style(HTML("
                           @import url('//fonts.googleapis.com/css?family=Lato|Cabin:400,700');
                           
                           h2 {
@@ -134,7 +141,7 @@ exploreDb <- function(con){
         class(li) <- append(class(li),"tslist")
         plot(li,use_legend = ifelse(input$legend == "yes",T,F),
              shiny_legend = T)    
-
+        
       })
       
       # Download Handler ------------------------------------
@@ -145,13 +152,31 @@ exploreDb <- function(con){
           # don't forget to change separator
           exportTsList(isolate(keys())[input$in5],fname = file) 
         }
-          
-          
-          )
+        
+        
+      )
       
       
-      
-      
+      output$store_set <- renderText({
+        
+        input$button2
+        
+        otext <- ""
+        
+        set_list <- isolate({
+          li <- as.list(rep(input$search_type, length(input$in5)))
+          names(li) <- input$in5
+          li
+        })
+        
+        if(length(set_list) > 0 && isolate(input$set_name) != "") {
+           storeTsSet(con, isolate(input$set_name), set_list, 'gbucur')
+       
+           otext <- paste('You have stored the set ', isolate(input$set_name), '!!!')
+        }
+
+        otext
+      })
       
       
     },
