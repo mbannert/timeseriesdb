@@ -39,15 +39,25 @@ exploreDb <- function(con){
                                                      "No" = "no")),
                                       downloadButton('download', 'Download')
                                )
+                             ),
+                             fluidRow(
+                               tags$form(
+                                 textInput("set_name", "Give a set name", "")
+                                 , br()
+                                 , actionButton("button2", "Store the time series set")
+                               ),
+                               textOutput("store_set") 
                              )
                     ),
                     tabPanel("Time Series Sets",
-                             tags$form(
-                               textInput("set_name", "Give a set name", "")
-                               , br()
-                               , actionButton("button2", "Store the time series set")
-                             ),
-                             textOutput("store_set") 
+                             tags$h2("Load a Time Series Set"),
+                             fluidRow(
+                               tags$form(
+                                 textInput("set_name_load", "Give a set name", "")
+                                 , br()
+                                 , actionButton("button_load_ts_set", "Search timeseriesdb")
+                               )
+                             )      
                     ),
                     header = 
                       tags$style(HTML("
@@ -176,6 +186,26 @@ exploreDb <- function(con){
         }
 
         otext
+      })
+      
+      set_keys <- reactive({
+        input$button_load_ts_set
+        set <- loadTsSet(con, isolate(input$set_name_load))
+        kvp <- unlist(strsplit(set$key_set[1], ","))
+        lapply(kvp, )
+      })
+      
+      
+      output$load_set <- renderUI({
+        
+        input$button_load_ts_set
+        
+        set <- loadTsSet(con, isolate(input$set_name_load))
+        
+#         selectInput('in5', paste0('Select keys (',
+#                                   length(isolate(keys())),' hits)'),
+#                     names(isolate(keys())),
+#                     multiple = T, selectize=FALSE)  
       })
       
       
