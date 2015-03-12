@@ -4,12 +4,14 @@
 \alias{exportTsList}
 \title{Export A List of Time Series to CSV}
 \usage{
-exportTsList(tl, fname = NULL)
+exportTsList(tl, fname = NULL, cast = T)
 }
 \arguments{
 \item{tl}{list of time series}
 
 \item{fname}{character file name. If set to NULL a standard file name chunk + Sys.Date is used.}
+
+\item{cast}{logical. Should the resulting data.frame be cast to wide format? Defaults to TRUE}
 }
 \description{
 Export a List of time series to semi-colon separated csv file. Typically multiple time series are exported as long format (melted format) files.
