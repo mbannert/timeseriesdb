@@ -16,15 +16,12 @@ exploreDb <- function(con){
   shinyApp(
     # UI PART FOR SHINY APP -----------------------------------------------
     ui = navbarPage("timeseriesdb Data Explorer",
-                    tabPanel("Build Query",
-                             tags$h2("Step 1: Search by Key"),
-                             uiOutput("search_type"),
-                             tags$form(
-                               textInput("key", "search for Key", "")
-                               , br()
-                               , actionButton("button1", "Search timeseriesdb")
-                             ),
-                             textOutput("hits")     
+                    tabPanel("Query Setup",
+                             tags$h2("Create Query"),
+                             selectInput("query_type","Select Query Type",
+                                         c("Key Based Query" = "key",
+                                           "Load Pre-Defined Set" = "set")),
+                             uiOutput("search_type")
                     ),
                     tabPanel("Plot and Export",
                              plotOutput("plot"),
@@ -117,23 +114,42 @@ exploreDb <- function(con){
                                   length(isolate(keys())),' hits)'),
                     names(isolate(keys())),
                     multiple = T, selectize=FALSE)  
-        
-        
-        
       })
       
       output$search_type <- renderUI({
-        md_keys <- dbGetQuery(con,"SELECT DISTINCT k FROM 
+        
+          md_keys <- dbGetQuery(con,"SELECT DISTINCT k FROM 
                    (SELECT skeys(meta_data) as k 
-                   FROM meta_data_unlocalized) as dt;")$k
-        
-        names(md_keys) <- md_keys
-        st_keys <- c(c("Main ts_key" = "ts_key"),md_keys)
-        
-        radioButtons("search_type", "Search Type",
-                     st_keys)
-        
-        
+                                FROM meta_data_unlocalized) as dt;")$k
+          
+          names(md_keys) <- md_keys
+          st_keys <- c(c("Main ts_key" = "ts_key"),md_keys)
+          
+          sets <- listTsSets(con)
+          
+          
+          html1 <- column(6,
+                   radioButtons("search_type", paste(input$query_type),
+                                st_keys),
+                   tags$form(
+                     textInput("key", "search for Key", "")
+                     , br()
+                     , actionButton("button1", "Search timeseriesdb")
+                   ),
+                   textOutput("hits")
+                   )    
+         
+          html2 <- column(6,
+                          selectInput('ui_set_list',
+                                      "Select a Set of Time Series",
+                                      sets,
+                                      multiple = T, selectize=FALSE),
+                          actionButton("get_series", "Get time series from set")
+                          )
+          
+                 
+          switch(input$query_type, key = html1, set = html2)       
+                 
       })
       
       output$hits <- renderText({
@@ -180,7 +196,7 @@ exploreDb <- function(con){
         })
         
         if(length(set_list) > 0 && isolate(input$set_name) != "") {
-           storeTsSet(con, isolate(input$set_name), set_list, 'gbucur')
+           storeTsSet(con, isolate(input$set_name), set_list)
        
            otext <- paste('You have stored the set ', isolate(input$set_name), '!!!')
         }
