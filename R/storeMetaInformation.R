@@ -40,7 +40,7 @@ storeMetaInformation <- function(series,
     }
     } else {
       hstore <- createHstore(mi,fct = T)
-      if(tbl != 'meta_data_unlocalized') warning('Locale is set to NULL and tbl is not set to meta_data_unlocalized.')
+      if(tbl != paste(schema,'meta_data_unlocalized',sep=".")) warning('Locale is set to NULL and tbl is not set to meta_data_unlocalized.')
       if(overwrite){
         sql_query <- sprintf("UPDATE %s SET meta_data = %s WHERE ts_key = '%s'",
                              tbl,hstore,series)

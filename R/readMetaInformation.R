@@ -36,10 +36,13 @@ readMetaInformation <- function(series,
     names(res_list) <- res$key
         
     # returns an environment of class meta_env
-    addMetaInformation(series,res_list,overwrite = overwrite)    
+    addMetaInformation(series,res_list,
+                       overwrite_objects =  overwrite_objects,
+                       overwrite_elements = overwrite_elements,
+                       meta_env = meta_env)    
   } else {
     # sanity check
-    if(tbl != 'meta_data_unlocalized') warning('DB table is not set to unlocalized, though locale is NULL!')
+    if(tbl != paste(schema,'meta_data_unlocalized',sep=".")) warning('DB table is not set to unlocalized, though locale is NULL!')
     sql_statement <- sprintf("SELECT
                              md_generated_by,
                              md_resource_last_update,

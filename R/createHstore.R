@@ -54,16 +54,28 @@ createHstore.list <- function(x,...){
   
   if(is.null(names(x))) stop('Only named lists are accepted.')
   
-  if(dot_args$fct){
-    paste(sprintf("hstore('%s','%s')",
-                  names(x),
-                  as.character(unlist(x))),
-          collapse="||")
+  # the => operator is deprecated in 
+  # Postgres so if you want to use the new version function
+  # based version use fct = T
+  # the operator will be kept alive as long as postgres does 
+  # the same 
+  deprecated_hstore_operator <- paste(sprintf('"%s"=>"%s"',
+                                              names(x),
+                                              as.character(unlist(x))),
+                                      collapse=",")
+  
+  if(exists("fct",dot_args)){
+    if(dot_args$fct){
+      paste(sprintf("hstore('%s','%s')",
+                    names(x),
+                    as.character(unlist(x))),
+            collapse="||")  
+    } else{
+      deprecated_hstore_operator
+    }
+    
   } else {
-    paste(sprintf('"%s"=>"%s"',
-                  names(x),
-                  as.character(unlist(x))),
-          collapse=",")
+    deprecated_hstore_operator
   }
   
 }
