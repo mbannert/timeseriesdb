@@ -23,6 +23,7 @@ CREATE TABLE timeseries_sets (setname varchar,
                               tstamp timestamptz,
                               key_set hstore,
                               set_description varchar,
+                              active bool,
                               primary key(setname, username)              
                             );
 
