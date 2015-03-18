@@ -24,38 +24,42 @@ exploreDb <- function(con){
                              uiOutput("search_type")
                     ),
                     tabPanel("Plot and Export",
-                             plotOutput("plot"),
                              fluidRow(
-                               column(2,radioButtons("legend", "Use legend?",
-                                                     c("Yes" = "yes",
-                                                       "No" = "no"))),
-                               column(6,uiOutput("choices")),
-                               column(4,tags$h2("Export"),
-                                      radioButtons("wide", "Use wide format?",
-                                                   c("Yes" = "yes",
-                                                     "No" = "no")),
-                                      downloadButton('download', 'Download')
-                               )
-                             ),
-                             fluidRow(
-                               tags$form(
-                                 textInput("set_name", "Give a set name", "")
+                               column(6,tags$h2("Variable Selection"),
+                                      uiOutput("choices")),
+                               column(4,tags$h2("Store As Set"),
+                                      tags$form(
+                                 textInput("set_name", "Name", "")
                                  , br()
                                  , actionButton("button2", "Store the time series set")
                                ),
                                textOutput("store_set") 
+                                      ),
+                               column(2,tags$h2("Export"),
+                                      radioButtons("wide", "Use wide format?",
+                                                   c("Yes" = "yes",
+                                                     "No" = "no")),
+                                      downloadButton('download', 'Download'))
+                               
+                             ),
+                             fluidRow(
+                               column(10,plotOutput("plot")),
+                               column(2,uiOutput("legend_control"))
                              )
                     ),
-                    tabPanel("Time Series Sets",
-                             tags$h2("Load a Time Series Set"),
-                             fluidRow(
-                               tags$form(
-                                 textInput("set_name_load", "Give a set name", "")
-                                 , br()
-                                 , actionButton("button_load_ts_set", "Search timeseriesdb")
-                               )
-                             )      
-                    ),
+                    
+                    # currently not needed, but will be used to share and delete sets
+                    # in future versions
+#                     tabPanel("Time Series Sets",
+#                              tags$h2("Load a Time Series Set"),
+#                              fluidRow(
+#                                tags$form(
+#                                  textInput("set_name_load", "Give a set name", "")
+#                                  , br()
+#                                  , actionButton("button_load_ts_set", "Search timeseriesdb")
+#                                )
+#                              )      
+#                     ),
                     header = 
                       tags$style(HTML("
                           @import url('//fonts.googleapis.com/css?family=Lato|Cabin:400,700');
@@ -73,7 +77,7 @@ exploreDb <- function(con){
                           }
                           
                           input[type='text']{
-                          width:400px !important;
+                          width:300px !important;
                           }
                           
                           
@@ -132,7 +136,7 @@ exploreDb <- function(con){
                    radioButtons("search_type", paste(input$query_type),
                                 st_keys),
                    tags$form(
-                     textInput("key", "search for Key", "")
+                     textInput("Key Type", "Search for Key", "")
                      , br()
                      , actionButton("button1", "Search timeseriesdb")
                    ),
@@ -223,6 +227,17 @@ exploreDb <- function(con){
 #                     names(isolate(keys())),
 #                     multiple = T, selectize=FALSE)  
       })
+      
+      
+      output$legend_control <- renderUI({
+        if(is.null(input$in5)) return(NULL)
+        column(2,radioButtons("legend", "Use legend?",
+                              c("Yes" = "yes",
+                                "No" = "no")))
+        
+        
+      })
+      
       
       
     },
