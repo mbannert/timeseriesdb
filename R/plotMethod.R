@@ -15,7 +15,7 @@
 plot.tslist <- function(x,...,use_legend = T,shiny_legend = F){
   stopifnot(is.list(x))
   if(!(length(x) > 1)){
-    return(plot(x[[1]]))
+    return(plot(x[[1]],lwd = 3,xlab="",ylab=""))
   } 
   
   # Get the min and max date from all the series ---------------
