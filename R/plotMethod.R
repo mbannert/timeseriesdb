@@ -60,7 +60,8 @@ plot.tslist <- function(x,...,use_legend = T,shiny_legend = F){
   plot(x[[1]],xlim = c(min_date_value,max_date_value),
        ylim = c(min_value_value,max_value_value),
        xlab = "",
-       ylab = "")
+       ylab = "",
+       lwd = 3)
   
   
   

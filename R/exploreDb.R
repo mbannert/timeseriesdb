@@ -136,7 +136,7 @@ exploreDb <- function(con){
                    radioButtons("search_type", paste(input$query_type),
                                 st_keys),
                    tags$form(
-                     textInput("Key Type", "Search for Key", "")
+                     textInput("key", "Search for Key", "")
                      , br()
                      , actionButton("button1", "Search timeseriesdb")
                    ),
