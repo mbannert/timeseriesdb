@@ -26,7 +26,8 @@ exploreDb <- function(con){
                     tabPanel("Plot and Export",
                              fluidRow(
                                column(6,tags$h2("Variable Selection"),
-                                      uiOutput("choices")),
+                                      uiOutput("choices"),
+                                      uiOutput("choices2")),
                                column(4,tags$h2("Store As Set"),
                                       tags$form(
                                  textInput("set_name", "Name", "")
@@ -37,8 +38,8 @@ exploreDb <- function(con){
                                       ),
                                column(2,tags$h2("Export"),
                                       radioButtons("wide", "Use wide format?",
-                                                   c("Yes" = "yes",
-                                                     "No" = "no")),
+                                                   c("Yes" = "T",
+                                                     "No" = "F")),
                                       downloadButton('download', 'Download'))
                                
                              ),
@@ -114,11 +115,30 @@ exploreDb <- function(con){
       output$choices <- renderUI({
         
         input$button1
-        selectInput('in5', paste0('Select keys (',
-                                  length(isolate(keys())),' hits)'),
-                    names(isolate(keys())),
-                    multiple = T, selectize=FALSE)  
+        if(length(keys()) != 0 & input$query_type == "key"){
+          selectInput('in5', paste0('Select keys (',
+                                    length(isolate(keys())),' hits)'),
+                      names(isolate(keys())),
+                      multiple = T, selectize=FALSE)    
+        } else {
+          NULL
+        }
+        
       })
+      
+      output$choices2 <- renderUI({
+        
+        input$get_series
+        if(length(isolate(input$ui_set_list)) != 0 & input$query_type == "set"){
+          selectInput('testin', "testlabel",
+                      c("a","b","d"),
+                      multiple = T, selectize=FALSE)    
+        } else {
+          NULL
+        }
+        
+      })
+      
       
       output$search_type <- renderUI({
         
@@ -180,7 +200,7 @@ exploreDb <- function(con){
         content = function(file){
           # write.table(isolate(keys())[[1]],file)
           # don't forget to change separator
-          exportTsList(isolate(keys())[input$in5],fname = file) 
+          exportTsList(isolate(keys())[input$in5],fname = file,cast = input$wide) 
         }
         
         
@@ -208,12 +228,7 @@ exploreDb <- function(con){
         otext
       })
       
-      set_keys <- reactive({
-        input$button_load_ts_set
-        set <- loadTsSet(con, isolate(input$set_name_load))
-        kvp <- unlist(strsplit(set$key_set[1], ","))
-        lapply(kvp, )
-      })
+      
       
       
       output$load_set <- renderUI({

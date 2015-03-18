@@ -80,13 +80,19 @@ deactivateTsSet <- function(con,set_name,
 #' @rdname storeTsSet
 storeTsSet <- function(con, set_name, set_keys,
                        user_name = Sys.info()['user'],
-                       description = '',
+                       description = '', active = TRUE,
                        tbl = 'timeseries_sets') {
   vector_values <-c(set_name,
                     user_name, as.character(Sys.time()),
-                    createHstore(set_keys, fct = TRUE), description)
+                    createHstore(set_keys, fct = TRUE), description, active)
   row_values <- paste(lapply(vector_values,
-                             function(str) sprintf("'%s'", str)), collapse = ",")
+                             function(str) {
+                               ifelse(grepl("hstore",str),
+                                      sprintf("%s", str),
+                                      sprintf("'%s'", str)
+                                      )
+                               }),
+                      collapse = ",")
   
   sql_query <- sprintf(
     "INSERT INTO %s VALUES (%s)",
