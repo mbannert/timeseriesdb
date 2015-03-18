@@ -92,8 +92,6 @@ exploreDb <- function(con){
       
       keys <- reactive({
         if(input$key != ""){
-          
-          
           if(input$search_type == "ts_key"){
             keys <- con %k% input$key # double check this
             keys  
@@ -102,9 +100,6 @@ exploreDb <- function(con){
             keys <- con %m% input$key
             keys
           }
-          
-          
-          
         } else {
           NULL
         }
@@ -129,9 +124,10 @@ exploreDb <- function(con){
       output$choices2 <- renderUI({
         
         input$get_series
-        if(length(isolate(input$ui_set_list)) != 0 & input$query_type == "set"){
-          selectInput('testin', "testlabel",
-                      c("a","b","d"),
+        if(length(isolate(input$ui_set)) != 0 & input$query_type == "set"){
+          ts_keys <- loadTsSet(con,input$ui_set)$keys
+          selectInput('sets', paste0("Time Series in ",input$ui_set),
+                      ts_keys,
                       multiple = T, selectize=FALSE)    
         } else {
           NULL
@@ -164,11 +160,10 @@ exploreDb <- function(con){
                    )    
          
           html2 <- column(6,
-                          selectInput('ui_set_list',
+                          selectInput('ui_set',
                                       "Select a Set of Time Series",
                                       sets,
-                                      multiple = T, selectize=FALSE),
-                          actionButton("get_series", "Get time series from set")
+                                      multiple = T, selectize=FALSE)
                           )
           
                  
@@ -222,7 +217,7 @@ exploreDb <- function(con){
         if(length(set_list) > 0 && isolate(input$set_name) != "") {
            storeTsSet(con, isolate(input$set_name), set_list)
        
-           otext <- paste('You have stored the set ', isolate(input$set_name), '!!!')
+           otext <- paste('You have stored the set ', isolate(input$set_name), '.')
         }
 
         otext
