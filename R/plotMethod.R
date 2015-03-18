@@ -12,10 +12,10 @@
 #' @param shiny_legend logical, is plot used in context of a shiny app? Defaults to FALSE.
 #' @export plot.tslist
 #' @rdname plotMethods
-plot.tslist <- function(x,...,use_legend = T,shiny_legend = F){
+plot.tslist <- function(x,...,use_legend = T,shiny_legend = F,lwd = 3){
   stopifnot(is.list(x))
   if(!(length(x) > 1)){
-    return(plot(x[[1]],lwd = 3,xlab="",ylab=""))
+    return(plot(x[[1]],lwd = lwd,xlab="",ylab=""))
   } 
   
   # Get the min and max date from all the series ---------------
@@ -61,7 +61,7 @@ plot.tslist <- function(x,...,use_legend = T,shiny_legend = F){
        ylim = c(min_value_value,max_value_value),
        xlab = "",
        ylab = "",
-       lwd = 3)
+       lwd = lwd)
   
   
   
