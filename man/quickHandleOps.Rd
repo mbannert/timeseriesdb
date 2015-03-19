@@ -7,7 +7,7 @@
 \usage{
 conObj \%k\% regexp
 
-createMetaDataHandle(key)
+createMetaDataHandle(key, schema = "timeseries")
 }
 \arguments{
 \item{conObj}{PostgreSQL Connection object.}

@@ -5,7 +5,7 @@
 \title{Store a New Set of Time Series}
 \usage{
 storeTsSet(con, set_name, set_keys, user_name = Sys.info()["user"],
-  description = "", tbl = "timeseries_sets")
+  description = "", active = TRUE, tbl = "timeseries_sets")
 }
 \arguments{
 \item{con}{PostgreSQL connection object}

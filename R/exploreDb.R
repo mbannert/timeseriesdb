@@ -7,257 +7,172 @@
 #' 
 #' @param con PostgreSQL Connection object
 #' @export 
-exploreDb <- function(con){
+exploreDb <- function(con, browser = F){
   library(shiny)
   
   if(!dbIsValid(con)) stop("Database connection is not valid. Can't start exploring data.")
   
-  
-  shinyApp(
-    # UI PART FOR SHINY APP -----------------------------------------------
-    ui = navbarPage("timeseriesdb Data Explorer",
-                    tabPanel("Query Setup",
-                             tags$h2("Create Query"),
-                             selectInput("query_type","Select Query Type",
-                                         c("Key Based Query" = "key",
-                                           "Load Pre-Defined Set" = "set")),
-                             uiOutput("search_type")
-                    ),
-                    tabPanel("Plot and Export",
-                             fluidRow(
-                               column(6,tags$h2("Variable Selection"),
-                                      uiOutput("choices"),
-                                      uiOutput("choices2")),
-                               column(4,tags$h2("Store As Set"),
-                                      tags$form(
-                                 textInput("set_name", "Name", "")
-                                 , br()
-                                 , actionButton("button2", "Store the time series set")
-                               ),
-                               textOutput("store_set") 
+  shinyApp(ui = navbarPage("timeseriesdb Data Explorer",
+                           tabPanel("Build Query",
+                                    fluidRow(
+                                      selectInput("query_type","Select Query Type",
+                                                  c("Key Based Query" = "key",
+                                                    "Load Pre-Defined Set" = "set")),
+                                      uiOutput("query_builder")  
+                                    )
+                           ),
+                           tabPanel("Plot and Export",
+                                    fluidRow(
+                                      column(6,tags$h2("Variable Selection"),
+                                             uiOutput("choices")
                                       ),
-                               column(2,tags$h2("Export"),
-                                      radioButtons("wide", "Use wide format?",
-                                                   c("Yes" = "T",
-                                                     "No" = "F")),
-                                      downloadButton('download', 'Download'))
-                               
-                             ),
-                             fluidRow(
-                               column(10,plotOutput("plot")),
-                               column(2,uiOutput("legend_control"))
-                             )
-                    ),
-                    
-                    # currently not needed, but will be used to share and delete sets
-                    # in future versions
-#                     tabPanel("Time Series Sets",
-#                              tags$h2("Load a Time Series Set"),
-#                              fluidRow(
-#                                tags$form(
-#                                  textInput("set_name_load", "Give a set name", "")
-#                                  , br()
-#                                  , actionButton("button_load_ts_set", "Search timeseriesdb")
-#                                )
-#                              )      
-#                     ),
-                    header = 
-                      tags$style(HTML("
-                          @import url('//fonts.googleapis.com/css?family=Lato|Cabin:400,700');
-                          
-                          h2 {
-                          font-family: 'Lato';
-                          font-weight: 500;
-                          line-height: 1.1;
-                          color: #A2C3C9;
-                          }
-                          
-                          select {
-                          width:400px !important;
-                          height:150px !important;
-                          }
-                          
-                          input[type='text']{
-                          width:300px !important;
-                          }
-                          
-                          
-                          
-                          "))
-    ),
+                                      column(4,
+                                             tags$h2("Store As Set"),
+                                             tags$form(
+                                               textInput("set_name", "Name", "")
+                                               , br()
+                                               , actionButton("button2", "Store the time series set"),
+                                               textOutput("store_set") 
+                                             )
+                                             
+                                      ),
+                                      column(2,tags$h2("Export"),
+                                             radioButtons("wide", "Use wide format?",
+                                                          c("Yes" = "T",
+                                                            "No" = "F")),
+                                             downloadButton('download', 'Download'))
+                                    ),
+                                    fluidRow(
+                                      column(10,plotOutput("plot")),
+                                      column(2,uiOutput("legend_control"))
+                                    )
+                           ),
+                           header = 
+                             tags$style(HTML("
+                                           @import url('//fonts.googleapis.com/css?family=Lato|Cabin:400,700');
+                                           
+                                           h2 {
+                                           font-family: 'Lato';
+                                           font-weight: 500;
+                                           line-height: 1.1;
+                                           color: #A2C3C9;
+                                           }
+                                           
+                                           select {
+                                           width:400px !important;
+                                           height:150px !important;
+                                           }
+                                           
+                                           input[type='text']{
+                                           width:300px !important;
+                                           }
+                                           
+                                           
+                                           
+                                           "))
+  ),
+  server = function(input,output){
+    # reactive stuff ----------------
+    query_type <- reactive({
+      out <- input$query_type
+      if(out == "key"){
+        class(out) <- append("key",class(out))
+      } else {
+        class(out) <- append("set",class(out))
+      }
+      out
+    })
     
-    # SERVER PART FOR SHINY APP -----------------------------------------------    
-    server = function(input, output) {
-      library(timeseriesdb)
+    
+    keys <- reactive({
+      searchKeys(query_type(),input = input)
+    })
+    
+    
+    
+    
+    
+    
+    # outputs ----------------
+    # flexible query builder 
+    output$query_builder <- renderUI({
+      createUI(query_type())        
+    })
+    
+    # display the hits 
+    output$hits <- renderText({
+      input$button1
+      paste0(length(isolate(keys())),
+             " series found. Switch to the next tab to proceed.")
+    })
+    
+    
+    # flexible choices boxes
+    output$choices <- renderUI({
+      createChoices(query_type(),input = input,
+                    keys = keys())
       
-      keys <- reactive({
-        if(input$key != ""){
-          if(input$search_type == "ts_key"){
-            keys <- con %k% input$key # double check this
-            keys  
-          } else{
-            "%m%" <- createMetaDataHandle(input$search_type)
-            keys <- con %m% input$key
-            keys
-          }
-        } else {
-          NULL
-        }
+    })
+    
+    # store set 
+    output$store_set <- renderText({
+      
+      input$button2
+      
+      otext <- ""
+      
+      set_list <- isolate({
+        li <- as.list(rep(input$search_type, length(input$in5)))
+        names(li) <- input$in5
+        li
       })
       
-      
-      # dynamically created UI
-      output$choices <- renderUI({
+      if(length(set_list) > 0 && isolate(input$set_name) != "") {
+        storeTsSet(con, isolate(input$set_name), set_list)
         
-        input$button1
-        if(length(keys()) != 0 & input$query_type == "key"){
-          selectInput('in5', paste0('Select keys (',
-                                    length(isolate(keys())),' hits)'),
-                      names(isolate(keys())),
-                      multiple = T, selectize=FALSE)    
-        } else {
-          NULL
-        }
-        
-      })
+        otext <- paste('You have stored the set ', isolate(input$set_name), '.')
+      }
       
-      output$choices2 <- renderUI({
-        
-        input$get_series
-        if(length(isolate(input$ui_set)) != 0 & input$query_type == "set"){
-          ts_keys <- loadTsSet(con,input$ui_set)$keys
-          selectInput('sets', paste0("Time Series in ",input$ui_set),
-                      ts_keys,
-                      multiple = T, selectize=FALSE)    
-        } else {
-          NULL
-        }
-        
-      })
+      otext
+    })
+    
+    
+    
+    
+    # download handler for export
+    output$download <- downloadHandler(
+      filename = function(){paste0("time_series_export_",
+                                   gsub(" |:|-","_",Sys.time()),".csv")}, #input$fname,
+      content = function(file){
+        # write.table(isolate(keys())[[1]],file)
+        # don't forget to change separator
+        exportTsList(isolate(keys())[input$in5],fname = file,cast = input$wide) 
+      }
       
       
-      output$search_type <- renderUI({
-        
-          md_keys <- dbGetQuery(con,"SELECT DISTINCT k FROM 
-                   (SELECT skeys(meta_data) as k 
-                                FROM meta_data_unlocalized) as dt;")$k
-          
-          names(md_keys) <- md_keys
-          st_keys <- c(c("Main ts_key" = "ts_key"),md_keys)
-          
-          sets <- listTsSets(con)
-          
-          
-          html1 <- column(6,
-                   radioButtons("search_type", paste(input$query_type),
-                                st_keys),
-                   tags$form(
-                     textInput("key", "Search for Key", "")
-                     , br()
-                     , actionButton("button1", "Search timeseriesdb")
-                   ),
-                   textOutput("hits")
-                   )    
-         
-          html2 <- column(6,
-                          selectInput('ui_set',
-                                      "Select a Set of Time Series",
-                                      sets,
-                                      multiple = T, selectize=FALSE)
-                          )
-          
-                 
-          switch(input$query_type, key = html1, set = html2)       
-                 
-      })
+    )
+    
+    # plot that reactive so changes in selection
+    output$plot <- renderPlot({
+      if(is.null(input$in5)) return(NULL)
       
-      output$hits <- renderText({
-        input$button1
-        paste0(length(isolate(keys()))," hits. Switch to the plot tab to select time series immediately from search results.")
-      })
+      li <- isolate(keys())
+      li <- li[input$in5]
+      class(li) <- append(class(li),"tslist")
+      plot(li,use_legend = ifelse(input$legend == "yes",T,F),
+           shiny_legend = T)  
+    })
+    
+    # switch legend on/off 
+    # legends are not suitable when 
+    # there are to many series selected
+    output$legend_control <- renderUI({
+      if(is.null(input$in5)) return(NULL)
+      column(2,radioButtons("legend", "Use legend?",
+                            c("Yes" = "yes",
+                              "No" = "no")))
       
       
-      output$plot <- renderPlot({
-        # li <- readTimeSeries(input$key,con)
-        if(is.null(input$in5)) return(NULL)
-        
-        li <- isolate(keys())
-        li <- li[input$in5]
-        class(li) <- append(class(li),"tslist")
-        plot(li,use_legend = ifelse(input$legend == "yes",T,F),
-             shiny_legend = T)    
-        
-      })
-      
-      # Download Handler ------------------------------------
-      output$download <- downloadHandler(
-        filename = function(){paste0("test.csv")}, #input$fname,
-        content = function(file){
-          # write.table(isolate(keys())[[1]],file)
-          # don't forget to change separator
-          exportTsList(isolate(keys())[input$in5],fname = file,cast = input$wide) 
-        }
-        
-        
-      )
-      
-      
-      output$store_set <- renderText({
-        
-        input$button2
-        
-        otext <- ""
-        
-        set_list <- isolate({
-          li <- as.list(rep(input$search_type, length(input$in5)))
-          names(li) <- input$in5
-          li
-        })
-        
-        if(length(set_list) > 0 && isolate(input$set_name) != "") {
-           storeTsSet(con, isolate(input$set_name), set_list)
-       
-           otext <- paste('You have stored the set ', isolate(input$set_name), '.')
-        }
-
-        otext
-      })
-      
-      
-      
-      
-      output$load_set <- renderUI({
-        
-        input$button_load_ts_set
-        
-        set <- loadTsSet(con, isolate(input$set_name_load))
-        
-#         selectInput('in5', paste0('Select keys (',
-#                                   length(isolate(keys())),' hits)'),
-#                     names(isolate(keys())),
-#                     multiple = T, selectize=FALSE)  
-      })
-      
-      
-      output$legend_control <- renderUI({
-        if(is.null(input$in5)) return(NULL)
-        column(2,radioButtons("legend", "Use legend?",
-                              c("Yes" = "yes",
-                                "No" = "no")))
-        
-        
-      })
-      
-      
-      
-    },
-    options=list(launch.browser = T)
-  )
-  
-  
+    })
+  }, options=list(launch.browser = browser))
 }
-
-
-
-
-
