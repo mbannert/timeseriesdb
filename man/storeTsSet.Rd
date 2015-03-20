@@ -16,6 +16,10 @@ storeTsSet(con, set_name, set_keys, user_name = Sys.info()["user"],
 
 \item{user_name}{character name of the user. Defaults to system user.}
 
+\item{active}{logical should a set be active? Defaults to TRUE. If set to FALSE
+a set is not seen directly in the GUI directly after being stored and needs to be
+activated first.}
+
 \item{tbl}{character name of set tqble. Defaults to timeseries\_sets.}
 }
 \description{

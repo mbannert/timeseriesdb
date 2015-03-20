@@ -65,6 +65,29 @@ deactivateTsSet <- function(con,set_name,
 }
 
 
+
+#' Activate a Set of Time Series
+#' 
+#' Activate a set of time series to get in the user's sight. 
+#' Deactivated sets are not deleted though.
+#'
+#' @param con PostgreSQL connection object
+#' @param user_name character name of the user. Defaults to system user. 
+#' @param tbl character name of set tqble. Defaults to timeseries\_sets.
+#' @author Matthias Bannert, Ioan Gabriel Bucur
+#' @export
+#' @rdname activateTsSet
+deactivateTsSet <- function(con,set_name,
+                            user_name = Sys.info()['user'],
+                            tbl = "timeseries_sets"){
+  sql_query <- sprintf("UPDATE %s SET active = TRUE
+                       WHERE username = '%s' AND setname = '%s'",
+                       tbl,user_name,set_name)
+  dbGetQuery(con,sql_query)
+}
+
+
+
 #' Store a New Set of Time Series
 #' 
 #' Store a new set of Time Series to the database. Users can select the time series keys
@@ -74,6 +97,9 @@ deactivateTsSet <- function(con,set_name,
 #' @param set_name character name of a set time series in the database.
 #' @param set_keys list of keys contained in the set and their type of key. 
 #' @param user_name character name of the user. Defaults to system user. 
+#' @param active logical should a set be active? Defaults to TRUE. If set to FALSE 
+#' a set is not seen directly in the GUI directly after being stored and needs to be
+#' activated first. 
 #' @param tbl character name of set tqble. Defaults to timeseries\_sets.
 #' @author Ioan Gabriel Bucur, Matthias Bannert
 #' @export
