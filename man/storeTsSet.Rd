@@ -23,6 +23,6 @@ Store a new set of Time Series to the database. Users can select the time series
 that should be grouped inside a set.
 }
 \author{
-Ioan Gabriel Bucur
+Ioan Gabriel Bucur, Matthias Bannert
 }
 

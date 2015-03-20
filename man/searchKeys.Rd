@@ -3,12 +3,15 @@
 \name{searchKeys}
 \alias{searchKeys}
 \alias{searchKeys.key}
+\alias{searchKeys.md}
 \alias{searchKeys.set}
 \title{Search Keys From Pre-Defined Or Key Based Queries}
 \usage{
 searchKeys(x, input = NULL, ...)
 
 \method{searchKeys}{key}(x, input = NULL, ...)
+
+\method{searchKeys}{md}(x, input = NULL, ...)
 
 \method{searchKeys}{set}(x, input = NULL, ....)
 }

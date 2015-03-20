@@ -4,7 +4,7 @@
 \alias{exploreDb}
 \title{Start a GUI to Explore Data}
 \usage{
-exploreDb(con)
+exploreDb(con, browser = F)
 }
 \arguments{
 \item{con}{PostgreSQL Connection object}

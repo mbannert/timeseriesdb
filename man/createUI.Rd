@@ -3,6 +3,7 @@
 \name{createUI}
 \alias{createUI}
 \alias{createUI.key}
+\alias{createUI.md}
 \alias{createUI.set}
 \title{Polymorphic Helpers for the Shiny Based GUI}
 \usage{
@@ -11,6 +12,8 @@ createUI(x, ...)
 \method{createUI}{key}(x, ...)
 
 \method{createUI}{set}(x, ...)
+
+\method{createUI}{md}(x, ...)
 }
 \description{
 Though R is not strictly OO it is sometimes useful to add some object orientation.

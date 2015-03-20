@@ -75,7 +75,7 @@ deactivateTsSet <- function(con,set_name,
 #' @param set_keys list of keys contained in the set and their type of key. 
 #' @param user_name character name of the user. Defaults to system user. 
 #' @param tbl character name of set tqble. Defaults to timeseries\_sets.
-#' @author Ioan Gabriel Bucur
+#' @author Ioan Gabriel Bucur, Matthias Bannert
 #' @export
 #' @rdname storeTsSet
 storeTsSet <- function(con, set_name, set_keys,

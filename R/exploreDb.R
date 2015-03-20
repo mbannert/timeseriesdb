@@ -17,7 +17,8 @@ exploreDb <- function(con, browser = F){
                                     fluidRow(
                                       selectInput("query_type","Select Query Type",
                                                   c("Key Based Query" = "key",
-                                                    "Load Pre-Defined Set" = "set")),
+                                                    "Load Pre-Defined Set" = "set",
+                                                    "Search Localized Meta Information" = "md")),
                                       uiOutput("query_builder")  
                                     )
                            ),
@@ -66,7 +67,10 @@ exploreDb <- function(con, browser = F){
                                            input[type='text']{
                                            width:300px !important;
                                            }
-                                           
+
+                                           .row{
+                                            margin-left:15px !important;
+                                           }                                           
                                            
                                            
                                            "))
@@ -77,8 +81,10 @@ exploreDb <- function(con, browser = F){
       out <- input$query_type
       if(out == "key"){
         class(out) <- append("key",class(out))
-      } else {
+      } else if(out == "set") {
         class(out) <- append("set",class(out))
+      } else {
+        class(out) <- append(c("md","key"),class(out))
       }
       out
     })

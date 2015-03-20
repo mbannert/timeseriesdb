@@ -26,27 +26,50 @@
 #' operator style to get the most out of it.
 #' 
 #' @param key character name of the key inside the hstore. 
+#' @param keep_keys logical should primary time series keys be kept? Defaults to FALSE. If set to TRUE
+#' dynamically created meta information handlers always use ts_key as key type no matter the key type used for the query.
+#' This comes handy when storing sets of time series. 
+#' @param tbl character name of the table that holds meta data. Defaults to meta_data_unlocalized. 
+#' Also supports meta_data_localized
+#' @param schema character database schema name. Defaults to timeseries.
 #' @export
 #' @rdname quickHandleOps
-createMetaDataHandle <- function(key,schema = "timeseries"){
+createMetaDataHandle <- function(key,keep_keys = FALSE, tbl = "meta_data_unlocalized",schema = "timeseries"){
   
   sql_query <- sprintf("SELECT ts_key,
                         meta_data->'%s' AS %s
-                        FROM %s.meta_data_unlocalized WHERE meta_data->'%s' ~ '",
-                        key,key,schema,key)
+                        FROM %s.%s WHERE meta_data->'%s' ~ '",
+                        key,key,schema,tbl,key)
   
   sql_query <- paste0(sql_query,"%s'")
-
-  fct <- sprintf("
+  
+  # This is bit redundant but much easier to read and understand
+  # in the context of creating a function dynamically and 
+  # passing unevaluated expression around as strings.
+  if(keep_keys) {
+    fct <- sprintf("
             function(conObj,regexp){
-            sql_query <- sprintf(\"%s\",regexp)
-            
-            key_df <- dbGetQuery(conObj,sql_query)
-            
-            ts_list <- readTimeSeries(key_df$ts_key,conObj)
-            names(ts_list) <- key_df[match(names(ts_list), key_df$ts_key),'%s']
-            return(ts_list)
+                   sql_query <- sprintf(\"%s\",regexp)
+                   
+                   key_df <- dbGetQuery(conObj,sql_query)
+                   
+                   ts_list <- readTimeSeries(key_df$ts_key,conObj)
+                   return(ts_list)
   }",sql_query,key)
+  } else {
+    fct <- sprintf("
+            function(conObj,regexp){
+                   sql_query <- sprintf(\"%s\",regexp)
+                   
+                   key_df <- dbGetQuery(conObj,sql_query)
+                   
+                   ts_list <- readTimeSeries(key_df$ts_key,conObj)
+                   names(ts_list) <- key_df[match(names(ts_list), key_df$ts_key),'%s']
+                   return(ts_list)
+  }",sql_query,key)
+  }
+
+  
   
   eval(parse(text = fct))
 }  

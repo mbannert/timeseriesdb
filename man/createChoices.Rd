@@ -3,12 +3,15 @@
 \name{createChoices}
 \alias{createChoices}
 \alias{createChoices.key}
+\alias{createChoices.md}
 \alias{createChoices.set}
 \title{Create Choices Boxes Dynamically}
 \usage{
 createChoices(x, input = NULL, keys = NULL, ...)
 
 \method{createChoices}{key}(x, input = NULL, keys = NULL, ...)
+
+\method{createChoices}{md}(x, input = NULL, keys = NULL, ...)
 
 \method{createChoices}{set}(x, input = NULL, keys = NULL, ...)
 }

@@ -7,14 +7,24 @@
 \usage{
 conObj \%k\% regexp
 
-createMetaDataHandle(key, schema = "timeseries")
+createMetaDataHandle(key, keep_keys = FALSE, tbl = "meta_data_unlocalized",
+  schema = "timeseries")
 }
 \arguments{
 \item{conObj}{PostgreSQL Connection object.}
 
 \item{regexp}{character regular expression pattern.}
 
+\item{schema}{character database schema name. Defaults to timeseries.}
+
 \item{key}{character name of the key inside the hstore.}
+
+\item{keep_keys}{logical should primary time series keys be kept? Defaults to FALSE. If set to TRUE
+dynamically created meta information handlers always use ts_key as key type no matter the key type used for the query.
+This comes handy when storing sets of time series.}
+
+\item{tbl}{character name of the table that holds meta data. Defaults to meta_data_unlocalized.
+Also supports meta_data_localized}
 }
 \description{
 Quick handle operator to search the database by keys. All time series whose key fit

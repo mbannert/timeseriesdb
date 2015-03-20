@@ -44,6 +44,30 @@ createUI.set <- function(x,...){
   
 }
 
+#' @rdname createUI
+createUI.md <- function(x,...){
+  md_keys <- dbGetQuery(con,"SELECT DISTINCT k FROM 
+                        (SELECT skeys(meta_data) as k 
+                        FROM meta_data_localized) as dt;")$k
+  
+  names(md_keys) <- md_keys
+  st_keys <- md_keys
+  
+  column(6,
+         radioButtons("search_type", "Key Based Query",
+                      st_keys),
+         tags$form(
+           textInput("key", "Search for Key", "")
+           , br()
+           , actionButton("button1", "Search timeseriesdb")
+         ),
+         textOutput("hits")
+  )
+  
+  
+}
+
+
 
 
 
@@ -64,6 +88,26 @@ createChoices.key <- function(x,input = NULL,keys = NULL,...){
     NULL
   }
 }
+
+#' @rdname createChoices
+createChoices.md <- function(x,input = NULL,keys = NULL,...){
+#   class(x) <- append("key",class(x))
+#   createChoices(x,input = input, keys = NULL, list(...))
+#   input$button1
+#   if(length(keys) != 0){
+#     selectInput('in5', paste0('Select keys (',
+#                               length(isolate(keys)),' hits)'),
+#                 names(isolate(keys)),
+#                 multiple = T, selectize=FALSE)    
+#   } else {
+#     NULL
+#   }
+NextMethod()  
+  
+}
+
+
+
 
 
 #' @rdname createChoices
@@ -92,7 +136,7 @@ searchKeys.key <- function(x,input = NULL,...) {
       keys <- con %k% input$key # double check this
       keys  
     } else{
-      "%m%" <- createMetaDataHandle(input$search_type)
+      "%m%" <- createMetaDataHandle(input$search_type,keep_keys = T)
       keys <- con %m% input$key
       keys
     }
@@ -100,6 +144,20 @@ searchKeys.key <- function(x,input = NULL,...) {
     NULL
   }
 }
+
+#' @rdname searchKeys
+searchKeys.md <- function(x,input = NULL,...) {
+  if(input$key != ""){
+    "%m%" <- createMetaDataHandle(input$search_type,keep_keys = T,
+                                  tbl = "meta_data_localized")
+    keys <- con %m% input$key
+    keys
+  } else {
+    NULL
+  }
+}
+
+
 
 #' @rdname searchKeys
 searchKeys.set <- function(x,input = NULL,....){
