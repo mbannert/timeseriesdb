@@ -6,7 +6,7 @@
 \usage{
 createConObj(dbuser = Sys.info()["user"],
   dbname = Sys.getenv("TIMESERIESDB_NAME"),
-  dbhost = Sys.getenv("TIMESERIESDB_HOST"), passwd = NULL, dbport = 5432)
+  dbhost = Sys.getenv("TIMESERIESDB_HOST"), passwd, dbport = 5432)
 }
 \arguments{
 \item{dbuser}{character username. Defaults to reading username from Sys.info()}
@@ -15,10 +15,10 @@ createConObj(dbuser = Sys.info()["user"],
 
 \item{dbhost}{character host address, asssumes dbhost ist stored in TIMESERIESDB_HOST.}
 
-\item{dbport}{integer port number defaults to 5432 for postgres}
+\item{passwd}{character password is used. No defaults, best way to pass a password is to
+.rs.askForPassword to hide password entries when using R Studio.}
 
-\item{password}{character password is used. Defaults to NULL so R Studio's more
-secure .rs.askForPassword is used.}
+\item{dbport}{integer port number defaults to 5432 for postgres}
 }
 \description{
 Create a conection object while getting user information from the R session.

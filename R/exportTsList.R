@@ -5,6 +5,7 @@
 #' @param tl list of time series
 #' @param fname character file name. If set to NULL a standard file name chunk + Sys.Date is used.
 #' @param cast logical. Should the resulting data.frame be cast to wide format? Defaults to TRUE
+#' @importFrom reshape2 dcast 
 #' @export
 exportTsList <- function(tl,fname = NULL,cast = T){
   library(xts)

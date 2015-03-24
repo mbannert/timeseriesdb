@@ -12,8 +12,9 @@
 #' @param tbl character string denoting the name of the main time series table in the PostgreSQL database.
 #' @param md_unlocal character string denoting the name of the table that holds unlocalized meta information.
 #' @param lookup_env environment to look in for timeseries. Defaults to .GobalEnv.
-#' @param ovewrite logical should existing records (same primary key) be overwritten? Defaults to TRUE.
+#' @param overwrite logical should existing records (same primary key) be overwritten? Defaults to TRUE.
 #' @param schema SQL schema name. Defaults to timeseries. 
+#' @importFrom DBI dbGetQuery
 #' @export
 storeTimeSeries <- function(series,
                       con,
@@ -30,7 +31,7 @@ storeTimeSeries <- function(series,
   
   # avoid overwriting
   if(!overwrite){
-    db_keys <- dbGetQuery(con,sprintf("SELECT ts_key FROM %s",tbl))$ts_key
+    db_keys <- DBI::dbGetQuery(con,sprintf("SELECT ts_key FROM %s",tbl))$ts_key
     series <- series[!(series %in% db_keys)]
     li <- li[series]
   }
@@ -85,8 +86,8 @@ storeTimeSeries <- function(series,
                           md_unlocal,md_values) 
   
   # Send queries
-  main_ok <- dbGetQuery(con,sql_query)
-  md_ok <- dbGetQuery(con,sql_query_md)
+  main_ok <- DBI::dbGetQuery(con,sql_query)
+  md_ok <- DBI::dbGetQuery(con,sql_query_md)
   
   l <- length(series)
   

@@ -5,14 +5,18 @@
 \title{Load a Time Series Set}
 \usage{
 loadTsSet(con, set_name, user_name = Sys.info()["user"],
-  tbl = "timeseries_sets")
+  tbl = "timeseries_sets", schema = "timeseries")
 }
 \arguments{
 \item{con}{PostgreSQL connection object}
 
+\item{set_name}{character name of the set to be loaded.}
+
 \item{user_name}{character name of the user. Defaults to system user.}
 
 \item{tbl}{character name of set tqble. Defaults to timeseries\_sets.}
+
+\item{schema}{character name of the database schema. Defaults to timeseries.}
 }
 \description{
 Loads a Time Series Set.

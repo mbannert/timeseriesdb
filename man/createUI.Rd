@@ -7,13 +7,20 @@
 \alias{createUI.set}
 \title{Polymorphic Helpers for the Shiny Based GUI}
 \usage{
-createUI(x, ...)
+createUI(x, con, ...)
 
-\method{createUI}{key}(x, ...)
+\method{createUI}{key}(x, con, ...)
 
-\method{createUI}{set}(x, ...)
+\method{createUI}{set}(x, con, ...)
 
-\method{createUI}{md}(x, ...)
+\method{createUI}{md}(x, con, ...)
+}
+\arguments{
+\item{x}{character query type.}
+
+\item{con}{PostgreSQL Connection object.}
+
+\item{...}{additional arguments to be passed to the respective methods.}
 }
 \description{
 Though R is not strictly OO it is sometimes useful to add some object orientation.

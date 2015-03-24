@@ -21,9 +21,9 @@ storeTimeSeries(series, con, li = NULL, tbl = "timeseries_main",
 
 \item{lookup_env}{environment to look in for timeseries. Defaults to .GobalEnv.}
 
-\item{schema}{SQL schema name. Defaults to timeseries.}
+\item{overwrite}{logical should existing records (same primary key) be overwritten? Defaults to TRUE.}
 
-\item{ovewrite}{logical should existing records (same primary key) be overwritten? Defaults to TRUE.}
+\item{schema}{SQL schema name. Defaults to timeseries.}
 }
 \description{
 This function writes time series object into a relational PostgreSQL database make use

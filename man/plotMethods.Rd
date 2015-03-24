@@ -19,6 +19,8 @@ for the axes to plot all values and dates in contained in the list.}
 \item{use_legend}{logical. Should legend be used. Defaults to TRUE. Useful to switch of if so many time series are drawn that they are hard to distinguish anyway.}
 
 \item{shiny_legend}{logical, is plot used in context of a shiny app? Defaults to FALSE.}
+
+\item{lwd}{line width argument passed to other internal plotting functions. Defaults to 3.}
 }
 \description{
 Plot a list of Time Series

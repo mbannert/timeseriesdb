@@ -5,12 +5,14 @@
 #' @param con PostgreSQL connection object
 #' @param user_name character name of the user. Defaults to system user. 
 #' @param tbl character name of set tqble. Defaults to timeseries\_sets.
+#' @param schema character name of the database schema. Defaults to timeseries.
 #' @author Matthias Bannert, Gabriel Bucur
 #' @export
+#' @importFrom DBI dbGetQuery
 #' @rdname listTsSets
-listTsSets <- function(con,user_name = Sys.info()['user'],tbl = "timeseries_sets"){
-  sql_query <- sprintf("SELECT setname FROM %s WHERE username = '%s' AND active = TRUE",tbl,user_name)
-  dbGetQuery(con,sql_query)$setname
+listTsSets <- function(con,user_name = Sys.info()['user'],tbl = "timeseries_sets", schema = "timeseries"){
+  sql_query <- sprintf("SELECT setname FROM %s.%s WHERE username = '%s' AND active = TRUE",schema,tbl,user_name)
+  DBI::dbGetQuery(con,sql_query)$setname
 }
 
 
@@ -20,19 +22,24 @@ listTsSets <- function(con,user_name = Sys.info()['user'],tbl = "timeseries_sets
 #' 
 #' @param con PostgreSQL connection object
 #' @param user_name character name of the user. Defaults to system user. 
+#' @param set_name character name of the set to be loaded.
 #' @param tbl character name of set tqble. Defaults to timeseries\_sets.
+#' @param schema character name of the database schema. Defaults to timeseries.
 #' @author Matthias Bannert, Ioan Gabriel Bucur
 #' @export
+#' @importFrom DBI dbGetQuery
+#' @importFrom RJSONIO fromJSON
 #' @rdname loadTsSet
-loadTsSet <- function(con, set_name, user_name = Sys.info()['user'], tbl = 'timeseries_sets') {
+loadTsSet <- function(con, set_name, user_name = Sys.info()['user'],
+                       tbl = 'timeseries_sets', schema = 'timeseries') {
   
   sql_query <- sprintf("SELECT setname,username,tstamp,
                        set_description,
-                       key_set::json::text FROM %s WHERE username = '%s'
+                       key_set::json::text FROM %s.%s WHERE username = '%s'
                        AND setname = '%s'",
-                       tbl, user_name,set_name)
+                       schema, tbl, user_name,set_name)
   
-  set <- dbGetQuery(con, sql_query)
+  set <- DBI::dbGetQuery(con, sql_query)
   
   result <- list()
   result$set_info <- set[,c("setname","username","tstamp","set_description")]
@@ -50,18 +57,22 @@ loadTsSet <- function(con, set_name, user_name = Sys.info()['user'], tbl = 'time
 #' but it's not the deleted because users may not delete sets.
 #'
 #' @param con PostgreSQL connection object
+#' @param set_name character name of the set to be deactivated.
 #' @param user_name character name of the user. Defaults to system user. 
 #' @param tbl character name of set tqble. Defaults to timeseries\_sets.
+#' @param schema character name of the database schema. Defaults to timeseries.
 #' @author Matthias Bannert, Ioan Gabriel Bucur
 #' @export
+#' @importFrom DBI dbGetQuery
 #' @rdname deactivateTsSet
 deactivateTsSet <- function(con,set_name,
                             user_name = Sys.info()['user'],
-                            tbl = "timeseries_sets"){
-  sql_query <- sprintf("UPDATE %s SET active = FALSE
+                            tbl = "timeseries_sets",
+                            schema = "timeseries"){
+  sql_query <- sprintf("UPDATE %s.%s SET active = FALSE
                        WHERE username = '%s' AND setname = '%s'",
-                       tbl,user_name,set_name)
-  dbGetQuery(con,sql_query)
+                       schema,tbl,user_name,set_name)
+  DBI::dbGetQuery(con,sql_query)
 }
 
 
@@ -73,17 +84,21 @@ deactivateTsSet <- function(con,set_name,
 #'
 #' @param con PostgreSQL connection object
 #' @param user_name character name of the user. Defaults to system user. 
+#' @param set_name character name of the set to be activated.
 #' @param tbl character name of set tqble. Defaults to timeseries\_sets.
+#' @param schema character name of the database schema. Defaults to timeseries.
 #' @author Matthias Bannert, Ioan Gabriel Bucur
 #' @export
+#' @importFrom DBI dbGetQuery
 #' @rdname activateTsSet
-deactivateTsSet <- function(con,set_name,
+activateTsSet <- function(con,set_name,
                             user_name = Sys.info()['user'],
-                            tbl = "timeseries_sets"){
-  sql_query <- sprintf("UPDATE %s SET active = TRUE
+                            tbl = "timeseries_sets",
+                            schema = "timeseries"){
+  sql_query <- sprintf("UPDATE %s.%s SET active = TRUE
                        WHERE username = '%s' AND setname = '%s'",
-                       tbl,user_name,set_name)
-  dbGetQuery(con,sql_query)
+                       schema,tbl,user_name,set_name)
+  DBI::dbGetQuery(con,sql_query)
 }
 
 
@@ -97,17 +112,21 @@ deactivateTsSet <- function(con,set_name,
 #' @param set_name character name of a set time series in the database.
 #' @param set_keys list of keys contained in the set and their type of key. 
 #' @param user_name character name of the user. Defaults to system user. 
+#' @param description character description of the set to be stored in the db.
 #' @param active logical should a set be active? Defaults to TRUE. If set to FALSE 
 #' a set is not seen directly in the GUI directly after being stored and needs to be
 #' activated first. 
 #' @param tbl character name of set tqble. Defaults to timeseries\_sets.
+#' @param schema character name of the database schema. Defaults to timeseries.
 #' @author Ioan Gabriel Bucur, Matthias Bannert
 #' @export
+#' @importFrom DBI dbSendQuery
 #' @rdname storeTsSet
 storeTsSet <- function(con, set_name, set_keys,
                        user_name = Sys.info()['user'],
                        description = '', active = TRUE,
-                       tbl = 'timeseries_sets') {
+                       tbl = 'timeseries_sets',
+                       schema = 'timeseries') {
   vector_values <-c(set_name,
                     user_name, as.character(Sys.time()),
                     createHstore(set_keys, fct = TRUE), description, active)
@@ -121,8 +140,8 @@ storeTsSet <- function(con, set_name, set_keys,
                       collapse = ",")
   
   sql_query <- sprintf(
-    "INSERT INTO %s VALUES (%s)",
-    tbl, row_values
+    "INSERT INTO %s.%s VALUES (%s)",
+    schema,tbl, row_values
   )
   dbSendQuery(con, sql_query)
 }

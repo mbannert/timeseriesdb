@@ -5,7 +5,8 @@
 \title{Store a New Set of Time Series}
 \usage{
 storeTsSet(con, set_name, set_keys, user_name = Sys.info()["user"],
-  description = "", active = TRUE, tbl = "timeseries_sets")
+  description = "", active = TRUE, tbl = "timeseries_sets",
+  schema = "timeseries")
 }
 \arguments{
 \item{con}{PostgreSQL connection object}
@@ -16,11 +17,15 @@ storeTsSet(con, set_name, set_keys, user_name = Sys.info()["user"],
 
 \item{user_name}{character name of the user. Defaults to system user.}
 
+\item{description}{character description of the set to be stored in the db.}
+
 \item{active}{logical should a set be active? Defaults to TRUE. If set to FALSE
 a set is not seen directly in the GUI directly after being stored and needs to be
 activated first.}
 
 \item{tbl}{character name of set tqble. Defaults to timeseries\_sets.}
+
+\item{schema}{character name of the database schema. Defaults to timeseries.}
 }
 \description{
 Store a new set of Time Series to the database. Users can select the time series keys

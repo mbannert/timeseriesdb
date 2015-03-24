@@ -10,11 +10,13 @@ beginTransaction <- function(con){
   if(is.null(DBI::dbGetQuery(con,'BEGIN'))) print('BEGIN')
 }
 
+#' @rdname transactionUtils
 #' @export
 commitTransaction <- function(con){
   if(is.null(DBI::dbGetQuery(con,'COMMIT'))) print('COMMIT')
 }
 
+#' @rdname transactionUtils
 #' @export
 rollbackTransaction <- function(con){
   if(is.null(DBI::dbGetQuery(con,'COMMIT'))) print('ROLLBACK')

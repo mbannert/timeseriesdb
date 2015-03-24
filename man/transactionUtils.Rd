@@ -2,9 +2,15 @@
 % Please edit documentation in R/transactionUtils.R
 \name{beginTransaction}
 \alias{beginTransaction}
+\alias{commitTransaction}
+\alias{rollbackTransaction}
 \title{Convenience Wrapper to SQL classics for BEGIN,COMMIT, ROLLBACK}
 \usage{
 beginTransaction(con)
+
+commitTransaction(con)
+
+rollbackTransaction(con)
 }
 \arguments{
 \item{con}{PostgreSQL connection object.}

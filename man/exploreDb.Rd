@@ -4,10 +4,12 @@
 \alias{exploreDb}
 \title{Start a GUI to Explore Data}
 \usage{
-exploreDb(con, browser = F)
+exploreDb(con, browser = T)
 }
 \arguments{
 \item{con}{PostgreSQL Connection object}
+
+\item{browser}{logical should app be fired up in the web browser? Defaults to TRUE.}
 }
 \description{
 Start a graphical user interface in the user's standard web browser to search

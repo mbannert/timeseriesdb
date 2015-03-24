@@ -13,9 +13,9 @@ createMetaDataHandle(key, keep_keys = FALSE, tbl = "meta_data_unlocalized",
 \arguments{
 \item{conObj}{PostgreSQL Connection object.}
 
-\item{regexp}{character regular expression pattern.}
-
-\item{schema}{character database schema name. Defaults to timeseries.}
+\item{regexp}{character regular expression pattern.
+Do not set this manually, because the quick handle operator only takes two arguments.
+use Sys.setenv to change the schema.}
 
 \item{key}{character name of the key inside the hstore.}
 
@@ -25,6 +25,8 @@ This comes handy when storing sets of time series.}
 
 \item{tbl}{character name of the table that holds meta data. Defaults to meta_data_unlocalized.
 Also supports meta_data_localized}
+
+\item{schema}{character database schema name. Defaults to timeseries.}
 }
 \description{
 Quick handle operator to search the database by keys. All time series whose key fit

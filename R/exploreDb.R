@@ -6,50 +6,50 @@
 #' time series plot. 
 #' 
 #' @param con PostgreSQL Connection object
+#' @param browser logical should app be fired up in the web browser? Defaults to TRUE.
 #' @export 
-exploreDb <- function(con, browser = F){
-  library(shiny)
+exploreDb <- function(con, browser = T){
   
   if(!dbIsValid(con)) stop("Database connection is not valid. Can't start exploring data.")
   
-  shinyApp(ui = navbarPage("timeseriesdb Data Explorer",
-                           tabPanel("Build Query",
-                                    fluidRow(
-                                      selectInput("query_type","Select Query Type",
+  shiny::shinyApp(ui = shiny::navbarPage("timeseriesdb Data Explorer",
+                           shiny::tabPanel("Build Query",
+                                    shiny::fluidRow(
+                                      shiny::selectInput("query_type","Select Query Type",
                                                   c("Key Based Query" = "key",
                                                     "Load Pre-Defined Set" = "set",
                                                     "Search Localized Meta Information" = "md")),
-                                      uiOutput("query_builder")  
+                                      shiny::uiOutput("query_builder")  
                                     )
                            ),
-                           tabPanel("Plot and Export",
-                                    fluidRow(
-                                      column(6,tags$h2("Variable Selection"),
-                                             uiOutput("choices")
+                           shiny::tabPanel("Plot and Export",
+                                    shiny::fluidRow(
+                                      shiny::column(6,shiny::tags$h2("Variable Selection"),
+                                             shiny::uiOutput("choices")
                                       ),
-                                      column(4,
-                                             tags$h2("Store As Set"),
-                                             tags$form(
-                                               textInput("set_name", "Name", "")
-                                               , br()
-                                               , actionButton("button2", "Store the time series set"),
-                                               textOutput("store_set") 
+                                      shiny::column(4,
+                                             shiny::tags$h2("Store As Set"),
+                                             shiny::tags$form(
+                                               shiny::textInput("set_name", "Name", "")
+                                               , shiny::br()
+                                               , shiny::actionButton("button2", "Store the time series set"),
+                                               shiny::textOutput("store_set") 
                                              )
                                              
                                       ),
-                                      column(2,tags$h2("Export"),
-                                             radioButtons("wide", "Use wide format?",
+                                      shiny::column(2,shiny::tags$h2("Export"),
+                                             shiny::radioButtons("wide", "Use wide format?",
                                                           c("Yes" = "T",
                                                             "No" = "F")),
-                                             downloadButton('download', 'Download'))
+                                             shiny::downloadButton('download', 'Download'))
                                     ),
-                                    fluidRow(
-                                      column(10,plotOutput("plot")),
-                                      column(2,uiOutput("legend_control"))
+                                    shiny::fluidRow(
+                                      shiny::column(10,shiny::plotOutput("plot")),
+                                      shiny::column(2,shiny::uiOutput("legend_control"))
                                     )
                            ),
                            header = 
-                             tags$style(HTML("
+                             shiny::tags$style(shiny::HTML("
                                            @import url('//fonts.googleapis.com/css?family=Lato|Cabin:400,700');
                                            
                                            h2 {
@@ -77,7 +77,7 @@ exploreDb <- function(con, browser = F){
   ),
   server = function(input,output){
     # reactive stuff ----------------
-    query_type <- reactive({
+    query_type <- shiny::reactive({
       out <- input$query_type
       if(out == "key"){
         class(out) <- append("key",class(out))
@@ -90,7 +90,7 @@ exploreDb <- function(con, browser = F){
     })
     
     
-    keys <- reactive({
+    keys <- shiny::reactive({
       searchKeys(query_type(),input = input)
     })
     
@@ -101,42 +101,42 @@ exploreDb <- function(con, browser = F){
     
     # outputs ----------------
     # flexible query builder 
-    output$query_builder <- renderUI({
+    output$query_builder <- shiny::renderUI({
       createUI(query_type())        
     })
     
     # display the hits 
-    output$hits <- renderText({
+    output$hits <- shiny::renderText({
       input$button1
-      paste0(length(isolate(keys())),
+      paste0(length(shiny::isolate(keys())),
              " series found. Switch to the next tab to proceed.")
     })
     
     
     # flexible choices boxes
-    output$choices <- renderUI({
+    output$choices <- shiny::renderUI({
       createChoices(query_type(),input = input,
                     keys = keys())
       
     })
     
     # store set 
-    output$store_set <- renderText({
+    output$store_set <- shiny::renderText({
       
       input$button2
       
       otext <- ""
       
-      set_list <- isolate({
+      set_list <- shiny::isolate({
         li <- as.list(rep(input$search_type, length(input$in5)))
         names(li) <- input$in5
         li
       })
       
-      if(length(set_list) > 0 && isolate(input$set_name) != "") {
-        storeTsSet(con, isolate(input$set_name), set_list)
+      if(length(set_list) > 0 && shiny::isolate(input$set_name) != "") {
+        storeTsSet(con, shiny::isolate(input$set_name), set_list)
         
-        otext <- paste('You have stored the set ', isolate(input$set_name), '.')
+        otext <- paste('You have stored the set ', shiny::isolate(input$set_name), '.')
       }
       
       otext
@@ -146,23 +146,23 @@ exploreDb <- function(con, browser = F){
     
     
     # download handler for export
-    output$download <- downloadHandler(
+    output$download <- shiny::downloadHandler(
       filename = function(){paste0("time_series_export_",
                                    gsub(" |:|-","_",Sys.time()),".csv")}, #input$fname,
       content = function(file){
         # write.table(isolate(keys())[[1]],file)
         # don't forget to change separator
-        exportTsList(isolate(keys())[input$in5],fname = file,cast = input$wide) 
+        exportTsList(shiny::isolate(keys())[input$in5],fname = file,cast = input$wide) 
       }
       
       
     )
     
     # plot that reactive so changes in selection
-    output$plot <- renderPlot({
+    output$plot <- shiny::renderPlot({
       if(is.null(input$in5)) return(NULL)
       
-      li <- isolate(keys())
+      li <- shiny::isolate(keys())
       li <- li[input$in5]
       class(li) <- append(class(li),"tslist")
       plot(li,use_legend = ifelse(input$legend == "yes",T,F),
@@ -172,9 +172,9 @@ exploreDb <- function(con, browser = F){
     # switch legend on/off 
     # legends are not suitable when 
     # there are to many series selected
-    output$legend_control <- renderUI({
+    output$legend_control <- shiny::renderUI({
       if(is.null(input$in5)) return(NULL)
-      column(2,radioButtons("legend", "Use legend?",
+      shiny::column(2,shiny::radioButtons("legend", "Use legend?",
                             c("Yes" = "yes",
                               "No" = "no")))
       

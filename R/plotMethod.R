@@ -10,6 +10,7 @@
 #' @param ... parameters than can simply by passed on tot the plot function
 #' @param use_legend logical. Should legend be used. Defaults to TRUE. Useful to switch of if so many time series are drawn that they are hard to distinguish anyway. 
 #' @param shiny_legend logical, is plot used in context of a shiny app? Defaults to FALSE.
+#' @param lwd line width argument passed to other internal plotting functions. Defaults to 3.
 #' @export plot.tslist
 #' @rdname plotMethods
 plot.tslist <- function(x,...,use_legend = T,shiny_legend = F,lwd = 3){

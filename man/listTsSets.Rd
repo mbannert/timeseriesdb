@@ -4,7 +4,8 @@
 \alias{listTsSets}
 \title{List All Time Series Sets for a Particular User}
 \usage{
-listTsSets(con, user_name = Sys.info()["user"], tbl = "timeseries_sets")
+listTsSets(con, user_name = Sys.info()["user"], tbl = "timeseries_sets",
+  schema = "timeseries")
 }
 \arguments{
 \item{con}{PostgreSQL connection object}
@@ -12,6 +13,8 @@ listTsSets(con, user_name = Sys.info()["user"], tbl = "timeseries_sets")
 \item{user_name}{character name of the user. Defaults to system user.}
 
 \item{tbl}{character name of set tqble. Defaults to timeseries\_sets.}
+
+\item{schema}{character name of the database schema. Defaults to timeseries.}
 }
 \description{
 Show the names of all sets that are available to a particular user.

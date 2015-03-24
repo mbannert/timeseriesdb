@@ -7,15 +7,28 @@
 \alias{createChoices.set}
 \title{Create Choices Boxes Dynamically}
 \usage{
-createChoices(x, input = NULL, keys = NULL, ...)
+createChoices(x, input = NULL, keys = NULL, con, ...)
 
 \method{createChoices}{key}(x, input = NULL, keys = NULL, ...)
 
-\method{createChoices}{md}(x, input = NULL, keys = NULL, ...)
+\method{createChoices}{md}(x, input = NULL, keys = NULL, con, ...)
 
-\method{createChoices}{set}(x, input = NULL, keys = NULL, ...)
+\method{createChoices}{set}(x, input = NULL, keys = NULL, con, ...)
+}
+\arguments{
+\item{x}{query type as character.}
+
+\item{input}{input that triggers action. Defaults to NULL.}
+
+\item{keys}{results to rendered to the choice box. Defaults to NULL.}
+
+\item{con}{PostgreSQL Connection object.}
+
+\item{...}{addtional arguments to be passed to the methods.}
 }
 \description{
-Create Choices Boxes Dynamically
+Dynamically create choices boxes depending on interactive choices by the user.
+The UI reacts to user input. We use a somewhat polymorphic approach here to avoid
+too much if/else and improve readabitity.
 }
 

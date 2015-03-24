@@ -11,6 +11,7 @@
 #' @param tbl character string denoting the name of the view
 #' containing the json records.
 #' @param schema SQL schema name. Defaults to timeseries.
+#' @importFrom DBI dbGetQuery
 #' @export
 readTimeSeries <- function(series,con,tbl = "v_timeseries_json",
                      schema = "timeseries"){
@@ -19,7 +20,7 @@ readTimeSeries <- function(series,con,tbl = "v_timeseries_json",
   # json
   series <- paste(paste0("'",series,"'"),collapse=",")
   sql_query <- sprintf("SELECT ts_json_records::text FROM %s.%s WHERE ts_key IN (%s)",schema,tbl,series)
-  out <- dbGetQuery(con,sql_query)$ts_json_records
+  out <- DBI::dbGetQuery(con,sql_query)$ts_json_records
   
   # identify text as json and create a list of 
   # time series 

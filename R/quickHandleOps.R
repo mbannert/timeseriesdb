@@ -4,11 +4,13 @@
 #' the regular expression which was handed to the operator are returned in a list. 
 #' 
 #' @param conObj PostgreSQL Connection object.
-#' @param regexp character regular expression pattern. 
+#' @param regexp character regular expression pattern.
+#' Do not set this manually, because the quick handle operator only takes two arguments.
+#' use Sys.setenv to change the schema.  
 #' @rdname quickHandleOps
 #' @export
-"%k%" <- function(conObj,regexp,schema = Sys.getenv("TIMESERIESDB_SCHEMA")){
-  
+"%k%" <- function(conObj,regexp){
+  schema <- Sys.getenv("TIMESERIESDB_SCHEMA")
   # get time series keys that suit the regexp
   sql_query <- sprintf("SELECT ts_key FROM %s.timeseries_main WHERE ts_key ~ '%s'",
                        schema,regexp)

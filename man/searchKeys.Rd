@@ -7,13 +7,22 @@
 \alias{searchKeys.set}
 \title{Search Keys From Pre-Defined Or Key Based Queries}
 \usage{
-searchKeys(x, input = NULL, ...)
+searchKeys(x, input = NULL, con, ...)
 
-\method{searchKeys}{key}(x, input = NULL, ...)
+\method{searchKeys}{key}(x, input = NULL, con, ...)
 
-\method{searchKeys}{md}(x, input = NULL, ...)
+\method{searchKeys}{md}(x, input = NULL, con, ...)
 
-\method{searchKeys}{set}(x, input = NULL, ....)
+\method{searchKeys}{set}(x, input = NULL, con, ...)
+}
+\arguments{
+\item{x}{query type as character.}
+
+\item{input}{input that triggers action. Defaults to NULL.}
+
+\item{con}{PostgreSQL Connection object.}
+
+\item{...}{addtional arguments to be passed to the methods.}
 }
 \description{
 Search Keys From Pre-Defined Or Key Based Queries
