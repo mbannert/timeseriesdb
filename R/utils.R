@@ -10,23 +10,21 @@
 #' @export
 getListDepth <- function(this) ifelse(is.list(this), 1L + max(sapply(this, getListDepth)), 0L)
 
-
-
-
-
-#' Check whether an PostgreSQL object is valid or not.
+#' Check Validity of a PostgreSQL connection
 #' 
-#' Support function that verifies that the holding a reference to a
-#' foreign object is still valid for communicating with the RDBMS
+#' Is the PostgreSQL connection expired?
 #' 
-#' @param dbObj a PostgreSQLConnection connection object. Check if the connection has expired.
-#' @return A logical scalar.
-#' @name dbIsValid
-#' @rdname dbIsValid
-#' @importFrom DBI dbIsValid 
+#' @param dbObj PostgreSQL connection object.
+#' @importFrom DBI dbIsValid
+#' @importFrom DBI dbGetInfo
+#' @import RPostgreSQL
+#' @import methods
+#' @docType methods
+#' @aliases dbIsValid
+#' @rdname dbIsValid-methods
 #' @export
 setMethod("dbIsValid", "PostgreSQLConnection", function(dbObj) {
-  isValid <- tryCatch({dbGetInfo(dbObj)},
+  isValid <- tryCatch({DBI::dbGetInfo(dbObj)},
                       error = function(e) NULL)
   !is.null(isValid)  
 })

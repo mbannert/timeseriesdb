@@ -8,7 +8,6 @@
 #' @importFrom reshape2 dcast 
 #' @export
 exportTsList <- function(tl,fname = NULL,cast = T){
-  library(xts)
   tl <- lapply(tl,as.xts)
   out_list <- lapply(names(tl),function(x){
     dframe <- data.frame(time = time(tl[[x]]),

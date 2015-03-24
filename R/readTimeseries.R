@@ -12,6 +12,7 @@
 #' containing the json records.
 #' @param schema SQL schema name. Defaults to timeseries.
 #' @importFrom DBI dbGetQuery
+#' @importFrom RJSONIO fromJSON
 #' @export
 readTimeSeries <- function(series,con,tbl = "v_timeseries_json",
                      schema = "timeseries"){
