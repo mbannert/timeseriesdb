@@ -1,6 +1,13 @@
-timeseriesdb v0.2 (Release date: )
+timeseriesdb v0.2 (Release date: 2015-03-25)
 ==============
-* changed upsert behavior to not affected unlocalized meta information on insert of new series
+* ~ quarterly release cycle planned
+* major speed up of write process by avoiding multiple selects (~2 times)
+* major speed up of read process by avoiding multiple selects (~ 3.5 times)
+* added a table to store sets of time series similar to shopping carts in web stores (basic)
+* basic export to .csv format to support wide and long format .csv
+* dependency to RJSONIO added as it used for speed up
+* added a shiny based data explorer GUI (use function exploredb(con))
+* changed upsert behavior to not affect unlocalized meta information on insert of new series
 * improved NULL handling
 * added SQL transaction utils
 * quiet execution of Meta Information Storage
@@ -11,6 +18,8 @@ timeseriesdb v0.2 (Release date: )
 * improved read process for bulk reading to use single query instead of looping
 * improve store process
 * exported print method
+* added function to check whether db connection is valid
+* added quickHandle operator and a closure to create further quick Handle operators
 
 
 
