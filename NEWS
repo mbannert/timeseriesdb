@@ -1,6 +1,7 @@
 timeseriesdb v0.2 (Release date: 2015-03-25)
 ==============
 * ~ quarterly release cycle planned
+* added convenience function to plot a list of time series (plot.tslist)
 * major speed up of write process by avoiding multiple selects (~2 times)
 * major speed up of read process by avoiding multiple selects (~ 3.5 times)
 * added a table to store sets of time series similar to shopping carts in web stores (basic)
@@ -13,6 +14,7 @@ timeseriesdb v0.2 (Release date: 2015-03-25)
 * quiet execution of Meta Information Storage
 * fixed issues with quotes
 * added hstore lookup function
+* changed from deprecated hstore operator to new hstore function (see PostgreSQL release notes)
 * function to concatenate overlapping series
 * function to set attributes to each element of a list
 * improved read process for bulk reading to use single query instead of looping
