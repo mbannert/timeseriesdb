@@ -91,7 +91,7 @@ exploreDb <- function(con, browser = T){
     
     
     keys <- shiny::reactive({
-      searchKeys(query_type(),input = input)
+      searchKeys(query_type(),input = input,con = con)
     })
     
     
@@ -102,7 +102,7 @@ exploreDb <- function(con, browser = T){
     # outputs ----------------
     # flexible query builder 
     output$query_builder <- shiny::renderUI({
-      createUI(query_type())        
+      createUI(query_type(),con)        
     })
     
     # display the hits 
@@ -115,7 +115,7 @@ exploreDb <- function(con, browser = T){
     
     # flexible choices boxes
     output$choices <- shiny::renderUI({
-      createChoices(query_type(),input = input,
+      createChoices(query_type(),input = input,con = con,
                     keys = keys())
       
     })
