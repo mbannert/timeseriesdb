@@ -1,3 +1,10 @@
+timeseriesdb v0.21 (Release date: 2015-04-01)
+==============
+* updated readme
+* fixed bug in the shiny based GUI that prevented starting it up properly
+* moved sql code to a single setup file
+
+
 timeseriesdb v0.2 (Release date: 2015-03-25)
 ==============
 * ~ quarterly release cycle planned
