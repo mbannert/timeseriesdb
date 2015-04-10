@@ -77,19 +77,56 @@ storeTimeSeries <- function(series,
 
   
   # SQL STATEMENTS ---------------------------------------------------------- 
-  # data
-  sql_query <- sprintf("INSERT INTO %s (ts_key,ts_data,ts_frequency) VALUES %s",
-                       tbl,values) 
-  # meta data
-  sql_query_md <- sprintf("INSERT INTO %s (ts_key,md_generated_by,
-                          md_resource_last_update,md_coverage_temp) VALUES %s",
-                          md_unlocal,md_values) 
   
-  # Send queries
-  main_ok <- DBI::dbGetQuery(con,sql_query)
-  md_ok <- DBI::dbGetQuery(con,sql_query_md)
+  sql_query_data <- sprintf("BEGIN;
+                            CREATE TEMPORARY TABLE 
+                            ts_updates(ts_key varchar, ts_data hstore, ts_frequency integer) ON COMMIT DROP;
+                            INSERT INTO ts_updates(ts_key, ts_data, ts_frequency) VALUES %s;
+                            LOCK TABLE %s.timeseries_main IN EXCLUSIVE MODE;
+
+                            UPDATE %s.timeseries_main
+                            SET ts_data = ts_updates.ts_data,
+                            ts_frequency = ts_updates.ts_frequency
+                            FROM ts_updates
+                            WHERE ts_updates.ts_key = %s.timeseries_main.ts_key;
+
+                            INSERT INTO %s.timeseries_main
+                            SELECT ts_updates.ts_key, ts_updates.ts_data, ts_updates.ts_frequency
+                            FROM ts_updates
+                            LEFT OUTER JOIN %s.timeseries_main ON (%s.timeseries_main.ts_key = ts_updates.ts_key)
+                            WHERE %s.timeseries_main.ts_key IS NULL;
+                            COMMIT;",
+                            values, schema, schema, schema, schema, schema, schema, schema)
+  
+  sql_query_meta_data <- sprintf("BEGIN;
+                            CREATE TEMPORARY TABLE 
+                            md_updates(ts_key varchar, md_generated_by varchar, md_resource_last_update timestamptz,
+                            md_coverage_temp varchar, meta_data hstore) ON COMMIT DROP;
+
+                            INSERT INTO md_updates(ts_key, md_generated_by, md_resource_last_update, md_coverage_temp) VALUES %s;
+                            LOCK TABLE %s.meta_data_unlocalized IN EXCLUSIVE MODE;
+                            
+                            UPDATE %s.meta_data_unlocalized
+                            SET md_generated_by = md_updates.md_generated_by,
+                            md_resource_last_update = md_updates.md_resource_last_update,
+                            md_coverage_temp = md_updates.md_coverage_temp
+                            FROM md_updates
+                            WHERE md_updates.ts_key = %s.meta_data_unlocalized.ts_key;
+                            
+                            INSERT INTO %s.meta_data_unlocalized
+                            SELECT md_updates.ts_key, md_updates.md_generated_by, md_updates.md_resource_last_update,
+                            md_updates.md_coverage_temp
+                            FROM md_updates
+                            LEFT OUTER JOIN %s.meta_data_unlocalized ON (%s.meta_data_unlocalized.ts_key = md_updates.ts_key)
+                            WHERE %s.meta_data_unlocalized.ts_key IS NULL;
+                            COMMIT;",
+                            md_values, schema, schema, schema, schema, schema, schema, schema)
+  
+  main_ok <- DBI::dbGetQuery(con,sql_query_data)
+  md_ok <- DBI::dbGetQuery(con,sql_query_meta_data)
   
   l <- length(series)
+  
   
   if(is.null(main_ok) & is.null(md_ok)){
     paste0(l, " data and meta data records written successfully.")
