@@ -4,7 +4,7 @@
 \alias{resolveOverlap}
 \title{Concatenate Time Series and Resolve Overlap Automatically}
 \usage{
-resolveOverlap(ts1, ts2, keep_ts2 = T)
+resolveOverlap(ts1, ts2, keep_ts2 = T, tolerance = 0.001)
 }
 \arguments{
 \item{ts1}{ts time series, typically the older series}
@@ -12,6 +12,8 @@ resolveOverlap(ts1, ts2, keep_ts2 = T)
 \item{ts2}{ts time series, typically the younger series}
 
 \item{keep_ts2}{logical should ts2 be kept? Defaults to TRUE.}
+
+\item{tolerance}{numeric when comparing min and max values with a index vector of a time series R runs in to trouble with precision handling, thus a tolerance needs to be set. Typically this does not need to be adjusted. E.g. 2010 != 2010.000. With the help of the tolerance parameter these two are equal.}
 }
 \description{
 Append time series to each other. Resolve overlap determines
