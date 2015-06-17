@@ -63,7 +63,17 @@ exportTsList <- function(tl,fname = NULL,cast = T,sep = ";",dec=".",
     tsdf$time <- format(tsdf$time,date_format)
     Sys.setlocale("LC_TIME",PREV_LC_TIME_LOCALE)
   } else{
-    tsdf$time <- ifelse(frq == 12,format(tsdf$time,"%Y-%m"),stop("need to provide a date_format argument if frequency is not monthly"))
+    
+    # DO NOT USE ifelse() here because it returns a 'scalar' 
+    # that will blow reformatting up... 
+    # wanna experience an R WTF try sdf$time <- ifelse(frq == 12, format(tsdf$time, "%Y-%m"),stop("some message")) 
+    if(frq == 12){
+      tsdf$time <- format(tsdf$time,"%Y-%m")
+    } else {
+      stop("need to provide a date_format argument if frequency is not monthly")
+    }
+    
+    
   }
   
   
