@@ -5,6 +5,7 @@
 #' @param tl list of time series
 #' @param fname character file name. If set to NULL a standard file name chunk + Sys.Date is used.
 #' @param cast logical. Should the resulting data.frame be cast to wide format? Defaults to TRUE
+#' @param xlsx logical. Should data be exported to .xlsx? Defaults to FALSE.
 #' @param sep character that separates columns in .csv
 #' @param dec character that separates decimals in .csv
 #' @param LC_TIME_LOCALE character time locale that differs from the standard locale. e.g. en_US.UTF-8. Defaults to NULL and uses the standard locale then. 
@@ -24,7 +25,8 @@
 #' tslist_q$ts2 <- ts(rnorm(50),start = c(1990,4),frequency = 4)
 #' exportTsList(tslist_q,date_format="%Y-0%q")
 #' @export
-exportTsList <- function(tl,fname = NULL,cast = T,sep = ";",dec=".",
+exportTsList <- function(tl,fname = NULL,cast = T, xlsx = F,
+                         sep = ";",dec=".",
                          LC_TIME_LOCALE = NULL,
                          date_format = NULL){
  
@@ -48,7 +50,7 @@ exportTsList <- function(tl,fname = NULL,cast = T,sep = ";",dec=".",
   if(is.null(fname)){
     fname <- "timeseriesdb_export_"
   } 
-  fname <- paste0(fname,gsub("-","_",Sys.Date()))
+  fname <- paste0(fname,"_",gsub("-","_",Sys.Date()))
   #write.csv2(tsdf,file = fname,row.names = F)
   #  reshape2::dcast(tsdf)
   if(cast){
@@ -76,7 +78,13 @@ exportTsList <- function(tl,fname = NULL,cast = T,sep = ";",dec=".",
     
   }
   
+  if(xlsx){
+    openxlsx::write.xlsx(tsdf,paste0(fname,".xlsx"))
+  } else{
+    write.table(tsdf,file = paste0(fname,".csv"), row.names = F, dec = dec, sep = sep)  
+  }
   
   
-  write.table(tsdf,file = paste0(fname,".csv"), row.names = F, dec = dec, sep = sep)
+  
+  
 }

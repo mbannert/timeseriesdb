@@ -13,7 +13,7 @@ Description: Store and organize a large amount of low frequency time series data
 Author: "Matthias Bannert <bannert@kof.ethz.ch> [aut, cre]"
 Depends:
     R (>= 3.0.0), RPostgreSQL, methods 
-Imports: RJSONIO, xts, zoo, reshape2, shiny, DBI
+Imports: RJSONIO, xts, zoo, reshape2, shiny, DBI, openxlsx, data.table (>= 1.9.4)
 Date: 2015-04-02
 License: GPL-2
 LazyData: true

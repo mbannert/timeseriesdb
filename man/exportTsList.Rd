@@ -4,8 +4,8 @@
 \alias{exportTsList}
 \title{Export A List of Time Series to CSV}
 \usage{
-exportTsList(tl, fname = NULL, cast = T, sep = ";", dec = ".",
-  LC_TIME_LOCALE = NULL, date_format = NULL)
+exportTsList(tl, fname = NULL, cast = T, xlsx = F, sep = ";",
+  dec = ".", LC_TIME_LOCALE = NULL, date_format = NULL)
 }
 \arguments{
 \item{tl}{list of time series}
@@ -13,6 +13,8 @@ exportTsList(tl, fname = NULL, cast = T, sep = ";", dec = ".",
 \item{fname}{character file name. If set to NULL a standard file name chunk + Sys.Date is used.}
 
 \item{cast}{logical. Should the resulting data.frame be cast to wide format? Defaults to TRUE}
+
+\item{xlsx}{logical. Should data be exported to .xlsx? Defaults to FALSE.}
 
 \item{sep}{character that separates columns in .csv}
 
