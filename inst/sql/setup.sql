@@ -32,6 +32,22 @@ CREATE TABLE timeseries_sets (setname varchar,
                               primary key(setname, username)              
                             );
 
+CREATE TABLE timeseries_vintages (ts_key varchar,
+                                  vnt_type varchar check(vnt_type IN ('seas_d11','seas_d12','seas_e2','minor','regular','major')),
+                                  vnt_date date,
+                                  vnt_data hstore,
+                                  primary key(ts_key, vnt_type, vnt_date),
+                                  foreign key(ts_key) references timeseries_main(ts_key))
+
+CREATE TABLE timeseries_derivatives (ts_key varchar,
+                                  vnt_type varchar check(vnt_type IN ('seas_d11','seas_d12','seas_e2')),
+                                  vnt_data hstore,
+                                  primary key(ts_key, vnt_type),
+                                  foreign key(ts_key) references timeseries_main(ts_key))
+
+
+
+
 
 CREATE VIEW v_timeseries_json AS SELECT timeseries_main.ts_key,
     row_to_json(timeseries_main.*) AS ts_json_records
