@@ -24,6 +24,10 @@ storeTimeSeries <- function(series,
                       lookup_env = .GlobalEnv,
                       overwrite = T,
                       schema = "timeseries"){
+  # subset a list series 
+  li <- li[series]
+  
+  
   # make this function compatible with former version that used environments. 
   if(is.null(li)){
     li <- as.list.environment(lookup_env)
