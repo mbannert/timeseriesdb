@@ -29,7 +29,7 @@ storeTimeSeries(series, con, li = NULL, tbl = "timeseries_main",
 This function writes time series object into a relational PostgreSQL database make use
 of PostgreSQL own 'key'=>'value' storage called hstore. The schema and database needs to
 created first. The parent R Package of this functions suggests a database structure
-designed to store a larger amount of time series. This function uses INSERT INTO instead of the more convenient dbWritetable for performance reasons. DO NOT USE THIS FUNCTIONS IN LOOPS OR LAPPLY! This function can handle a set of time series on it's own and is much faster than looping over a list. Non-unique primary keys are overwritten !
+designed to store a larger amount of time series. This function uses INSERT INTO instead of the more convenient dbWritetable for performance reasons. DO NOT USE THIS FUNCTIONS IN LOOPS OR LAPPLY! This function can handle a set of time series on its own and is much faster than looping over a list. Non-unique primary keys are overwritten !
 }
 \author{
 Matthias Bannert, Gabriel Bucur
