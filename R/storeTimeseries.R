@@ -43,6 +43,14 @@ storeTimeSeries <- function(series,
   # CREATE ELEMENTS AND RECORDS ---------------------------------------------
   # use the form (..record1..),(..record2..),(..recordN..)
   # to be able to store everything in one big query
+  
+  keep <- sapply(li,function(x) inherits(x,c("ts","zoo","xts")))
+  dontkeep <- !keep
+  
+  cat("These series caused problems", series[dontkeep],"\n")
+  
+  li <- li[keep]
+
   hstores <- unlist(lapply(li,createHstore))
   freqs <- sapply(li,frequency)
   values <- paste(paste0("('",
@@ -129,7 +137,7 @@ storeTimeSeries <- function(series,
   main_ok <- DBI::dbGetQuery(con,sql_query_data)
   md_ok <- DBI::dbGetQuery(con,sql_query_meta_data)
   
-  l <- length(series)
+  l <- length(li)
   
   
   if(is.null(main_ok) & is.null(md_ok)){
