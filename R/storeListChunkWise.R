@@ -28,7 +28,10 @@ storeListChunkWise <- function(series,
   # loop over the chunks in order to store it chunk wise 
   # otherwise we run into stack limit on the server
   for(i in seq_along(name_chunks)){
-    storeTimeSeries(name_chunks[[i]],con,li = li[name_chunks[[i]]])  
+    storeTimeSeries(name_chunks[[i]],con,li = li[name_chunks[[i]]],
+                    overwrite = overwrite,
+                    tbl = tbl,
+                    schema = schema)  
   }
 }
   
