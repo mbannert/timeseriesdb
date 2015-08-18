@@ -47,7 +47,12 @@ storeTimeSeries <- function(series,
   keep <- sapply(li,function(x) inherits(x,c("ts","zoo","xts")))
   dontkeep <- !keep
   
-  cat("These series caused problems", series[dontkeep],"\n")
+  if(all(keep)){
+    cat("No corrupted series found.")
+  } else {
+    cat("These series caused problems", series[dontkeep],"\n")  
+  }
+  
   
   li <- li[keep]
 
