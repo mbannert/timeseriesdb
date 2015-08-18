@@ -22,7 +22,8 @@ storeMetaInformation <- function(series,
                                  quiet = F,
                                  schema = 'timeseries'){
   # get an object from the meta environment
-  mi <- get(series,envir = get(lookup_env))
+  mi <- get(series,envir = get(lookup_env,envir = parent.frame()))
+  
   
   tbl <- paste(schema,tbl,sep=".")
   
