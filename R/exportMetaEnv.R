@@ -19,12 +19,12 @@
 #' @export
 exportMetaEnv <- function(meta_env,fname = NULL,export_type = "pdf",flexcols = NULL,
                           row.names = F, sep=";",overwrite = T){
-  if(!inherits(mmeta,"meta_env")) stop("object not a timeseriesdb meta information environment.")
+  if(!inherits(meta_env,"meta_env")) stop("object not a timeseriesdb meta information environment.")
   
-  flex <- lapply(mmeta,"[[","flexible") 
+  flex <- lapply(meta_env,"[[","flexible") 
   # address fixed meta information later on 
   # do not need it right now, fixed part should also contain frequency then !?
-  # fix <- lapply(mmeta,"[[","fixed") 
+  # fix <- lapply(meta_env,"[[","fixed") 
   
   nms <- names(flex)
   all_names <- unique(unlist(lapply(flex,"[[","key")))

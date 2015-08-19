@@ -48,7 +48,7 @@ storeTimeSeries <- function(series,
   dontkeep <- !keep
   
   if(all(keep)){
-    cat("No corrupted series found.")
+    cat("No corrupted series found. \n")
   } else {
     cat("These series caused problems", series[dontkeep],"\n")  
   }
