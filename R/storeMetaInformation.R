@@ -34,11 +34,34 @@ storeMetaInformation <- function(series,
   if(!is.null(locale)){
     if(overwrite){
         hstore <- createHstore(mi)
-        sql_query <- sprintf("INSERT INTO %s
-(ts_key,locale_info,meta_data) VALUES 
-                             ('%s','%s','%s')",
-                             tbl,series,locale,hstore)
+        sql_query <- sprintf("BEGIN;
+                              CREATE TEMPORARY TABLE 
+                              md_updates(ts_key varchar, locale_info varchar, meta_data hstore) ON COMMIT DROP;
+                              INSERT INTO md_updates(ts_key, locale_info, meta_data) 
+                              VALUES ('%s','%s','%s');
+                              LOCK TABLE %s.meta_data_localized IN EXCLUSIVE MODE;
+
+                              UPDATE %s.meta_data_localized
+                              SET locale_info = md_updates.locale_info,
+                              meta_data = md_updates.meta_data
+                              FROM md_updates
+                              WHERE md_updates.ts_key = %s.meta_data_localized.ts_key;
+                                       
+                              INSERT INTO %s.meta_data_localized
+                              SELECT md_updates.ts_key, md_updates.locale_info, md_updates.meta_data
+                              FROM md_updates
+                              LEFT OUTER JOIN %s.meta_data_localized ON (%s.meta_data_localized.ts_key = md_updates.ts_key)
+                              WHERE %s.meta_data_localized.ts_key IS NULL;
+                              COMMIT;",
+                              series, locale, hstore, schema, schema, schema, schema, schema, schema, schema)
     }
+    
+    
+    
+    
+    # if the locale is null the there's no upsert problem
+    # you can be sure there's always a record in the db because
+    # storeTimeSeries stores basic unlocalized meta information
     } else {
       hstore <- createHstore(mi,fct = T)
       if(tbl != paste(schema,'meta_data_unlocalized',sep=".")) warning('Locale is set to NULL and tbl is not set to meta_data_unlocalized.')
