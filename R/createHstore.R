@@ -64,7 +64,9 @@ createHstore.list <- function(x,...){
                                               as.character(unlist(x))),
                                       collapse=",")
   
-  if(exists("fct",dot_args)){
+  # note the double ampersand here !!
+  # it denotes a short-circuit logical operator.
+  if(length(dot_args) != 0 && exists("fct",dot_args)){
     if(dot_args$fct){
       paste(sprintf("hstore('%s','%s')",
                     names(x),
