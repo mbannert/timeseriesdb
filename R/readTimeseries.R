@@ -8,14 +8,16 @@
 #' @author Matthias Bannert, Gabriel Bucur
 #' @param series character vector of series names.
 #' @param con a PostgreSQL connection object
+#' @param to\_global logical, should resulting series be put the global environment? Defaults to FALSE.
 #' @param tbl character string denoting the name of the view
 #' containing the json records.
 #' @param schema SQL schema name. Defaults to timeseries.
 #' @importFrom DBI dbGetQuery
 #' @importFrom RJSONIO fromJSON
 #' @export
-readTimeSeries <- function(series,con,tbl = "v_timeseries_json",
-                     schema = "timeseries"){
+readTimeSeries <- function(series,con,to_global=F,
+                           tbl = "v_timeseries_json",
+                           schema = "timeseries"){
   # Create a WHERE IN SQL clause, cast to json to text
   # so RS-DBI doesn't issue a warning cause it does not know
   # json
@@ -57,5 +59,12 @@ readTimeSeries <- function(series,con,tbl = "v_timeseries_json",
   })
   names(out_li) <- nms
   class(out_li) <- append(class(out_li),"tslist")
-  return(out_li)
+  
+  if(to_global) {
+    list2env(out_li,envir = globalenv())
+  } else {
+    out_li
+  }
+  
+  
 }
