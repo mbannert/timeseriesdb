@@ -19,6 +19,7 @@
 storeTimeSeries <- function(series,
                       con,
                       li = NULL,
+                      store_freq = T,
                       tbl="timeseries_main",
                       md_unlocal = "meta_data_unlocalized",
                       lookup_env = .GlobalEnv,
@@ -58,13 +59,23 @@ storeTimeSeries <- function(series,
 
   hstores <- unlist(lapply(li,createHstore))
   freqs <- sapply(li,frequency)
-  values <- paste(paste0("('",
-                         paste(series,
-                               hstores,
-                               freqs,
-                               sep="','"),
-                         "')"),
-                  collapse = ",")
+  
+  if(!store_freq){
+    values <- paste(paste0("('",
+                           paste(series,
+                                 hstores,
+                                 sep="','"),
+                           "')"),
+                    collapse = ",")
+  } else {
+    values <- paste(paste0("('",
+                           paste(series,
+                                 hstores,
+                                 freqs,
+                                 sep="','"),
+                           "')"),
+                    collapse = ",")
+  }
   
   
   # add schema name
@@ -94,26 +105,55 @@ storeTimeSeries <- function(series,
 
   
   # SQL STATEMENTS ---------------------------------------------------------- 
-  
-  sql_query_data <- sprintf("BEGIN;
+  # we use the state for store frequency here because it is the easiest
+  # way to store NULL values in the PostgreSQL table with the bulk
+  # optimized process, just note the missing frequency in the insert
+  # statement of the update table causing the NULL. 
+  if(store_freq){
+    sql_query_data <- sprintf("BEGIN;
                             CREATE TEMPORARY TABLE 
-                            ts_updates(ts_key varchar, ts_data hstore, ts_frequency integer) ON COMMIT DROP;
-                            INSERT INTO ts_updates(ts_key, ts_data, ts_frequency) VALUES %s;
-                            LOCK TABLE %s.timeseries_main IN EXCLUSIVE MODE;
-
-                            UPDATE %s.timeseries_main
-                            SET ts_data = ts_updates.ts_data,
-                            ts_frequency = ts_updates.ts_frequency
-                            FROM ts_updates
-                            WHERE ts_updates.ts_key = %s.timeseries_main.ts_key;
-
-                            INSERT INTO %s.timeseries_main
-                            SELECT ts_updates.ts_key, ts_updates.ts_data, ts_updates.ts_frequency
-                            FROM ts_updates
-                            LEFT OUTER JOIN %s.timeseries_main ON (%s.timeseries_main.ts_key = ts_updates.ts_key)
-                            WHERE %s.timeseries_main.ts_key IS NULL;
-                            COMMIT;",
-                            values, schema, schema, schema, schema, schema, schema, schema)
+                              ts_updates(ts_key varchar, ts_data hstore, ts_frequency integer) ON COMMIT DROP;
+                              INSERT INTO ts_updates(ts_key, ts_data, ts_frequency) VALUES %s;
+                              LOCK TABLE %s.timeseries_main IN EXCLUSIVE MODE;
+                              
+                              UPDATE %s.timeseries_main
+                              SET ts_data = ts_updates.ts_data,
+                              ts_frequency = ts_updates.ts_frequency
+                              FROM ts_updates
+                              WHERE ts_updates.ts_key = %s.timeseries_main.ts_key;
+                              
+                              INSERT INTO %s.timeseries_main
+                              SELECT ts_updates.ts_key, ts_updates.ts_data, ts_updates.ts_frequency
+                              FROM ts_updates
+                              LEFT OUTER JOIN %s.timeseries_main ON (%s.timeseries_main.ts_key = ts_updates.ts_key)
+                              WHERE %s.timeseries_main.ts_key IS NULL;
+                              COMMIT;",
+                              values, schema, schema, schema, schema, schema, schema, schema)
+  } else {
+    
+    sql_query_data <- sprintf("BEGIN;
+                            CREATE TEMPORARY TABLE 
+                              ts_updates(ts_key varchar, ts_data hstore, ts_frequency integer) ON COMMIT DROP;
+                              INSERT INTO ts_updates(ts_key, ts_data) VALUES %s;
+                              LOCK TABLE %s.timeseries_main IN EXCLUSIVE MODE;
+                              
+                              UPDATE %s.timeseries_main
+                              SET ts_data = ts_updates.ts_data,
+                              ts_frequency = ts_updates.ts_frequency
+                              FROM ts_updates
+                              WHERE ts_updates.ts_key = %s.timeseries_main.ts_key;
+                              
+                              INSERT INTO %s.timeseries_main
+                              SELECT ts_updates.ts_key, ts_updates.ts_data, ts_updates.ts_frequency
+                              FROM ts_updates
+                              LEFT OUTER JOIN %s.timeseries_main ON (%s.timeseries_main.ts_key = ts_updates.ts_key)
+                              WHERE %s.timeseries_main.ts_key IS NULL;
+                              COMMIT;",
+                              values, schema, schema, schema, schema, schema, schema, schema)
+  }
+  
+  
+  
   
   sql_query_meta_data <- sprintf("BEGIN;
                             CREATE TEMPORARY TABLE 

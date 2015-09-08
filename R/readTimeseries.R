@@ -6,16 +6,20 @@
 #' R time series object of class 'ts' is built and returned. 
 #' 
 #' @author Matthias Bannert, Gabriel Bucur
-#' @param series character vector of series names.
+#' @param series character vector of time series keys
 #' @param con a PostgreSQL connection object
-#' @param to\_global logical, should resulting series be put the global environment? Defaults to FALSE.
+#' @param manual\_freq numeric if time series are irregular in the sense that the distance between all observations is not the same storing frequencies is not appropriate. Also for regular yearly or weekly data storing frequencies is not appropriate as years can have 52 or 53 weeks. Different approaches can be applied by using the manual_freq parameter, that overwrites the NULL value from the databse with a numeric that Rs ts function can deal with. 
+#' @param manual\_period set a period value manually. Sets the start period when no frequency is stored in the databse. Defaults to NULL and is not needed for regular quarterly or monthly series.
+#' @param env environment, optional argument to dump time series directly into an environment. Most often used with globalenv(), which gives all time series directly back to the global env. 
 #' @param tbl character string denoting the name of the view
 #' containing the json records.
 #' @param schema SQL schema name. Defaults to timeseries.
 #' @importFrom DBI dbGetQuery
 #' @importFrom RJSONIO fromJSON
 #' @export
-readTimeSeries <- function(series,con,to_global=F,
+readTimeSeries <- function(series,con, manual_freq=1,
+                           manual_period = NULL,
+                           env=NULL,
                            tbl = "v_timeseries_json",
                            schema = "timeseries"){
   # Create a WHERE IN SQL clause, cast to json to text
@@ -41,15 +45,26 @@ readTimeSeries <- function(series,con,to_global=F,
     d <- as.Date(names(ts_data)[1])
     y <- as.numeric(format(d,"%Y"))
     p <- as.numeric(format(d,"%m"))
-    if(freq == 4){
-      period <- (p -1) / 3 + 1
-    } else if(freq == 12){
-      period <- p
-    } else if(freq == 1){
-      period <- NULL
+    
+    if(is.null(freq)){
+      freq <- manual_freq
+      period <- manual_period
     } else {
-      stop("Not a standard frequency.")
+      
+      if(freq == 4){
+        period <- (p -1) / 3 + 1
+      } else if(freq == 12){
+        period <- p
+      } else if(freq == 1){
+        period <- NULL  
+      }
     }
+      
+      
+      
+      
+    
+    
     
     # create the time series object but suppress the warning of creating NAs
     # when transforming text NAs to numeric NAs
@@ -57,11 +72,16 @@ readTimeSeries <- function(series,con,to_global=F,
                         start=c(y,period),
                         frequency = freq))
   })
+  
+  
   names(out_li) <- nms
   class(out_li) <- append(class(out_li),"tslist")
   
-  if(to_global) {
-    list2env(out_li,envir = globalenv())
+  if(!is.null(env)) {
+    if(class(env) != "environment"){
+      stop("If class is not NULL, it has to be an environemnt.")
+    } 
+    list2env(out_li,envir = env)
   } else {
     out_li
   }

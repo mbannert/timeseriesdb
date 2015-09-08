@@ -4,18 +4,24 @@
 \alias{readTimeSeries}
 \title{Read Time Series From PostgreSQL database}
 \usage{
-readTimeSeries(series, con, tbl = "v_timeseries_json",
-  schema = "timeseries")
+readTimeSeries(series, con, manual_freq = 1, manual_period = NULL,
+  env = NULL, tbl = "v_timeseries_json", schema = "timeseries")
 }
 \arguments{
-\item{series}{character vector of series names.}
+\item{series}{character vector of time series keys}
 
 \item{con}{a PostgreSQL connection object}
+
+\item{env}{environment, optional argument to dump time series directly into an environment. Most often used with globalenv(), which gives all time series directly back to the global env.}
 
 \item{tbl}{character string denoting the name of the view
 containing the json records.}
 
 \item{schema}{SQL schema name. Defaults to timeseries.}
+
+\item{manual\_freq}{numeric if time series are irregular in the sense that the distance between all observations is not the same storing frequencies is not appropriate. Also for regular yearly or weekly data storing frequencies is not appropriate as years can have 52 or 53 weeks. Different approaches can be applied by using the manual_freq parameter, that overwrites the NULL value from the databse with a numeric that Rs ts function can deal with.}
+
+\item{manual\_period}{set a period value manually. Sets the start period when no frequency is stored in the databse. Defaults to NULL and is not needed for regular quarterly or monthly series.}
 }
 \description{
 This function reads a time series from a postgres database,
