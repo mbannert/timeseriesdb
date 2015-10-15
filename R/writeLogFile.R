@@ -9,7 +9,7 @@
 #' @export
 writeLogFile <- function(filename=NULL,msg,line_end = "\n"){
     if(is.null(filename)){
-        filename <- paste0(Sys.Date,".log")
+        filename <- paste0(Sys.Date(),".log")
     }
     sink(filename,append=T)
     msg <- paste0(Sys.time(),":",msg,line_end)
