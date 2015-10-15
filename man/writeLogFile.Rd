@@ -4,12 +4,12 @@
 \alias{writeLogFile}
 \title{Simple Log File Writer}
 \usage{
-writeLogFile(filename = NULL, msg, line_end = "\\n")
+writeLogFile(msg, filename = NULL, line_end = "\\n")
 }
 \arguments{
-\item{filename}{character name of a textfile. Defaults to NULL.}
-
 \item{msg}{log file message}
+
+\item{filename}{character name of a textfile. Defaults to NULL.}
 
 \item{line_end}{line end character}
 }
