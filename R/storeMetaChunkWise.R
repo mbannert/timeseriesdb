@@ -11,25 +11,37 @@
 #' Defaults to 'meta_data_unlocalized'.
 #' @param keys character vector of time series. If specified only the selected 
 #' meta information is stored. Defaults to NULL which stores all meta information
-#' records in the environment. 
+#' records in the environment.
+#' @param chunksize integer number of chunks. Defaults to NULL which automatically choose chunks based
+#' on Cstack size. 
 #' @export
 storeMetaChunkWise <- function(meta_envir,con,
                                schema = "timeseries",
                                tbl = "meta_data_unlocalized",
-                               keys=NULL){
-  
-  chunks <- ceiling(as.numeric(object.size(as.list(meta_envir)))/(Cstack_info()["size"]*0.7))
+                               keys=NULL,
+                               chunksize = NULL){
+  if(!is.null(chunksize)){
+    chunks <- chunksize
+  } else {
+    chunks <- ceiling(as.numeric(object.size(as.list(meta_envir)))/(Cstack_info()["size"]*0.7))  
+  }
+
   nms <- ls(envir=meta_envir)
-  name_chunks <- split(nms,ceiling(seq_along(nms/chunks)))
+  name_chunks <- split(nms,
+                       ceiling(seq_along(nms)/chunks)
+                       )
   
   # loop over the chunks in order to store it chunk wise 
   # otherwise we run into stack limit on the server
   for(i in seq_along(name_chunks)){
-    updateMetaInformation(meta_envir,con,
-             schema,
-             tbl,
-             keys=name_chunks[i]) 
+    updateMetaInformation(meta_envir = meta_envir,
+                          con = con,
+                          schema = schema, 
+                          tbl = tbl, 
+                          keys = name_chunks[[i]])
   }
+  
+  
 }
 
 

@@ -5,7 +5,7 @@
 \title{Store Meta Information Chunk Wise to Avoid Memory Problem}
 \usage{
 storeMetaChunkWise(meta_envir, con, schema = "timeseries",
-  tbl = "meta_data_unlocalized", keys = NULL)
+  tbl = "meta_data_unlocalized", keys = NULL, chunksize = NULL)
 }
 \arguments{
 \item{meta_envir}{object of class meta_env. Most likely
@@ -21,6 +21,9 @@ Defaults to 'meta_data_unlocalized'.}
 \item{keys}{character vector of time series. If specified only the selected
 meta information is stored. Defaults to NULL which stores all meta information
 records in the environment.}
+
+\item{chunksize}{integer number of chunks. Defaults to NULL which automatically choose chunks based
+on Cstack size.}
 }
 \description{
 This function is a wrapper around \code{\link{updateMetaInformation}}. It is used to split large environments of meta info
