@@ -17,12 +17,14 @@
 #' Defaults to 'meta_data_unlocalized'.
 #' @param keys character vector of time series. If specified only the selected 
 #' meta information is stored. Defaults to NULL which stores all meta information
-#' records in the environment. 
+#' records in the environment.
+#' @param quiet logical should function be quiet instead of returning a message when done? Defaults to FALSE.  
 #' @export
 updateMetaInformation <- function(meta_envir,con,
                           schema = "timeseries",
                           tbl = "meta_data_unlocalized",
-                          keys=NULL) {
+                          keys=NULL,
+                          quiet=F) {
   UseMethod("updateMetaInformation")
 } 
 
@@ -80,5 +82,8 @@ updateMetaInformation.meta_env <- function(meta_envir,con,
                              COMMIT;", md_values, schema, schema, schema, schema)
   
   md_ok <- DBI::dbGetQuery(con,query_meta_data)
-  if(is.null(md_ok)) cat("Meta information updated.")
+  if(!quiet) {
+    if(is.null(md_ok)) cat("Meta information updated.")  
+  }
+  
 }

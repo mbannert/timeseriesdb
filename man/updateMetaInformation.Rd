@@ -6,7 +6,7 @@
 \title{Update Meta Information Records}
 \usage{
 updateMetaInformation(meta_envir, con, schema = "timeseries",
-  tbl = "meta_data_unlocalized", keys = NULL)
+  tbl = "meta_data_unlocalized", keys = NULL, quiet = F)
 
 \method{updateMetaInformation}{meta_env}(meta_envir, con,
   schema = "timeseries", tbl = "meta_data_unlocalized", keys = NULL)
@@ -25,6 +25,8 @@ Defaults to 'meta_data_unlocalized'.}
 \item{keys}{character vector of time series. If specified only the selected
 meta information is stored. Defaults to NULL which stores all meta information
 records in the environment.}
+
+\item{quiet}{logical should function be quiet instead of returning a message when done? Defaults to FALSE.}
 }
 \description{
 When a time series is stored to the database by \code{\link{storeTimeSeries}}
