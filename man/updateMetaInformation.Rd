@@ -9,7 +9,8 @@ updateMetaInformation(meta_envir, con, schema = "timeseries",
   tbl = "meta_data_unlocalized", keys = NULL, quiet = F)
 
 \method{updateMetaInformation}{meta_env}(meta_envir, con,
-  schema = "timeseries", tbl = "meta_data_unlocalized", keys = NULL)
+  schema = "timeseries", tbl = "meta_data_unlocalized", keys = NULL,
+  quiet = F)
 }
 \arguments{
 \item{meta_envir}{object of class meta_env. Most likely

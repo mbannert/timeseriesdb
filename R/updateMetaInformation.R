@@ -34,7 +34,8 @@ updateMetaInformation <- function(meta_envir,con,
 updateMetaInformation.meta_env <- function(meta_envir,con,
                                            schema = "timeseries",
                                            tbl = "meta_data_unlocalized",
-                                           keys=NULL){
+                                           keys = NULL,
+                                           quiet = F){
   
   l <- as.list(meta_envir)
   
