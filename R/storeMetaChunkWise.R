@@ -13,13 +13,15 @@
 #' meta information is stored. Defaults to NULL which stores all meta information
 #' records in the environment.
 #' @param chunksize integer number of chunks. Defaults to NULL which automatically choose chunks based
-#' on Cstack size. 
+#' on Cstack size.
+#' @param quiet logical should the update function be quiet? Defaults to TRUE.  
 #' @export
 storeMetaChunkWise <- function(meta_envir,con,
                                schema = "timeseries",
                                tbl = "meta_data_unlocalized",
                                keys=NULL,
-                               chunksize = NULL){
+                               chunksize = NULL,
+                               quiet = T){
   if(!is.null(chunksize)){
     chunks <- chunksize
   } else {
@@ -38,7 +40,8 @@ storeMetaChunkWise <- function(meta_envir,con,
                           con = con,
                           schema = schema, 
                           tbl = tbl, 
-                          keys = name_chunks[[i]])
+                          keys = name_chunks[[i]],
+                          quiet = quiet)
   }
   
   
