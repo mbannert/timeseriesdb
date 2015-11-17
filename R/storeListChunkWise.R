@@ -11,6 +11,7 @@
 #' @param md_unlocal character string denoting the name of the table that holds unlocalized meta information.
 #' @param lookup_env environment to look in for timeseries. Defaults to .GobalEnv.
 #' @param overwrite logical should existing records (same primary key) be overwritten? Defaults to TRUE.
+#' @param chunksize integer number of chunks. Defaults to NULL, invoking automatic chunk determination based on C Stack size.
 #' @param schema SQL schema name. Defaults to timeseries. 
 #' @importFrom DBI dbGetQuery
 #' @export
@@ -19,10 +20,16 @@ storeListChunkWise <- function(series,
                                li = NULL,
                                tbl="timeseries_main",
                                md_unlocal = "meta_data_unlocalized",
-                               lookup_env = .GlobalEnv,
                                overwrite = T,
-                               schema = "timeseries"){
-  chunks <- ceiling(as.numeric(object.size(li))/(Cstack_info()["size"]*0.7))
+                               chunksize = NULL,
+                               schema = "timeseries",
+                               quiet = T){
+  if(!is.null(chunksize)){
+    chunks <- chunksize
+  } else {
+    chunks <- ceiling(as.numeric(object.size(as.list(meta_envir)))/(Cstack_info()["size"]*0.7))  
+  }
+  
   name_chunks <- split(series,ceiling(seq_along(names(li))/chunks))
   
   # loop over the chunks in order to store it chunk wise 
@@ -34,6 +41,4 @@ storeListChunkWise <- function(series,
                     schema = schema)  
   }
 }
-  
-  
   

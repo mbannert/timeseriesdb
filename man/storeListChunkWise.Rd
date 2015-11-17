@@ -5,8 +5,8 @@
 \title{Store a List of Time Series Chunk Wise to Avoid Memory Problem}
 \usage{
 storeListChunkWise(series, con, li = NULL, tbl = "timeseries_main",
-  md_unlocal = "meta_data_unlocalized", lookup_env = .GlobalEnv,
-  overwrite = T, schema = "timeseries")
+  md_unlocal = "meta_data_unlocalized", overwrite = T, chunksize = NULL,
+  schema = "timeseries", quiet = T)
 }
 \arguments{
 \item{series}{character name of a time series, S3 class ts. When used with lists it is convenient to set series to names(li). Note that the series name needs to be unique in the database!}
@@ -19,11 +19,13 @@ storeListChunkWise(series, con, li = NULL, tbl = "timeseries_main",
 
 \item{md_unlocal}{character string denoting the name of the table that holds unlocalized meta information.}
 
-\item{lookup_env}{environment to look in for timeseries. Defaults to .GobalEnv.}
-
 \item{overwrite}{logical should existing records (same primary key) be overwritten? Defaults to TRUE.}
 
+\item{chunksize}{integer number of chunks. Defaults to NULL, invoking automatic chunk determination based on C Stack size.}
+
 \item{schema}{SQL schema name. Defaults to timeseries.}
+
+\item{lookup_env}{environment to look in for timeseries. Defaults to .GobalEnv.}
 }
 \description{
 This function is a wrapper around \code{\link{storeTimeSeries}}. It is used to split large lists of time series
