@@ -2,19 +2,30 @@ Package: timeseriesdb
 Type: Package
 Version: 0.2.1
 Title: Manage Time Series with R and PostgreSQL
-Description: Store and organize a large amount of low frequency time series data. 
-    The package was designed to manage a large catalog of official statistics which are
-    typically published on monthly, quarterly or yearly basis. Thus timeseriesdb is
-    optimized to handle a large number of lower frequency time series as opposed to a
-    smaller amount of high frequency time series such as real time data from measuring devices.
-    Hence timeseriesdb provides the opportunity to store extensive multi-lingual
-    meta information. The package also provides a web GUI to explore the underlying
-    PostgreSQL database interactively. 
+Description: Store and organize a large amount of low frequency time series
+    data. The package was designed to manage a large catalog of official statistics
+    which are typically published on monthly, quarterly or yearly basis. Thus
+    timeseriesdb is optimized to handle a large number of lower frequency time
+    series as opposed to a smaller amount of high frequency time series such as real
+    time data from measuring devices. Hence timeseriesdb provides the opportunity to
+    store extensive multi-lingual meta information. The package also provides a web
+    GUI to explore the underlying PostgreSQL database interactively.
 Author: "Matthias Bannert <bannert@kof.ethz.ch> [aut, cre]"
 Depends:
-    R (>= 3.0.0), RPostgreSQL, methods 
-Imports: RJSONIO, xts, zoo, reshape2, shiny, DBI, openxlsx, data.table (>= 1.9.4)
+    R (>= 3.0.0),
+    RPostgreSQL,
+    methods
+Imports:
+    RJSONIO,
+    xts,
+    zoo,
+    reshape2,
+    shiny,
+    DBI,
+    openxlsx,
+    data.table (>= 1.9.4)
 Date: 2015-04-02
 License: GPL-2
 LazyData: true
 Maintainer: 'Matthias Bannert' <bannert@kof.ethz.ch>
+RoxygenNote: 5.0.1
