@@ -38,6 +38,7 @@ readTimeSeries <- function(series,con, manual_freq=1,
   # later on
   nms <- unlist(lapply(jsn_li,"[[","ts_key"))
   
+  # cast to numeric cause hstore is just simple text !
   # create time series objects
   out_li <- lapply(jsn_li,function(x){
     freq <- "[["(x,"ts_frequency")
@@ -47,10 +48,12 @@ readTimeSeries <- function(series,con, manual_freq=1,
     p <- as.numeric(format(d,"%m"))
     
     if(is.null(freq)){
-      freq <- manual_freq
-      period <- manual_period
+      warning("time series does not have regular frequency, using the zoo package for mapping to R.
+This is not an error, but the functionality is currently considered experimental")
+      z <- zoo::zoo(as.numeric(ts_data),
+                    order.by = as.Date(names(ts_data)))
+      z
     } else {
-      
       if(freq == 4){
         period <- (p -1) / 3 + 1
       } else if(freq == 12){
@@ -58,19 +61,12 @@ readTimeSeries <- function(series,con, manual_freq=1,
       } else if(freq == 1){
         period <- NULL  
       }
+      # create the time series object but suppress the warning of creating NAs
+      # when transforming text NAs to numeric NAs
+      suppressWarnings(ts(as.numeric(ts_data),
+                          start=c(y,period),
+                          frequency = freq))
     }
-      
-      
-      
-      
-    
-    
-    
-    # create the time series object but suppress the warning of creating NAs
-    # when transforming text NAs to numeric NAs
-    suppressWarnings(ts(as.numeric(ts_data),
-                        start=c(y,period),
-                        frequency = freq))
   })
   
   

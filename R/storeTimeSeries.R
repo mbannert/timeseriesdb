@@ -49,16 +49,18 @@ storeTimeSeries <- function(series,
   dontkeep <- !keep
   
   if(all(keep)){
-    cat("No corrupted series found. \n")
+    NULL #cat("No corrupted series found. \n")
   } else {
-    cat("These series caused problems", series[dontkeep],"\n")  
+    cat("These series caused problems", names(series[dontkeep]),"\n")  
   }
   
   
   li <- li[keep]
 
   hstores <- unlist(lapply(li,createHstore))
-  freqs <- sapply(li,frequency)
+  freqs <- sapply(li,function(x) {
+    ifelse(inherits(x,"zoo"),'NULL',frequency(x))
+  })
   
   if(!store_freq){
     values <- paste(paste0("('",
@@ -76,6 +78,11 @@ storeTimeSeries <- function(series,
                            "')"),
                     collapse = ",")
   }
+  
+  values <- gsub("'hstore","hstore",values)
+  values <- gsub("')','",
+                 "'),'",values)
+  values <- gsub("'NULL'","NULL",values)
   
   
   # add schema name

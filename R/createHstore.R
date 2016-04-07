@@ -21,11 +21,24 @@ createHstore <- function(x,...) UseMethod("createHstore")
 #' @export
 createHstore.ts <- function(x,...){
   tm <- time(x)
-  paste(sprintf('"%s"=>"%s"',
+  paste(sprintf("hstore('%s','%s')",
                 zooLikeDateConvert(tm),
                 as.character(x)),
-        collapse=",")
+        collapse="||")  
 }
+
+#' @rdname createHstore
+#' @export
+createHstore.zoo <- function(x,...){
+  tm <- zoo::index(x)
+  paste(sprintf("hstore('%s','%s')",
+                tm,
+                as.character(x)),
+        collapse="||")  
+}
+
+
+
 
 #' @rdname createHstore
 #' @export

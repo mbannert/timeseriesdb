@@ -5,11 +5,14 @@
 \alias{createHstore.data.frame}
 \alias{createHstore.list}
 \alias{createHstore.ts}
+\alias{createHstore.zoo}
 \title{Create Hstore}
 \usage{
 createHstore(x, ...)
 
 \method{createHstore}{ts}(x, ...)
+
+\method{createHstore}{zoo}(x, ...)
 
 \method{createHstore}{data.frame}(x, ...)
 

@@ -8,7 +8,7 @@
 zooLikeDateConvert(x, offset = 0, ...)
 }
 \arguments{
-\item{x}{object of class ts}
+\item{x}{object of class ts or zoo (experimental)}
 
 \item{offset}{numeric defaults to 0. See the zoo package for more information.}
 
