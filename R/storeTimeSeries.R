@@ -78,10 +78,9 @@ storeTimeSeries <- function(series,
                            "')"),
                     collapse = ",")
   }
-  
-  values <- gsub("'hstore","hstore",values)
-  values <- gsub("')','",
-                 "'),'",values)
+
+  values <- gsub("''","'",values)
+  values <- gsub("::hstore'","::hstore",values)
   values <- gsub("'NULL'","NULL",values)
   
   

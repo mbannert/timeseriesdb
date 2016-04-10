@@ -20,21 +20,24 @@ createHstore <- function(x,...) UseMethod("createHstore")
 #' @rdname createHstore
 #' @export
 createHstore.ts <- function(x,...){
+  # '1900-01-01 => -0.395131869823009, 1900-01-02 => -0.395131869823009, ...'::hstore
   tm <- time(x)
-  paste(sprintf("hstore('%s','%s')",
-                zooLikeDateConvert(tm),
-                as.character(x)),
-        collapse="||")  
+  sprintf("'%s'::hstore",
+          paste0(zooLikeDateConvert(tm),
+                 " => ",
+                 as.character(x),
+                 collapse=", "))
 }
 
 #' @rdname createHstore
 #' @export
 createHstore.zoo <- function(x,...){
   tm <- zoo::index(x)
-  paste(sprintf("hstore('%s','%s')",
-                tm,
-                as.character(x)),
-        collapse="||")  
+  sprintf("'%s'::hstore",
+          paste0(tm,
+                 " => ",
+                 as.character(x),
+                 collapse=", "))
 }
 
 
