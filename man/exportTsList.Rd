@@ -4,15 +4,18 @@
 \alias{exportTsList}
 \title{Export A List of Time Series to CSV}
 \usage{
-exportTsList(tl, fname = NULL, cast = T, xlsx = F, sep = ";",
-  dec = ".", LC_TIME_LOCALE = NULL, date_format = NULL, timeAsX = FALSE)
+exportTsList(tl, fname = NULL, auto_date = T, cast = T, xlsx = F,
+  sep = ";", dec = ".", LC_TIME_LOCALE = NULL, date_format = NULL,
+  timeAsX = FALSE)
 }
 \arguments{
 \item{tl}{list of time series}
 
 \item{fname}{character file name. If set to NULL a standard file name chunk + Sys.Date is used.}
 
-\item{cast}{logical. Should the resulting data.frame be cast to wide format? Defaults to TRUE}
+\item{auto_date}{logical should date automatically be appended to file name? Defaults to TRUE.}
+
+\item{cast}{logical. Should the resulting data.frame be cast to wide format? Defaults to TRUE.}
 
 \item{xlsx}{logical. Should data be exported to .xlsx? Defaults to FALSE.}
 

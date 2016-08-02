@@ -4,7 +4,8 @@
 #' 
 #' @param tl list of time series
 #' @param fname character file name. If set to NULL a standard file name chunk + Sys.Date is used.
-#' @param cast logical. Should the resulting data.frame be cast to wide format? Defaults to TRUE
+#' @param auto_date logical should date automatically be appended to file name? Defaults to TRUE.
+#' @param cast logical. Should the resulting data.frame be cast to wide format? Defaults to TRUE.
 #' @param xlsx logical. Should data be exported to .xlsx? Defaults to FALSE.
 #' @param sep character that separates columns in .csv
 #' @param dec character that separates decimals in .csv
@@ -27,7 +28,9 @@
 #' tslist_q$ts2 <- ts(rnorm(50),start = c(1990,4),frequency = 4)
 #' exportTsList(tslist_q,date_format="%Y-0%q")
 #' @export
-exportTsList <- function(tl,fname = NULL,cast = T, xlsx = F,
+exportTsList <- function(tl,fname = NULL,
+                         auto_date = T,
+                         cast = T, xlsx = F,
                          sep = ";",dec=".",
                          LC_TIME_LOCALE = NULL,
                          date_format = NULL,
@@ -37,7 +40,10 @@ exportTsList <- function(tl,fname = NULL,cast = T, xlsx = F,
   if(is.null(fname)){
     fname <- "timeseriesdb_export"
   } 
-  fname <- paste0(fname,"_",gsub("-","_",Sys.Date()))
+  fname <- paste0(fname,"_",
+                  ifelse(auto_date,
+                         gsub("-","_",Sys.Date()),
+                         NULL))
   
   # check if all series got some frequencies 
   # other we can't export, maybe we don't even need this anymore... 
