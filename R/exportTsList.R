@@ -40,10 +40,11 @@ exportTsList <- function(tl,fname = NULL,
   if(is.null(fname)){
     fname <- "timeseriesdb_export"
   } 
-  fname <- paste0(fname,"_",
-                  ifelse(auto_date,
-                         gsub("-","_",Sys.Date()),
-                         NULL))
+  
+  if(auto_date){
+    fname <-  paste0(fname,"_",gsub("-","_",Sys.Date()))
+  }
+  
   
   # check if all series got some frequencies 
   # other we can't export, maybe we don't even need this anymore... 
