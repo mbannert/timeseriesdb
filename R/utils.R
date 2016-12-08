@@ -30,3 +30,20 @@ setMethod("dbIsValid", "PostgreSQLConnection", function(dbObj) {
 })
 
 
+
+#' Delete all objects except for specific objects
+#' 
+#' Run rm(list=ls()) but sparing some objects from being deleted. 
+#' This function is particularly handy when you want to clear the memory but want to keep the 
+#' the database connection object.
+#' 
+#' @param but character vector of variables that should not be deleted. 
+#' @rdname rmAllBut
+#' @export
+rmAllBut <- function(but,env = .GlobalEnv){
+  vars <- ls(envir = env)
+  del <- vars[!vars %in% but]
+  rm(list = del,envir = env)
+  cat(sprintf("All objects but '%s' deleted.",but))
+}
+

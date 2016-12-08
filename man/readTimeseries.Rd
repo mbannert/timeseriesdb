@@ -4,13 +4,16 @@
 \alias{readTimeSeries}
 \title{Read Time Series From PostgreSQL database}
 \usage{
-readTimeSeries(series, con, manual_freq = 1, manual_period = NULL,
-  env = NULL, tbl = "v_timeseries_json", schema = "timeseries")
+readTimeSeries(series, con, vintage = NULL, manual_freq = 1,
+  manual_period = NULL, env = NULL, tbl = "v_timeseries_json",
+  schema = "timeseries")
 }
 \arguments{
 \item{series}{character vector of time series keys}
 
 \item{con}{a PostgreSQL connection object}
+
+\item{vintage}{character a point in time or a timespan that denotes the vintage. Must be the same for all series. You can query only one vintage at a time.}
 
 \item{env}{environment, optional argument to dump time series directly into an environment. Most often used with globalenv(), which gives all time series directly back to the global env.}
 
