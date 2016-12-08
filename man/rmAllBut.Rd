@@ -4,7 +4,7 @@
 \alias{rmAllBut}
 \title{Delete all objects except for specific objects}
 \usage{
-rmAllBut(but, env = .GlobalEnv)
+rmAllBut(but, env = .GlobalEnv, quiet = F)
 }
 \arguments{
 \item{but}{character vector of variables that should not be deleted.}

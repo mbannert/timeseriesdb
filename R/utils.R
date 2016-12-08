@@ -38,12 +38,18 @@ setMethod("dbIsValid", "PostgreSQLConnection", function(dbObj) {
 #' the database connection object.
 #' 
 #' @param but character vector of variables that should not be deleted. 
+#' @param env environment to clean up. Defaults to .Globalenv
+#' @param quiet logical should functions print output? Defaults to falase.
 #' @rdname rmAllBut
 #' @export
-rmAllBut <- function(but,env = .GlobalEnv){
+rmAllBut <- function(but,env = .GlobalEnv, quiet = F){
   vars <- ls(envir = env)
   del <- vars[!vars %in% but]
   rm(list = del,envir = env)
-  cat(sprintf("All objects but '%s' deleted.",but))
+  if(!quiet){
+    cat(sprintf("All objects but '%s' deleted.",
+                paste(but,collapse = ", ")))
+  }
+  
 }
 
