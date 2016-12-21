@@ -8,6 +8,10 @@ rmAllBut(but, env = .GlobalEnv, quiet = F)
 }
 \arguments{
 \item{but}{character vector of variables that should not be deleted.}
+
+\item{env}{environment to clean up. Defaults to .Globalenv}
+
+\item{quiet}{logical should functions print output? Defaults to falase.}
 }
 \description{
 Run rm(list=ls()) but sparing some objects from being deleted. 

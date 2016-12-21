@@ -11,8 +11,12 @@
 #' @importFrom DBI dbGetQuery
 #' @rdname listTsSets
 listTsSets <- function(con,user_name = Sys.info()['user'],tbl = "timeseries_sets", schema = "timeseries"){
-  sql_query <- sprintf("SELECT setname FROM %s.%s WHERE username = '%s' AND active = TRUE",schema,tbl,user_name)
-  DBI::dbGetQuery(con,sql_query)$setname
+  sql_query <- sprintf("SELECT setname FROM %s.%s 
+                       WHERE username = '%s' 
+                       AND active = TRUE",
+                       schema,tbl,user_name)
+  class(sql_query) <- "SQL"
+  dbGetQuery(con,sql_query)$setname
 }
 
 
@@ -28,7 +32,7 @@ listTsSets <- function(con,user_name = Sys.info()['user'],tbl = "timeseries_sets
 #' @author Matthias Bannert, Ioan Gabriel Bucur
 #' @export
 #' @importFrom DBI dbGetQuery
-#' @importFrom RJSONIO fromJSON
+#' @importFrom jsonlite fromJSON
 #' @rdname loadTsSet
 loadTsSet <- function(con, set_name, user_name = Sys.info()['user'],
                        tbl = 'timeseries_sets', schema = 'timeseries') {
@@ -38,12 +42,16 @@ loadTsSet <- function(con, set_name, user_name = Sys.info()['user'],
                        key_set::json::text FROM %s.%s WHERE username = '%s'
                        AND setname = '%s'",
                        schema, tbl, user_name,set_name)
+  class(sql_query) <- "SQL"
+  set <- dbGetQuery(con, sql_query)
+  if(nrow(set) == 0){
+    return(cat("No set with this set_name / user_name combination available."))
+  }
   
-  set <- DBI::dbGetQuery(con, sql_query)
   
   result <- list()
   result$set_info <- set[,c("setname","username","tstamp","set_description")]
-  json_conversion <- RJSONIO::fromJSON(set$key_set)
+  json_conversion <- fromJSON(set$key_set)
   result$keys <- names(json_conversion)
   result$key_type <- unique(json_conversion)
   if(length(result$key_type) != 1) stop("Multiple key type are not allowed in the same set yet.")
@@ -72,7 +80,8 @@ deactivateTsSet <- function(con,set_name,
   sql_query <- sprintf("UPDATE %s.%s SET active = FALSE
                        WHERE username = '%s' AND setname = '%s'",
                        schema,tbl,user_name,set_name)
-  DBI::dbGetQuery(con,sql_query)
+  class(sql_query) <- "SQL"
+  dbGetQuery(con,sql_query)
 }
 
 
@@ -98,7 +107,8 @@ activateTsSet <- function(con,set_name,
   sql_query <- sprintf("UPDATE %s.%s SET active = TRUE
                        WHERE username = '%s' AND setname = '%s'",
                        schema,tbl,user_name,set_name)
-  DBI::dbGetQuery(con,sql_query)
+  class(sql_query) <- "SQL"
+  dbGetQuery(con,sql_query)
 }
 
 
@@ -143,13 +153,7 @@ storeTsSet <- function(con, set_name, set_keys,
     "INSERT INTO %s.%s VALUES (%s)",
     schema,tbl, row_values
   )
+  class(sql_query) <- "SQL"
   dbSendQuery(con, sql_query)
 }
-
-
-
-
-
-
-
 
