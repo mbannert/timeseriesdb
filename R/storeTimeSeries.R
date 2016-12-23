@@ -16,7 +16,7 @@
 #' @param schema SQL schema name. Defaults to timeseries. 
 #' @importFrom DBI dbGetQuery
 #' @export
-storeTimeSeries <- function(series,
+depr_storeTimeSeries <- function(series,
                       con,
                       li = NULL,
                       store_freq = T,

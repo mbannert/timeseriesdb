@@ -37,6 +37,9 @@ readTimeSeries <- function(series, con,
   out <- dbGetQuery(con,read_SQL)
   dbGetQuery(con,"COMMIT;")
   
+  if(nrow(out) == 0) return(list(error = "No series found. Did you use the right schema?"))
+  
+  
   # create a json array from character vector, cause
   # jsonlite expects json array
   jsn_arr <- sprintf("[%s]",paste0(out[,2],collapse = ","))

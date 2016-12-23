@@ -18,9 +18,9 @@
 #' @export
 storeTimeSeries <- function(series,
                             con,
-                            valid_from = NULL,
-                            valid_to = NULL,
                             li = NULL,
+                            valid_from = "",
+                            valid_to = "",
                             store_freq = T,
                             tbl = "timeseries_main",
                             md_unlocal = "meta_data_unlocalized",
@@ -28,61 +28,39 @@ storeTimeSeries <- function(series,
                             overwrite = T,
                             schema = "timeseries"){
   
-  # subset a list series 
-  li <- li[series]
-  # make this function compatible with former version that used environments. 
+  # Create a PostgreSQL daterange compliant string
+  validity <- sprintf("[%s,%s)",valid_from,valid_to)
+  # make storeTimeSeries calls work
+  # with former versions of timeseriesdb
+  # that used environments. 
   if(is.null(li)){
     li <- as.list.environment(lookup_env)
   }
-  
-  # CASE: Don't store vintages (version), just 
-  # have one series per key
-  .createNoVintageQuery <- function(){
-    R_CURRENT_DATE <- Sys.Date()
-    validity <- sprintf("[%s,)",R_CURRENT_DATE)  
-    
-    sql_query <- sprintf("BEGIN;
-                         CREATE TEMPORARY TABLE 
-                         ts_updates(ts_key varchar, validity daterange, ts_data hstore, ts_frequency integer)
-                         ON COMMIT DROP;
-                         
-                         INSERT INTO ts_updates(ts_key, validity, ts_data, ts_frequency) VALUES %s;
-                         LOCK TABLE %s.timeseries_main IN EXCLUSIVE MODE;
-                         
-                         -- Update existing entries
-                         UPDATE %s.timeseries_main
-                         SET ts_data = ts_updates.ts_data,
-                         validity = ts_updates.validity,
-                         ts_frequency = ts_updates.ts_frequency
-                         FROM ts_updates
-                         WHERE ts_updates.ts_key = %s.timeseries_main.ts_key
-                         AND %s.timeseries_main.validity @> CURRENT_DATE;
-                         
-                         -- Add new entries
-                         INSERT INTO %s.timeseries_main
-                         SELECT ts_updates.ts_key, validity, ts_updates.ts_data, ts_updates.ts_frequency
-                         FROM ts_updates
-                         LEFT OUTER JOIN %s.timeseries_main ON (%s.timeseries_main.ts_key = ts_updates.ts_key)
-                         WHERE %s.timeseries_main.ts_key IS NULL;
-                         
-                         COMMIT;")
-    class(sql_query) <- "SQL"
-    sql_query
-  }
-  
-  if(is.null(valid_from) && is.null(valid_to)){
-    .createNoVintageQuery()  
-  }
-  
 
-  # avoid overwriting
+  # subset 
+  li <- li[series]
+  
+  # avoid overwrite totally, 
+  # i.e., existing records are not edited at all, 
+  # not even vingtages are created
   if(!overwrite){
-    db_keys <- DBI::dbGetQuery(con,sprintf("SELECT ts_key FROM %s",tbl))$ts_key
-    series <- series[!(series %in% db_keys)]
+    db_keys <- runDbQuery(con,.queryGetExistingKeys(series,
+                                         validity = validity,
+                                         tbl = tbl,
+                                         schema = schema))
+    series <- series[!(series %in% db_keys$ts_key)]
     li <- li[series]
   }
   
-  # CREATE ELEMENTS AND RECORDS ---------------------------------------------
+  # stop here if none of the elements in the input list 
+  # are allowed to be stored. In that case we do not need to run 
+  # through the entire write process.
+  if(length(li) == 0){
+    cat("No time series in subset - returned empty list. Set overwrite=TRUE,\nif you want to overwrite existing series in the database.")
+    return(list())
+  } 
+  
+  # CREATE ELEMENTS AND RECORDS ##########################
   # use the form (..record1..),(..record2..),(..recordN..)
   # to be able to store everything in one big query
   
@@ -92,9 +70,9 @@ storeTimeSeries <- function(series,
   if(all(keep)){
     NULL #cat("No corrupted series found. \n")
   } else {
-    cat("These series caused problems", names(series[dontkeep]),"\n")  
+    cat("These elements are no valid time series objects: ",
+        names(series[dontkeep]),"\n")  
   }
-  
   
   li <- li[keep]
   
@@ -106,6 +84,7 @@ storeTimeSeries <- function(series,
   if(!store_freq){
     values <- paste(paste0("('",
                            paste(series,
+                                 validity,
                                  hstores,
                                  sep="','"),
                            "')"),
@@ -113,6 +92,7 @@ storeTimeSeries <- function(series,
   } else {
     values <- paste(paste0("('",
                            paste(series,
+                                 validity,
                                  hstores,
                                  freqs,
                                  sep="','"),
@@ -127,115 +107,15 @@ storeTimeSeries <- function(series,
   
   # add schema name
   tbl <- paste(schema,tbl,sep = ".")
-  md_unlocal <- paste(schema,md_unlocal,sep = ".")
+  #md_unlocal <- paste(schema,md_unlocal,sep = ".")
   
-  # CREATE META INFORMATION -------------------------------------------------
-  # automatically generated meta information
-  md_generated_by <- Sys.info()["user"]
-  md_resource_last_update <- Sys.time()
-  md_coverages <- unlist(lapply(li,function(x){
-    sprintf('%s to %s',
-            min(zooLikeDateConvert(x)),
-            max(zooLikeDateConvert(x))
-    )}
-  ))
-  
-  # same trick as for data itself, one query
-  md_values <- paste(paste0("('",
-                            paste(series,
-                                  md_generated_by,
-                                  md_resource_last_update,
-                                  md_coverages,
-                                  sep="','"),
-                            "')"),
-                     collapse = ",")
-  
-  
-  # SQL STATEMENTS ---------------------------------------------------------- 
-  # we use the state for store frequency here because it is the easiest
-  # way to store NULL values in the PostgreSQL table with the bulk
-  # optimized process, just note the missing frequency in the insert
-  # statement of the update table causing the NULL. 
-  if(store_freq){
-    sql_query_data <- sprintf("BEGIN;
-                              CREATE TEMPORARY TABLE 
-                              ts_updates(ts_key varchar, ts_data hstore, ts_frequency integer) ON COMMIT DROP;
-                              INSERT INTO ts_updates(ts_key, ts_data, ts_frequency) VALUES %s;
-                              LOCK TABLE %s.timeseries_main IN EXCLUSIVE MODE;
-                              
-                              UPDATE %s.timeseries_main
-                              SET ts_data = ts_updates.ts_data,
-                              ts_frequency = ts_updates.ts_frequency
-                              FROM ts_updates
-                              WHERE ts_updates.ts_key = %s.timeseries_main.ts_key;
-                              
-                              INSERT INTO %s.timeseries_main
-                              SELECT ts_updates.ts_key, ts_updates.ts_data, ts_updates.ts_frequency
-                              FROM ts_updates
-                              LEFT OUTER JOIN %s.timeseries_main ON (%s.timeseries_main.ts_key = ts_updates.ts_key)
-                              WHERE %s.timeseries_main.ts_key IS NULL;
-                              COMMIT;",
-                              values, schema, schema, schema, schema, schema, schema, schema)
-  } else {
-    
-    sql_query_data <- sprintf("BEGIN;
-                              CREATE TEMPORARY TABLE 
-                              ts_updates(ts_key varchar, ts_data hstore, ts_frequency integer) ON COMMIT DROP;
-                              INSERT INTO ts_updates(ts_key, ts_data) VALUES %s;
-                              LOCK TABLE %s.timeseries_main IN EXCLUSIVE MODE;
-                              
-                              UPDATE %s.timeseries_main
-                              SET ts_data = ts_updates.ts_data,
-                              ts_frequency = ts_updates.ts_frequency
-                              FROM ts_updates
-                              WHERE ts_updates.ts_key = %s.timeseries_main.ts_key;
-                              
-                              INSERT INTO %s.timeseries_main
-                              SELECT ts_updates.ts_key, ts_updates.ts_data, ts_updates.ts_frequency
-                              FROM ts_updates
-                              LEFT OUTER JOIN %s.timeseries_main ON (%s.timeseries_main.ts_key = ts_updates.ts_key)
-                              WHERE %s.timeseries_main.ts_key IS NULL;
-                              COMMIT;",
-                              values, schema, schema, schema, schema, schema, schema, schema)
+  # CASE: Don't store vintages (version), just 
+  # have one series per key
+  if(valid_from == "" && valid_to == ""){
+    data_query <- .queryStoreNoVintage(val = values,
+                                       schema = schema,
+                                       tbl = tbl)  
   }
-  
-  
-  
-  
-  sql_query_meta_data <- sprintf("BEGIN;
-                                 CREATE TEMPORARY TABLE 
-                                 md_updates(ts_key varchar, md_generated_by varchar, md_resource_last_update timestamptz,
-                                 md_coverage_temp varchar, meta_data hstore) ON COMMIT DROP;
-                                 
-                                 INSERT INTO md_updates(ts_key, md_generated_by, md_resource_last_update, md_coverage_temp) VALUES %s;
-                                 LOCK TABLE %s.meta_data_unlocalized IN EXCLUSIVE MODE;
-                                 
-                                 UPDATE %s.meta_data_unlocalized
-                                 SET md_generated_by = md_updates.md_generated_by,
-                                 md_resource_last_update = md_updates.md_resource_last_update,
-                                 md_coverage_temp = md_updates.md_coverage_temp
-                                 FROM md_updates
-                                 WHERE md_updates.ts_key = %s.meta_data_unlocalized.ts_key;
-                                 
-                                 INSERT INTO %s.meta_data_unlocalized
-                                 SELECT md_updates.ts_key, md_updates.md_generated_by, md_updates.md_resource_last_update,
-                                 md_updates.md_coverage_temp
-                                 FROM md_updates
-                                 LEFT OUTER JOIN %s.meta_data_unlocalized ON (%s.meta_data_unlocalized.ts_key = md_updates.ts_key)
-                                 WHERE %s.meta_data_unlocalized.ts_key IS NULL;
-                                 COMMIT;",
-                                 md_values, schema, schema, schema, schema, schema, schema, schema)
-  
-  main_ok <- DBI::dbGetQuery(con,sql_query_data)
-  md_ok <- DBI::dbGetQuery(con,sql_query_meta_data)
-  
-  l <- length(li)
-  
-  
-  if(is.null(main_ok) & is.null(md_ok)){
-    paste0(l, " data and meta data records written successfully.")
-  } else {
-    paste("An error occured, data could not be written properly. Check the database")
-  } 
+  data_query
 }
 
