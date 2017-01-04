@@ -2,9 +2,9 @@
 % Please edit documentation in R/runDbQuery.R
 \name{runDbQuery}
 \alias{runDbQuery}
-\title{Run database query}
+\title{Run SELECT query}
 \usage{
-runDbQuery(con, sql_query)
+runDbQuery(con, sql_query, ...)
 }
 \arguments{
 \item{con}{PostgreSQL connection object}
@@ -13,7 +13,7 @@ runDbQuery(con, sql_query)
 }
 \description{
 Run database queries using \code{\link{DBI::dbSendQuery}}, \code{\link{DBI::fetch}} and \code{\link{DBI::dbClearResult}} in similar fashion as \code{\link{DBI::dbGetQuery}} but provide better error handling. 
-This function always returns a data.frame as opposed to different types in case of an exception. However, if the database query fails and empty data.frame is returned. Besides query status and database error are returned as attributes.
+This function always returns a data.frame as opposed to different types in case of an exception. However, if the database query fails and empty data.frame is returned. Besides query status and database error are returned as attributes. Make sure to use BEGIN and COMMIT outside of these statements.
 }
 \examples{
 # There's no connection, so this returns a proper error message.

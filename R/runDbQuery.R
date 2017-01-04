@@ -12,16 +12,14 @@
 #' attributes(out_obj)
 runDbQuery <- function(con,sql_query,...){
   tryCatch({
-    rs <- dbSendQuery(con,sql_query,...)
-    return_df <- fetch(rs,n = -1)
+    return_df <- dbGetQuery(con,sql_query,...)
+    if(is.null(return_df)) return_df <- data.frame()
     attr(return_df,"query_status") <- "OK"
-    on.exit(dbClearResult(rs))
     return_df
   },error = function(e){
     return_df <- data.frame()
     attr(return_df,"query_status") <- "Failure"
     attr(return_df,"db_error") <- geterrmessage()
-    cat("DB query not valid, returned empty data.frame.\nRun attributes(your_return_object) to see database error message.")
     return_df
   })  
 }

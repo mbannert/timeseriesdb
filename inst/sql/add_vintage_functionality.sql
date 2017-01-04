@@ -17,7 +17,7 @@ ALTER TABLE sbx_timeseries.timeseries_main
 ALTER TABLE sbx_timeseries.timeseries_main
   ADD COLUMN validity DATERANGE;
 UPDATE sbx_timeseries.timeseries_main
-SET validity = '[,)' :: DATERANGE;
+SET validity = '(,)' :: DATERANGE;
 ALTER TABLE sbx_timeseries.timeseries_main
   ADD PRIMARY KEY (ts_key, validity);
 ALTER TABLE sbx_timeseries.timeseries_main
@@ -26,7 +26,7 @@ ALTER TABLE sbx_timeseries.timeseries_main
 ALTER TABLE sbx_timeseries.meta_data_unlocalized
   ADD COLUMN validity DATERANGE;
 UPDATE sbx_timeseries.meta_data_unlocalized
-SET validity = '[,)' :: DATERANGE;
+SET validity = '(,)' :: DATERANGE;
 ALTER TABLE sbx_timeseries.meta_data_unlocalized
   ADD PRIMARY KEY (ts_key, validity);
 COMMIT;
@@ -41,7 +41,7 @@ ON DELETE CASCADE ON UPDATE CASCADE;
 ALTER TABLE sbx_timeseries.meta_data_localized
   ADD COLUMN validity DATERANGE;
 UPDATE sbx_timeseries.meta_data_localized
-SET validity = '[,)' :: DATERANGE;
+SET validity = '(),)' :: DATERANGE;
 ALTER TABLE sbx_timeseries.meta_data_localized
   ADD PRIMARY KEY (ts_key, validity);
 ALTER TABLE sbx_timeseries.meta_data_localized

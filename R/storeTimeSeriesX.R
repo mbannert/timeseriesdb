@@ -1,4 +1,4 @@
-#' Write an R Time Series to a PostgreSQL database 
+#' Write an R time series to a PostgreSQL database 
 #' 
 #' This function writes time series object into a relational PostgreSQL database make use 
 #' of PostgreSQL own 'key'=>'value' storage called hstore. The schema and database needs to 
@@ -9,6 +9,8 @@
 #' @param series character name of a time series, S3 class ts. When used with lists it is convenient to set series to names(li). Note that the series name needs to be unique in the database!
 #' @param con a PostgreSQL connection object.
 #' @param li list of time series. Defaults to NULL to no break legacy calls that use lookup environments.
+#' @param valid_from character lower bound of a date range.
+#' @param valid_to character upper bound of a date range.
 #' @param tbl character string denoting the name of the main time series table in the PostgreSQL database.
 #' @param md_unlocal character string denoting the name of the table that holds unlocalized meta information.
 #' @param lookup_env environment to look in for timeseries. Defaults to .GobalEnv.
@@ -19,35 +21,31 @@
 storeTimeSeries <- function(series,
                             con,
                             li = NULL,
-                            valid_from = "",
-                            valid_to = "",
+                            valid_from = NULL,
+                            valid_to = NULL,
                             store_freq = T,
                             tbl = "timeseries_main",
+                            tbl_vintages = "timeseries_vintages",
                             md_unlocal = "meta_data_unlocalized",
                             lookup_env = .GlobalEnv,
                             overwrite = T,
                             schema = "timeseries"){
-  
-  # Create a PostgreSQL daterange compliant string
-  validity <- sprintf("[%s,%s)",valid_from,valid_to)
+  # backwards compatibility
   # make storeTimeSeries calls work
   # with former versions of timeseriesdb
   # that used environments. 
   if(is.null(li)){
     li <- as.list.environment(lookup_env)
   }
-
   # subset 
   li <- li[series]
-  
   # avoid overwrite totally, 
   # i.e., existing records are not edited at all, 
-  # not even vingtages are created
+  # not even additional vintages are created
   if(!overwrite){
     db_keys <- runDbQuery(con,.queryGetExistingKeys(series,
-                                         validity = validity,
-                                         tbl = tbl,
-                                         schema = schema))
+                                                    tbl = tbl,
+                                                    schema = schema))
     series <- series[!(series %in% db_keys$ts_key)]
     li <- li[series]
   }
@@ -56,66 +54,103 @@ storeTimeSeries <- function(series,
   # are allowed to be stored. In that case we do not need to run 
   # through the entire write process.
   if(length(li) == 0){
-    cat("No time series in subset - returned empty list. Set overwrite=TRUE,\nif you want to overwrite existing series in the database.")
+    cat("No time series in subset - returned empty list. Set overwrite=TRUE or add valid_from and/or valid_to arguments, if you want to overwrite existing series or store different versions of a series.")
     return(list())
   } 
   
-  # CREATE ELEMENTS AND RECORDS ##########################
-  # use the form (..record1..),(..record2..),(..recordN..)
-  # to be able to store everything in one big query
-  
+  # SANITY CHECK ##############
   keep <- sapply(li,function(x) inherits(x,c("ts","zoo","xts")))
   dontkeep <- !keep
   
   if(all(keep)){
     NULL #cat("No corrupted series found. \n")
   } else {
-    cat("These elements are no valid time series objects: ",
-        names(series[dontkeep]),"\n")  
+    cat("These elements are no valid time series objects: \n",
+        paste0(names(series[dontkeep])," \n"))  
   }
   
   li <- li[keep]
   
+  # VALIDITY / VINTAGES ##################
+  if(is.null(valid_from) && is.null(valid_to)){
+    # Standard for single versioned time series ###############
+    values <- .createValues(li,NULL,store_freq = store_freq)
+    data_query <- .queryStoreNoVintage(val = values,
+                                       schema = schema,
+                                       tbl = tbl)  
+  } else {
+    # Handle case that either valid from OR valid to is null.
+    # Create a PostgreSQL daterange compliant string
+    valid_from <- ifelse(is.null(valid_from),"",valid_from)
+    valid_to <- ifelse(is.null(valid_to),"",valid_to)
+    validity <- sprintf("[%s,%s)",valid_from,valid_to)
+    values <- .createValues(li,validity,store_freq = store_freq)
+    data_query <- .queryStoreVintage(val = values,
+                                     schema = schema,
+                                     tbl = tbl_vintages)
+  }
+  attributes(runDbQuery(con,data_query))
+}
+
+
+.storeToMain <- function(con, named_list, schema, tbl){
+  
+}
+
+.storeToVintages <- function(con, named_list, valid_from = "",
+                             valid_to = "", schema, tbl){
+  
+}
+
+.createValues <- function(li, validity = NULL, store_freq){
+  # CREATE ELEMENTS AND RECORDS ##########################
+  # use the form (..record1..),(..record2..),(..recordN..)
+  # to be able to store everything in one big query
   hstores <- unlist(lapply(li,createHstore))
+  series <- names(li)
   freqs <- sapply(li,function(x) {
     ifelse(inherits(x,"zoo"),'NULL',frequency(x))
   })
   
-  if(!store_freq){
-    values <- paste(paste0("('",
-                           paste(series,
-                                 validity,
-                                 hstores,
-                                 sep="','"),
-                           "')"),
-                    collapse = ",")
+  if(is.null(validity)){
+    if(!store_freq){
+      values <- paste(paste0("('",
+                             paste(series,
+                                   hstores,
+                                   sep="','"),
+                             "')"),
+                      collapse = ",")
+    } else {
+      values <- paste(paste0("('",
+                             paste(series,
+                                   hstores,
+                                   freqs,
+                                   sep="','"),
+                             "')"),
+                      collapse = ",")
+    }
   } else {
-    values <- paste(paste0("('",
-                           paste(series,
-                                 validity,
-                                 hstores,
-                                 freqs,
-                                 sep="','"),
-                           "')"),
-                    collapse = ",")
+    if(!store_freq){
+      values <- paste(paste0("('",
+                             paste(series,
+                                   validity,
+                                   hstores,
+                                   sep="','"),
+                             "')"),
+                      collapse = ",")
+    } else {
+      values <- paste(paste0("('",
+                             paste(series,
+                                   validity,
+                                   hstores,
+                                   freqs,
+                                   sep="','"),
+                             "')"),
+                      collapse = ",")
+    }
   }
-  
-  values <- gsub("''","'",values)
-  values <- gsub("::hstore'","::hstore",values)
-  values <- gsub("'NULL'","NULL",values)
-  
-  
-  # add schema name
-  tbl <- paste(schema,tbl,sep = ".")
-  #md_unlocal <- paste(schema,md_unlocal,sep = ".")
-  
-  # CASE: Don't store vintages (version), just 
-  # have one series per key
-  if(valid_from == "" && valid_to == ""){
-    data_query <- .queryStoreNoVintage(val = values,
-                                       schema = schema,
-                                       tbl = tbl)  
-  }
-  data_query
+    values <- gsub("''","'",values)
+    values <- gsub("::hstore'","::hstore",values)
+    values <- gsub("'NULL'","NULL",values)
+    values
 }
-
