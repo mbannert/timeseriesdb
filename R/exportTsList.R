@@ -13,7 +13,9 @@
 #' @param date_format character denotes the date format. Defaults to NULL. If set to null the default is used: Jan 2010. In combination with LC\_TIME\_Locale various international date formats can be produced. 
 #' @param timeAsX logical should time be put to the x-axis of the spreadsheet?
 #' Defaults to FALSE.
+#' @importFrom xts as.xts
 #' @importFrom reshape2 dcast
+#' @importFrom zoo as.yearmon
 #' @examples 
 #' tslist <- list()
 #' tslist$ts1 <- ts(rnorm(50),start = c(1990,1),frequency = 12)
