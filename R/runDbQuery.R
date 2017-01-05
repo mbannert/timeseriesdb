@@ -11,15 +11,22 @@
 #' out_obj <- runDbQuery(bogus_connection,"SELECT * FROM some_table") 
 #' attributes(out_obj)
 runDbQuery <- function(con,sql_query,...){
+  # treat warnings as erors
+  options(warn=2)
   tryCatch({
-    return_df <- dbGetQuery(con,sql_query,...)
+    return_df <- suppressMessages(dbGetQuery(con,sql_query,...))
     if(is.null(return_df)) return_df <- data.frame()
     attr(return_df,"query_status") <- "OK"
+    options(warn=1)
     return_df
   },error = function(e){
     return_df <- data.frame()
     attr(return_df,"query_status") <- "Failure"
-    attr(return_df,"db_error") <- geterrmessage()
+    em <- geterrmessage()
+    class(em) <- "SQL"
+    attr(return_df,"db_error") <- em
+    options(warn=1)
+    dbGetQuery(con,"ROLLBACK")
     return_df
   })  
 }

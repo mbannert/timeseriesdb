@@ -4,17 +4,21 @@
 \alias{readTimeSeries}
 \title{Read Time Series From PostgreSQL database}
 \usage{
-readTimeSeries(series, con, tbl = "timeseries_main", schema = "timeseries",
-  env = NULL)
+readTimeSeries(series, con, valid_on = NULL, tbl = "timeseries_main",
+  tbl_vintages = "timeseries_vintages", schema = "timeseries", env = NULL)
 }
 \arguments{
 \item{series}{character vector of time series keys}
 
 \item{con}{a PostgreSQL connection object}
 
+\item{valid_on}{character date string on which the series should be valid. Defaults to NULL. Only needed when different vintages of a time series are stored.}
+
 \item{tbl}{character string denoting the name of the relation that contains ts_key, ts_data, ts_frequency.}
 
-\item{schema}{SQL schema name. Defaults to timeseries.}
+\item{tbl_vintages}{character table name of the relation that holds time series vintages}
+
+\item{schema}{character SQL schema name. Defaults to timeseries.}
 
 \item{env}{environment, optional argument to dump time series directly into an environment. Most often used with globalenv(), which gives all time series directly back to the global env.}
 }

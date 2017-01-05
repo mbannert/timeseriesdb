@@ -42,13 +42,13 @@
   sql_query
 }
 
-.queryStoreVintage <- function(val,schema,tbl){
+.queryStoreVintage <- function(val,schema,tbl,vintage_date){
   sql_query <- sprintf("BEGIN;
                        CREATE TEMPORARY TABLE 
                        ts_updates(ts_key text, 
                                   ts_validity daterange,
                                   ts_data hstore,
-                                  ts_frequency integer);
+                                  ts_frequency integer) ON COMMIT DROP;
                        
                        INSERT INTO ts_updates(ts_key,
                                               ts_validity,
@@ -61,12 +61,14 @@
                        -- be updated automatically through FK)
                        -- Use coalesce because lower statement produces NULL
                        UPDATE %s.%s
-                       SET ts_validity = ('['||coalesce(lower(ts_updates.ts_validity)::TEXT,'')||
-                              ','||coalesce(upper(ts_updates.ts_validity)::TEXT,'')||
-                              ')')::DATERANGE
+                        SET ts_validity = ('['|| 
+                        COALESCE(lower(%s.ts_validity):: TEXT,'') ||
+                        ','|| 
+                        COALESCE(lower(ts_updates.ts_validity) :: TEXT,'') ||
+                        ')'):: DATERANGE
                        FROM ts_updates
                        WHERE ts_updates.ts_key = %s.ts_key
-                       AND %s.ts_validity @> CURRENT_DATE;
+                       AND %s.ts_validity @> %s;
 
                        -- Add new entries
                        INSERT INTO %s.%s 
@@ -74,18 +76,21 @@
                               ts_updates.ts_validity,
                               ts_updates.ts_data,
                               ts_updates.ts_frequency
-                       FROM ts_updates;",
+                       FROM ts_updates;
+                       COMMIT;",
                        val,
-                       schema,tbl,
-                       schema,tbl,
-                       tbl,
-                       tbl,
+                       schema,tbl, # LOCK TABLE
+                       schema,tbl, # UPDATE
+                       tbl, # COALESCE
+                       tbl, # WHERE
+                       tbl, # AND
+                       ifelse(is.null(vintage_date),"CURRENT_DATE",
+                              sprintf("'%s'::DATE",vintage_date)), # CONTAINS
                        schema,tbl
                        )
   class(sql_query) <- "SQL"
   sql_query
 }
-
 
 .queryGetExistingKeys <- function(keys,tbl,schema){
   vals <- paste(paste0("('",
@@ -104,6 +109,40 @@
                        JOIN ts_search ts ON (tm.ts_key = ts.ts_key);",
                        vals,
                        schema,tbl)
+  class(sql_query) <- "SQL"
+  sql_query
+}
+
+
+.queryStoreMeta <- function(vals,schema){
+  sql_query <- sprintf("BEGIN;
+                        CREATE TEMPORARY TABLE 
+                        md_updates(ts_key varchar, md_generated_by varchar,
+                        md_resource_last_update timestamptz,
+                        md_coverage_temp varchar, meta_data hstore) ON COMMIT DROP;
+                                 
+                        INSERT INTO md_updates(ts_key, md_generated_by,
+                                              md_resource_last_update,
+                                              md_coverage_temp) VALUES %s;
+                        LOCK TABLE %s.meta_data_unlocalized IN EXCLUSIVE MODE;
+                                 
+                        UPDATE %s.meta_data_unlocalized
+                        SET md_generated_by = md_updates.md_generated_by,
+                        md_resource_last_update = md_updates.md_resource_last_update,
+                        md_coverage_temp = md_updates.md_coverage_temp
+                        FROM md_updates
+                        WHERE md_updates.ts_key = %s.meta_data_unlocalized.ts_key;
+                                 
+                        INSERT INTO %s.meta_data_unlocalized
+                        SELECT md_updates.ts_key, md_updates.md_generated_by,
+                        md_updates.md_resource_last_update,
+                        md_updates.md_coverage_temp
+                        FROM md_updates
+                        LEFT OUTER JOIN %s.meta_data_unlocalized
+                        ON (%s.meta_data_unlocalized.ts_key = md_updates.ts_key)
+                        WHERE %s.meta_data_unlocalized.ts_key IS NULL;
+                        COMMIT;",
+                       vals, schema, schema, schema, schema, schema, schema, schema)
   class(sql_query) <- "SQL"
   sql_query
 }
