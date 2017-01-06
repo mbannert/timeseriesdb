@@ -36,8 +36,7 @@ readTimeSeries <- function(series, con,
             FROM %s.%s tm
             JOIN ts_read tr
             ON (tm.ts_key = tr.ts_key)
-            ) t;
-            COMMIT;",
+            ) t;",
               series, schema, tbl)  
   } else {
     read_SQL <-
@@ -53,13 +52,13 @@ readTimeSeries <- function(series, con,
               JOIN ts_read tr
               ON (tm.ts_key = tr.ts_key)
               WHERE ts_validity @> '%s'::DATE
-              ) t;
-              COMMIT;",
+              ) t;",
             series, schema, tbl_vintages, valid_on)
   }
   
   class(read_SQL) <- "SQL"
   out <- runDbQuery(con,read_SQL)
+  suppressMessages(commitTransaction(con))
   
   if(nrow(out) == 0) return(list(error = "No series found. Did you use the right schema?"))
   

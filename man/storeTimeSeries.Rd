@@ -5,8 +5,8 @@
 \title{Write an R time series to a PostgreSQL database}
 \usage{
 storeTimeSeries(series, con, li = NULL, valid_from = NULL,
-  valid_to = NULL, store_freq = T, tbl = "timeseries_main",
-  tbl_vintages = "timeseries_vintages",
+  valid_to = NULL, vintage_date = NULL, store_freq = T,
+  tbl = "timeseries_main", tbl_vintages = "timeseries_vintages",
   md_unlocal = "meta_data_unlocalized", lookup_env = .GlobalEnv,
   overwrite = T, schema = "timeseries")
 }
@@ -17,9 +17,11 @@ storeTimeSeries(series, con, li = NULL, valid_from = NULL,
 
 \item{li}{list of time series. Defaults to NULL to no break legacy calls that use lookup environments.}
 
-\item{valid_from}{character lower bound of a date range.}
+\item{valid_from}{character date lower bound of a date range.}
 
-\item{valid_to}{character upper bound of a date range.}
+\item{valid_to}{character date upper bound of a date range.}
+
+\item{vintage_date}{character date, usually not used, defaults to NULL for non-vintages and vintages that are entered at the current end of the series. By specifying a date one can store former vintages.}
 
 \item{tbl}{character string denoting the name of the main time series table in the PostgreSQL database.}
 

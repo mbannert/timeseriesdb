@@ -6,11 +6,11 @@
 \alias{rollbackTransaction}
 \title{Convenience Wrapper to SQL classics for BEGIN,COMMIT, ROLLBACK}
 \usage{
-beginTransaction(con)
+beginTransaction(con, quiet = T)
 
-commitTransaction(con)
+commitTransaction(con, quiet = T)
 
-rollbackTransaction(con)
+rollbackTransaction(con, quiet = T)
 }
 \arguments{
 \item{con}{PostgreSQL connection object.}
