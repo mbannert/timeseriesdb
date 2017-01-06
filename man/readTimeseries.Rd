@@ -4,33 +4,29 @@
 \alias{readTimeSeries}
 \title{Read Time Series From PostgreSQL database}
 \usage{
-readTimeSeries(series, con, vintage = NULL, manual_freq = 1,
-  manual_period = NULL, env = NULL, tbl = "v_timeseries_json",
-  schema = "timeseries")
+readTimeSeries(series, con, valid_on = NULL, tbl = "timeseries_main",
+  tbl_vintages = "timeseries_vintages", schema = "timeseries", env = NULL)
 }
 \arguments{
 \item{series}{character vector of time series keys}
 
 \item{con}{a PostgreSQL connection object}
 
-\item{vintage}{character a point in time or a timespan that denotes the vintage. Must be the same for all series. You can query only one vintage at a time.}
+\item{valid_on}{character date string on which the series should be valid. Defaults to NULL. Only needed when different vintages of a time series are stored.}
+
+\item{tbl}{character string denoting the name of the relation that contains ts_key, ts_data, ts_frequency.}
+
+\item{tbl_vintages}{character table name of the relation that holds time series vintages}
+
+\item{schema}{character SQL schema name. Defaults to timeseries.}
 
 \item{env}{environment, optional argument to dump time series directly into an environment. Most often used with globalenv(), which gives all time series directly back to the global env.}
-
-\item{tbl}{character string denoting the name of the view
-containing the json records.}
-
-\item{schema}{SQL schema name. Defaults to timeseries.}
-
-\item{manual\_freq}{numeric if time series are irregular in the sense that the distance between all observations is not the same storing frequencies is not appropriate. Also for regular yearly or weekly data storing frequencies is not appropriate as years can have 52 or 53 weeks. Different approaches can be applied by using the manual_freq parameter, that overwrites the NULL value from the databse with a numeric that Rs ts function can deal with.}
-
-\item{manual\_period}{set a period value manually. Sets the start period when no frequency is stored in the databse. Defaults to NULL and is not needed for regular quarterly or monthly series.}
 }
 \description{
-This function reads a time series from a postgres database,
-that uses key value pair storage (hstore), to archive time series.
+This function reads a time series from a PostgreSQL relation
+that uses Postgres' key value pair storage (hstore).
 After reading the information from the database a standard
-R time series object of class 'ts' is built and returned.
+R time series object of class 'ts' is built and returned. Irregular time series return zoo objects.
 }
 \author{
 Matthias Bannert, Gabriel Bucur

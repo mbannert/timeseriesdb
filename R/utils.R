@@ -53,3 +53,12 @@ rmAllBut <- function(but,env = .GlobalEnv, quiet = F){
   
 }
 
+#' @export 
+print.SQL <- function(x,...){
+  cat(gsub("\n[ \t]+","\n",x))
+}
+
+
+
+
+
