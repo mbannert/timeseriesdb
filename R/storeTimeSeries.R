@@ -89,8 +89,10 @@ storeTimeSeries <- function(series,
   } else {
     # Handle case that either valid from OR valid to is null.
     # Create a PostgreSQL daterange compliant string
-    valid_from <- ifelse(is.null(valid_from),"",valid_from)
-    valid_to <- ifelse(is.null(valid_to),"",valid_to)
+    # do not use ifelse (never dare to) here !!!!! thanks to 
+    # Oliver Mueller for the bugfix
+    if(is.null(valid_from)) valid_from <- ""
+    if(is.null(valid_to)) valid_to <- ""
     validity <- sprintf("[%s,%s)",valid_from,valid_to)
     values <- .createValues(li,validity,store_freq = store_freq)
     data_query <- .queryStoreVintage(val = values,
