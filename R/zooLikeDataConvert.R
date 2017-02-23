@@ -22,6 +22,9 @@ zooLikeDateConvert <- function (x, offset = 0, ...)
     time.x <- unclass(time(x)) + offset
     if (frequency(x) == 1) 
       as.Date(paste(time.x, 1, 1, sep = "-"))
+    else if (frequency(x) == 2)
+      as.Date(paste((time.x + 0.001)%/%1, 6 * (cycle(x) - 1) + 
+                      1, 1, sep = "-"))
     else if (frequency(x) == 4) 
       as.Date(paste((time.x + 0.001)%/%1, 3 * (cycle(x) - 1) + 
                       1, 1, sep = "-"))
@@ -30,3 +33,16 @@ zooLikeDateConvert <- function (x, offset = 0, ...)
     else stop("unable to convert ts time to Date class")  
   }
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
