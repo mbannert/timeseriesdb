@@ -1,7 +1,7 @@
 Package: timeseriesdb
 Type: Package
-Version: 0.2.6
-Title: Manage Time Series with R and PostgreSQL
+Version: 0.2.8
+Title: Manage Time Series for Official Statistics with R and PostgreSQL
 Description: Store and organize a large amount of low frequency time series
     data. The package was designed to manage a large catalog of official statistics
     which are typically published on monthly, quarterly or yearly basis. Thus
