@@ -1,5 +1,6 @@
 #' Store Meta Information Chunk Wise to Avoid Memory Problem
 #' 
+#' FUNCTION DEPRECATED.
 #' This function is a wrapper around \code{\link{updateMetaInformation}}. It is used to split large environments of meta info
 #' to avoid memory limitations. This function uses INSERT INTO instead of the more convenient dbWritetable for performance reasons. DO NOT USE THIS FUNCTIONS IN LOOPS OR LAPPLY! This function can handle a set of time series on its own and is much faster than looping over a list. Non-unique primary keys are overwritten !
 #' 
@@ -22,29 +23,15 @@ storeMetaChunkWise <- function(meta_envir,con,
                                keys=NULL,
                                chunksize = NULL,
                                quiet = T){
-  if(!is.null(chunksize)){
-    chunks <- chunksize
-  } else {
-    chunks <- ceiling(as.numeric(object.size(as.list(meta_envir)))/(Cstack_info()["size"]*0.7))  
-  }
-
-  nms <- ls(envir=meta_envir)
-  name_chunks <- split(nms,
-                       ceiling(seq_along(nms)/chunks)
-                       )
+  warning("chunkwise storage is deprecated. Simply use updateMetaInformation,
+          which capable of COPY-based bulk inserts now.")
   
-  # loop over the chunks in order to store it chunk wise 
-  # otherwise we run into stack limit on the server
-  for(i in seq_along(name_chunks)){
     updateMetaInformation(meta_envir = meta_envir,
                           con = con,
                           schema = schema, 
                           tbl = tbl, 
-                          keys = name_chunks[[i]],
+                          keys = ls(envir = meta_envir),
                           quiet = quiet)
-  }
-  
-  
 }
 
 

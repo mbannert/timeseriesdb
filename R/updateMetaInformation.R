@@ -62,29 +62,30 @@ updateMetaInformation.meta_env <- function(meta_envir,con,
   tbl <- paste(schema,tbl,sep=".")
   
   series <- names(l)
-  md_values <- paste(paste0("('",
-                            paste(series,
-                                  hstores,
-                                  sep="','"),
-                            "')"),
-                     collapse = ",")
+
+  md_df <- data.frame(ts_key = names(hstores),
+                      meta_data = unlist(hstores),
+                      stringsAsFactors = F)
   
-  query_meta_data <- sprintf("BEGIN;
-                             CREATE TEMPORARY TABLE 
-                             md_updates(ts_key varchar, meta_data hstore) ON COMMIT DROP;
-                             
-                             INSERT INTO md_updates(ts_key, meta_data) VALUES %s;
-                             LOCK TABLE %s.meta_data_unlocalized IN EXCLUSIVE MODE;
-                             
-                             UPDATE %s.meta_data_unlocalized
-                             SET meta_data = md_updates.meta_data
-                             FROM md_updates
-                             WHERE md_updates.ts_key = %s.meta_data_unlocalized.ts_key;
-                             COMMIT;", md_values, schema, schema, schema, schema)
+  query_meta_data_insert <- sprintf("BEGIN;
+                              CREATE TEMPORARY TABLE 
+                              md_updates(ts_key varchar, meta_data hstore) ON COMMIT DROP;
+                              COPY md_updates FROM STDIN;")
   
-  md_ok <- DBI::dbGetQuery(con,query_meta_data)
+  md_ok <- DBI::dbGetQuery(con,query_meta_data_insert)
+  postgresqlCopyInDataframe(con, md_df)
+      
+  query_meta_data_update <- sprintf("LOCK TABLE %s.meta_data_unlocalized IN EXCLUSIVE MODE;
+                                     UPDATE %s.meta_data_unlocalized
+                                     SET meta_data = md_updates.meta_data
+                                     FROM md_updates
+                                     WHERE md_updates.ts_key = %s.meta_data_unlocalized.ts_key;
+                                     COMMIT;",
+                                    schema, schema, schema)
+
+  md_ok2 <- DBI::dbGetQuery(con,query_meta_data_update)
   if(!quiet) {
-    if(is.null(md_ok)) cat("Meta information updated.")  
+    if(is.null(md_ok2)) cat("Meta information updated.")  
   }
   
 }
