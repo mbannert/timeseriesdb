@@ -22,6 +22,11 @@ readTimeSeries <- function(series, con,
                            tbl_vintages = "timeseries_vintages",
                            schema = "timeseries",
                            env = NULL){
+  useries <- unique(series)
+  if(length(useries) != length(series)){
+    warning("Input vector contains non-unique keys, stripped duplicates.")
+  } 
+  series <- useries
   series <- paste(paste0("('",series,"')"),collapse=",")
   if(is.null(valid_on)){
     read_SQL <-
