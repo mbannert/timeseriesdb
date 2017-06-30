@@ -96,7 +96,7 @@ readTimeSeries <- function(series, con,
       if(freq == 4){
         period <- (p -1) / 3 + 1
       } else if(freq == 2) {
-        period <- ifelse(p == 1,1,7)
+        period <- ifelse(p == 1,1,2)
       } else if(freq == 12){
         period <- p
       } else if(freq == 1){
