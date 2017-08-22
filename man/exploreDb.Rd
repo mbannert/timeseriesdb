@@ -17,4 +17,3 @@ and explore time series data. Data can be searched using regular expressions for
 keys. Hits can subsequently selected from a select box and are plotted in a joint
 time series plot.
 }
-

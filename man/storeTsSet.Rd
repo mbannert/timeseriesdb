@@ -34,4 +34,3 @@ that should be grouped inside a set.
 \author{
 Ioan Gabriel Bucur, Matthias Bannert
 }
-

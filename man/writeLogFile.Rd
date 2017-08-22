@@ -17,4 +17,3 @@ writeLogFile(msg, filename = NULL, line_end = "\\n")
 Most simple log file writer just write steps of
 a script to a text file.
 }
-

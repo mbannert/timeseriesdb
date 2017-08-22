@@ -30,4 +30,3 @@ The catalog file can be used as a companion to illustrate time series exports fr
 timeseriesdb. Note that this function imports functionality from other packages such as 
 data.table and openxlsx.
 }
-

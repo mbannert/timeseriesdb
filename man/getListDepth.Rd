@@ -18,4 +18,3 @@ Hat tip to flodel at stackoverflow for suggesting this light weight way analyze 
 \references{
 http://stackoverflow.com/questions/13432863/determine-level-of-nesting-in-r
 }
-

@@ -42,4 +42,3 @@ designed to store a larger amount of time series. This function uses INSERT INTO
 \author{
 Matthias Bannert, Charles Clavadetscher, Gabriel Bucur
 }
-

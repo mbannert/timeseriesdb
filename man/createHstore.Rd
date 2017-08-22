@@ -2,10 +2,10 @@
 % Please edit documentation in R/createHstore.R
 \name{createHstore}
 \alias{createHstore}
-\alias{createHstore.data.frame}
-\alias{createHstore.list}
 \alias{createHstore.ts}
 \alias{createHstore.zoo}
+\alias{createHstore.data.frame}
+\alias{createHstore.list}
 \title{Create Hstore}
 \usage{
 createHstore(x, ...)
@@ -42,4 +42,3 @@ createHstore(ts1)
 \author{
 Matthias Bannert
 }
-

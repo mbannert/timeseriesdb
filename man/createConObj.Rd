@@ -25,4 +25,3 @@ Create a conection object while getting user information from the R session.
 Also standard db parameters like port and driver are set. Yet flexible information like 
 host or dbname should be added to Sys.setenv environments.
 }
-

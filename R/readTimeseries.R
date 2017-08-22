@@ -13,6 +13,7 @@
 #' @param tbl character string denoting the name of the relation that contains ts_key, ts_data, ts_frequency.
 #' @param tbl_vintages character table name of the relation that holds time series vintages
 #' @param schema character SQL schema name. Defaults to timeseries.
+#' @param pkg_for_irreg character name of package for irregular series. xts or zoo, defaults to xts.
 #' @importFrom DBI dbGetQuery
 #' @importFrom jsonlite fromJSON
 #' @export
@@ -21,7 +22,8 @@ readTimeSeries <- function(series, con,
                            tbl = "timeseries_main",
                            tbl_vintages = "timeseries_vintages",
                            schema = "timeseries",
-                           env = NULL){
+                           env = NULL,
+                           pkg_for_irreg = "xts"){
   useries <- unique(series)
   if(length(useries) != length(series)){
     warning("Input vector contains non-unique keys, stripped duplicates.")
@@ -87,11 +89,21 @@ readTimeSeries <- function(series, con,
     p <- as.numeric(format(d,"%m"))
     
     if(is.null(freq)){
-      warning("time series does not have regular frequency, using the zoo package for mapping to R.
+      if(pkg_for_irreg == "zoo"){
+        warning("time series does not have regular frequency, using the zoo package for mapping to R.
               This is not an error, but the functionality is currently considered experimental.")
-      z <- zoo::zoo(ts_data,
-                    order.by = d_chars)
-      z
+        z <- zoo::zoo(ts_data,
+                      order.by = d_chars)
+        z 
+      } else if(pkg_for_irreg == "xts"){
+        warning("time series does not have regular frequency, using the xts package for mapping to R.
+              This is not an error, but the functionality is currently considered experimental.")
+        z <- xts::xts(ts_data,
+                      order.by = as.Date(d_chars))
+        z 
+      } else {
+        stop("No valid package for irregular time series selected. Choose either xts or zoo.")
+      }
     } else {
       if(freq == 4){
         period <- (p -1) / 3 + 1

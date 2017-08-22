@@ -18,4 +18,3 @@ Run rm(list=ls()) but sparing some objects from being deleted.
 This function is particularly handy when you want to clear the memory but want to keep the 
 the database connection object.
 }
-

@@ -34,4 +34,3 @@ according to memory limitations. This function uses INSERT INTO instead of the m
 \author{
 Matthias Bannert, Gabriel Bucur
 }
-

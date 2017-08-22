@@ -5,7 +5,8 @@
 \title{Read Time Series From PostgreSQL database}
 \usage{
 readTimeSeries(series, con, valid_on = NULL, tbl = "timeseries_main",
-  tbl_vintages = "timeseries_vintages", schema = "timeseries", env = NULL)
+  tbl_vintages = "timeseries_vintages", schema = "timeseries", env = NULL,
+  pkg_for_irreg = "xts")
 }
 \arguments{
 \item{series}{character vector of time series keys}
@@ -21,6 +22,8 @@ readTimeSeries(series, con, valid_on = NULL, tbl = "timeseries_main",
 \item{schema}{character SQL schema name. Defaults to timeseries.}
 
 \item{env}{environment, optional argument to dump time series directly into an environment. Most often used with globalenv(), which gives all time series directly back to the global env.}
+
+\item{pkg_for_irreg}{character name of package for irregular series. xts or zoo, defaults to xts.}
 }
 \description{
 This function reads a time series from a PostgreSQL relation
@@ -31,4 +34,3 @@ R time series object of class 'ts' is built and returned. Irregular time series 
 \author{
 Matthias Bannert, Gabriel Bucur
 }
-

@@ -14,4 +14,3 @@ importTsList(f, base_ts = T)
 \description{
 Generates a List of time series of class tslist from a flat file that contains multiple time series.
 }
-

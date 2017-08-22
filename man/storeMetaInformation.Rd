@@ -30,4 +30,3 @@ If locale is set to NULL unlocalized meta is updated. Make sure to change tbl to
 This function stores meta information to the database for a given time series.
 Make sure that corresponding time series had been inserted to the main table before.
 }
-

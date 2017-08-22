@@ -22,4 +22,3 @@ Show the names of all sets that are available to a particular user.
 \author{
 Matthias Bannert, Gabriel Bucur
 }
-

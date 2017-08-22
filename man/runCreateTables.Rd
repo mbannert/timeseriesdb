@@ -17,4 +17,3 @@ This function should only be run once as an initial setup. Make sure you got suf
 access rights. The function returns a list of status reports for the its 5 database queries. 
 look at this helps you to see whether anything went wrong.
 }
-

@@ -3,8 +3,8 @@
 \name{createUI}
 \alias{createUI}
 \alias{createUI.key}
-\alias{createUI.md}
 \alias{createUI.set}
+\alias{createUI.md}
 \title{Polymorphic Helpers for the Shiny Based GUI}
 \usage{
 createUI(x, con, ...)
@@ -29,4 +29,3 @@ of pseudo polymorphism helps to avoid too many but,ifs and elses.
 Depending on the query type that is selected by the user a UI creation
 method is called.
 }
-

@@ -23,4 +23,3 @@ database. All meta information in all series will be deleted.
 To only edit the original time series use \code{\link{storeTimeSeries}}
 to overwrite existing series.
 }
-

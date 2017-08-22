@@ -24,4 +24,3 @@ Loads a Time Series Set.
 \author{
 Matthias Bannert, Ioan Gabriel Bucur
 }
-

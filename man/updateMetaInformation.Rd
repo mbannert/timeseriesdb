@@ -39,4 +39,3 @@ NOTE: AVOID looping over this function. This functions accepts entire environmen
 and creates large SQL queries instead of looping over multiple small queries. 
 In other words loops are moved to the databse level for massive speed gain.
 }
-

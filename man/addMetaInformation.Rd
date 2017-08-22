@@ -27,4 +27,3 @@ are explicitly meant to store Meta Information. This function
 can be used separately in interactive R Session or to facilitate
 mapping database information to R.
 }
-

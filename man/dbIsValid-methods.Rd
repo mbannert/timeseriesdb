@@ -2,8 +2,8 @@
 % Please edit documentation in R/utils.R
 \docType{methods}
 \name{dbIsValid,PostgreSQLConnection-method}
-\alias{dbIsValid}
 \alias{dbIsValid,PostgreSQLConnection-method}
+\alias{dbIsValid}
 \title{Check Validity of a PostgreSQL connection}
 \usage{
 \S4method{dbIsValid}{PostgreSQLConnection}(dbObj)
@@ -14,4 +14,3 @@
 \description{
 Is the PostgreSQL connection expired?
 }
-

@@ -25,4 +25,3 @@ but it's not the deleted because users may not delete sets.
 \author{
 Matthias Bannert, Ioan Gabriel Bucur
 }
-

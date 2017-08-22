@@ -33,4 +33,3 @@ FUNCTION DEPRECATED.
 This function is a wrapper around \code{\link{updateMetaInformation}}. It is used to split large environments of meta info
 to avoid memory limitations. This function uses INSERT INTO instead of the more convenient dbWritetable for performance reasons. DO NOT USE THIS FUNCTIONS IN LOOPS OR LAPPLY! This function can handle a set of time series on its own and is much faster than looping over a list. Non-unique primary keys are overwritten !
 }
-

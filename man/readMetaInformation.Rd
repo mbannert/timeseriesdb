@@ -31,4 +31,3 @@ als in English 'en', French 'fr' and Italian 'it'. Set the locale to NULL to que
 This function reads meta information from a timeseriesdb package PostgreSQL
 database and puts into a meta information environment.
 }
-

@@ -19,4 +19,3 @@ rollbackTransaction(con, quiet = T)
 this set of function can speed up loops by starting a transaction, 
 performing several queries and ending them with either commit or rollback.
 }
-

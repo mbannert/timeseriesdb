@@ -18,4 +18,3 @@ An attribute is set to all elements of a list given a vector of possible instanc
 the attribute. Note that this function fails to excecute if the vector is not of the same length
 list.
 }
-

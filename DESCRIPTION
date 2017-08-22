@@ -1,6 +1,6 @@
 Package: timeseriesdb
 Type: Package
-Version: 0.2.9.1
+Version: 0.2.9.2
 Title: Manage Time Series for Official Statistics with R and PostgreSQL
 Description: Store and organize a large amount of low frequency time series
     data. The package was designed to manage a large catalog of official statistics
@@ -28,4 +28,4 @@ Date: 2015-04-02
 License: GPL-2
 LazyData: true
 Maintainer: 'Matthias Bannert' <bannert@kof.ethz.ch>
-RoxygenNote: 5.0.1
+RoxygenNote: 6.0.1

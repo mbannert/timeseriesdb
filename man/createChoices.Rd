@@ -31,4 +31,3 @@ Dynamically create choices boxes depending on interactive choices by the user.
 The UI reacts to user input. We use a somewhat polymorphic approach here to avoid
 too much if/else and improve readabitity.
 }
-

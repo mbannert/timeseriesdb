@@ -49,4 +49,3 @@ ts1 <- ts(rnorm(50),start = c(1990,1),frequency = 4)
 ts2 <- ts(1:100,start = c(1990,1),frequency = 4)
 resolveOverlap(ts1,ts2)
 }
-

@@ -36,4 +36,3 @@ Create '%letter%' style operator to conveniently access meta data by hstore keys
 This function creates a new function operator for a particular key. Name the function 
 operator style to get the most out of it.
 }
-

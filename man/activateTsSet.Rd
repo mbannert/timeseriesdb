@@ -25,4 +25,3 @@ Deactivated sets are not deleted though.
 \author{
 Matthias Bannert, Ioan Gabriel Bucur
 }
-

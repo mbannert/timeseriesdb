@@ -30,4 +30,3 @@ also of class tslist which makes it very convenient to plot timeseries,
 directly out of the database. This function gets automatically the right ranges 
 for the axes to plot all values and dates in contained in the list.
 }
-
