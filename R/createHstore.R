@@ -75,6 +75,11 @@ createHstore.list <- function(x,...){
   # based version use fct = T
   # the operator will be kept alive as long as postgres does 
   # the same 
+  
+  # 2017 Edit: deprecation was a misunderstanding
+  # calling the hstore function everytime is not good. better use => !!!
+  # being able to use hstore might be useful for some cases too, 
+  # naming 'deprecated is unfortunate' might change naming at some point. 
   deprecated_hstore_operator <- paste(sprintf('"%s"=>"%s"',
                                               names(x),
                                               as.character(unlist(x))),

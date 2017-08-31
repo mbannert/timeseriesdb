@@ -139,7 +139,7 @@ storeTsSet <- function(con, set_name, set_keys,
                        schema = 'timeseries') {
   vector_values <-c(set_name,
                     user_name, as.character(Sys.time()),
-                    createHstore(set_keys, fct = TRUE), description, active)
+                    createHstore(set_keys, fct = FALSE), description, active)
   row_values <- paste(lapply(vector_values,
                              function(str) {
                                ifelse(grepl("hstore",str),
