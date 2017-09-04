@@ -15,6 +15,7 @@
 #' @param schema character name of the schema to write to. Defaults to 'timeseries'.
 #' @param tbl character name of the meta information table to write to. 
 #' Defaults to 'meta_data_unlocalized'.
+#' @param locale character iso 2 digit locae description. Defaults to NULL.
 #' @param keys character vector of time series. If specified only the selected 
 #' meta information is stored. Defaults to NULL which stores all meta information
 #' records in the environment.
@@ -23,8 +24,9 @@
 updateMetaInformation <- function(meta_envir,con,
                           schema = "timeseries",
                           tbl = "meta_data_unlocalized",
-                          keys=NULL,
-                          quiet=F) {
+                          locale = NULL,
+                          keys = NULL,
+                          quiet = F) {
   UseMethod("updateMetaInformation")
 } 
 
@@ -34,6 +36,7 @@ updateMetaInformation <- function(meta_envir,con,
 updateMetaInformation.meta_env <- function(meta_envir,con,
                                            schema = "timeseries",
                                            tbl = "meta_data_unlocalized",
+                                           locale = NULL,
                                            keys = NULL,
                                            quiet = F){
   
@@ -58,31 +61,68 @@ updateMetaInformation.meta_env <- function(meta_envir,con,
   
   
   hstores <- lapply(l,createHstore)
-  
   tbl <- paste(schema,tbl,sep=".")
-  
   series <- names(l)
-
-  md_df <- data.frame(ts_key = names(hstores),
-                      meta_data = unlist(hstores),
-                      stringsAsFactors = F)
   
-  query_meta_data_insert <- sprintf("BEGIN;
+  if(is.null(locale)){
+    md_df <- data.frame(ts_key = names(hstores),
+                        meta_data = unlist(hstores),
+                        stringsAsFactors = F)
+
+    query_meta_data_insert <- sprintf("BEGIN;
                               CREATE TEMPORARY TABLE 
                               md_updates(ts_key varchar, meta_data hstore) ON COMMIT DROP;
                               COPY md_updates FROM STDIN;")
+
+    query_meta_data_update <- sprintf("LOCK TABLE %s IN EXCLUSIVE MODE;
+                                      UPDATE %s
+                                      SET meta_data = md_updates.meta_data
+                                      FROM md_updates
+                                      WHERE md_updates.ts_key = %s.ts_key;
+                                      COMMIT;",
+                                      tbl,
+                                      tbl,
+                                      tbl)
+    } else {
+    md_df <- data.frame(ts_key = names(hstores),
+                        locale = locale,
+                        meta_data = unlist(hstores),
+                        stringsAsFactors = F)
+    
+    query_meta_data_insert <- sprintf("BEGIN;
+                              CREATE TEMPORARY TABLE 
+                              md_updates(ts_key varchar, locale varchar, meta_data hstore) ON COMMIT DROP;
+                              COPY md_updates FROM STDIN;")
+    
+    # localized meta information does not HAVE to exist, which 
+    # means we have to have an insert here!  
+    query_meta_data_update <- sprintf("LOCK TABLE %s IN EXCLUSIVE MODE;
+                                      UPDATE %s
+                                      SET meta_data = md_updates.meta_data,
+                                      locale_info = md_updates.locale
+                                      FROM md_updates
+                                      WHERE md_updates.ts_key = %s.ts_key;
+                                      
+                                      ---
+                                      INSERT INTO %s
+                                      SELECT md_updates.ts_key,
+                                      md_updates.locale,
+                                      md_updates.meta_data
+                                      FROM md_updates
+                                      LEFT OUTER JOIN %s 
+                                      ON %s.ts_key = md_updates.ts_key
+                                      AND %s.locale_info = md_updates.locale
+                                      WHERE %s.ts_key IS NULL;
+                                      COMMIT;",
+                                      tbl, tbl, tbl,
+                                      tbl, tbl, tbl, tbl, tbl)
+  }
+  
+  class(query_meta_data_update) <- "SQL"
+  class(query_meta_data_insert) <- "SQL"
   
   md_ok <- DBI::dbGetQuery(con,query_meta_data_insert)
   postgresqlCopyInDataframe(con, md_df)
-      
-  query_meta_data_update <- sprintf("LOCK TABLE %s.meta_data_unlocalized IN EXCLUSIVE MODE;
-                                     UPDATE %s.meta_data_unlocalized
-                                     SET meta_data = md_updates.meta_data
-                                     FROM md_updates
-                                     WHERE md_updates.ts_key = %s.meta_data_unlocalized.ts_key;
-                                     COMMIT;",
-                                    schema, schema, schema)
-
   md_ok2 <- DBI::dbGetQuery(con,query_meta_data_update)
   if(!quiet) {
     if(is.null(md_ok2)) cat("Meta information updated.")  
