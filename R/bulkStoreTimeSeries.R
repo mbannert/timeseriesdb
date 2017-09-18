@@ -72,27 +72,38 @@ bulkStoreTimeSeries <- function(series,
   }
   
   li <- li[keep]
+  tbl <- paste(schema,tbl,sep=".")
   
   # VALIDITY / VINTAGES ##################
   if(is.null(valid_from) && is.null(valid_to)){
     # Standard for single versioned time series ###############
-    lapply(l,createHstore)
+    out <- list()
+    value_df <- data.frame(ts_key = names(li),
+                           ts_data = sapply(li,createHstore),
+                           ts_frequency = sapply(li,frequency),
+                           stringsAsFactors = FALSE)
     
-    values <- .createValues(li,NULL,store_freq = store_freq)
-    data_query <- .queryStoreNoVintage(val = values,
-                                       schema = schema,
-                                       tbl = tbl)
-    md_values <- .createValuesMeta(li)
-    meta_data_query <- .queryStoreMeta(md_values,schema)
+    out$queryCreateTemp <- attributes(runDbQuery(con,.queryBulkInsert()))$query_status
+    postgresqlCopyInDataframe(con, value_df)
+    out$queryUpsert <- attributes(runDbQuery(con,.queryBulkUpsert(schema,tbl)))$query_status
     
-    out <- c(data = attributes(runDbQuery(con,data_query)),
-             meta_data = attributes(runDbQuery(con,meta_data_query)))
     
-    md_df <- data.frame(ts_key = names(hstores),
-                        locale = locale,
-                        meta_data = unlist(hstores),
-                        stringsAsFactors = F)
-    postgresqlCopyInDataframe(con, md_df)
+    
+    # values <- .createValues(li,NULL,store_freq = store_freq)
+    # data_query <- .queryStoreNoVintage(val = values,
+    #                                    schema = schema,
+    #                                    tbl = tbl)
+    # md_values <- .createValuesMeta(li)
+    # meta_data_query <- .queryStoreMeta(md_values,schema)
+    # 
+    # out <- c(data = attributes(runDbQuery(con,data_query)),
+    #          meta_data = attributes(runDbQuery(con,meta_data_query)))
+    # 
+    # md_df <- data.frame(ts_key = names(hstores),
+    #                     locale = locale,
+    #                     meta_data = unlist(hstores),
+    #                     stringsAsFactors = F)
+    # postgresqlCopyInDataframe(con, md_df)
     
     
   } else {
