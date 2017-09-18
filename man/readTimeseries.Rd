@@ -6,7 +6,7 @@
 \usage{
 readTimeSeries(series, con, valid_on = NULL, tbl = "timeseries_main",
   tbl_vintages = "timeseries_vintages", schema = "timeseries", env = NULL,
-  pkg_for_irreg = "xts")
+  pkg_for_irreg = "xts", chunk_threshold = 90000)
 }
 \arguments{
 \item{series}{character vector of time series keys}
@@ -24,6 +24,8 @@ readTimeSeries(series, con, valid_on = NULL, tbl = "timeseries_main",
 \item{env}{environment, optional argument to dump time series directly into an environment. Most often used with globalenv(), which gives all time series directly back to the global env.}
 
 \item{pkg_for_irreg}{character name of package for irregular series. xts or zoo, defaults to xts.}
+
+\item{chunksize}{numeric value of threshold at which input vector should be processed in chunks. defaults to 70000.}
 }
 \description{
 This function reads a time series from a PostgreSQL relation

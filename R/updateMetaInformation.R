@@ -91,7 +91,8 @@ updateMetaInformation.meta_env <- function(meta_envir,con,
     
     query_meta_data_insert <- sprintf("BEGIN;
                               CREATE TEMPORARY TABLE 
-                              md_updates(ts_key varchar, locale varchar, meta_data hstore) ON COMMIT DROP;
+                              md_updates(ts_key varchar, locale varchar,
+                                         meta_data hstore) ON COMMIT DROP;
                               COPY md_updates FROM STDIN;")
     
     # localized meta information does not HAVE to exist, which 
@@ -101,7 +102,8 @@ updateMetaInformation.meta_env <- function(meta_envir,con,
                                       SET meta_data = md_updates.meta_data,
                                       locale_info = md_updates.locale
                                       FROM md_updates
-                                      WHERE md_updates.ts_key = %s.ts_key;
+                                      WHERE md_updates.ts_key = %s.ts_key
+                                      AND md_updates.locale = %s.locale_info;
                                       
                                       ---
                                       INSERT INTO %s
@@ -112,10 +114,11 @@ updateMetaInformation.meta_env <- function(meta_envir,con,
                                       LEFT OUTER JOIN %s 
                                       ON %s.ts_key = md_updates.ts_key
                                       AND %s.locale_info = md_updates.locale
-                                      WHERE %s.ts_key IS NULL;
+                                      WHERE %s.ts_key IS NULL 
+                                      AND %s.locale_info IS NULL;
                                       COMMIT;",
-                                      tbl, tbl, tbl,
-                                      tbl, tbl, tbl, tbl, tbl)
+                                      tbl, tbl, tbl, tbl,
+                                      tbl, tbl, tbl, tbl, tbl, tbl)
   }
   
   class(query_meta_data_update) <- "SQL"
