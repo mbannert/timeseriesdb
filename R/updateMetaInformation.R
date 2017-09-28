@@ -53,8 +53,8 @@ updateMetaInformation.meta_env <- function(meta_envir,con,
   # when meta information gets too crazy... maybe need to escape things.
   # Did you really name your son Robert); DROP table students?
   l <- lapply(l,function(x){
-    san <- lapply(x, gsub, pattern="'DROP|DELETE|TRUNCATE|UPDATE|",
-                  replacement = "", ignore.case = T)
+    san <- lapply(x,gsub,pattern="'|DROP|DELETE|UPDATE|SELECT",
+                  replacement="",ignore.case = T)
     class(san) <- c('miro','list')
     san
   })
