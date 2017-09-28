@@ -30,8 +30,8 @@ tslist$ts2 <- ts(1:30,start = c(2000,1),freq=12)
 #debug(runDbQuery)
 out <- storeTimeSeries(names(tslist)[2],
                        sandbox,
-                       valid_from = "2017-05-01",
-                       valid_to = "2017-11-01",
+                       valid_from = "2017-12-01",
+                       valid_to = "2018-01-01",
                        vintage_date = NULL,
                        li = tslist,
                        overwrite = T,

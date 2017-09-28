@@ -73,6 +73,7 @@ bulkStoreTimeSeries <- function(series,
   
   li <- li[keep]
   tbl <- paste(schema,tbl,sep=".")
+  md_unlocal <- paste(schema,md_unlocal,sep=".")
   
   # VALIDITY / VINTAGES ##################
   if(is.null(valid_from) && is.null(valid_to)){
@@ -85,8 +86,22 @@ bulkStoreTimeSeries <- function(series,
     
     out$queryCreateTemp <- attributes(runDbQuery(con,.queryBulkInsert()))$query_status
     postgresqlCopyInDataframe(con, value_df)
-    out$queryUpsert <- attributes(runDbQuery(con,.queryBulkUpsert(schema,tbl)))$query_status
+    out$queryUpsert <- attributes(runDbQuery(con,.queryBulkUpsert(tbl)))$query_status
     
+    meta_df <- data.frame(md_generated_by = Sys.info()["user"],
+                          md_resource_last_update = Sys.time(),
+                          md_coverages = unlist(lapply(li,function(x){
+                            sprintf('%s to %s',
+                                    min(zooLikeDateConvert(x)),
+                                    max(zooLikeDateConvert(x))
+                            )})),
+                          meta_data = '',
+                          stringsAsFactors = F,
+                          row.names = NULL)
+    
+    out$queryCreateMetaTemp <- attributes(runDbQuery(con,.queryBulkInsertMeta()))$query_status
+    postgresqlCopyInDataframe(con, meta_df)
+    out$queryMetaUpsert <- attributes(runDbQuery(con,.queryBulkUpsertMeta(md_unlocal)))$query_status
     
     
     # values <- .createValues(li,NULL,store_freq = store_freq)
