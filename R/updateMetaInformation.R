@@ -124,8 +124,7 @@ updateMetaInformation.meta_env <- function(meta_envir,con,
   class(query_meta_data_update) <- "SQL"
   class(query_meta_data_insert) <- "SQL"
   
-  md_ok <- DBI::dbGetQuery(con,query_meta_data_insert)
-  postgresqlCopyInDataframe(con, md_df)
+  pgCopyDf(con, md_df, q = query_meta_data_insert)
   md_ok2 <- DBI::dbGetQuery(con,query_meta_data_update)
   if(!quiet) {
     if(is.null(md_ok2)) cat("Meta information updated.")  
