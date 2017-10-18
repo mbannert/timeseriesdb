@@ -1,10 +1,7 @@
-con <- createConObj(dbhost = "t-archivedb.kof.ethz.ch",
-                    dbuser = "kofbts",
-                    dbname = "kofdb",
-                    passwd = gsub('(.+)(:kofbts:)(.+)',
-                                  '\\3',
-                                  scan("~/.pgpass",
-                                       what="")[6]))
+con <- createConObj(dbhost = "localhost",
+                    dbuser = "mbannert",
+                    dbname = "sandbox",
+                    passwd = "")
 
 set.seed(123)
 tslist <- list()
@@ -39,9 +36,26 @@ updateMetaInformation(m_d,
                       locale = "de",
                       tbl = "meta_data_localized")
 
-mil_record_count <- dbGetQuery(con,"SELECT COUNT(*) FROM meta_data_localized WHERE ts_key = 'ts1'")$count
+mil_record_count <- dbGetQuery(con,"SELECT COUNT(*) FROM timeseries.meta_data_localized WHERE ts_key = 'ts1'")$count
+
+
+tsl <- list()
+for(i in seq_along(1:30000)){
+  tsl[[i]] <- ts(rnorm(20),start=c(1991,1),frequency = 12)
+}
+names(tsl) <- paste0("series",1:21000)
+
+count_before <- dbGetQuery(con, "SELECT COUNT(*) FROM timeseries.timeseries_main")$count
+storeTimeSeries(names(tsl),con,tsl)
+deleteTimeSeries(names(tsl),con)
+count_after <- dbGetQuery(con, "SELECT COUNT(*) FROM timeseries.timeseries_main")$count
+
+
 
 dbDisconnect(con)
+
+
+
 
 
 # Test that ..... ##################
@@ -55,6 +69,10 @@ test_that("We have to localized meta data objects. I.e. one does not overwrite t
   expect_equal(mil_record_count,2)
 })
 
+test_that("After succesful store, delete is also successful,i.e., same amount of series",
+          {
+            expect_equal(count_before,count_after)
+          })
 
 
 

@@ -7,15 +7,24 @@
 #' 
 #' @param series character name of the timeseries
 #' @param con a PostgreSQL connection object
+#' @param chunksize integer max size of chunk when deleting chunkwise. Defaults 
+#' to 10000.
 #' @param tbl_main character name of the table that contains the 
 #' main time series catalog. Defaults to 'timeseries_main'.
 #' @param schema SQL schema name. Defaults to 'timeseries'.
 #' @export
-deleteTimeSeries <- function(series,con,
+deleteTimeSeries <- function(series, con,
+                             chunksize = 10000,
                              tbl_main = 'timeseries_main',
                              schema = 'timeseries'){
-  sql_statement <- sprintf("DELETE FROM %s WHERE ts_key ='%s' CASCADE",
-                           tbl_main, series)
-  if(is.null(DBI::dbGetQuery(con,sql_statement))) sprintf('Time series %s deleted.',series)
+  s <- split(series,(seq(length(series))-1) %/% chunksize)
+  lapply(s,function(x, tbl, schema){
+    keys <- paste(x,collapse = "','")  
+    del_statement <- sprintf("DELETE FROM %s.%s WHERE ts_key IN ('%s')",
+                             schema, tbl, keys)
+    out <- dbGetQuery(con,del_statement)
+  },tbl = tbl_main, schema = schema)
+  
+  cat(sprintf("DELETE operations in %s chunk(s) performed.",length(s)))
   
 }
