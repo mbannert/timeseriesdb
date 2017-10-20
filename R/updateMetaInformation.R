@@ -20,13 +20,15 @@
 #' meta information is stored. Defaults to NULL which stores all meta information
 #' records in the environment.
 #' @param quiet logical should function be quiet instead of returning a message when done? Defaults to FALSE.  
+#' @param chunksize integer max size of chunks to split large query in. 
 #' @export
 updateMetaInformation <- function(meta_envir,con,
                           schema = "timeseries",
                           tbl = "meta_data_unlocalized",
                           locale = NULL,
                           keys = NULL,
-                          quiet = F) {
+                          quiet = F,
+                          chunksize = 10000) {
   UseMethod("updateMetaInformation")
 } 
 
@@ -38,7 +40,8 @@ updateMetaInformation.meta_env <- function(meta_envir,con,
                                            tbl = "meta_data_unlocalized",
                                            locale = NULL,
                                            keys = NULL,
-                                           quiet = F){
+                                           quiet = F,
+                                           chunksize = 10000){
   
   l <- as.list(meta_envir)
   
@@ -69,11 +72,15 @@ updateMetaInformation.meta_env <- function(meta_envir,con,
                         meta_data = unlist(hstores),
                         stringsAsFactors = F)
 
-    query_meta_data_insert <- sprintf("BEGIN;
-                              CREATE TEMPORARY TABLE 
-                              md_updates(ts_key varchar, meta_data hstore) ON COMMIT DROP;
-                              COPY md_updates FROM STDIN;")
 
+    query_meta_data_create <- sprintf("BEGIN;
+                              CREATE TEMPORARY TABLE 
+                                      md_updates(ts_key varchar,
+                                      meta_data hstore) ON COMMIT DROP;")
+    
+    query_meta_data_insert <- "COPY md_updates FROM STDIN;"
+    
+    
     query_meta_data_update <- sprintf("LOCK TABLE %s IN EXCLUSIVE MODE;
                                       UPDATE %s
                                       SET meta_data = md_updates.meta_data
@@ -89,11 +96,12 @@ updateMetaInformation.meta_env <- function(meta_envir,con,
                         meta_data = unlist(hstores),
                         stringsAsFactors = F)
     
-    query_meta_data_insert <- sprintf("BEGIN;
+    query_meta_data_create <- sprintf("BEGIN;
                               CREATE TEMPORARY TABLE 
-                              md_updates(ts_key varchar, locale varchar,
-                                         meta_data hstore) ON COMMIT DROP;
-                              COPY md_updates FROM STDIN;")
+                                      md_updates(ts_key varchar, locale varchar,
+                                      meta_data hstore) ON COMMIT DROP;")
+    
+    query_meta_data_insert <- "COPY md_updates FROM STDIN;"
     
     # localized meta information does not HAVE to exist, which 
     # means we have to have an insert here!  
@@ -124,7 +132,8 @@ updateMetaInformation.meta_env <- function(meta_envir,con,
   class(query_meta_data_update) <- "SQL"
   class(query_meta_data_insert) <- "SQL"
   
-  pgCopyDf(con, md_df, q = query_meta_data_insert)
+  md_create <- DBI::dbGetQuery(con,query_meta_data_create)
+  pgCopyDf(con, md_df, q = query_meta_data_insert, chunksize = chunksize)
   md_ok2 <- DBI::dbGetQuery(con,query_meta_data_update)
   if(!quiet) {
     if(is.null(md_ok2)) cat("Meta information updated.")  

@@ -1,3 +1,10 @@
+timeseriesdb v0.3.5.3 (Release date: 2017-10-20)
+==============
+* getting ready for next CRAN release
+* bulk wise operations using copy
+
+
+
 timeseriesdb v0.21 (Release date: 2015-04-01)
 ==============
 * updated readme

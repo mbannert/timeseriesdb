@@ -6,12 +6,37 @@ con <- createConObj(dbhost = "localhost",
 set.seed(123)
 tslist <- list()
 tslist$ts1 <- ts(rnorm(20),start = c(1990,1), frequency = 4)
+tslist$ts2 <- ts(rnorm(20),start = c(1990,1), frequency = 4)
+tslist$ts3 <- ts(rnorm(20),start = c(1990,1), frequency = 4)
+tslist$ts4 <- ts(rnorm(20),start = c(1990,1), frequency = 4)
+tslist$ts5 <- ts(rnorm(20),start = c(1990,1), frequency = 4)
+tslist$ts6 <- ts(rnorm(20),start = c(1990,1), frequency = 4)
+
 
 # Store Series
-storeTimeSeries("ts1",con,tslist)
+storeTimeSeries(c("ts1","ts2","ts3","ts4","ts5","ts6"),con,tslist)
 
 # Read Series
 result <- readTimeSeries("ts1",con)
+
+# unlocalized meta information
+m <- new.env()
+meta_ts1 <- list(seed = 123,legacy_key = 'series1')
+meta_ts2 <- list(seed = 543,legacy_key = 'series2')
+meta_ts3 <- list(seed = 123,legacy_key = 'series1')
+meta_ts4 <- list(seed = 543,legacy_key = 'series2')
+meta_ts5 <- list(seed = 123,legacy_key = 'series1')
+meta_ts6 <- list(seed = 543,legacy_key = 'series2')
+
+meta_unlocalized <- addMetaInformation("ts1",meta_ts1)
+addMetaInformation("ts2",meta_ts2,meta_unlocalized)
+addMetaInformation("ts3",meta_ts3,meta_unlocalized)
+addMetaInformation("ts4",meta_ts4,meta_unlocalized)
+addMetaInformation("ts5",meta_ts5,meta_unlocalized)
+addMetaInformation("ts6",meta_ts6,meta_unlocalized)
+updateMetaInformation(meta_unlocalized,con,chunksize = 2)
+
+mdul_count <- dbGetQuery(con,"SELECT COUNT(*) FROM timeseries.meta_data_unlocalized WHERE ts_key ~ 'ts[1-6]'")$count
 
 # create some localized meta information
 # EN
@@ -40,23 +65,22 @@ mil_record_count <- dbGetQuery(con,"SELECT COUNT(*) FROM timeseries.meta_data_lo
 
 
 tsl <- list()
-for(i in seq_along(1:30000)){
+m <- new.env()
+for(i in seq_along(1:21000)){
   tsl[[i]] <- ts(rnorm(20),start=c(1991,1),frequency = 12)
 }
 names(tsl) <- paste0("series",1:21000)
+
+
+
+
 
 count_before <- dbGetQuery(con, "SELECT COUNT(*) FROM timeseries.timeseries_main")$count
 storeTimeSeries(names(tsl),con,tsl)
 deleteTimeSeries(names(tsl),con)
 count_after <- dbGetQuery(con, "SELECT COUNT(*) FROM timeseries.timeseries_main")$count
 
-
-
 dbDisconnect(con)
-
-
-
-
 
 # Test that ..... ##################
 
@@ -74,5 +98,8 @@ test_that("After succesful store, delete is also successful,i.e., same amount of
             expect_equal(count_before,count_after)
           })
 
-
+test_that("Unlocalized meta data can be written to db in chunks.",
+          {
+            expect_equal(mdul_count)
+          })
 
