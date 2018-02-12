@@ -22,6 +22,6 @@ commitTransaction <- function(con, quiet = T){
 #' @rdname transactionUtils
 #' @export
 rollbackTransaction <- function(con, quiet = T){
-  out <- dbGetQuery(con,'COMMIT')
+  out <- dbGetQuery(con,'ROLLBACK')
   if(is.null(out) && !quiet) print('ROLLBACK')
 }
