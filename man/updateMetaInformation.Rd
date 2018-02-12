@@ -6,11 +6,12 @@
 \title{Update Meta Information Records}
 \usage{
 updateMetaInformation(meta_envir, con, schema = "timeseries",
-  tbl = "meta_data_unlocalized", locale = NULL, keys = NULL, quiet = F)
+  tbl = "meta_data_unlocalized", locale = NULL, keys = NULL, quiet = F,
+  chunksize = 10000)
 
 \method{updateMetaInformation}{meta_env}(meta_envir, con,
   schema = "timeseries", tbl = "meta_data_unlocalized", locale = NULL,
-  keys = NULL, quiet = F)
+  keys = NULL, quiet = F, chunksize = 10000)
 }
 \arguments{
 \item{meta_envir}{object of class meta_env. Most likely
@@ -30,6 +31,8 @@ meta information is stored. Defaults to NULL which stores all meta information
 records in the environment.}
 
 \item{quiet}{logical should function be quiet instead of returning a message when done? Defaults to FALSE.}
+
+\item{chunksize}{integer max size of chunks to split large query in.}
 }
 \description{
 When a time series is stored to the database by \code{\link{storeTimeSeries}} 

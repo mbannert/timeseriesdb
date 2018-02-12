@@ -4,13 +4,16 @@
 \alias{deleteTimeSeries}
 \title{Delete Time Series from the database}
 \usage{
-deleteTimeSeries(series, con, tbl_main = "timeseries_main",
-  schema = "timeseries")
+deleteTimeSeries(series, con, chunksize = 10000,
+  tbl_main = "timeseries_main", schema = "timeseries")
 }
 \arguments{
 \item{series}{character name of the timeseries}
 
 \item{con}{a PostgreSQL connection object}
+
+\item{chunksize}{integer max size of chunk when deleting chunkwise. Defaults 
+to 10000.}
 
 \item{tbl_main}{character name of the table that contains the 
 main time series catalog. Defaults to 'timeseries_main'.}
