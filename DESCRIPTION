@@ -19,7 +19,7 @@ Depends:
 Imports:
     xts,
     zoo,
-    reshape2,
+    xtable,
     shiny,
     DBI,
     openxlsx,
