@@ -15,7 +15,7 @@
 ##'  \item{"meta_data_localized"}{contains translation specific meta information, e.g., wording of a question.}
 ##' }
 ##' 
-#' @references OECD Defintion of vintages: \code{\link{http://www.oecd.org/std/40315408.pdf}}
+#' @references OECD Defintion of vintages: \code{http://www.oecd.org/std/40315408.pdf}
 #' 
 #' @param schema character denoting a PostgreSQL schema
 #' @param tbl character denoting a table name

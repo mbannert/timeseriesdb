@@ -44,5 +44,5 @@ The following tables will be create in the given schema.
 }
 }
 \references{
-OECD Defintion of vintages: \code{\link{http://www.oecd.org/std/40315408.pdf}}
+OECD Defintion of vintages: \code{http://www.oecd.org/std/40315408.pdf}
 }
