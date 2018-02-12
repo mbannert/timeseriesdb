@@ -8,8 +8,10 @@
 #' @export
 #' @examples 
 #' # There's no connection, so this returns a proper error message.
+#' \donttest{
 #' out_obj <- runDbQuery(bogus_connection,"SELECT * FROM some_table") 
 #' attributes(out_obj)
+#' }
 runDbQuery <- function(con,sql_query,...){
   # treat warnings as erors
   options(warn=2)

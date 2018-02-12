@@ -17,6 +17,8 @@ This function always returns a data.frame as opposed to different types in case 
 }
 \examples{
 # There's no connection, so this returns a proper error message.
+\donttest{
 out_obj <- runDbQuery(bogus_connection,"SELECT * FROM some_table") 
 attributes(out_obj)
+}
 }
