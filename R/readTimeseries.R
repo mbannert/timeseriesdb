@@ -25,7 +25,25 @@ readTimeSeries <- function(series, con,
                            schema = "timeseries",
                            env = NULL,
                            pkg_for_irreg = "xts",
-                           chunksize = 10000){
+                           chunksize = 10000,
+                           regex = FALSE){
+  
+  if(regex) {
+    if(length(series) > 1) {
+      stop("Only supports a single expression in series!")
+    }
+    
+    pattern <- series
+    
+    match_query <- sprintf("SELECT ts_key FROM %s.timeseries_main WHERE ts_key ~ '%s'",
+                         schema, pattern)
+    series <- dbGetQuery(con, match_query)$ts_key
+    
+    if(length(series) == 0) {
+      stop(sprintf("No series found matching '%s'!", pattern))
+    }
+  }
+  
   useries <- unique(series)
   if(length(useries) != length(series)){
     warning("Input vector contains non-unique keys, stripped duplicates.")
