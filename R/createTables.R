@@ -26,7 +26,8 @@ createTimeseriesMain <- function(schema = "timeseries",
                                  tbl = "timeseries_main"){
   sql_query <- sprintf("CREATE TABLE %s.%s (ts_key text primary key,
                         ts_data hstore, 
-                        ts_frequency integer)",
+                        ts_frequency integer,
+                        ts_release_date timestamp with time zone DEFAULT '1900-01-01 00:00:00')",
                        schema,
                        tbl)
   class(sql_query) <- "SQL"
