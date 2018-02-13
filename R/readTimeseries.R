@@ -6,6 +6,7 @@
 #' R time series object of class 'ts' is built and returned. Irregular time series return zoo objects.
 #' 
 #' @author Matthias Bannert, Gabriel Bucur
+#'
 #' @param series character vector of time series keys
 #' @param con a PostgreSQL connection object
 #' @param valid_on character date string on which the series should be valid. Defaults to NULL. Only needed when different vintages of a time series are stored.  
@@ -14,7 +15,9 @@
 #' @param tbl_vintages character table name of the relation that holds time series vintages
 #' @param schema character SQL schema name. Defaults to timeseries.
 #' @param pkg_for_irreg character name of package for irregular series. xts or zoo, defaults to xts.
+#' @param regex If set to TRUE, \code{readTimeSeries} will get all time series which keys matching the pattern given in series
 #' @param chunksize numeric value of threshold at which input vector should be processed in chunks. defaults to 70000.
+#'
 #' @importFrom DBI dbGetQuery
 #' @importFrom jsonlite fromJSON
 #' @export
