@@ -12,7 +12,7 @@ runDbQuery(con, sql_query, ...)
 \item{sql_query}{character string containing a SQL query}
 }
 \description{
-Run database queries using \code{\link{DBI::dbSendQuery}}, \code{\link{DBI::fetch}} and \code{\link{DBI::dbClearResult}} in similar fashion as \code{\link{DBI::dbGetQuery}} but provide better error handling. 
+Run database queries using \code{\link[DBI]{dbSendQuery}}, \code{\link[DBI]{fetch}} and \code{\link[DBI]{dbClearResult}} in similar fashion as \code{\link[DBI]{dbGetQuery}} but provide better error handling. 
 This function always returns a data.frame as opposed to different types in case of an exception. However, if the database query fails and empty data.frame is returned. Besides query status and database error are returned as attributes. Make sure to use BEGIN and COMMIT outside of these statements.
 }
 \examples{
