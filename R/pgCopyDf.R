@@ -3,7 +3,9 @@
 #' 
 #' @param con PostgreSQL connection object.
 #' @param d data.frame
+#' @param q 
 #' @param chunksize integer, defaults to 10000.
+#'
 #' @export
 pgCopyDf <- function(con, d, q, chunksize = 10000){
   l <- split(d, (seq(nrow(d))-1) %/% chunksize) 

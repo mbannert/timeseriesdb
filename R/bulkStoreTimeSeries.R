@@ -6,6 +6,7 @@
 #' designed to store a larger amount of time series. This function uses INSERT INTO instead of the more convenient dbWritetable for performance reasons. DO NOT USE THIS FUNCTIONS IN LOOPS OR LAPPLY! This function can handle a set of time series on its own and is much faster than looping over a list. Non-unique primary keys are overwritten !
 #' 
 #' @author Matthias Bannert, Charles Clavadetscher, Gabriel Bucur
+#'
 #' @param series character name of a time series, S3 class ts. When used with lists it is convenient to set series to names(li). Note that the series name needs to be unique in the database!
 #' @param con a PostgreSQL connection object.
 #' @param li list of time series. Defaults to NULL to no break legacy calls that use lookup environments.
@@ -16,7 +17,10 @@
 #' @param md_unlocal character string denoting the name of the table that holds unlocalized meta information.
 #' @param lookup_env environment to look in for timeseries. Defaults to .GobalEnv.
 #' @param overwrite logical should existing records (same primary key) be overwritten? Defaults to TRUE.
+#' @param store_freq 
+#' @param tbl_vintages 
 #' @param schema SQL schema name. Defaults to timeseries. 
+#'
 #' @importFrom DBI dbGetQuery
 #' @export
 bulkStoreTimeSeries <- function(series,
