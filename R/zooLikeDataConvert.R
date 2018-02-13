@@ -17,19 +17,19 @@
 zooLikeDateConvert <- function (x, offset = 0, ...) 
 {
   if(class(x) == "zoo"){
-    time(x)
+    stats::time(x)
   } else {
-    time.x <- unclass(time(x)) + offset
-    if (frequency(x) == 1) 
+    time.x <- unclass(stats::time(x)) + offset
+    if (stats::frequency(x) == 1) 
       as.Date(paste(time.x, 1, 1, sep = "-"))
-    else if (frequency(x) == 2)
-      as.Date(paste((time.x + 0.001)%/%1, 6 * (cycle(x) - 1) + 
+    else if (stats::frequency(x) == 2)
+      as.Date(paste((time.x + 0.001)%/%1, 6 * (stats::cycle(x) - 1) + 
                       1, 1, sep = "-"))
-    else if (frequency(x) == 4) 
-      as.Date(paste((time.x + 0.001)%/%1, 3 * (cycle(x) - 1) + 
+    else if (stats::frequency(x) == 4) 
+      as.Date(paste((time.x + 0.001)%/%1, 3 * (stats::cycle(x) - 1) + 
                       1, 1, sep = "-"))
-    else if (frequency(x) == 12) 
-      as.Date(paste((time.x + 0.001)%/%1, cycle(x), 1, sep = "-"))
+    else if (stats::frequency(x) == 12) 
+      as.Date(paste((time.x + 0.001)%/%1, stats::cycle(x), 1, sep = "-"))
     else stop("unable to convert ts time to Date class")  
   }
 }

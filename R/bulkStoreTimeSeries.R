@@ -85,7 +85,7 @@ bulkStoreTimeSeries <- function(series,
     out <- list()
     value_df <- data.frame(ts_key = names(li),
                            ts_data = sapply(li,createHstore),
-                           ts_frequency = sapply(li,frequency),
+                           ts_frequency = sapply(li,stats::frequency),
                            stringsAsFactors = FALSE)
     
     out$queryCreateTemp <- attributes(runDbQuery(con,.queryBulkInsert()))$query_status

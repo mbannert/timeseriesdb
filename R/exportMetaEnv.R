@@ -67,7 +67,7 @@ exportMetaEnv <- function(meta_env,fname = NULL,export_type = "pdf",flexcols = N
     
     if(export_type == "csv") {
       message("Writing .csv file...")
-      write.table(wtf,file=fname,sep=sep,row.names = row.names)  
+      utils::write.table(wtf,file=fname,sep=sep,row.names = row.names)  
     } 
     
     if(export_type == "pdf"){

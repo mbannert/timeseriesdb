@@ -65,7 +65,7 @@ print.SQL <- function(x,...){
   hstores <- unlist(lapply(li,createHstore))
   series <- names(li)
   freqs <- sapply(li,function(x) {
-    ifelse(inherits(x,"zoo"),'NULL',frequency(x))
+    ifelse(inherits(x,"zoo"),'NULL',stats::frequency(x))
   })
   
   if(is.null(validity)){
