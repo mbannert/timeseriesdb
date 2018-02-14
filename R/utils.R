@@ -71,7 +71,13 @@ print.SQL <- function(x,...){
   if(is.null(release_date)) {
     release_date <- "DEFAULT"
   } else {
-    # TODO: Make sure release_date is in Postgres compatible format
+    tryCatch(
+      release_date <- strftime(release_date, format = "%F %T"),
+      error = function(e) {
+        msg <- sprintf("Failed to parse release_date \"%s\". Please make sure it is an object which can be converted to \"POSIXlt\" for strftime!", release_date)
+        stop(msg)
+      }
+    );
   }
   
   if(is.null(validity)){
