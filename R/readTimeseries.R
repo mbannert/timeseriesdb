@@ -25,7 +25,8 @@ readTimeSeries <- function(series, con,
                            schema = "timeseries",
                            env = NULL,
                            pkg_for_irreg = "xts",
-                           chunksize = 10000){
+                           chunksize = 10000,
+                           honour_release_date = TRUE){
   useries <- unique(series)
   if(length(useries) != length(series)){
     warning("Input vector contains non-unique keys, stripped duplicates.")
@@ -46,7 +47,7 @@ readTimeSeries <- function(series, con,
                 
                 SELECT ts_key, row_to_json(t)::text AS ts_json_records
                 FROM (
-                SELECT tm.ts_key, ts_data, ts_frequency
+                SELECT tm.ts_key, ts_data, ts_frequency, ts_release_date
                 FROM %s.%s tm
                 JOIN ts_read tr
                 ON (tm.ts_key = tr.ts_key)
@@ -61,7 +62,7 @@ readTimeSeries <- function(series, con,
                 
                 SELECT ts_key, row_to_json(t)::text AS ts_json_records
                 FROM (
-                SELECT tm.ts_key, ts_data, ts_frequency
+                SELECT tm.ts_key, ts_data, ts_frequency, ts_release_date
                 FROM %s.%s tm 
                 JOIN ts_read tr
                 ON (tm.ts_key = tr.ts_key)
@@ -84,6 +85,11 @@ readTimeSeries <- function(series, con,
     
     out_li <- lapply(jsn_li,function(x){
       freq <- x$ts_frequency
+      
+      if(x$ts_release_date > Sys.time() && honour_release_date) {
+        x$ts_data <- x$ts_data[1:(length(x$ts_data)-1)]
+      }
+      
       d_chars <- names(x$ts_data)
       ts_data <- suppressWarnings(as.numeric(unlist(x$ts_data,
                                                     recursive = F)))
