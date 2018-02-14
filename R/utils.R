@@ -72,7 +72,7 @@ print.SQL <- function(x,...){
     release_date <- "DEFAULT"
   } else {
     tryCatch(
-      release_date <- strftime(release_date, format = "%F %T"),
+      release_date <- strftime(release_date, format = "%F %T %z"),
       error = function(e) {
         msg <- sprintf("Failed to parse release_date \"%s\". Please make sure it is an object which can be converted to \"POSIXlt\" for strftime!", release_date)
         stop(msg)
