@@ -45,9 +45,9 @@ readTimeSeries <- function(series, con,
                 CREATE TEMPORARY TABLE ts_read (ts_key text PRIMARY KEY) ON COMMIT DROP;
                 INSERT INTO ts_read(ts_key) VALUES %s;
                 
-                SELECT ts_key, row_to_json(t)::text AS ts_json_records
+                SELECT ts_key, row_to_json(t)::text AS ts_json_records, NOW() as server_time
                 FROM (
-                SELECT tm.ts_key, ts_data, ts_frequency, ts_release_date
+                SELECT tm.ts_key, ts_data, ts_frequency, to_char(ts_release_date, 'YYYY-MM-DD HH24:MI:SS TZ') as ts_release_date
                 FROM %s.%s tm
                 JOIN ts_read tr
                 ON (tm.ts_key = tr.ts_key)
@@ -60,9 +60,9 @@ readTimeSeries <- function(series, con,
                 CREATE TEMPORARY TABLE ts_read (ts_key text PRIMARY KEY) ON COMMIT DROP;
                 INSERT INTO ts_read(ts_key) VALUES %s;
                 
-                SELECT ts_key, row_to_json(t)::text AS ts_json_records
+                SELECT ts_key, row_to_json(t)::text AS ts_json_records, NOW() as server_time
                 FROM (
-                SELECT tm.ts_key, ts_data, ts_frequency, ts_release_date
+                SELECT tm.ts_key, ts_data, ts_frequency, to_char(ts_release_date, 'YYYY-MM-DD HH24:MI:SS TZ') as release_date
                 FROM %s.%s tm 
                 JOIN ts_read tr
                 ON (tm.ts_key = tr.ts_key)
@@ -83,10 +83,12 @@ readTimeSeries <- function(series, con,
     jsn_arr <- sprintf("[%s]",paste0(out[,2],collapse = ","))
     jsn_li <- fromJSON(jsn_arr,simplifyVector = F)
     
+    server_time <- out[1, "server_time"]
+    
     out_li <- lapply(jsn_li,function(x){
       freq <- x$ts_frequency
       
-      if(x$ts_release_date > Sys.time() && honour_release_date) {
+      if(x$ts_release_date > server_time && honour_release_date) {
         x$ts_data <- x$ts_data[1:(length(x$ts_data)-1)]
       }
       
