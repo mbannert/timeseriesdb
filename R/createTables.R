@@ -31,6 +31,7 @@ createTimeseriesMain <- function(schema = "timeseries",
                        schema,
                        tbl)
   class(sql_query) <- "SQL"
+  
   sql_query
 }
 
