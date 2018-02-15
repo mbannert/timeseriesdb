@@ -11,6 +11,8 @@ pgCopyDf(con, d, q, chunksize = 10000)
 
 \item{d}{data.frame}
 
+\item{q}{}
+
 \item{chunksize}{integer, defaults to 10000.}
 }
 \description{

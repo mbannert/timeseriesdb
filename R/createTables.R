@@ -35,6 +35,24 @@ createTimeseriesMain <- function(schema = "timeseries",
   sql_query
 }
 
+#' Title
+#'
+#' @param schema 
+#' @param tbl 
+#'
+#' @return
+#' @export
+#'
+#' @examples
+addReleaseDateToTimeseriesMain <- function(schema = "timeseries",
+                                  tbl = "timeseries_main") {
+  sql_query <- sprintf("ALTER TABLE %s.%s ADD IF NOT EXISTS ts_release_date timestamp with time zone DEFAULT '1900-01-01 00:00:00'",
+                       schema, tbl)
+  class(sql_query) <- "SQL"
+  
+  sql_query
+}
+
 # OECD vintage defintion: 
 # http://www.oecd.org/std/40315408.pdf
 
@@ -135,8 +153,17 @@ runCreateTables <- function(con,schema = "timeseries"){
 }
 
 
-
-
-
-
-
+#' Title
+#'
+#' @param con 
+#' @param schema 
+#'
+#' @return
+#' @export
+#'
+#' @examples
+runUpgradeTables <- function(con, schema = "timeseries") {
+  status <- list()
+  status$timeseries_main <- attributes(runDbQuery(con, addReleaseDateToTimeseriesMain(schema = schema)))
+  status
+}

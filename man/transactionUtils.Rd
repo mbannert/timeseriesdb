@@ -14,6 +14,16 @@ rollbackTransaction(con, quiet = T)
 }
 \arguments{
 \item{con}{PostgreSQL connection object.}
+
+\item{quiet}{}
+
+\item{con}{}
+
+\item{quiet}{}
+
+\item{con}{}
+
+\item{quiet}{}
 }
 \description{
 this set of function can speed up loops by starting a transaction, 

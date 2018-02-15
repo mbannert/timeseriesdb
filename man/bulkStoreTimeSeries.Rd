@@ -23,7 +23,11 @@ bulkStoreTimeSeries(series, con, li = NULL, valid_from = NULL,
 
 \item{vintage_date}{character date, usually not used, defaults to NULL for non-vintages and vintages that are entered at the current end of the series. By specifying a date one can store former vintages.}
 
+\item{store_freq}{}
+
 \item{tbl}{character string denoting the name of the main time series table in the PostgreSQL database.}
+
+\item{tbl_vintages}{}
 
 \item{md_unlocal}{character string denoting the name of the table that holds unlocalized meta information.}
 
