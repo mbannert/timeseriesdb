@@ -26,7 +26,7 @@ readTimeSeries <- function(series, con,
                            env = NULL,
                            pkg_for_irreg = "xts",
                            chunksize = 10000,
-                           honour_release_date = TRUE){
+                           respect_release_date = FALSE){
   useries <- unique(series)
   if(length(useries) != length(series)){
     warning("Input vector contains non-unique keys, stripped duplicates.")
@@ -88,7 +88,7 @@ readTimeSeries <- function(series, con,
     out_li <- lapply(jsn_li,function(x){
       freq <- x$ts_frequency
       
-      if(x$ts_release_date > server_time && honour_release_date) {
+      if(respect_release_date && x$ts_release_date > server_time) {
         x$ts_data <- x$ts_data[1:(length(x$ts_data)-1)]
       }
       
