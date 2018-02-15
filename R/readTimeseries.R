@@ -161,8 +161,6 @@ readTimeSeries <- function(series, con,
     out_li <- readFromDB(series,con)
   }
   
-  
-  
   if(!is.null(env)) {
     if(class(env) != "environment"){
       stop("If class is not NULL, it has to be an environment.")
