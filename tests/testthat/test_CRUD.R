@@ -100,6 +100,6 @@ test_that("After succesful store, delete is also successful,i.e., same amount of
 
 test_that("Unlocalized meta data can be written to db in chunks.",
           {
-            expect_equal(mdul_count)
+            expect_equal(mdul_count,6)
           })
 
