@@ -74,6 +74,8 @@ test_that("We have to localized meta data objects. I.e. one does not overwrite t
 })
 
 test_that("After succesful store, delete is also successful,i.e., same amount of series", {
+  skip_on_cran()
+  
   tsl <- list()
   m <- new.env()
   for(i in seq_along(1:21000)){
