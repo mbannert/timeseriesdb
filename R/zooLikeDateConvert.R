@@ -15,7 +15,7 @@
 #' @export
 zooLikeDateConvert <- function (x, offset = 0, as.string = FALSE) 
 {
-  if(class(x) == "zoo"){
+  if(inherits(x, "zoo")) {
     stats::time(x)
   } else {
     time.x <- unclass(stats::time(x)) + offset
@@ -40,16 +40,3 @@ zooLikeDateConvert <- function (x, offset = 0, as.string = FALSE)
     
   }
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
