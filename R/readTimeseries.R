@@ -1,12 +1,32 @@
-readTimeSeriesWithReleaseEpoch <- function(series, con,
-                                           valid_on = NULL,
-                                           tbl = "timeseries_main",
-                                           tbl_vintages = "timeseries_vintages",
-                                           schema = "timeseries",
-                                           env = NULL,
-                                           pkg_for_irreg = "xts",
-                                           chunksize = 10000,
-                                           respect_release_date = FALSE){
+#' Read Time Series From PostgreSQL database
+#' 
+#' This function reads a time series from a PostgreSQL relation
+#' that uses Postgres' key value pair storage (hstore).
+#' After reading the information from the database a standard
+#' R time series object of class 'ts' is built and returned. Irregular time series return zoo objects.
+#' 
+#' @author Matthias Bannert, Gabriel Bucur
+#' @param series character vector of time series keys
+#' @param con a PostgreSQL connection object
+#' @param valid_on character date string on which the series should be valid. Defaults to NULL. Only needed when different vintages of a time series are stored.  
+#' @param env environment, optional argument to dump time series directly into an environment. Most often used with globalenv(), which gives all time series directly back to the global env.
+#' @param tbl character string denoting the name of the relation that contains ts_key, ts_data, ts_frequency.
+#' @param tbl_vintages character table name of the relation that holds time series vintages
+#' @param schema character SQL schema name. Defaults to timeseries.
+#' @param pkg_for_irreg character name of package for irregular series. xts or zoo, defaults to xts.
+#' @param chunksize numeric value of threshold at which input vector should be processed in chunks. defaults to 70000.
+#' @importFrom DBI dbGetQuery
+#' @importFrom jsonlite fromJSON
+#' @export
+readTimeSeries <- function(series, con,
+                           valid_on = NULL,
+                           tbl = "timeseries_main",
+                           tbl_vintages = "timeseries_vintages",
+                           schema = "timeseries",
+                           env = NULL,
+                           pkg_for_irreg = "xts",
+                           chunksize = 10000,
+                           respect_release_date = FALSE){
   useries <- unique(series)
   if(length(useries) != length(series)){
     warning("Input vector contains non-unique keys, stripped duplicates.")
