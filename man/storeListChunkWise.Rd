@@ -6,7 +6,7 @@
 \usage{
 storeListChunkWise(series, con, li = NULL, tbl = "timeseries_main",
   md_unlocal = "meta_data_unlocalized", overwrite = T, chunksize = NULL,
-  schema = "timeseries", quiet = T)
+  schema = "timeseries")
 }
 \arguments{
 \item{series}{character name of a time series, S3 class ts. When used with lists it is convenient to set series to names(li). Note that the series name needs to be unique in the database!}
