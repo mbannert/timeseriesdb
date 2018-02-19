@@ -27,7 +27,7 @@ storeListChunkWise <- function(series,
   if(!is.null(chunksize)){
     chunks <- chunksize
   } else {
-    chunks <- ceiling(as.numeric(object.size(as.list(meta_envir)))/(Cstack_info()["size"]*0.7))  
+    chunks <- ceiling(as.numeric(utils::object.size(as.list(meta_envir)))/(Cstack_info()["size"]*0.7))  
   }
   
   name_chunks <- split(series,ceiling(seq_along(names(li))/chunks))

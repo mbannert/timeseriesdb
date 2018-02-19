@@ -144,7 +144,7 @@ readTimeSeries <- function(series, con,
         }
         # create the time series object but suppress the warning of creating NAs
         # when transforming text NAs to numeric NAs
-        ts(ts_data,
+        stats::ts(ts_data,
            start=c(y,period),
            frequency = freq)
       }
