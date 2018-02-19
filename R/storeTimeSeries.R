@@ -18,7 +18,7 @@
 #' @param lookup_env environment to look in for timeseries. Defaults to .GobalEnv.
 #' @param overwrite logical should existing records (same primary key) be overwritten? Defaults to TRUE.
 #' @param store_freq 
-#' @param tbl_vintages 
+#' @param tbl_vintages character string denoting the name of the vintages time series table in the PostgreSQL database.
 #' @param schema SQL schema name. Defaults to timeseries. 
 #'
 #' @importFrom DBI dbGetQuery
