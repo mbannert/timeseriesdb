@@ -24,8 +24,6 @@ storeListChunkWise(series, con, li = NULL, tbl = "timeseries_main",
 \item{chunksize}{integer number of chunks. Defaults to NULL, invoking automatic chunk determination based on C Stack size.}
 
 \item{schema}{SQL schema name. Defaults to timeseries.}
-
-\item{lookup_env}{environment to look in for timeseries. Defaults to .GobalEnv.}
 }
 \description{
 This function is a wrapper around \code{\link{storeTimeSeries}}. It is used to split large lists of time series
