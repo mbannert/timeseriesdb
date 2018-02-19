@@ -6,18 +6,21 @@
                        CREATE TEMPORARY TABLE 
                        ts_updates(ts_key varchar, 
                                   ts_data hstore,
-                                  ts_frequency integer)
+                                  ts_frequency integer,
+                                  ts_release_date timestamp with time zone DEFAULT '1900-01-01 00:00:00')
                        ON COMMIT DROP;
                        
                        INSERT INTO ts_updates(ts_key,
                                               ts_data,
-                                              ts_frequency) VALUES %s;
+                                              ts_frequency,
+                                              ts_release_date) VALUES %s;
                        LOCK TABLE %s.%s IN EXCLUSIVE MODE;
                        
                        -- Update existing entries
                        UPDATE %s.%s
                        SET ts_data = ts_updates.ts_data,
-                       ts_frequency = ts_updates.ts_frequency
+                       ts_frequency = ts_updates.ts_frequency,
+                       ts_release_date = ts_updates.ts_release_date
                        FROM ts_updates
                        WHERE ts_updates.ts_key = %s.%s.ts_key;
                        
@@ -25,7 +28,8 @@
                        INSERT INTO %s.%s
                               SELECT ts_updates.ts_key,
                                      ts_updates.ts_data,
-                                     ts_updates.ts_frequency
+                                     ts_updates.ts_frequency,
+                                     ts_updates.ts_release_date
                        FROM ts_updates
                        LEFT OUTER JOIN %s.%s ON (%s.%s.ts_key = ts_updates.ts_key)
                        WHERE %s.%s.ts_key IS NULL;

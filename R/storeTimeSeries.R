@@ -20,6 +20,7 @@
 #' @param store_freq 
 #' @param tbl_vintages 
 #' @param schema SQL schema name. Defaults to timeseries. 
+#' @param release_date 
 #'
 #' @importFrom DBI dbGetQuery
 #' @export
@@ -28,6 +29,7 @@ storeTimeSeries <- function(series,
                             li = NULL,
                             valid_from = NULL,
                             valid_to = NULL,
+                            release_date = NULL,
                             vintage_date = NULL,
                             store_freq = T,
                             tbl = "timeseries_main",
@@ -80,7 +82,7 @@ storeTimeSeries <- function(series,
   # VALIDITY / VINTAGES ##################
   if(is.null(valid_from) && is.null(valid_to)){
     # Standard for single versioned time series ###############
-    values <- .createValues(li,NULL,store_freq = store_freq)
+    values <- .createValues(li,NULL,store_freq = store_freq, release_date)
     data_query <- .queryStoreNoVintage(val = values,
                                        schema = schema,
                                        tbl = tbl)

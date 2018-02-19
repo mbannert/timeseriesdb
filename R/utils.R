@@ -58,7 +58,7 @@ print.SQL <- function(x,...){
   cat(gsub("\n[ \t]+","\n",x))
 }
 
-.createValues <- function(li, validity = NULL, store_freq){
+.createValues <- function(li, validity = NULL, store_freq, release_date = NULL){
   # CREATE ELEMENTS AND RECORDS ##########################
   # use the form (..record1..),(..record2..),(..recordN..)
   # to be able to store everything in one big query
@@ -68,13 +68,25 @@ print.SQL <- function(x,...){
     ifelse(inherits(x,"zoo"),'NULL',stats::frequency(x))
   })
   
+  if(is.null(release_date)) {
+    release_date <- "DEFAULT"
+  } else {
+    tryCatch(
+      release_date <- strftime(release_date, format = "%F %T %z"),
+      error = function(e) {
+        msg <- sprintf("Failed to parse release_date \"%s\". Please make sure it is an object which can be converted to \"POSIXlt\" for strftime!", release_date)
+        stop(msg)
+      }
+    );
+  }
+  
   if(is.null(validity)){
     if(!store_freq){
       values <- paste(paste0("('",
                              paste(series,
                                    hstores,
                                    sep="','"),
-                             "')"),
+                             "', '", release_date, "')"),
                       collapse = ",")
     } else {
       values <- paste(paste0("('",
@@ -82,7 +94,7 @@ print.SQL <- function(x,...){
                                    hstores,
                                    freqs,
                                    sep="','"),
-                             "')"),
+                             "', '", release_date, "')"),
                       collapse = ",")
     }
   } else {
@@ -92,7 +104,7 @@ print.SQL <- function(x,...){
                                    validity,
                                    hstores,
                                    sep="','"),
-                             "')"),
+                             "', '", release_date, "')"),
                       collapse = ",")
     } else {
       values <- paste(paste0("('",
@@ -101,13 +113,14 @@ print.SQL <- function(x,...){
                                    hstores,
                                    freqs,
                                    sep="','"),
-                             "')"),
+                             "', '", release_date, "')"),
                       collapse = ",")
     }
   }
   values <- gsub("''","'",values)
   values <- gsub("::hstore'","::hstore",values)
   values <- gsub("'NULL'","NULL",values)
+  values <- gsub("'DEFAULT'", "DEFAULT", values)
   values
 }
 
