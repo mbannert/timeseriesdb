@@ -130,9 +130,10 @@ print.SQL <- function(x,...){
   md_generated_by <- Sys.info()["user"]
   md_resource_last_update <- Sys.time()
   md_coverages <- unlist(lapply(li,function(x){
+    zld <- zooLikeDateConvert(x)
     sprintf('%s to %s',
-            min(zooLikeDateConvert(x)),
-            max(zooLikeDateConvert(x))
+            min(zld),
+            max(zld)
     )}
   ))
   

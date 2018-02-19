@@ -95,9 +95,11 @@ bulkStoreTimeSeries <- function(series,
     meta_df <- data.frame(md_generated_by = Sys.info()["user"],
                           md_resource_last_update = Sys.time(),
                           md_coverages = unlist(lapply(li,function(x){
+                            # TODO: Find min/max first, then convert single value!
+                            zld <- zooLikeDateConvert(x)
                             sprintf('%s to %s',
-                                    min(zooLikeDateConvert(x)),
-                                    max(zooLikeDateConvert(x))
+                                    min(zld),
+                                    max(zld)
                             )})),
                           meta_data = '',
                           stringsAsFactors = F,
