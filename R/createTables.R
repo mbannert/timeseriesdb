@@ -64,7 +64,8 @@ createTimeseriesVintages <- function(schema = "timeseries",
                        CREATE TABLE %s.%s (ts_key text,
                                            ts_validity daterange,
                                            ts_data hstore, 
-                                           ts_frequency integer);
+                                           ts_frequency integer,
+                                           ts_release_date timestamp with time zone DEFAULT '1900-01-01 00:00:00');
                        ALTER TABLE %s.%s
                        ADD PRIMARY KEY (ts_key, ts_validity);
                        ALTER TABLE %s.%s
