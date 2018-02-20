@@ -6,7 +6,8 @@
 \usage{
 readTimeSeries(series, con, valid_on = NULL, tbl = "timeseries_main",
   tbl_vintages = "timeseries_vintages", schema = "timeseries", env = NULL,
-  pkg_for_irreg = "xts", chunksize = 10000, respect_release_date = FALSE)
+  pkg_for_irreg = "xts", chunksize = 10000, respect_release_date = FALSE,
+  regex = FALSE)
 }
 \arguments{
 \item{series}{character vector of time series keys}
@@ -26,6 +27,8 @@ readTimeSeries(series, con, valid_on = NULL, tbl = "timeseries_main",
 \item{pkg_for_irreg}{character name of package for irregular series. xts or zoo, defaults to xts.}
 
 \item{chunksize}{numeric value of threshold at which input vector should be processed in chunks. defaults to 70000.}
+
+\item{regex}{If set to TRUE, \code{readTimeSeries} will get all time series which keys matching the pattern given in series}
 }
 \description{
 This function reads a time series from a PostgreSQL relation

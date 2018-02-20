@@ -14,10 +14,6 @@ beginTransaction <- function(con, quiet = T){
   if(is.null(out) && !quiet) print('BEGIN')
 }
 
-#' @param con 
-#'
-#' @param quiet 
-#'
 #' @rdname transactionUtils
 #' @export
 commitTransaction <- function(con, quiet = T){
@@ -25,10 +21,6 @@ commitTransaction <- function(con, quiet = T){
   if(is.null(out) && !quiet) print('COMMIT')
 }
 
-#' @param con 
-#'
-#' @param quiet 
-#'
 #' @rdname transactionUtils
 #' @export
 rollbackTransaction <- function(con, quiet = T){

@@ -30,7 +30,7 @@ storeTimeSeries(series, con, li = NULL, valid_from = NULL,
 
 \item{tbl}{character string denoting the name of the main time series table in the PostgreSQL database.}
 
-\item{tbl_vintages}{}
+\item{tbl_vintages}{character string denoting the name of the vintages time series table in the PostgreSQL database.}
 
 \item{md_unlocal}{character string denoting the name of the table that holds unlocalized meta information.}
 
