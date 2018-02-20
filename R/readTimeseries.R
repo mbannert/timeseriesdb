@@ -29,6 +29,7 @@ readTimeSeries <- function(series, con,
                            env = NULL,
                            pkg_for_irreg = "xts",
                            chunksize = 10000,
+                           respect_release_date = FALSE,
                            regex = FALSE){
   
   if(regex) {
@@ -46,7 +47,7 @@ readTimeSeries <- function(series, con,
       stop(sprintf("No series found matching '%s'!", pattern))
     }
   }
-  
+
   useries <- unique(series)
   if(length(useries) != length(series)){
     warning("Input vector contains non-unique keys, stripped duplicates.")
@@ -65,9 +66,9 @@ readTimeSeries <- function(series, con,
                 CREATE TEMPORARY TABLE ts_read (ts_key text PRIMARY KEY) ON COMMIT DROP;
                 INSERT INTO ts_read(ts_key) VALUES %s;
                 
-                SELECT ts_key, row_to_json(t)::text AS ts_json_records
+                SELECT ts_key, row_to_json(t)::text AS ts_json_records, extract(EPOCH FROM NOW()) as server_time
                 FROM (
-                SELECT tm.ts_key, ts_data, ts_frequency
+                SELECT tm.ts_key, ts_data, ts_frequency, extract(epoch from ts_release_date) as ts_release_date
                 FROM %s.%s tm
                 JOIN ts_read tr
                 ON (tm.ts_key = tr.ts_key)
@@ -80,9 +81,9 @@ readTimeSeries <- function(series, con,
                 CREATE TEMPORARY TABLE ts_read (ts_key text PRIMARY KEY) ON COMMIT DROP;
                 INSERT INTO ts_read(ts_key) VALUES %s;
                 
-                SELECT ts_key, row_to_json(t)::text AS ts_json_records
+                SELECT ts_key, row_to_json(t)::text AS ts_json_records, extract(EPOCH FROM NOW()) as server_time
                 FROM (
-                SELECT tm.ts_key, ts_data, ts_frequency
+                SELECT tm.ts_key, ts_data, ts_frequency, extract(epoch from ts_release_date) as ts_release_date
                 FROM %s.%s tm 
                 JOIN ts_read tr
                 ON (tm.ts_key = tr.ts_key)
@@ -103,8 +104,15 @@ readTimeSeries <- function(series, con,
     jsn_arr <- sprintf("[%s]",paste0(out[,2],collapse = ","))
     jsn_li <- fromJSON(jsn_arr,simplifyVector = F)
     
+    server_time <- out[1, "server_time"]
+    
     out_li <- lapply(jsn_li,function(x){
       freq <- x$ts_frequency
+      
+      if(respect_release_date && x$ts_release_date > server_time) {
+        x$ts_data <- x$ts_data[1:(length(x$ts_data)-1)]
+      }
+      
       d_chars <- names(x$ts_data)
       ts_data <- suppressWarnings(as.numeric(unlist(x$ts_data,
                                                     recursive = F)))
@@ -149,18 +157,18 @@ readTimeSeries <- function(series, con,
            frequency = freq)
       }
     })
-
-        names(out_li) <- out[,1]
+    
+    names(out_li) <- out[,1]
     class(out_li) <- append(class(out_li),"tslist")
     out_li
-  }
+    }
   
   
   if(length(series) > chunksize){
     n <- length(series)
     chunks <- suppressWarnings(split(series,
-                    rep(1:ceiling(length(series)/chunksize),
-                        each = chunksize)))
+                                     rep(1:ceiling(length(series)/chunksize),
+                                         each = chunksize)))
     
     names(chunks) <- NULL
     # out_li <- unlist(lapply(chunks,readFromDB,con = con),recursive = F)
@@ -173,8 +181,6 @@ readTimeSeries <- function(series, con,
   } else{
     out_li <- readFromDB(series,con)
   }
-  
-  
   
   if(!is.null(env)) {
     if(class(env) != "environment"){

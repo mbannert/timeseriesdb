@@ -5,8 +5,9 @@
 \title{Write an R time series to a PostgreSQL database}
 \usage{
 storeTimeSeries(series, con, li = NULL, valid_from = NULL,
-  valid_to = NULL, vintage_date = NULL, store_freq = T,
-  tbl = "timeseries_main", tbl_vintages = "timeseries_vintages",
+  valid_to = NULL, release_date = NULL, vintage_date = NULL,
+  store_freq = T, tbl = "timeseries_main",
+  tbl_vintages = "timeseries_vintages",
   md_unlocal = "meta_data_unlocalized", lookup_env = .GlobalEnv,
   overwrite = T, schema = "timeseries")
 }
@@ -21,13 +22,15 @@ storeTimeSeries(series, con, li = NULL, valid_from = NULL,
 
 \item{valid_to}{character date upper bound of a date range.}
 
+\item{release_date}{}
+
 \item{vintage_date}{character date, usually not used, defaults to NULL for non-vintages and vintages that are entered at the current end of the series. By specifying a date one can store former vintages.}
 
 \item{store_freq}{}
 
 \item{tbl}{character string denoting the name of the main time series table in the PostgreSQL database.}
 
-\item{tbl_vintages}{}
+\item{tbl_vintages}{character string denoting the name of the vintages time series table in the PostgreSQL database.}
 
 \item{md_unlocal}{character string denoting the name of the table that holds unlocalized meta information.}
 

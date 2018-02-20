@@ -6,7 +6,8 @@
 \usage{
 readTimeSeries(series, con, valid_on = NULL, tbl = "timeseries_main",
   tbl_vintages = "timeseries_vintages", schema = "timeseries", env = NULL,
-  pkg_for_irreg = "xts", chunksize = 10000, regex = FALSE)
+  pkg_for_irreg = "xts", chunksize = 10000, respect_release_date = FALSE,
+  regex = FALSE)
 }
 \arguments{
 \item{series}{character vector of time series keys}

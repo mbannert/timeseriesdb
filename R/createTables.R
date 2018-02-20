@@ -26,10 +26,30 @@ createTimeseriesMain <- function(schema = "timeseries",
                                  tbl = "timeseries_main"){
   sql_query <- sprintf("CREATE TABLE %s.%s (ts_key text primary key,
                         ts_data hstore, 
-                        ts_frequency integer)",
+                        ts_frequency integer,
+                        ts_release_date timestamp with time zone DEFAULT '1900-01-01 00:00:00')",
                        schema,
                        tbl)
   class(sql_query) <- "SQL"
+  
+  sql_query
+}
+
+#' Title
+#'
+#' @param schema 
+#' @param tbl 
+#'
+#' @return
+#' @export
+#'
+#' @examples
+addReleaseDateToTimeseriesMain <- function(schema = "timeseries",
+                                  tbl = "timeseries_main") {
+  sql_query <- sprintf("ALTER TABLE %s.%s ADD IF NOT EXISTS ts_release_date timestamp with time zone DEFAULT '1900-01-01 00:00:00'",
+                       schema, tbl)
+  class(sql_query) <- "SQL"
+  
   sql_query
 }
 
@@ -44,7 +64,8 @@ createTimeseriesVintages <- function(schema = "timeseries",
                        CREATE TABLE %s.%s (ts_key text,
                                            ts_validity daterange,
                                            ts_data hstore, 
-                                           ts_frequency integer);
+                                           ts_frequency integer,
+                                           ts_release_date timestamp with time zone DEFAULT '1900-01-01 00:00:00');
                        ALTER TABLE %s.%s
                        ADD PRIMARY KEY (ts_key, ts_validity);
                        ALTER TABLE %s.%s
@@ -54,6 +75,24 @@ createTimeseriesVintages <- function(schema = "timeseries",
                        schema,tbl,
                        schema,tbl)
   class(sql_query) <- "SQL"
+  sql_query
+}
+
+#' Title
+#'
+#' @param schema 
+#' @param tbl 
+#'
+#' @return
+#' @export
+#'
+#' @examples
+addReleaseDateToTimeseriesVintages <- function(schema = "timeseries",
+                                           tbl = "timeseries_vintages") {
+  sql_query <- sprintf("ALTER TABLE %s.%s ADD IF NOT EXISTS ts_release_date timestamp with time zone DEFAULT '1900-01-01 00:00:00'",
+                       schema, tbl)
+  class(sql_query) <- "SQL"
+  
   sql_query
 }
 
@@ -73,6 +112,8 @@ createTimeseriesSets <- function(schema = "timeseries",
   class(sql_query) <- "SQL"
   sql_query
 }
+
+
 
 #' @export
 #' @rdname createTable
@@ -133,8 +174,18 @@ runCreateTables <- function(con,schema = "timeseries"){
 }
 
 
-
-
-
-
-
+#' Title
+#'
+#' @param con 
+#' @param schema 
+#'
+#' @return
+#' @export
+#'
+#' @examples
+runUpgradeTables <- function(con, schema = "timeseries") {
+  status <- list()
+  status$timeseries_main <- attributes(runDbQuery(con, addReleaseDateToTimeseriesMain(schema = schema)))
+  status$timeseries_vintages <- attributes(runDbQuery(con, addReleaseDateToTimeseriesVintages(schema = schema)))
+  status
+}
