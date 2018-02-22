@@ -1,31 +1,58 @@
-timeseriesdb
+timeseriesdb - Manage Official Statistics' Time Series Data with R and PostgreSQL
 ============
 
-Store and organize a large amount of low frequency time series data. The package was designed to manage a large catalog of official statistics which are typically published on monthly, quarterly or yearly basis. Thus timeseriesdb is optimized to handle a large number of lower frequency time series as opposed to a smaller amount of high frequency time series such as real time data from measuring devices. Hence timeseriesdb provides the opportunity to store extensive multi-lingual meta information. The package also provides a web GUI to explore the underlying PostgreSQL database interactively.
+*timeseriesdb* is PostgreSQL based database schema to store time series and a corresponding R mapper package. The package was designed to map R time series objects to records in PostgreSQL relations. **timeseriesdb** aims at time series from official statistics which are typically published on a monthly, quarterly or yearly basis. Thus **timeseriesdb** is optimized to handle updates caused by data revisions. Further **timeseriesdb**'s schema allows to store extensive, context aware, multi-lingual meta-information.  
 
-## Installation Notes
 
-### R stable version
-The stable version of the \pkg{timeseriesdb} \proglang{R} package itself can be downloaded and installed from CRAN (\proglang{R}'s official repository). The package source as well as binaries for Windows an OS X are available from CRAN. The package can be installed following \proglang{R}'s standard procedure to install packages eithe by running:
+## Getting Started
+
+This quick start guide assumes you've PostgreSQL installed or have access to a remote PostgreSQL database including the necessary access rights to create new schemas and tables. Also, let's assume you installed R. 
+
+If that's not case please refer to: 
+
+- [PostgreSQL Download](https://www.postgresql.org/download/)
+- [R Language for Statistical Computing](https://www.r-project.org/)
+
+
+### Before you install the R Package
+**timeseriesdb** depends on **RPostgreSQL** to connect to the **PostgreSQL** database, the user needs to make sure that the PostgreSQL's own library and header files are present and can be found by RPostgreSQL. For Windows, the library called **libpq** is attached to the **RPostgreSQL** package and will thus be installed with the R package. Hence Windows users are unlikely to experience further troubles.
+
+For OS X and Linux the installation is a bit different when **libpq** is not present. For some Linux distributions the corresponding library can be obtained with the **postgresql-devel** package. Similarly, on OS X, the user needs to make sure that **libpq** is present and can be found by **RpostgreSQL**. I recommend to use the **homebrew** package manager and run `brew install postgresql`. OS X and Linux users should note that previously installed versions may not contain the libraries provided by **postgresql-devel** package. 
+
+
+
+
+### Install the R package (stable version)
+
+Yay! **timeseriesdb** is on CRAN now. Installing the stable version (right choice for most users) is a matter of running on your R console 
 
 ```{r, eval = FALSE}
 install.packages("timeseriesdb")
 ```
 
-or using \proglang{R}'s GUI. 
+or using R (Studio's) **G**raphical **U**ser **I**nterface. 
 
-### R developer version
-The developer version of \pkg{timeseriesdb} can be obtained from github.com/mbannert/timeseriesdb. The most convenient way to install the latest developer version from inside an \proglang{R} session is to use the \pkg{devtools} package [@devtools]:
+### Install the R packages (developer version)
+
+The latest version of the **timeseriesdb** is available from [my github account](https://github.com/mbannert/timeseriesdb). The **devtools** package is a easy way to directly install packages directly from github. 
+
 
 ```{r, eval = FALSE}
 library(devtools)
-install_github('mbannert/timeseriesb')
+install_github('mbannert/timeseriesdb')
 ```
 
-### PostgreSQL
-However, because \pkg{timeseriesdb} depends on \pkg{RPostgreSQL} to connect to the \proglang{PostgreSQL} database, the user needs to make sure that the \proglang{PostgreSQL}'s own library and header files are present and can be found by \pkg{RPostgreSQL}. For Windows, this library called libpq is attached to the \pkg{RPostgreSQL} package and will thus be installed with the \proglang{R} package. Hence Windows should make sure \pkg{RPostgreSQL} and should not experience further troubles.
 
-For OS X and Linux the installation is a bit different when libpq is not present. For some Linux distributions the corresponding library can be obtained with the postgresql-devel package. Similarly on OS X, the user needs to make sure that libpq is present and can be found by \pkg{RpostgreSQL}. It is recommend to use the \pkg{homebrew} package manager running `brew install postgresql`. OS X and Linux users should note that previously installed versions may not contain the libraries provided by postgresql-devel package. 
+### Set up PostgreSQL
+
+
+
+
+
+
+
+
+### PostgreSQL
 
 
 ## Database
