@@ -15,8 +15,9 @@
 #' @param tbl_vintages character table name of the relation that holds time series vintages
 #' @param schema character SQL schema name. Defaults to timeseries.
 #' @param pkg_for_irreg character name of package for irregular series. xts or zoo, defaults to xts.
-#' @param regex If set to TRUE, \code{readTimeSeries} will get all time series which keys matching the pattern given in series
 #' @param chunksize numeric value of threshold at which input vector should be processed in chunks. defaults to 70000.
+#' @param respect_release_date logical should the relaase set in the database be respected. If TRUE, the last observation will be cut off if server time is before release date. Reasonable for relesae date.
+#' @param regex If set to TRUE, series will be interpreted as a regular exporession, so that all time series whose keys match the pattern will be returned.
 #'
 #' @importFrom DBI dbGetQuery
 #' @importFrom jsonlite fromJSON

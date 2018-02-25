@@ -35,15 +35,6 @@ createTimeseriesMain <- function(schema = "timeseries",
   sql_query
 }
 
-#' Title
-#'
-#' @param schema 
-#' @param tbl 
-#'
-#' @return
-#' @export
-#'
-#' @examples
 addReleaseDateToTimeseriesMain <- function(schema = "timeseries",
                                   tbl = "timeseries_main") {
   sql_query <- sprintf("ALTER TABLE %s.%s ADD IF NOT EXISTS ts_release_date timestamp with time zone DEFAULT '1900-01-01 00:00:00'",
@@ -78,15 +69,6 @@ createTimeseriesVintages <- function(schema = "timeseries",
   sql_query
 }
 
-#' Title
-#'
-#' @param schema 
-#' @param tbl 
-#'
-#' @return
-#' @export
-#'
-#' @examples
 addReleaseDateToTimeseriesVintages <- function(schema = "timeseries",
                                            tbl = "timeseries_vintages") {
   sql_query <- sprintf("ALTER TABLE %s.%s ADD IF NOT EXISTS ts_release_date timestamp with time zone DEFAULT '1900-01-01 00:00:00'",
@@ -174,12 +156,14 @@ runCreateTables <- function(con,schema = "timeseries"){
 }
 
 
-#' Title
+#' Add Release Date Column to Tables
+#' 
+#' Adds a release column to tables of older versions of timeseriesdb. 
+#' 
 #'
-#' @param con 
-#' @param schema 
+#' @param con PostgreSQLL connection object
+#' @param schema database schema, defaults to 'timeseries'.
 #'
-#' @return
 #' @export
 #'
 #' @examples
