@@ -1,6 +1,12 @@
-con <- createConObj(dbhost = "localhost",
+con <- NULL
+
+on_cran <- !identical(Sys.getenv("NOT_CRAN"), "true")
+
+if (!on_cran) {
+  con <- createConObj(dbhost = "localhost",
                     dbname = "sandbox",
                     passwd = "")
+}
 
 set.seed(123)
 tslist <- list()
@@ -99,4 +105,6 @@ test_that("Unlocalized meta data can be written to db in chunks.", {
   expect_equal(mdul_count, 6)
 })
 
-dbDisconnect(con)
+if(!on_cran) {
+  dbDisconnect(con)
+}
