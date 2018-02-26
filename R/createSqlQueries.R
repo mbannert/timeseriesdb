@@ -48,7 +48,7 @@
   sql_query
 }
 
-.queryStoreVintage <- function(val,schema,tbl,vintage_date){
+.queryStoreVintage <- function(val,schema,tbl){
   sql_query <- sprintf("BEGIN;
                        CREATE TEMPORARY TABLE 
                        ts_updates(ts_key text, 
@@ -77,7 +77,7 @@
                         ')'):: DATERANGE
                        FROM ts_updates
                        WHERE ts_updates.ts_key = %s.ts_key
-                       AND %s.ts_validity @> %s;
+                       AND %s.ts_validity @> CURRENT_DATE;
 
                        -- Add new entries
                        INSERT INTO %s.%s 
@@ -94,8 +94,6 @@
                        tbl, # COALESCE
                        tbl, # WHERE
                        tbl, # AND
-                       ifelse(is.null(vintage_date),"CURRENT_DATE",
-                              sprintf("'%s'::DATE",vintage_date)), # CONTAINS
                        schema,tbl
                        )
   class(sql_query) <- "SQL"

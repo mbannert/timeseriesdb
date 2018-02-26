@@ -12,8 +12,6 @@
 #' @param li list of time series. Defaults to NULL to no break legacy calls that use lookup environments.
 #' @param valid_from character date lower bound of a date range.
 #' @param valid_to character date upper bound of a date range.
-#' @param release_date character date string indicating when a series should be released. This facilitates implementations that only share part of the information before a certain release date. 
-#' @param vintage_date character date, usually not used, defaults to NULL for non-vintages and vintages that are entered at the current end of the series. By specifying a date one can store former vintages. 
 #' @param tbl character string denoting the name of the main time series table in the PostgreSQL database.
 #' @param md_unlocal character string denoting the name of the table that holds unlocalized meta information.
 #' @param lookup_env environment to look in for timeseries. Defaults to .GobalEnv.
@@ -30,7 +28,6 @@ storeTimeSeries <- function(series,
                             valid_from = NULL,
                             valid_to = NULL,
                             release_date = NULL,
-                            vintage_date = NULL,
                             store_freq = T,
                             tbl = "timeseries_main",
                             tbl_vintages = "timeseries_vintages",
@@ -103,8 +100,7 @@ storeTimeSeries <- function(series,
     values <- .createValues(li,validity,store_freq = store_freq, release_date = release_date)
     data_query <- .queryStoreVintage(val = values,
                                      schema = schema,
-                                     tbl = tbl_vintages,
-                                     vintage_date = vintage_date)
+                                     tbl = tbl_vintages)
     out <- attributes(runDbQuery(con,data_query))
   }
   out
