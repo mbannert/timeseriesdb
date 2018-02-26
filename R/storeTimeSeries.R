@@ -88,6 +88,20 @@ storeTimeSeries <- function(series,
              meta_data = attributes(runDbQuery(con,meta_data_query)))
     
   } else {
+    vintage_keys <- sprintf("('%s')", paste(series, collapse = "','"))
+    
+    query <- sprintf("SELECT lower(ts_validity) as vintage_dates FROM %s.%s WHERE
+                                          ts_key IN %s
+                     AND upper_inf(ts_validity)",
+                     schema, tbl_vintages,
+                     vintage_keys)
+    class(query) <- "SQL"
+    
+    vintage_start_dates <- dbGetQuery(con, query)$vintage_dates
+    if(any(vintage_start_dates == valid_from)) {
+      return(list(error = "valid_from must be greater than start date of vintages"))
+    }
+    
     # Handle case that either valid from OR valid to is null.
     # Create a PostgreSQL daterange compliant string
     # do not use ifelse (never dare to) here !!!!! thanks to 

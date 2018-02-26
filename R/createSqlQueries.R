@@ -77,7 +77,8 @@
                         ')'):: DATERANGE
                        FROM ts_updates
                        WHERE ts_updates.ts_key = %s.ts_key
-                       AND %s.ts_validity @> CURRENT_DATE;
+                       -- only allow inserts at end of timeline
+                       AND upper_inf(%s.ts_validity);
 
                        -- Add new entries
                        INSERT INTO %s.%s 
