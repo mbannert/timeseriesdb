@@ -42,7 +42,7 @@ test_that("Time series is the same after db roundtrip",{
   expect_equal(tslist$ts1, result$ts1)
 })
 
-test_that("We have to localized meta data objects. I.e. one does not overwrite the other", {
+test_that("We have two localized meta data objects. I.e. one does not overwrite the other", {
   skip_on_cran()
 
   # create some localized meta information
