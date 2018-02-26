@@ -5,7 +5,7 @@
 \title{Store a List of Time Series Chunk Wise to Avoid Memory Problem}
 \usage{
 storeListChunkWise(series, con, li = NULL, tbl = "timeseries_main",
-  md_unlocal = "meta_data_unlocalized", overwrite = T, chunksize = NULL,
+  md_unlocal = "meta_data_unlocalized", overwrite = T, chunksize = 10000,
   schema = "timeseries")
 }
 \arguments{
@@ -21,7 +21,7 @@ storeListChunkWise(series, con, li = NULL, tbl = "timeseries_main",
 
 \item{overwrite}{logical should existing records (same primary key) be overwritten? Defaults to TRUE.}
 
-\item{chunksize}{integer number of chunks. Defaults to NULL, invoking automatic chunk determination based on C Stack size.}
+\item{chunksize}{integer number of chunks. Defaults to chunks of 10K.}
 
 \item{schema}{SQL schema name. Defaults to timeseries.}
 }

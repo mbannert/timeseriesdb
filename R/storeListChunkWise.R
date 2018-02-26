@@ -10,7 +10,7 @@
 #' @param tbl character string denoting the name of the main time series table in the PostgreSQL database.
 #' @param md_unlocal character string denoting the name of the table that holds unlocalized meta information.
 #' @param overwrite logical should existing records (same primary key) be overwritten? Defaults to TRUE.
-#' @param chunksize integer number of chunks. Defaults to NULL, invoking automatic chunk determination based on C Stack size.
+#' @param chunksize integer number of chunks. Defaults to chunks of 10K. 
 #' @param schema SQL schema name. Defaults to timeseries.
 #' @importFrom DBI dbGetQuery
 #' @export
