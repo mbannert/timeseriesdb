@@ -15,7 +15,7 @@ rollbackTransaction(con, quiet = T)
 \arguments{
 \item{con}{PostgreSQL connection object.}
 
-\item{quiet}{}
+\item{quiet}{logical should the query be executed quietly? Otherwise BEGIN, COMMIT or ROLLBACK are echoed.}
 }
 \description{
 this set of function can speed up loops by starting a transaction, 

@@ -3,7 +3,7 @@
 #' this set of function can speed up loops by starting a transaction, 
 #' performing several queries and ending them with either commit or rollback. 
 #' 
-#' @param quiet 
+#' @param quiet logical should the query be executed quietly? Otherwise BEGIN, COMMIT or ROLLBACK are echoed.
 #' @param con PostgreSQL connection object.
 #'
 #' @importFrom DBI dbGetQuery

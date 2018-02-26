@@ -12,15 +12,15 @@
 #' @param li list of time series. Defaults to NULL to no break legacy calls that use lookup environments.
 #' @param valid_from character date lower bound of a date range.
 #' @param valid_to character date upper bound of a date range.
+#' @param release_date character date string indicating when a series should be released. This facilitates implementations that only share part of the information before a certain release date. 
 #' @param vintage_date character date, usually not used, defaults to NULL for non-vintages and vintages that are entered at the current end of the series. By specifying a date one can store former vintages. 
 #' @param tbl character string denoting the name of the main time series table in the PostgreSQL database.
 #' @param md_unlocal character string denoting the name of the table that holds unlocalized meta information.
 #' @param lookup_env environment to look in for timeseries. Defaults to .GobalEnv.
 #' @param overwrite logical should existing records (same primary key) be overwritten? Defaults to TRUE.
-#' @param store_freq 
+#' @param store_freq logical, should frequencies be stored. Defaults to TRUE. 
 #' @param tbl_vintages character string denoting the name of the vintages time series table in the PostgreSQL database.
 #' @param schema SQL schema name. Defaults to timeseries. 
-#' @param release_date 
 #'
 #' @importFrom DBI dbGetQuery
 #' @export

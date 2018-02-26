@@ -22,11 +22,11 @@ storeTimeSeries(series, con, li = NULL, valid_from = NULL,
 
 \item{valid_to}{character date upper bound of a date range.}
 
-\item{release_date}{}
+\item{release_date}{character date string indicating when a series should be released. This facilitates implementations that only share part of the information before a certain release date.}
 
 \item{vintage_date}{character date, usually not used, defaults to NULL for non-vintages and vintages that are entered at the current end of the series. By specifying a date one can store former vintages.}
 
-\item{store_freq}{}
+\item{store_freq}{logical, should frequencies be stored. Defaults to TRUE.}
 
 \item{tbl}{character string denoting the name of the main time series table in the PostgreSQL database.}
 

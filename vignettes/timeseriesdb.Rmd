@@ -12,9 +12,7 @@ vignette: >
 
 # timeseriesdb - Manage Official Statistics' Time Series Data with R and PostgreSQL
 
-*timeseriesdb* maps R time series object to PostgreSQL relations for permanent storage.  
-Instead of writing time series to spreadsheet files or .RData on disk, **timeseriesdb**
-uses a PostgreSQL schema which allows to store data alongside extensive, context aware, multi-lingual meta information. **timeseriesdb** aims at time series from official statistics which are typically published on a monthly, quarterly or yearly basis. Thus **timeseriesdb** is optimized to handle updates of large parts of a time series caused by data revisions such as GDP revisions. 
+*timeseriesdb* maps R time series object to PostgreSQL relations for permanent storage.  Instead of writing time series to spreadsheet files or .RData on disk, **timeseriesdb** uses a PostgreSQL schema which allows to store data alongside extensive, context aware, multi-lingual meta information. **timeseriesdb** aims at time series from official statistics which are typically published on a monthly, quarterly or yearly basis. Thus **timeseriesdb** is optimized to handle updates of large parts of a time series caused by data revisions such as GDP revisions. 
 
 
 ## Getting Started
