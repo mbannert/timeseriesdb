@@ -100,7 +100,7 @@ storeTimeSeries <- function(series,
     if(is.null(valid_from)) valid_from <- ""
     if(is.null(valid_to)) valid_to <- ""
     validity <- sprintf("[%s,%s)",valid_from,valid_to)
-    values <- .createValues(li,validity,store_freq = store_freq)
+    values <- .createValues(li,validity,store_freq = store_freq, release_date = release_date)
     data_query <- .queryStoreVintage(val = values,
                                      schema = schema,
                                      tbl = tbl_vintages,
