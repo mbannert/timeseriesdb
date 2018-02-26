@@ -28,7 +28,9 @@ readTimeSeries(series, con, valid_on = NULL, tbl = "timeseries_main",
 
 \item{chunksize}{numeric value of threshold at which input vector should be processed in chunks. defaults to 70000.}
 
-\item{regex}{If set to TRUE, \code{readTimeSeries} will get all time series which keys matching the pattern given in series}
+\item{respect_release_date}{logical should the relaase set in the database be respected. If TRUE, the last observation will be cut off if server time is before release date. Reasonable for relesae date.}
+
+\item{regex}{If set to TRUE, series will be interpreted as a regular exporession, so that all time series whose keys match the pattern will be returned.}
 }
 \description{
 This function reads a time series from a PostgreSQL relation
