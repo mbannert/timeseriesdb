@@ -11,7 +11,6 @@
 #' @param con a PostgreSQL connection object.
 #' @param li list of time series. Defaults to NULL to no break legacy calls that use lookup environments.
 #' @param valid_from character date lower bound of a date range.
-#' @param valid_to character date upper bound of a date range.
 #' @param tbl character string denoting the name of the main time series table in the PostgreSQL database.
 #' @param md_unlocal character string denoting the name of the table that holds unlocalized meta information.
 #' @param lookup_env environment to look in for timeseries. Defaults to .GobalEnv.
@@ -26,7 +25,6 @@ storeTimeSeries <- function(series,
                             con,
                             li = NULL,
                             valid_from = NULL,
-                            valid_to = NULL,
                             release_date = NULL,
                             store_freq = T,
                             tbl = "timeseries_main",
@@ -59,7 +57,7 @@ storeTimeSeries <- function(series,
   # are allowed to be stored. In that case we do not need to run 
   # through the entire write process.
   if(length(li) == 0){
-    cat("No time series in subset - returned empty list. Set overwrite=TRUE or add valid_from and/or valid_to arguments, if you want to overwrite existing series or store different versions of a series.")
+    cat("No time series in subset - returned empty list. Set overwrite=TRUE or add a valid_from argument, if you want to overwrite existing series or store different versions of a series.")
     return(list())
   } 
   
@@ -77,7 +75,7 @@ storeTimeSeries <- function(series,
   li <- li[keep]
   
   # VALIDITY / VINTAGES ##################
-  if(is.null(valid_from) && is.null(valid_to)){
+  if(is.null(valid_from)){
     # Standard for single versioned time series ###############
     values <- .createValues(li,NULL,store_freq = store_freq, release_date)
     data_query <- .queryStoreNoVintage(val = values,
@@ -95,8 +93,7 @@ storeTimeSeries <- function(series,
     # do not use ifelse (never dare to) here !!!!! thanks to 
     # Oliver Mueller for the bugfix
     if(is.null(valid_from)) valid_from <- ""
-    if(is.null(valid_to)) valid_to <- ""
-    validity <- sprintf("[%s,%s)",valid_from,valid_to)
+    validity <- sprintf("[%s,)",valid_from)
     values <- .createValues(li,validity,store_freq = store_freq, release_date = release_date)
     data_query <- .queryStoreVintage(val = values,
                                      schema = schema,
