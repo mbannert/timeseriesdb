@@ -6,15 +6,15 @@ if (!on_cran) {
   con <- createConObj(dbhost = "localhost",
                       dbname = "sandbox",
                       passwd = "")
+  
+  db_time <- dbGetQuery(con, "select NOW() as time")$time
+  
+  release_date <- db_time + 3 # 3 seconds from now
 }
 
 set.seed(123)
 tslist <- list()
 tslist$ts_w_release_date <- ts(rnorm(20),start = c(1990,1), frequency = 4)
-
-db_time <- dbGetQuery(con, "select NOW() as time")$time
-
-release_date <- db_time + 3 # 3 seconds from now
 
 # Test that ..... ##################
 
