@@ -20,15 +20,11 @@ storeListChunkWise <- function(series,
                                tbl="timeseries_main",
                                md_unlocal = "meta_data_unlocalized",
                                overwrite = T,
-                               chunksize = NULL,
+                               chunksize = 10000,
                                schema = "timeseries"){
-  if(!is.null(chunksize)){
-    chunks <- chunksize
-  } else {
-    chunks <- ceiling(as.numeric(utils::object.size(as.list(meta_envir)))/(Cstack_info()["size"]*0.7))  
-  }
+ 
   
-  name_chunks <- split(series,ceiling(seq_along(names(li))/chunks))
+  name_chunks <- split(series,ceiling(seq_along(names(li))/chunksize))
   
   # loop over the chunks in order to store it chunk wise 
   # otherwise we run into stack limit on the server
