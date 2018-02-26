@@ -84,7 +84,8 @@
                        SELECT ts_updates.ts_key,
                               ts_updates.ts_validity,
                               ts_updates.ts_data,
-                              ts_updates.ts_frequency
+                              ts_updates.ts_frequency,
+                              ts_updates.ts_release_date
                        FROM ts_updates;
                        COMMIT;",
                        val,
