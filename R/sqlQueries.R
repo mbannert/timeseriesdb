@@ -54,12 +54,15 @@
                        ts_updates(ts_key text, 
                        ts_validity daterange,
                        ts_data hstore,
-                       ts_frequency integer) ON COMMIT DROP;
+                       ts_frequency integer,
+                       ts_release_date timestamp with time zone DEFAULT '1900-01-01 00:00:00')
+                       ON COMMIT DROP;
                        
                        INSERT INTO ts_updates(ts_key,
                        ts_validity,
                        ts_data,
-                       ts_frequency) VALUES %s;
+                       ts_frequency,
+                       ts_release_date) VALUES %s;
                        LOCK TABLE %s.%s IN EXCLUSIVE MODE;
                        
                        -- Update existing entries
@@ -68,20 +71,21 @@
                        -- Use coalesce because lower statement produces NULL
                        UPDATE %s.%s
                        SET ts_validity = ('['|| 
-                       COALESCE(lower(%s.ts_validity):: TEXT,'') ||
+                       COALESCE(lower(%s.ts_validity)::TEXT,'') ||
                        ','|| 
-                       COALESCE(lower(ts_updates.ts_validity) :: TEXT,'') ||
-                       ')'):: DATERANGE
+                       COALESCE(lower(ts_updates.ts_validity)::TEXT,'') ||
+                       ')')::DATERANGE
                        FROM ts_updates
                        WHERE ts_updates.ts_key = %s.ts_key
-                       AND %s.ts_validity @> %s;
+                       AND upper_inf(%s.ts_validity);
                        
                        -- Add new entries
                        INSERT INTO %s.%s 
                        SELECT ts_updates.ts_key,
                        ts_updates.ts_validity,
                        ts_updates.ts_data,
-                       ts_updates.ts_frequency
+                       ts_updates.ts_frequency,
+                       ts_updates.ts_release_date
                        FROM ts_updates;
                        COMMIT;",
                        val,
@@ -90,8 +94,6 @@
                        tbl, # COALESCE
                        tbl, # WHERE
                        tbl, # AND
-                       ifelse(is.null(vintage_date),"CURRENT_DATE",
-                              sprintf("'%s'::DATE",vintage_date)), # CONTAINS
                        schema,tbl
   )
   class(sql_query) <- "SQL"

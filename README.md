@@ -127,18 +127,16 @@ I suggest to prevent users from deleting series using PostgreSQL's sophisticated
 ### Storing Time Series Vintages (Real Time Reproducibility)
 
 Sometime it is important to store different versions of the same time series. Revision of official statistics are common example of why you want to store so-called vintages. Assume you use GDP figures published by your national statistical office in your research. At the time you compiled your computations, the official bureau did their best to publish the GDP, but had to revise their estimations later on anyway. As a researcher who cares about reproducibility you may not want to rely on a source being online forever or to store different versions of their own publications for you. 
-That's why you can add a *valid_from* and *valid_to* to a *storeTimeSeries*. 
+That's why you can add a *valid_from* to a *storeTimeSeries*. 
 Note that vintages are not allowed to overlap and need to succeed each other without gaps. This will be enforced by **timeseriesdb**.
 
 ```
 
 tsl <- list(ts1 = ts(rnorm(100),start = c(1990,1),freq = 4))
 
-storeTimeseries(names(tsl),con, tsl, valid_from = '2018-01-01',
-				valid_to = '2018-01-31')
+storeTimeseries(names(tsl),con, tsl, valid_from = '2018-01-01')
 
-storeTimeseries(names(tsl),con, tsl, valid_from = '2018-02-01',
-				valid_to = '2018-02-28')
+storeTimeseries(names(tsl),con, tsl, valid_from = '2018-02-01')
 
 ```
 

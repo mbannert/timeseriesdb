@@ -1,5 +1,6 @@
 con <- NULL
 
+# same check as skip_on_cran()
 on_cran <- !identical(Sys.getenv("NOT_CRAN"), "true")
 
 if (!on_cran) {
