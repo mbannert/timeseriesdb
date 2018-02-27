@@ -107,7 +107,6 @@ storeTimeSeries <- function(series,
     # Create a PostgreSQL daterange compliant string
     # do not use ifelse (never dare to) here !!!!! thanks to 
     # Oliver Mueller for the bugfix
-    if(is.null(valid_from)) valid_from <- ""
     validity <- sprintf("[%s,)",valid_from)
     values <- .createValues(li,validity,store_freq = store_freq, release_date = release_date)
     data_query <- .queryStoreVintage(val = values,
