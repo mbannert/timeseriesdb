@@ -71,10 +71,10 @@
                        -- Use coalesce because lower statement produces NULL
                        UPDATE %s.%s
                        SET ts_validity = ('['|| 
-                       COALESCE(lower(%s.ts_validity):: TEXT,'') ||
+                       COALESCE(lower(%s.ts_validity)::TEXT,'') ||
                        ','|| 
-                       COALESCE(lower(ts_updates.ts_validity) :: TEXT,'') ||
-                       ')'):: DATERANGE
+                       COALESCE(lower(ts_updates.ts_validity)::TEXT,'') ||
+                       ')')::DATERANGE
                        FROM ts_updates
                        WHERE ts_updates.ts_key = %s.ts_key
                        AND upper_inf(%s.ts_validity);
