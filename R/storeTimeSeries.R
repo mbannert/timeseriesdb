@@ -11,6 +11,7 @@
 #' @param con a PostgreSQL connection object.
 #' @param li list of time series. Defaults to NULL to no break legacy calls that use lookup environments.
 #' @param valid_from character date lower bound of a date range.
+#' @param release_date character date string indicating when a series should be released. This facilitates implementations that only share part of the information before a certain release date.
 #' @param tbl character string denoting the name of the main time series table in the PostgreSQL database.
 #' @param md_unlocal character string denoting the name of the table that holds unlocalized meta information.
 #' @param lookup_env environment to look in for timeseries. Defaults to .GobalEnv.
