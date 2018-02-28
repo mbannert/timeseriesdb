@@ -18,7 +18,8 @@ getTimeSeriesVintages <- function(series,
   query <- sprintf("SELECT
                       ts_key, lower(ts_validity) as lower_bound, upper(ts_validity) as upper_bound
                     FROM %s.%s 
-                    WHERE ts_key in %s",
+                    WHERE ts_key in %s
+                    ORDER BY lower(ts_validity)",
                    schema,
                    tbl_vintages,
                    in_clause)
