@@ -1,3 +1,5 @@
+context("CRUD")
+
 con <- NULL
 
 # same check as skip_on_cran()

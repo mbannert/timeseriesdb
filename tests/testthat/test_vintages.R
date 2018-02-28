@@ -1,3 +1,5 @@
+context("vintages")
+
 con <- NULL
 
 on_cran <- !identical(Sys.getenv("NOT_CRAN"), "true")

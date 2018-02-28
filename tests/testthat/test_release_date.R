@@ -1,3 +1,5 @@
+contect("release date")
+
 con <- NULL
 
 on_cran <- !identical(Sys.getenv("NOT_CRAN"), "true")
