@@ -50,8 +50,6 @@ test_that("inserting vintage that causes empty validity range fails", {
   
   err <- storeTimeSeries(c("ts1"), con, list(ts1 = ts1), valid_from = "2006-08-01")
   
-  message(names(err))
-  
   expect_equal(names(err), "error")
 })
 
@@ -63,6 +61,23 @@ test_that("reading earlier versions works", {
   
   expect_equal(ts_before$ts1, ts1)
   expect_equal(ts_after$ts1, ts1.2)
+})
+
+test_that("getTimeSeriesVintages works", {
+  skip_on_cran()
+  
+  series <- c("ts1", "ts2", "ts3")
+  
+  expected_vintages_ts1 <- data.frame(
+    lower_bound = c(as.Date("2000-01-01"), as.Date("2006-08-01")),
+    upper_bound = c(as.Date("2006-08-01"), structure(Inf, class="Date"))
+  )
+  
+  vintages <- getTimeSeriesVintages(series, con)
+  
+  expect_equal(names(vintages), series)
+  expect_true(is.na(vintages$ts3))
+  expect_equivalent(vintages$ts1, expected_vintages_ts1)
 })
 
 if (!on_cran) {
