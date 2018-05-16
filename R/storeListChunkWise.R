@@ -12,6 +12,7 @@
 #' @param overwrite logical should existing records (same primary key) be overwritten? Defaults to TRUE.
 #' @param chunksize integer number of chunks. Defaults to chunks of 10K. 
 #' @param schema SQL schema name. Defaults to timeseries.
+#' @param show_progress If TRUE, storeListChunkWise will print a progress indicator to the console. Default FALSE.
 #' @importFrom DBI dbGetQuery
 #' @export
 storeListChunkWise <- function(series,
@@ -21,10 +22,21 @@ storeListChunkWise <- function(series,
                                md_unlocal = "meta_data_unlocalized",
                                overwrite = T,
                                chunksize = 10000,
-                               schema = "timeseries"){
+                               schema = "timeseries",
+                               show_progress = FALSE){
  
   
   name_chunks <- split(series,ceiling(seq_along(names(li))/chunksize))
+  
+  n_series <- length(series)
+  n_chunks <- length(name_chunks)
+  bar_width <- getOption("width") - 5
+  
+  if(show_progress) {  
+    cat(sprintf("\r|%s| %d%%",
+                paste(rep(" ", ceiling(bar_width)), collapse = ""),
+                0))
+  }
   
   # loop over the chunks in order to store it chunk wise 
   # otherwise we run into stack limit on the server
@@ -33,6 +45,13 @@ storeListChunkWise <- function(series,
                     overwrite = overwrite,
                     tbl = tbl,
                     schema = schema)  
+    
+    if(show_progress) {  
+      progress <- (i*chunksize)/n_series    
+      cat(sprintf("\r|%s%s| %d%%",
+                  paste(rep("=", floor(bar_width * progress)), collapse = ""),
+                  paste(rep(" ", ceiling(bar_width * max(0, (1 - progress)))), collapse = ""),
+                  min(floor(100*progress), 100)))
+    }
   }
 }
-  

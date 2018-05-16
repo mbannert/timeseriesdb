@@ -1,4 +1,4 @@
-contect("release date")
+context("release date")
 
 con <- NULL
 

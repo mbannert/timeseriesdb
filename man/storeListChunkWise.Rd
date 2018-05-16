@@ -6,7 +6,7 @@
 \usage{
 storeListChunkWise(series, con, li = NULL, tbl = "timeseries_main",
   md_unlocal = "meta_data_unlocalized", overwrite = T, chunksize = 10000,
-  schema = "timeseries")
+  schema = "timeseries", show_progress = FALSE)
 }
 \arguments{
 \item{series}{character name of a time series, S3 class ts. When used with lists it is convenient to set series to names(li). Note that the series name needs to be unique in the database!}
@@ -24,6 +24,8 @@ storeListChunkWise(series, con, li = NULL, tbl = "timeseries_main",
 \item{chunksize}{integer number of chunks. Defaults to chunks of 10K.}
 
 \item{schema}{SQL schema name. Defaults to timeseries.}
+
+\item{show_progress}{If TRUE, storeListChunkWise will print a progress indicator to the console. Default FALSE.}
 }
 \description{
 This function is a wrapper around \code{\link{storeTimeSeries}}. It is used to split large lists of time series
