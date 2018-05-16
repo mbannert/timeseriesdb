@@ -45,14 +45,13 @@ storeListChunkWise <- function(series,
                     overwrite = overwrite,
                     tbl = tbl,
                     schema = schema)  
-  }
-  
-  if(show_progress) {  
-    progress <- (i*chunksize)/n_series    
-    cat(sprintf("\r|%s%s| %d%%",
-                paste(rep("=", floor(bar_width * progress)), collapse = ""),
-                paste(rep(" ", ceiling(bar_width * max(0, (1 - progress)))), collapse = ""),
-                floor(100*progress)))
+    
+    if(show_progress) {  
+      progress <- (i*chunksize)/n_series    
+      cat(sprintf("\r|%s%s| %d%%",
+                  paste(rep("=", floor(bar_width * progress)), collapse = ""),
+                  paste(rep(" ", ceiling(bar_width * max(0, (1 - progress)))), collapse = ""),
+                  min(floor(100*progress), 100)))
+    }
   }
 }
-  
