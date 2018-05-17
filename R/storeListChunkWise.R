@@ -30,7 +30,7 @@ storeListChunkWise <- function(series,
   
   n_series <- length(series)
   n_chunks <- length(name_chunks)
-  bar_width <- getOption("width") - 5
+  bar_width <- getOption("width") - 6
   
   if(show_progress) {  
     cat(sprintf("\r|%s| %d%%",
@@ -49,7 +49,7 @@ storeListChunkWise <- function(series,
     if(show_progress) {  
       progress <- (i*chunksize)/n_series    
       cat(sprintf("\r|%s%s| %d%%",
-                  paste(rep("=", floor(bar_width * progress)), collapse = ""),
+                  paste(rep("=", floor(bar_width * min(progress, 1))), collapse = ""),
                   paste(rep(" ", ceiling(bar_width * max(0, (1 - progress)))), collapse = ""),
                   min(floor(100*progress), 100)))
     }
