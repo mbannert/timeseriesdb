@@ -142,7 +142,7 @@ createMetaDatasets <- function(schema = "timeseries",
   sql_query <- sprintf("CREATE TABLE %s.%s (
                        dataset_id text,
                        meta_data jsonb,
-                       primary key(dataset_id);",
+                       primary key(dataset_id));",
                        schema,tbl)
   
   class(sql_query) <- "SQL"
