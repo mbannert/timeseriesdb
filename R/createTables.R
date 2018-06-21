@@ -134,6 +134,25 @@ createMetaLocalized <- function(schema = "timeseries",
 }
 
 
+#' @export
+#' @rdname createTable
+createMetaDatasets <- function(schema = "timeseries",
+                                tbl = "meta_datasets"){
+  
+  sql_query <- sprintf("CREATE TABLE %s.%s (
+                       dataset_id text,
+                       meta_data jsonb,
+                       primary key(dataset_id);",
+                       schema,tbl)
+  
+  class(sql_query) <- "SQL"
+  sql_query
+}
+
+
+
+
+
 #' Run Setup: Create all mandatory tables
 #' 
 #' Creates all tables absolutely needed for timeseriesdb to work correctly. 
@@ -152,6 +171,7 @@ runCreateTables <- function(con,schema = "timeseries"){
   status$timeseries_sets <- attributes(runDbQuery(con,createTimeseriesSets(schema = schema)))
   status$meta_localized <- attributes(runDbQuery(con,createMetaLocalized(schema = schema)))
   status$meta_unlocalized <- attributes(runDbQuery(con,createMetaUnlocalized(schema = schema)))
+  status$meta_datasets <- attributes(runDbQuery(con, createMetaDatasets(schema = schema)))
   status
 }
 
