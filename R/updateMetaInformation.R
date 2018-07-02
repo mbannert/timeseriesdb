@@ -72,6 +72,7 @@ updateMetaInformation.meta_env <- function(meta_envir,con,
   updateMetaInformation.data.frame(md_df, con, schema, tbl, locale, quiet, chunksize)
 }
 
+#' @export
 updateMetaInformation.data.frame <- function(meta_df,
                                              con,
                                              schema = "timeseries",
