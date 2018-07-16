@@ -23,7 +23,7 @@ createHstore.ts <- function(x,...){
   # '1900-01-01 => -0.395131869823009, 1900-01-02 => -0.395131869823009, ...'::hstore
   tm <- stats::time(x)
   sprintf("'%s'::hstore",
-          paste0(zooLikeDateConvert(tm),
+          paste0(zooLikeDateConvert(tm, as.string = TRUE),
                  " => ",
                  as.character(x),
                  collapse=", "))
