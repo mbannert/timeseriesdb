@@ -21,7 +21,7 @@ createHstore <- function(x,...) UseMethod("createHstore")
 #' @export
 createHstore.ts <- function(x,...){
   # '1900-01-01 => -0.395131869823009, 1900-01-02 => -0.395131869823009, ...'::hstore
-  tm <- stats::time(x)
+  tm <- zoo::index(x)
   sprintf("'%s'::hstore",
           paste0(indexToDate(tm, as.string = TRUE),
                  " => ",
