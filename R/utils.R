@@ -130,9 +130,20 @@ print.SQL <- function(x,...){
   md_generated_by <- Sys.info()["user"]
   md_resource_last_update <- Sys.time()
   md_coverages <- unlist(lapply(li,function(x){
+    
+    if(inherits(x, "zoo")) {
+      idx <- stats::time(x)
+      t0 <- min(idx)
+      t1 <- max(idx)
+    } else {
+      tsp.x <- tsp(x)
+      t0 <- tsp.x[1]
+      t1 <- tsp.x[2]
+    }
+    
     sprintf('%s to %s',
-            min(zooLikeDateConvert(x)),
-            max(zooLikeDateConvert(x))
+      indexToDate(t0, as.string = TRUE),
+      indexToDate(t1, as.string = TRUE)
     )}
   ))
   

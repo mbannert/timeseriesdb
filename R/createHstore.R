@@ -21,23 +21,24 @@ createHstore <- function(x,...) UseMethod("createHstore")
 #' @export
 createHstore.ts <- function(x,...){
   # '1900-01-01 => -0.395131869823009, 1900-01-02 => -0.395131869823009, ...'::hstore
-  tm <- stats::time(x)
-  sprintf("'%s'::hstore",
-          paste0(zooLikeDateConvert(tm),
-                 " => ",
-                 as.character(x),
-                 collapse=", "))
+  tm <- zoo::index(x)
+  
+  # TODO: 1) This also has 16 digits for whole numbers
+  #       2) How many digits are really necessary?
+  paste0("'", 
+         paste(sprintf("%s => %.16f", indexToDate(tm, as.string = TRUE), x),
+               collapse=", "),
+         "'::hstore")
 }
 
 #' @rdname createHstore
 #' @export
 createHstore.zoo <- function(x,...){
-  tm <- zoo::index(x)
-  sprintf("'%s'::hstore",
-          paste0(tm,
-                 " => ",
-                 as.character(x),
-                 collapse=", "))
+  tm <- as.numeric(zoo::index(x))
+  paste0("'", 
+         paste(sprintf("%s => %.16f", indexToDate(tm, as.string = TRUE), x),
+               collapse=", "),
+         "'::hstore")
 }
 
 
@@ -45,16 +46,18 @@ createHstore.zoo <- function(x,...){
 
 #' @rdname createHstore
 #' @export
-createHstore.data.frame <- function(x,...){
+createHstore.data.frame <- function(x, key_col_index = 1){
+
   # only allow to cols because its KEY => VALUE
-  if(!exists('key_pos')) key_pos <- 1
-  if(!exists('value_pos')) value_pos <- 2
-  
   stopifnot(ncol(x) == 2)
   
+  # figure out the value column
+  # since we only have two cols it must be 1 or 2 depending on the key col
+  val_col_index <- `if`(key_col_index[1] == 1, 2, 1)
+  
   paste(sprintf('"%s"=>"%s"',
-                as.character(x[,key_pos]),
-                as.character(x[,value_pos])),
+                as.character(x[,key_col_index]),
+                as.character(x[,val_col_index])),
         collapse=",")
 }
 
