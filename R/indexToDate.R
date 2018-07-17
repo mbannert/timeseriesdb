@@ -15,7 +15,8 @@ indexToDate <- function (x, as.string = FALSE)
   years <- floor(x)
   months <- floor(12*(x - years + 1/24)) + 1
   # No support for days currently
-  datestr <- paste(years, months, 1, sep = "-")
+  # datestr <- paste(years, months, 1, sep = "-")
+  datestr <- sprintf("%d-%d-1", years, months)
   
   if(!as.string) {
     date <- as.Date(datestr)

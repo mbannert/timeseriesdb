@@ -22,11 +22,13 @@ createHstore <- function(x,...) UseMethod("createHstore")
 createHstore.ts <- function(x,...){
   # '1900-01-01 => -0.395131869823009, 1900-01-02 => -0.395131869823009, ...'::hstore
   tm <- zoo::index(x)
-  sprintf("'%s'::hstore",
-          paste0(indexToDate(tm, as.string = TRUE),
-                 " => ",
-                 as.character(x),
-                 collapse=", "))
+  
+  # TODO: 1) This also has 16 digits for whole numbers
+  #       2) How many digits are really necessary?
+  paste0("'", 
+         paste(sprintf("%s => %.16f", indexToDate(tm, as.string = TRUE), x),
+               collapse=", "),
+         "'::hstore")
 }
 
 #' @rdname createHstore
