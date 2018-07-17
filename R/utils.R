@@ -132,17 +132,18 @@ print.SQL <- function(x,...){
   md_coverages <- unlist(lapply(li,function(x){
     
     if(inherits(x, "zoo")) {
-      t0 <- x[1]
-      t1 <- x[length(x)]
+      idx <- stats::time(x)
+      t0 <- min(idx)
+      t1 <- max(idx)
     } else {
       tsp.x <- tsp(x)
-      t0 <- window(x, start = tsp.x[1], end = tsp.x[1])
-      t1 <- window(x, start = tsp.x[2], end = tsp.x[2])
+      t0 <- tsp.x[1]
+      t1 <- tsp.x[2]
     }
     
     sprintf('%s to %s',
-      zooLikeDateConvert(t0, as.string = TRUE),
-      zooLikeDateConvert(t1, as.string = TRUE)
+      indexToDate(t0, as.string = TRUE),
+      indexToDate(t1, as.string = TRUE)
     )}
   ))
   
