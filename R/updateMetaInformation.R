@@ -103,6 +103,10 @@ updateMetaInformation.data.frame <- function(meta_df,
   } else {
     meta_df$locale <- locale
     
+    # Column order!
+    # See #55
+    meta_df <- meta_df[, c("ts_key", "locale", "meta_data")]
+    
     query_meta_data_create <- sprintf("BEGIN;
                                       CREATE TEMPORARY TABLE 
                                       md_updates(ts_key varchar, locale varchar,
