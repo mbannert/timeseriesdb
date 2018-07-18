@@ -9,7 +9,7 @@ if (!on_cran) {
                       dbname = "sandbox",
                       passwd = "")
   
-  dbGetQuery(con, "DELETE from timeseries.timeseries_main")
+  dbGetQuery(con, "DELETE from timeseriesdb_unit_tests.timeseries_main")
   
   db_time <- dbGetQuery(con, "select NOW() as time")$time
   
@@ -25,29 +25,29 @@ tslist$ts_w_release_date <- ts(rnorm(20),start = c(1990,1), frequency = 4)
 test_that("Release date gets stored without error", {
   skip_on_cran()
   
-  storeTimeSeries("ts_w_release_date", con, tslist, release_date = release_date)
+  storeTimeSeries("ts_w_release_date", con, tslist, release_date = release_date, schema = "timeseriesdb_unit_tests")
   stored_release_date <- dbGetQuery(con, 
-                                    "select ts_release_date from timeseries.timeseries_main where ts_key = 'ts_w_release_date'")$ts_release_date
+                                    "select ts_release_date from timeseriesdb_unit_tests.timeseries_main where ts_key = 'ts_w_release_date'")$ts_release_date
   expect_equal(release_date, stored_release_date, tolerance = 10)
 })
 
 test_that("Release date has no effect by default", {
   skip_on_cran()
   
-  ts_read <- readTimeSeries("ts_w_release_date", con)$ts_w_release_date
+  ts_read <- readTimeSeries("ts_w_release_date", con, schema = "timeseriesdb_unit_tests")$ts_w_release_date
   expect_equal(length(ts_read), 20)
 })
 
 test_that("Respecting release_date in readTimeSeries works", {
   skip_on_cran()
   
-  ts_read_before <- readTimeSeries("ts_w_release_date", con, respect_release_date = TRUE)$ts_w_release_date
+  ts_read_before <- readTimeSeries("ts_w_release_date", con, respect_release_date = TRUE, schema = "timeseriesdb_unit_tests")$ts_w_release_date
   expect_equal(length(ts_read_before), 19)
   
   # Make sure we cross the release threshold
   Sys.sleep(5)
   
-  ts_read_after <- readTimeSeries("ts_w_release_date", con, respect_release_date = TRUE)$ts_w_release_date
+  ts_read_after <- readTimeSeries("ts_w_release_date", con, respect_release_date = TRUE, schema = "timeseriesdb_unit_tests")$ts_w_release_date
   expect_equal(length(ts_read_after), 20)
 })
 

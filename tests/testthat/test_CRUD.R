@@ -10,7 +10,7 @@ if (!on_cran) {
                     dbname = "sandbox",
                     passwd = "")
   
-  dbGetQuery(con, "DELETE from timeseries.timeseries_main")
+  dbGetQuery(con, "DELETE from timeseriesdb_unit_tests.timeseries_main")
 }
 
 set.seed(123)
@@ -45,10 +45,10 @@ test_that("Time series is the same after db roundtrip",{
   skip_on_cran()
   
   # Store Series
-  storeTimeSeries(c("ts1","ts2","ts3","ts4","ts5","ts6"),con,tslist)
+  storeTimeSeries(c("ts1","ts2","ts3","ts4","ts5","ts6"),con,tslist, schema = "timeseriesdb_unit_tests")
   
   # Read Series
-  result <- readTimeSeries("ts1",con)
+  result <- readTimeSeries("ts1",con, schema = "timeseriesdb_unit_tests")
   
   expect_equal(tslist$ts1, result$ts1)
 })
@@ -72,14 +72,16 @@ test_that("We have two localized meta data objects. I.e. one does not overwrite 
   updateMetaInformation(m_e,
                       con,
                       locale = "en",
-                      tbl = "meta_data_localized")
+                      tbl = "meta_data_localized",
+                      schema = "timeseriesdb_unit_tests")
 
   updateMetaInformation(m_d,
               con,
               locale = "de",
-              tbl = "meta_data_localized")
+              tbl = "meta_data_localized",
+              schema = "timeseriesdb_unit_tests")
 
-  mil_record_count <- dbGetQuery(con,"SELECT COUNT(*) FROM timeseries.meta_data_localized WHERE ts_key = 'ts1'")$count
+  mil_record_count <- dbGetQuery(con,"SELECT COUNT(*) FROM timeseriesdb_unit_tests.meta_data_localized WHERE ts_key = 'ts1'")$count
     
   expect_equal(mil_record_count,2)
 })
@@ -94,19 +96,19 @@ test_that("After succesful store, delete is also successful,i.e., same amount of
   }
   names(tsl) <- paste0("series",1:21000)
   
-  count_before <- dbGetQuery(con, "SELECT COUNT(*) FROM timeseries.timeseries_main")$count
-  storeTimeSeries(names(tsl),con,tsl)
-  deleteTimeSeries(names(tsl),con)
-  count_after <- dbGetQuery(con, "SELECT COUNT(*) FROM timeseries.timeseries_main")$count
+  count_before <- dbGetQuery(con, "SELECT COUNT(*) FROM timeseriesdb_unit_tests.timeseries_main")$count
+  storeTimeSeries(names(tsl),con,tsl, schema = "timeseriesdb_unit_tests")
+  deleteTimeSeries(names(tsl),con, schema = "timeseriesdb_unit_tests")
+  count_after <- dbGetQuery(con, "SELECT COUNT(*) FROM timeseriesdb_unit_tests.timeseries_main")$count
   expect_equal(count_before,count_after)
 })
 
 test_that("Unlocalized meta data can be written to db in chunks.", {
   skip_on_cran()
   
-  updateMetaInformation(meta_unlocalized,con,chunksize = 2)
+  updateMetaInformation(meta_unlocalized,con,chunksize = 2, schema = "timeseriesdb_unit_tests")
 
-  mdul_count <- dbGetQuery(con,"SELECT COUNT(*) FROM timeseries.meta_data_unlocalized WHERE ts_key ~ 'ts[1-6]'")$count
+  mdul_count <- dbGetQuery(con,"SELECT COUNT(*) FROM timeseriesdb_unit_tests.meta_data_unlocalized WHERE ts_key ~ 'ts[1-6]'")$count
   expect_equal(mdul_count, 6)
 })
 
