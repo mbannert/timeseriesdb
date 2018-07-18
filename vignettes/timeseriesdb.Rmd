@@ -60,6 +60,13 @@ The basic idea behind **timeseriesdb**'s storage concept is to use the PostgreSQ
 CREATE EXTENSION hstore;
 ```
 
+Plus you will need the **btree_gist** extension if you want to use the vintages table, that is, store different version of the same time series. The extension is used to make sure 
+different versions do not overlap in their validity. Installing is as simple as: 
+
+```
+CREATE EXTENSION btree_gist;
+```
+
 If set up **timeseriesdb** from scratch, create a new postgres schema: 
 
 ```
@@ -117,7 +124,7 @@ tsl <- list(
       ts2 = ts(rnorm(100),start = c(1985,1),freq = 12),
       ts3 = ts(rnorm(50),start = c(2000,1),freq = 4))
 
-storeTimeSeries(names(tsl), con, li)
+storeTimeSeries(names(tsl), con, tsl)
 
 read_it <- readTimeSeries(c("ts1","ts2"),con)
 
@@ -136,19 +143,25 @@ I suggest to prevent users from deleting series using PostgreSQL's sophisticated
 
 ### Storing Time Series Vintages (Real Time Reproducibility)
 
-Sometime it is important to store different versions of the same time series. Revision of official statistics are common example of why you want to store so-called vintages. Assume you use GDP figures published by your national statistical office in your research. At the time you compiled your computations, the official bureau did their best to publish the GDP, but had to revise their estimations later on anyway. As a researcher who cares about reproducibility you may not want to rely on a source being online forever or to store different versions of their own publications for you. 
-That's why you can add a *valid_from* and *valid_to* to a *storeTimeSeries*. 
-Note that vintages are not allowed to overlap and need to succeed each other without gaps. This will be enforced by **timeseriesdb**.
+Sometime it is important to store different versions of the same time series. Revision of official statistics are common example of why you want to store so-called vintages. Assume you use GDP figures published by your national statistical office in your research. At the time you compiled your computations, the official bureau did their best to publish the GDP, but had to revise their estimations later on. As a researcher who cares about reproducibility you may not want to rely on a source being online forever or to store different versions of their own publications for you. 
+Note that vintages are not allowed to overlap and need to succeed each other without gaps. This will be enforced by **timeseriesdb**. 
 
 ```
 
 tsl <- list(ts1 = ts(rnorm(100),start = c(1990,1),freq = 4))
 
-storeTimeseries(names(tsl),con, tsl, valid_from = '2018-01-01',
-                        valid_to = '2018-01-31')
+storeTimeSeries(names(tsl),con, tsl,   valid_from = '2018-07-01')
 
-storeTimeseries(names(tsl),con, tsl, valid_from = '2018-02-01',
-                        valid_to = '2018-02-28')
+```
+
+Adding another version of the same series with a validity before the former series
+is not allowed. If you add a version with a validity after the existing version, 
+the validity of the current version is set to end when the new validity starts. 
+
+
+```
+
+storeTimeSeries(names(tsl),con, tsl, valid_from = '2018-08-01')
 
 ```
 
@@ -164,7 +177,7 @@ you pull of a Marty McFly that's way in the past. But if you set future release 
 
 
 ```
-storeTimeseries(names(tsl),con, tsl, release_date = '2018-07-01')
+storeTimeSeries(names(tsl),con, tsl, release_date = '2018-07-01')
 
 ``` 
 
