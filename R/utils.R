@@ -137,8 +137,10 @@ print.SQL <- function(x,...){
       t1 <- max(idx)
       if(class(t0) == "Date") {
         time_range <- as.character(c(t0, t1))
+      } else if(class(t0) == "character") {
+        time_range <- c(t0, t1)
       } else {
-        timetime_range <- indexToDate(c(t0, t1), as.string = TRUE)
+        time_range <- indexToDate(c(t0, t1), as.string = TRUE)
       }
     } else {
       tsp.x <- tsp(x)
