@@ -34,6 +34,8 @@ createHstore.ts <- function(x,...){
 #' @rdname createHstore
 #' @export
 createHstore.zoo <- function(x,...){
+  tm <- zoo::index(x)
+  
   if(class(tm) == "Date") {
     tm <- as.character(tm)
   } else {
