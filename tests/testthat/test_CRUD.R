@@ -9,6 +9,8 @@ if (!on_cran) {
   con <- createConObj(dbhost = "localhost",
                     dbname = "sandbox",
                     passwd = "")
+  
+  dbGetQuery(con, "DELETE from timeseries.timeseries_main")
 }
 
 set.seed(123)

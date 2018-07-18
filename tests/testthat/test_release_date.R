@@ -9,6 +9,8 @@ if (!on_cran) {
                       dbname = "sandbox",
                       passwd = "")
   
+  dbGetQuery(con, "DELETE from timeseries.timeseries_main")
+  
   db_time <- dbGetQuery(con, "select NOW() as time")$time
   
   release_date <- db_time + 3 # 3 seconds from now
