@@ -34,9 +34,13 @@ createHstore.ts <- function(x,...){
 #' @rdname createHstore
 #' @export
 createHstore.zoo <- function(x,...){
-  tm <- as.numeric(zoo::index(x))
+  if(class(tm) == "Date") {
+    tm <- as.character(tm)
+  } else {
+    tm <- indexToDate(as.numeric(tm), as.string = TRUE)
+  }
   paste0("'", 
-         paste(sprintf("%s => %.16f", indexToDate(tm, as.string = TRUE), x),
+         paste(sprintf("%s => %.16f", tm, x),
                collapse=", "),
          "'::hstore")
 }
