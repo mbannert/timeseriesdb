@@ -12,7 +12,7 @@ vignette: >
 
 # timeseriesdb - Manage Official Statistics' Time Series Data with R and PostgreSQL
 
-*timeseriesdb* maps R time series object to PostgreSQL relations for permanent storage.  Instead of writing time series to spreadsheet files or .RData on disk, **timeseriesdb** uses a PostgreSQL schema which allows to store data alongside extensive, context aware, multi-lingual meta information. **timeseriesdb** aims at time series from official statistics which are typically published on a monthly, quarterly or yearly basis. Thus **timeseriesdb** is optimized to handle updates of large parts of a time series caused by data revisions such as GDP revisions. 
+*timeseriesdb* maps R time series objects to PostgreSQL relations for permanent storage.  Instead of writing time series to spreadsheet files or .RData on disk, **timeseriesdb** uses a PostgreSQL schema which allows to store data alongside extensive, context aware, multi-lingual meta information. **timeseriesdb** aims at time series from official statistics which are typically published on a monthly, quarterly or yearly basis. Unlike many time series database which excel at appending single observations at record speed and on-the-fly aggregations on database level, **timeseriesdb** is focused on large upsert operations. That is, check whether a series is available and perform and update if that is the case and an insert if not. This is the case for example when an entire time series is revised such as in the case of GDP revisions or seasonal adjustment.  
 
 
 ## Getting Started
@@ -43,7 +43,7 @@ or using R (Studio's) **G**raphical **U**ser **I**nterface.
 
 ### Install the R packages (developer version)
 
-The latest version of the **timeseriesdb** is available from [my github account](https://github.com/mbannert/timeseriesdb). The **devtools** package is an easy way to directly install packages directly from github. 
+The latest version of the **timeseriesdb** is available from [github account](https://github.com/mbannert/timeseriesdb). The **devtools** package is an easy way to directly install packages directly from github. 
 
 
 ```{r, eval = FALSE}
@@ -54,7 +54,7 @@ install_github('mbannert/timeseriesdb')
 
 ### Set up PostgreSQL
 
-The basic idea behind **timeseriesdb** storage concept is to use of the PostgreSQL extension *hstore* to store time series in a key value pair store. Thus you'll have install the hstore extension before you can create the relations needed to operate timeseriesdb. Just run: 
+The basic idea behind **timeseriesdb**'s storage concept is to use the PostgreSQL extension *hstore* to store time series in a key-value-pair. Thus you'll have to install the hstore extension before you can create the relations needed to operate timeseriesdb. Just run: 
 
 ```
 CREATE EXTENSION hstore;
@@ -66,7 +66,7 @@ If set up **timeseriesdb** from scratch, create a new postgres schema:
 CREATE SCHEMA timeseries;
 ```
 
-Note that 'timeseries' is the default schema name. That is, the defaults of the R functions use that name. Of course, you can have multiple schemas and manipulate those, by explicitly passing their name as parameter. In the standard case setting up all relations on localhost sandbox database is just a matter of:
+Note that 'timeseries' is the default schema name. That is, the defaults of the R functions use that name. Of course, you can have multiple schemas and manipulate those, by explicitly passing their name as a parameter. In the standard case setting up all relations on localhost sandbox database is just a matter of:
 
 ```
 library(timeseriesdb)
@@ -207,6 +207,6 @@ In addition the localized meta information, **timeseriesdb** stores a few things
 **timeseriesdb** was the first of several time series related packages built at KOF. 
 In the meantime there a few more to address some other concerns. The package are designed to work well with each other and form a little suite of helpers to make every day life with time series in official statistics a little easier. 
 
-- Mostly plotting and export of time series [tstools](http://whatsgood.io/post/on-cran-now-tstools-a-time-series-toolbox-for-official-statistics/)
+- Mostly plotting and export of time series [tstools](https://cran.r-project.org/package=tstools)
 - An API wrapper to get time series data through our timeseriesdb backed API [kofdata](http://whatsgood.io/post/introducing-the-kofdata-rstats-CRAN-package/) 
 - @christopsax's Best in class wrapper for X13-ARIMA-SEATS seasonal adjustment [seasonal](http://www.seasonal.website/)
