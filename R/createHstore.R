@@ -38,7 +38,8 @@ createHstore.zoo <- function(x,...){
   
   if(class(tm) == "Date") {
     tm <- as.character(tm)
-  } else {
+  # Index can also be character in which case we need not do anything
+  } else if(class(tm) %in% c("numeric", "yearmon", "yearqtr")) {
     tm <- indexToDate(as.numeric(tm), as.string = TRUE)
   }
   paste0("'", 
