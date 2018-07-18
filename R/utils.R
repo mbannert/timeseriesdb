@@ -135,15 +135,19 @@ print.SQL <- function(x,...){
       idx <- stats::time(x)
       t0 <- min(idx)
       t1 <- max(idx)
+      if(class(t0) == "Date") {
+        time_range <- as.character(c(t0, t1))
+      } else {
+        timetime_range <- indexToDate(c(t0, t1), as.string = TRUE)
+      }
     } else {
       tsp.x <- tsp(x)
-      t0 <- tsp.x[1]
-      t1 <- tsp.x[2]
+      time_range <- indexToDate(tsp.x[c(1, 2)], as.string = TRUE)
     }
     
     sprintf('%s to %s',
-      indexToDate(t0, as.string = TRUE),
-      indexToDate(t1, as.string = TRUE)
+      time_range[1],
+      time_range[2]
     )}
   ))
   
