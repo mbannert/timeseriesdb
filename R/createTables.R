@@ -58,7 +58,7 @@ createTimeseriesVintages <- function(schema = "timeseries",
                                            ts_frequency integer,
                                            ts_release_date timestamp with time zone DEFAULT '1900-01-01 00:00:00');
                        ALTER TABLE %s.%s
-                       ADD PRIMARY KEY, btree (ts_key, ts_validity);
+                       ADD PRIMARY KEY (ts_key, ts_validity);
                        ALTER TABLE %s.%s
                        ADD EXCLUDE USING GIST (ts_key WITH =, ts_validity WITH &&);
                        ",
