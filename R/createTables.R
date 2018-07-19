@@ -185,8 +185,6 @@ runCreateTables <- function(con,schema = "timeseries"){
 #' @param schema database schema, defaults to 'timeseries'.
 #'
 #' @export
-#'
-#' @examples
 runUpgradeTables <- function(con, schema = "timeseries") {
   status <- list()
   status$timeseries_main <- attributes(runDbQuery(con, addReleaseDateToTimeseriesMain(schema = schema)))

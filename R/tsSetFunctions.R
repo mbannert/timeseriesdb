@@ -297,10 +297,11 @@ addKeysToTsSet <- function(con,
 #' Remove keys from a Time Series set (if present)
 #'
 #' @param con PostgreSQL connection
-#' @param ts_keys A character vector of keys to be removed
-#' @param user_name The user name of the set's owner
-#' @param tbl Name of the time series sets table
-#' @param schema Schema of the time series database to use
+#' @param set_name character name of a time series set.
+#' @param ts_keys A character vector of keys to be removed.
+#' @param user_name The user name of the set's owner.
+#' @param tbl Name of the time series sets table.
+#' @param schema Schema of the time series database to use.
 #' @export
 #' @author Severin Thöni
 #' @importFrom DBI dbSendQuery

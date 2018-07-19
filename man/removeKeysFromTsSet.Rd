@@ -10,13 +10,15 @@ removeKeysFromTsSet(con, set_name, ts_keys, user_name = Sys.info()["user"],
 \arguments{
 \item{con}{PostgreSQL connection}
 
-\item{ts_keys}{A character vector of keys to be removed}
+\item{set_name}{character name of a time series set.}
 
-\item{user_name}{The user name of the set's owner}
+\item{ts_keys}{A character vector of keys to be removed.}
 
-\item{tbl}{Name of the time series sets table}
+\item{user_name}{The user name of the set's owner.}
 
-\item{schema}{Schema of the time series database to use}
+\item{tbl}{Name of the time series sets table.}
+
+\item{schema}{Schema of the time series database to use.}
 }
 \description{
 Remove keys from a Time Series set (if present)

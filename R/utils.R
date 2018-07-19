@@ -124,6 +124,8 @@ print.SQL <- function(x,...){
   values
 }
 
+
+#'@importFrom stats tsp time
 .createValuesMeta <- function(li){
   # CREATE META INFORMATION -------------------------------------------------
   # automatically generated meta information
@@ -132,7 +134,7 @@ print.SQL <- function(x,...){
   md_coverages <- unlist(lapply(li,function(x){
     
     if(inherits(x, "zoo")) {
-      idx <- stats::time(x)
+      idx <- time(x)
       t0 <- min(idx)
       t1 <- max(idx)
       if(class(t0) == "Date") {
