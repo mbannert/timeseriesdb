@@ -5,7 +5,7 @@ author: "Matthias Bannert"
 date: "`r Sys.Date()`"
 output: rmarkdown::html_vignette
 vignette: >
-  %\VignetteIndexEntry{timeseriesdb}
+  %\VignetteIndexEntry{Manage Official Statistics' Time Series Data with R and PostgreSQL}
   %\VignetteEngine{knitr::rmarkdown}
   \usepackage[utf8]{inputenc}
 ---
