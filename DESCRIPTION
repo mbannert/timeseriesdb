@@ -25,3 +25,4 @@ LazyData: true
 Maintainer: 'Matthias Bannert' <bannert@kof.ethz.ch>
 RoxygenNote: 6.0.1
 Suggests: testthat
+VignetteBuilder: knitr
