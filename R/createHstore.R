@@ -25,6 +25,26 @@ createHstore.ts <- function(x,...){
   
   # TODO: 1) This also has 16 digits for whole numbers
   #       2) How many digits are really necessary?
+  #
+  # Idea for further speedup(?)
+  # library(tstools)
+  # a <- generate_random_ts(3)
+  # b <- generate_random_ts(3, starts = 1989)
+  # names(b) <- c("bla", "ble", "bli")
+  # d <- c(a, b)
+  # 
+  # tsps <- lapply(d, tsp)
+  # 
+  # r <- Reduce(function(a, b) {
+  #   c(min(a[1], b[1]), max(a[2], b[2]))
+  # }, tsps)
+  # 
+  # datts <- ts(timeseriesdb::indexToDate(seq(r[1], r[2], by = 1/12), as.string = TRUE), start = 1988, frequency = 12)
+  # 
+  # lapply(tsps, function(x){
+  #   window(datts, start = x[1], end = x[2])
+  # })
+  # 
   paste0("'", 
          paste(sprintf("%s => %.16f", indexToDate(tm, as.string = TRUE), x),
                collapse=", "),
