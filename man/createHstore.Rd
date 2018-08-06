@@ -14,7 +14,7 @@ createHstore(x, ...)
 
 \method{createHstore}{zoo}(x, ...)
 
-\method{createHstore}{data.frame}(x, key_col_index = 1)
+\method{createHstore}{data.frame}(x, ...)
 
 \method{createHstore}{list}(x, ...)
 }

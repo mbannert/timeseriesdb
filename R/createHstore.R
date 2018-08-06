@@ -73,8 +73,10 @@ createHstore.zoo <- function(x,...){
 
 #' @rdname createHstore
 #' @export
-createHstore.data.frame <- function(x, key_col_index = 1){
-
+createHstore.data.frame <- function(x, ...){
+  
+  if(is.null(key_col_index)) key_col_index <- 1
+  
   # only allow to cols because its KEY => VALUE
   stopifnot(ncol(x) == 2)
   

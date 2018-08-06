@@ -16,13 +16,16 @@ Imports:
     shiny,
     DBI,
     openxlsx,
-    data.table (>= 1.9.4)
-Date: 2015-04-02
+    data.table (>= 1.9.4),
+Suggests:
+    knitr,
+    testthat
+VignetteBuilder: knitr
+Date: 2018-07-19
 License: GPL-2
 URL: https://github.com/mbannert/timeseriesdb
 BugReports: https://github.com/mbannert/timeseriesdb/issues
 LazyData: true
 Maintainer: 'Matthias Bannert' <bannert@kof.ethz.ch>
 RoxygenNote: 6.0.1
-Suggests: testthat
-VignetteBuilder: knitr
+Encoding: UTF-8
