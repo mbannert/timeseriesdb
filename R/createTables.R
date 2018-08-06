@@ -35,15 +35,6 @@ createTimeseriesMain <- function(schema = "timeseries",
   sql_query
 }
 
-#' Title
-#'
-#' @param schema 
-#' @param tbl 
-#'
-#' @return
-#' @export
-#'
-#' @examples
 addReleaseDateToTimeseriesMain <- function(schema = "timeseries",
                                   tbl = "timeseries_main") {
   sql_query <- sprintf("ALTER TABLE %s.%s ADD IF NOT EXISTS ts_release_date timestamp with time zone DEFAULT '1900-01-01 00:00:00'",
@@ -64,7 +55,8 @@ createTimeseriesVintages <- function(schema = "timeseries",
                        CREATE TABLE %s.%s (ts_key text,
                                            ts_validity daterange,
                                            ts_data hstore, 
-                                           ts_frequency integer);
+                                           ts_frequency integer,
+                                           ts_release_date timestamp with time zone DEFAULT '1900-01-01 00:00:00');
                        ALTER TABLE %s.%s
                        ADD PRIMARY KEY (ts_key, ts_validity);
                        ALTER TABLE %s.%s
@@ -74,6 +66,15 @@ createTimeseriesVintages <- function(schema = "timeseries",
                        schema,tbl,
                        schema,tbl)
   class(sql_query) <- "SQL"
+  sql_query
+}
+
+addReleaseDateToTimeseriesVintages <- function(schema = "timeseries",
+                                           tbl = "timeseries_vintages") {
+  sql_query <- sprintf("ALTER TABLE %s.%s ADD IF NOT EXISTS ts_release_date timestamp with time zone DEFAULT '1900-01-01 00:00:00'",
+                       schema, tbl)
+  class(sql_query) <- "SQL"
+  
   sql_query
 }
 
@@ -93,6 +94,8 @@ createTimeseriesSets <- function(schema = "timeseries",
   class(sql_query) <- "SQL"
   sql_query
 }
+
+
 
 #' @export
 #' @rdname createTable
@@ -131,6 +134,25 @@ createMetaLocalized <- function(schema = "timeseries",
 }
 
 
+#' @export
+#' @rdname createTable
+createMetaDatasets <- function(schema = "timeseries",
+                                tbl = "meta_datasets"){
+  
+  sql_query <- sprintf("CREATE TABLE %s.%s (
+                       dataset_id text,
+                       meta_data jsonb,
+                       primary key(dataset_id));",
+                       schema,tbl)
+  
+  class(sql_query) <- "SQL"
+  sql_query
+}
+
+
+
+
+
 #' Run Setup: Create all mandatory tables
 #' 
 #' Creates all tables absolutely needed for timeseriesdb to work correctly. 
@@ -149,21 +171,25 @@ runCreateTables <- function(con,schema = "timeseries"){
   status$timeseries_sets <- attributes(runDbQuery(con,createTimeseriesSets(schema = schema)))
   status$meta_localized <- attributes(runDbQuery(con,createMetaLocalized(schema = schema)))
   status$meta_unlocalized <- attributes(runDbQuery(con,createMetaUnlocalized(schema = schema)))
+  status$meta_datasets <- attributes(runDbQuery(con, createMetaDatasets(schema = schema)))
   status
 }
 
 
-#' Title
+#' Add Release Date Column to Tables
+#' 
+#' Adds a release column to tables of older versions of timeseriesdb. 
+#' 
 #'
-#' @param con 
-#' @param schema 
+#' @param con PostgreSQLL connection object
+#' @param schema database schema, defaults to 'timeseries'.
 #'
-#' @return
 #' @export
 #'
 #' @examples
 runUpgradeTables <- function(con, schema = "timeseries") {
   status <- list()
   status$timeseries_main <- attributes(runDbQuery(con, addReleaseDateToTimeseriesMain(schema = schema)))
+  status$timeseries_vintages <- attributes(runDbQuery(con, addReleaseDateToTimeseriesVintages(schema = schema)))
   status
 }

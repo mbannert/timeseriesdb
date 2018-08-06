@@ -64,17 +64,27 @@ updateMetaInformation.meta_env <- function(meta_envir,con,
   
   
   hstores <- lapply(l,createHstore)
+
+  md_df <- data.frame(ts_key = names(hstores),
+                      meta_data = unlist(hstores),
+                      stringsAsFactors = F)
+    
+  updateMetaInformation.data.frame(md_df, con, schema, tbl, locale, quiet, chunksize)
+}
+
+#' @export
+updateMetaInformation.data.frame <- function(meta_df,
+                                             con,
+                                             schema = "timeseries",
+                                             tbl = "meta_data_unlocalized",
+                                             locale = NULL,
+                                             quiet = F,
+                                             chunksize = 10000) {
   tbl <- paste(schema,tbl,sep=".")
-  series <- names(l)
   
   if(is.null(locale)){
-    md_df <- data.frame(ts_key = names(hstores),
-                        meta_data = unlist(hstores),
-                        stringsAsFactors = F)
-
-
     query_meta_data_create <- sprintf("BEGIN;
-                              CREATE TEMPORARY TABLE 
+                                      CREATE TEMPORARY TABLE 
                                       md_updates(ts_key varchar,
                                       meta_data hstore) ON COMMIT DROP;")
     
@@ -90,16 +100,16 @@ updateMetaInformation.meta_env <- function(meta_envir,con,
                                       tbl,
                                       tbl,
                                       tbl)
-    } else {
-    md_df <- data.frame(ts_key = names(hstores),
-                        locale = locale,
-                        meta_data = unlist(hstores),
-                        stringsAsFactors = F)
+  } else {
+    meta_df$locale <- locale
     
+    # Columns in DF are c("ts_key", "meta_data", "locale"), table must reflect that
+    # See #55
     query_meta_data_create <- sprintf("BEGIN;
-                              CREATE TEMPORARY TABLE 
-                                      md_updates(ts_key varchar, locale varchar,
-                                      meta_data hstore) ON COMMIT DROP;")
+                                      CREATE TEMPORARY TABLE 
+                                      md_updates(ts_key varchar,
+                                      meta_data hstore,
+                                      locale varchar) ON COMMIT DROP;")
     
     query_meta_data_insert <- "COPY md_updates FROM STDIN;"
     
@@ -133,10 +143,9 @@ updateMetaInformation.meta_env <- function(meta_envir,con,
   class(query_meta_data_insert) <- "SQL"
   
   md_create <- DBI::dbGetQuery(con,query_meta_data_create)
-  pgCopyDf(con, md_df, q = query_meta_data_insert, chunksize = chunksize)
+  pgCopyDf(con, meta_df, q = query_meta_data_insert, chunksize = chunksize)
   md_ok2 <- DBI::dbGetQuery(con,query_meta_data_update)
   if(!quiet) {
     if(is.null(md_ok2)) cat("Meta information updated.")  
   }
-  
 }

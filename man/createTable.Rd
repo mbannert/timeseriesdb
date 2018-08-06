@@ -6,6 +6,7 @@
 \alias{createTimeseriesSets}
 \alias{createMetaUnlocalized}
 \alias{createMetaLocalized}
+\alias{createMetaDatasets}
 \title{Create Statements for PostgreSQL tables}
 \usage{
 createTimeseriesMain(schema = "timeseries", tbl = "timeseries_main")
@@ -19,6 +20,8 @@ createMetaUnlocalized(schema = "timeseries", tbl = "meta_data_unlocalized",
 
 createMetaLocalized(schema = "timeseries", tbl = "meta_data_localized",
   main = "timeseries_main")
+
+createMetaDatasets(schema = "timeseries", tbl = "meta_datasets")
 }
 \arguments{
 \item{schema}{character denoting a PostgreSQL schema}

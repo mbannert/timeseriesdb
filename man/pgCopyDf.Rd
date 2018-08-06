@@ -11,7 +11,7 @@ pgCopyDf(con, d, q, chunksize = 10000)
 
 \item{d}{data.frame}
 
-\item{q}{}
+\item{q}{character string containing a SQL query.}
 
 \item{chunksize}{integer, defaults to 10000.}
 }

@@ -3,7 +3,7 @@
 #' this set of function can speed up loops by starting a transaction, 
 #' performing several queries and ending them with either commit or rollback. 
 #' 
-#' @param quiet 
+#' @param quiet logical should the query be executed quietly? Otherwise BEGIN, COMMIT or ROLLBACK are echoed.
 #' @param con PostgreSQL connection object.
 #'
 #' @importFrom DBI dbGetQuery
@@ -14,10 +14,6 @@ beginTransaction <- function(con, quiet = T){
   if(is.null(out) && !quiet) print('BEGIN')
 }
 
-#' @param con 
-#'
-#' @param quiet 
-#'
 #' @rdname transactionUtils
 #' @export
 commitTransaction <- function(con, quiet = T){
@@ -25,10 +21,6 @@ commitTransaction <- function(con, quiet = T){
   if(is.null(out) && !quiet) print('COMMIT')
 }
 
-#' @param con 
-#'
-#' @param quiet 
-#'
 #' @rdname transactionUtils
 #' @export
 rollbackTransaction <- function(con, quiet = T){

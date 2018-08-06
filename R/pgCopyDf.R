@@ -1,9 +1,8 @@
-
 #' Copy data.frame to postgres using bulk copy
 #' 
 #' @param con PostgreSQL connection object.
 #' @param d data.frame
-#' @param q 
+#' @param q character string containing a SQL query. 
 #' @param chunksize integer, defaults to 10000.
 #'
 #' @export
