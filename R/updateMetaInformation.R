@@ -44,13 +44,6 @@ updateMetaInformation.meta_env <- function(meta,con,
                                            chunksize = 10000){
   
   l <- as.list(meta)
-  
-  # specification of keys can be used
-  # to only store selected parts of the
-  # meta infomration environment
-  if(!is.null(keys)){
-    l <- l[keys]  
-  }
  
   # Minimal sanitizer to avoid trouble
   # when meta information gets too crazy... maybe need to escape things.
@@ -69,7 +62,7 @@ updateMetaInformation.meta_env <- function(meta,con,
                       meta_data = unlist(hstores),
                       stringsAsFactors = F)
     
-  updateMetaInformation.data.frame(md_df, con, schema, tbl, locale, quiet, chunksize)
+  updateMetaInformation.data.frame(md_df, con, schema, tbl, locale, keys, quiet, chunksize)
 }
 
 #' @export
