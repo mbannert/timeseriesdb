@@ -11,7 +11,7 @@ runDbQuery(con, sql_query, ...)
 
 \item{sql_query}{character string containing a SQL query}
 
-\item{...}{}
+\item{...}{Additional arguments to be passed to \code{\link[DBI]{dbGetQuery}}}
 }
 \description{
 Run database queries using \code{\link[DBI]{dbSendQuery}}, \code{\link[DBI]{fetch}} and \code{\link[DBI]{dbClearResult}} in similar fashion as \code{\link[DBI]{dbGetQuery}} but provide better error handling. 

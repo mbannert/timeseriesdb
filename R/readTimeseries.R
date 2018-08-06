@@ -6,6 +6,7 @@
 #' R time series object of class 'ts' is built and returned. Irregular time series return zoo objects.
 #' 
 #' @author Matthias Bannert, Gabriel Bucur
+#'
 #' @param series character vector of time series keys
 #' @param con a PostgreSQL connection object
 #' @param valid_on character date string on which the series should be valid. Defaults to NULL. Only needed when different vintages of a time series are stored.  
@@ -15,6 +16,9 @@
 #' @param schema character SQL schema name. Defaults to timeseries.
 #' @param pkg_for_irreg character name of package for irregular series. xts or zoo, defaults to xts.
 #' @param chunksize numeric value of threshold at which input vector should be processed in chunks. defaults to 70000.
+#' @param respect_release_date logical should the relaase set in the database be respected. If TRUE, the last observation will be cut off if server time is before release date. Reasonable for relesae date.
+#' @param regex If set to TRUE, series will be interpreted as a regular exporession, so that all time series whose keys match the pattern will be returned.
+#'
 #' @importFrom DBI dbGetQuery
 #' @importFrom jsonlite fromJSON
 #' @export
@@ -26,7 +30,25 @@ readTimeSeries <- function(series, con,
                            env = NULL,
                            pkg_for_irreg = "xts",
                            chunksize = 10000,
-                           respect_release_date = FALSE){
+                           respect_release_date = FALSE,
+                           regex = FALSE){
+  
+  if(regex) {
+    if(length(series) > 1) {
+      stop("Only supports a single expression in series!")
+    }
+    
+    pattern <- series
+    
+    match_query <- sprintf("SELECT ts_key FROM %s.timeseries_main WHERE ts_key ~ '%s'",
+                         schema, pattern)
+    series <- dbGetQuery(con, match_query)$ts_key
+    
+    if(length(series) == 0) {
+      stop(sprintf("No series found matching '%s'!", pattern))
+    }
+  }
+
   useries <- unique(series)
   if(length(useries) != length(series)){
     warning("Input vector contains non-unique keys, stripped duplicates.")
@@ -131,7 +153,7 @@ readTimeSeries <- function(series, con,
         }
         # create the time series object but suppress the warning of creating NAs
         # when transforming text NAs to numeric NAs
-        ts(ts_data,
+        stats::ts(ts_data,
            start=c(y,period),
            frequency = freq)
       }

@@ -4,7 +4,7 @@
 #'This function always returns a data.frame as opposed to different types in case of an exception. However, if the database query fails and empty data.frame is returned. Besides query status and database error are returned as attributes. Make sure to use BEGIN and COMMIT outside of these statements.
 #'
 #' @param con PostgreSQL connection object
-#' @param ... 
+#' @param ... Additional arguments to be passed to \code{\link[DBI]{dbGetQuery}}
 #' @param sql_query character string containing a SQL query
 #'
 #' @export

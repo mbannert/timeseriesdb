@@ -11,16 +11,14 @@
 #' @param con a PostgreSQL connection object.
 #' @param li list of time series. Defaults to NULL to no break legacy calls that use lookup environments.
 #' @param valid_from character date lower bound of a date range.
-#' @param valid_to character date upper bound of a date range.
-#' @param vintage_date character date, usually not used, defaults to NULL for non-vintages and vintages that are entered at the current end of the series. By specifying a date one can store former vintages. 
+#' @param release_date character date string indicating when a series should be released. This facilitates implementations that only share part of the information before a certain release date.
 #' @param tbl character string denoting the name of the main time series table in the PostgreSQL database.
 #' @param md_unlocal character string denoting the name of the table that holds unlocalized meta information.
 #' @param lookup_env environment to look in for timeseries. Defaults to .GobalEnv.
 #' @param overwrite logical should existing records (same primary key) be overwritten? Defaults to TRUE.
-#' @param store_freq 
-#' @param tbl_vintages 
+#' @param store_freq logical, should frequencies be stored. Defaults to TRUE. 
+#' @param tbl_vintages character string denoting the name of the vintages time series table in the PostgreSQL database.
 #' @param schema SQL schema name. Defaults to timeseries. 
-#' @param release_date 
 #'
 #' @importFrom DBI dbGetQuery
 #' @export
@@ -28,9 +26,7 @@ storeTimeSeries <- function(series,
                             con,
                             li = NULL,
                             valid_from = NULL,
-                            valid_to = NULL,
                             release_date = NULL,
-                            vintage_date = NULL,
                             store_freq = T,
                             tbl = "timeseries_main",
                             tbl_vintages = "timeseries_vintages",
@@ -62,7 +58,7 @@ storeTimeSeries <- function(series,
   # are allowed to be stored. In that case we do not need to run 
   # through the entire write process.
   if(length(li) == 0){
-    cat("No time series in subset - returned empty list. Set overwrite=TRUE or add valid_from and/or valid_to arguments, if you want to overwrite existing series or store different versions of a series.")
+    cat("No time series in subset - returned empty list. Set overwrite=TRUE or add a valid_from argument, if you want to overwrite existing series or store different versions of a series.")
     return(list())
   } 
   
@@ -80,7 +76,7 @@ storeTimeSeries <- function(series,
   li <- li[keep]
   
   # VALIDITY / VINTAGES ##################
-  if(is.null(valid_from) && is.null(valid_to)){
+  if(is.null(valid_from)){
     # Standard for single versioned time series ###############
     values <- .createValues(li,NULL,store_freq = store_freq, release_date)
     data_query <- .queryStoreNoVintage(val = values,
@@ -93,18 +89,29 @@ storeTimeSeries <- function(series,
              meta_data = attributes(runDbQuery(con,meta_data_query)))
     
   } else {
+    vintage_keys <- sprintf("('%s')", paste(series, collapse = "','"))
+    
+    query <- sprintf("SELECT lower(ts_validity) as vintage_dates FROM %s.%s WHERE
+                                          ts_key IN %s
+                     AND upper_inf(ts_validity)",
+                     schema, tbl_vintages,
+                     vintage_keys)
+    class(query) <- "SQL"
+    
+    vintage_start_dates <- dbGetQuery(con, query)$vintage_dates
+    if(any(vintage_start_dates == valid_from)) {
+      return(list(error = "valid_from must be greater than start date of vintages"))
+    }
+    
     # Handle case that either valid from OR valid to is null.
     # Create a PostgreSQL daterange compliant string
     # do not use ifelse (never dare to) here !!!!! thanks to 
     # Oliver Mueller for the bugfix
-    if(is.null(valid_from)) valid_from <- ""
-    if(is.null(valid_to)) valid_to <- ""
-    validity <- sprintf("[%s,%s)",valid_from,valid_to)
-    values <- .createValues(li,validity,store_freq = store_freq)
+    validity <- sprintf("[%s,)",valid_from)
+    values <- .createValues(li,validity,store_freq = store_freq, release_date = release_date)
     data_query <- .queryStoreVintage(val = values,
                                      schema = schema,
-                                     tbl = tbl_vintages,
-                                     vintage_date = vintage_date)
+                                     tbl = tbl_vintages)
     out <- attributes(runDbQuery(con,data_query))
   }
   out

@@ -9,10 +9,10 @@
 #' @param li list of time series. Defaults to NULL to no break legacy calls that use lookup environments.
 #' @param tbl character string denoting the name of the main time series table in the PostgreSQL database.
 #' @param md_unlocal character string denoting the name of the table that holds unlocalized meta information.
-#' @param lookup_env environment to look in for timeseries. Defaults to .GobalEnv.
 #' @param overwrite logical should existing records (same primary key) be overwritten? Defaults to TRUE.
-#' @param chunksize integer number of chunks. Defaults to NULL, invoking automatic chunk determination based on C Stack size.
-#' @param schema SQL schema name. Defaults to timeseries. 
+#' @param chunksize integer number of chunks. Defaults to chunks of 10K. 
+#' @param schema SQL schema name. Defaults to timeseries.
+#' @param show_progress If TRUE, storeListChunkWise will print a progress indicator to the console. Default FALSE.
 #' @importFrom DBI dbGetQuery
 #' @export
 storeListChunkWise <- function(series,
@@ -21,16 +21,22 @@ storeListChunkWise <- function(series,
                                tbl="timeseries_main",
                                md_unlocal = "meta_data_unlocalized",
                                overwrite = T,
-                               chunksize = NULL,
+                               chunksize = 10000,
                                schema = "timeseries",
-                               quiet = T){
-  if(!is.null(chunksize)){
-    chunks <- chunksize
-  } else {
-    chunks <- ceiling(as.numeric(object.size(as.list(meta_envir)))/(Cstack_info()["size"]*0.7))  
-  }
+                               show_progress = FALSE){
+ 
   
-  name_chunks <- split(series,ceiling(seq_along(names(li))/chunks))
+  name_chunks <- split(series,ceiling(seq_along(names(li))/chunksize))
+  
+  n_series <- length(series)
+  n_chunks <- length(name_chunks)
+  bar_width <- getOption("width") - 6
+  
+  if(show_progress) {  
+    cat(sprintf("\r|%s| %d%%",
+                paste(rep(" ", ceiling(bar_width)), collapse = ""),
+                0))
+  }
   
   # loop over the chunks in order to store it chunk wise 
   # otherwise we run into stack limit on the server
@@ -39,6 +45,13 @@ storeListChunkWise <- function(series,
                     overwrite = overwrite,
                     tbl = tbl,
                     schema = schema)  
+    
+    if(show_progress) {  
+      progress <- (i*chunksize)/n_series    
+      cat(sprintf("\r|%s%s| %d%%",
+                  paste(rep("=", floor(bar_width * min(progress, 1))), collapse = ""),
+                  paste(rep(" ", ceiling(bar_width * max(0, (1 - progress)))), collapse = ""),
+                  min(floor(100*progress), 100)))
+    }
   }
 }
-  

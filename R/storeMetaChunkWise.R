@@ -26,7 +26,7 @@ storeMetaChunkWise <- function(meta_envir,con,
   warning("chunkwise storage is deprecated. Simply use updateMetaInformation,
           which capable of COPY-based bulk inserts now.")
   
-    updateMetaInformation(meta_envir = meta_envir,
+    updateMetaInformation(meta = meta_envir,
                           con = con,
                           schema = schema, 
                           tbl = tbl, 

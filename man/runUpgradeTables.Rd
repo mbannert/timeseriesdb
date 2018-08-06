@@ -2,15 +2,15 @@
 % Please edit documentation in R/createTables.R
 \name{runUpgradeTables}
 \alias{runUpgradeTables}
-\title{Title}
+\title{Add Release Date Column to Tables}
 \usage{
 runUpgradeTables(con, schema = "timeseries")
 }
 \arguments{
-\item{con}{}
+\item{con}{PostgreSQLL connection object}
 
-\item{schema}{}
+\item{schema}{database schema, defaults to 'timeseries'.}
 }
 \description{
-Title
+Adds a release column to tables of older versions of timeseriesdb.
 }
