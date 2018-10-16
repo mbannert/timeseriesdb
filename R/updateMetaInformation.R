@@ -66,10 +66,10 @@ updateMetaInformation.meta_env <- function(meta,con,
   })
   
   
-  hstores <- lapply(l,createJSON)
+  json <- lapply(l, createJSON)
 
-  md_df <- data.frame(ts_key = names(hstores),
-                      meta_data = unlist(hstores),
+  md_df <- data.frame(ts_key = names(json),
+                      meta_data = unlist(json),
                       stringsAsFactors = F)
     
   updateMetaInformation.data.frame(md_df, con, schema, tbl, locale, keys, quiet, chunksize)
@@ -84,7 +84,7 @@ updateMetaInformation.data.frame <- function(meta,
                                              keys = NULL,
                                              quiet = F,
                                              chunksize = 10000) {
-  tbl <- paste(schema,tbl,sep=".")
+  tbl <- paste(schema, tbl, sep=".")
   
   meta <- createJSON(meta)
   

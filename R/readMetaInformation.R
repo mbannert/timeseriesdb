@@ -45,6 +45,10 @@ readMetaInformation <- function(series,
     res <- as.data.table(dbGetQuery(con, read_SQL))
     commitTransaction(con)
     
+    if(nrow(res) == 0) {
+      stop(sprintf("None of the provided series were found in %s.%s", schema, tbl))
+    }
+    
     meta_list <- res[, .(meta_data = list(jsonlite::fromJSON(meta_data))), by = ts_key][, meta_data]
     names(meta_list) <- res[, ts_key]
     
@@ -71,6 +75,10 @@ readMetaInformation <- function(series,
     
     res <- as.data.table(dbGetQuery(con, read_SQL))
     commitTransaction(con)
+    
+    if(nrow(res) == 0) {
+      stop(sprintf("None of the provided series were found in %s.%s", schema, tbl))
+    }
     
     meta_list <- res[, {
       md = jsonlite::fromJSON(meta_data)
