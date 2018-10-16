@@ -23,43 +23,67 @@ readMetaInformation <- function(series,
                                 meta_env = NULL,
                                 schema = 'timeseries'){
   
-  
-  tbl = paste(schema,tbl,sep='.')
+  series <- paste(paste0("('", series, "')"), collapse=",")
   
   if(!is.null(locale)){
-    sql_statement <- sprintf("SELECT (each(meta_data)).key,
-                             (each(meta_data)).value
-                             FROM %s WHERE ts_key = '%s' AND locale_info = '%s'",
-                             tbl,series,locale)
-    res <- DBI::dbGetQuery(con,sql_statement)
-    res_list <- as.list(res$value)
-    names(res_list) <- res$key
-        
-    # returns an environment of class meta_env
-    addMetaInformation(series,res_list,
-                       overwrite_objects =  overwrite_objects,
-                       overwrite_elements = overwrite_elements,
-                       meta_env = meta_env)    
+    
+    read_SQL <-
+      sprintf("
+              BEGIN;
+              CREATE TEMPORARY TABLE meta_read (ts_key text PRIMARY KEY) ON COMMIT DROP;
+              INSERT INTO meta_read(ts_key) VALUES %s;
+              
+              SELECT *
+              FROM (
+              SELECT tm.ts_key, meta_data::text
+              FROM %s.%s tm
+              JOIN meta_read tr
+              ON (tm.ts_key = tr.ts_key AND locale_info = '%s')
+              ) t;",
+              series, schema, tbl, locale)
+    
+    res <- as.data.table(dbGetQuery(con, read_SQL))
+    commitTransaction(con)
+    
+    meta_list <- res[, .(meta_data = list(jsonlite::fromJSON(meta_data))), by = ts_key][, meta_data]
+    names(meta_list) <- res[, ts_key]
+    
   } else {
     # sanity check
-    if(tbl != paste(schema,'meta_data_unlocalized',sep=".")) warning('DB table is not set to unlocalized, though locale is NULL!')
-    sql_statement <- sprintf("SELECT
-                             md_generated_by,
-                             md_resource_last_update,
-                             md_coverage_temp
-                             FROM %s WHERE ts_key= '%s'",
-                             tbl,series)
+    if(tbl != 'meta_data_unlocalized') {
+      warning('DB table is not set to unlocalized, though locale is set!')
+    }
     
-    sql_statement_hstore <- sprintf("SELECT 
-                             (each(meta_data)).key,
-                             (each(meta_data)).value
-                             FROM %s WHERE ts_key = '%s'",tbl,series)
-    res_list <- list()
-    res_list$fixed <- DBI::dbGetQuery(con,sql_statement)
-    res_list$flexible <- DBI::dbGetQuery(con,sql_statement_hstore)
-    addMetaInformation(series,res_list,overwrite_objects =  overwrite_objects,
-                       overwrite_elements = overwrite_elements,
-                       meta_env = meta_env)    
+    read_SQL <-
+      sprintf("
+              BEGIN;
+              CREATE TEMPORARY TABLE meta_read (ts_key text PRIMARY KEY) ON COMMIT DROP;
+              INSERT INTO meta_read(ts_key) VALUES %s;
+              
+              SELECT *
+              FROM (
+              SELECT tm.ts_key, tm.md_generated_by, tm.md_resource_last_update, md_coverage_temp, meta_data::text
+              FROM %s.%s tm
+              JOIN meta_read tr
+              ON (tm.ts_key = tr.ts_key)
+              ) t;",
+              series, schema, tbl)
+    
+    res <- as.data.table(dbGetQuery(con, read_SQL))
+    commitTransaction(con)
+    
+    meta_list <- res[, {
+      md = jsonlite::fromJSON(meta_data)
+      md$md_generated_by <- md_generated_by
+      md$md_resource_last_update <- md_resource_last_update
+      md$md_coverage_temp <- md_coverage_temp
+      .(meta_data = list(md))
+    }, by = ts_key][, meta_data]
+    names(meta_list) <- res[, ts_key]
   }
+  
+  # TODO: if(!is.null(meta_env)) { merge meta_env and meta_list }
+  # For backwards comp
+  meta_list
 }
 
