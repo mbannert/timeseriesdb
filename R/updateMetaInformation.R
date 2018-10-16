@@ -82,7 +82,7 @@ updateMetaInformation.data.frame <- function(meta,
     query_meta_data_create <- sprintf("BEGIN;
                                       CREATE TEMPORARY TABLE 
                                       md_updates(ts_key varchar,
-                                      meta_data hstore) ON COMMIT DROP;")
+                                      meta_data json) ON COMMIT DROP;")
     
     query_meta_data_insert <- "COPY md_updates FROM STDIN;"
     
@@ -104,7 +104,7 @@ updateMetaInformation.data.frame <- function(meta,
     query_meta_data_create <- sprintf("BEGIN;
                                       CREATE TEMPORARY TABLE 
                                       md_updates(ts_key varchar,
-                                      meta_data hstore,
+                                      meta_data json,
                                       locale varchar) ON COMMIT DROP;")
     
     query_meta_data_insert <- "COPY md_updates FROM STDIN;"
