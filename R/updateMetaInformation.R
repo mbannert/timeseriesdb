@@ -32,6 +32,16 @@ updateMetaInformation <- function(meta,con,
   UseMethod("updateMetaInformation")
 } 
 
+#' @export
+updateMetaInformation.list <- function(meta,con,
+                                       schema = "timeseries",
+                                       tbl = "meta_data_unlocalized",
+                                       locale = NULL,
+                                       keys = NULL,
+                                       quiet = F,
+                                       chunksize = 10000) {
+  updateMetaInformation.meta_env(meta, con, schema, tbl, locale, keys, quiet, chunksize)
+}
 
 #' @rdname updateMetaInformation
 #' @export
@@ -56,7 +66,7 @@ updateMetaInformation.meta_env <- function(meta,con,
   })
   
   
-  hstores <- lapply(l,createHstore)
+  hstores <- lapply(l,createJSON)
 
   md_df <- data.frame(ts_key = names(hstores),
                       meta_data = unlist(hstores),
@@ -75,6 +85,8 @@ updateMetaInformation.data.frame <- function(meta,
                                              quiet = F,
                                              chunksize = 10000) {
   tbl <- paste(schema,tbl,sep=".")
+  
+  meta <- createJSON(meta)
   
   if(!is.null(keys)) meta <- meta[meta$ts_key %in% keys,]
   
