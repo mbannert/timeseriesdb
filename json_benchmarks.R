@@ -24,8 +24,6 @@ microbenchmark({
   meta_to_json(meta_dt)
 }, times  = 50)
 
-<<<<<<< Updated upstream
-=======
 # Depends on which version is loaded! (Actually, it doesn't, long as the schema was created with the proper type (except for reading maybe (and hstores (more parentheses!))))
 # meta_list <- meta_dt <- tstools::read_swissdata_meta(meta_file, as_list = TRUE)
 # microbenchmark(updateMetaInformation(meta_list, con, "timeseries_jsonb", "meta_data_localized", "de"))
@@ -251,10 +249,8 @@ ggplot(plotdata, aes(x = n, y = t, group = grp, color = grp)) +
 
 
 
->>>>>>> Stashed changes
-
 ######################################################
-# Time series
+# Time series (just to check)
 ######################################################
 
 tsl <- tstools::generate_random_ts(lengths = 100)
