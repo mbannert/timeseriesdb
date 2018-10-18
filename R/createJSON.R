@@ -13,7 +13,13 @@ createJSON.data.frame <- function(data) {
   dims <- setdiff(names(data), "ts_key")
   
   meta_fmt <- create_meta_format(dims)
+<<<<<<< Updated upstream
   out <- data[, .(meta_data = do.call(sprintf, c(meta_fmt, .SD))), by = ts_key]
+=======
+  #out <- data[, .(meta_data = do.call(sprintf, c(meta_fmt, .SD))), by = ts_key]
+  
+  out <- data[, .(ts_key, meta_data = do.call(sprintf, c(meta_fmt, .SD[, -"ts_key"])))]
+>>>>>>> Stashed changes
   
   # Strip out some chars causing problems
   out[, meta_data := gsub("\n", "", meta_data)]
