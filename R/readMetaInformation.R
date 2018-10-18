@@ -21,7 +21,8 @@ readMetaInformation <- function(series,
                                 overwrite_objects = F,
                                 overwrite_elements = T,
                                 meta_env = NULL,
-                                schema = 'timeseries'){
+                                schema = 'timeseries',
+                                as_list = TRUE){
   
   series <- paste(paste0("('", series, "')"), collapse=",")
   
@@ -51,7 +52,6 @@ readMetaInformation <- function(series,
     
     meta_list <- res[, .(meta_data = list(jsonlite::fromJSON(meta_data))), by = ts_key][, meta_data]
     names(meta_list) <- res[, ts_key]
-    
   } else {
     # sanity check
     if(tbl != 'meta_data_unlocalized') {
@@ -92,6 +92,10 @@ readMetaInformation <- function(series,
   
   # TODO: if(!is.null(meta_env)) { merge meta_env and meta_list }
   # For backwards comp
-  meta_list
+  if(as_list) {
+    as.meta.list(meta_list)
+  } else {
+    as.meta.dt(meta_list)
+  }
 }
 

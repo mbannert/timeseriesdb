@@ -32,17 +32,6 @@ updateMetaInformation <- function(meta,con,
   UseMethod("updateMetaInformation")
 } 
 
-#' @export
-updateMetaInformation.list <- function(meta,con,
-                                       schema = "timeseries",
-                                       tbl = "meta_data_unlocalized",
-                                       locale = NULL,
-                                       keys = NULL,
-                                       quiet = F,
-                                       chunksize = 10000) {
-  updateMetaInformation.meta_env(meta, con, schema, tbl, locale, keys, quiet, chunksize)
-}
-
 #' @rdname updateMetaInformation
 #' @export
 updateMetaInformation.meta_env <- function(meta,con,
@@ -72,11 +61,17 @@ updateMetaInformation.meta_env <- function(meta,con,
                       meta_data = unlist(json),
                       stringsAsFactors = F)
     
-  updateMetaInformation.data.frame(md_df, con, schema, tbl, locale, keys, quiet, chunksize)
+  updateMetaInformation.data.table(md_df, con, schema, tbl, locale, keys, quiet, chunksize)
 }
 
 #' @export
-updateMetaInformation.data.frame <- function(meta,
+updateMetaInformation.list <- updateMetaInformation.meta_env
+
+#' @export
+updateMetaInformation.meta.list <- updateMetaInformation.meta_env
+
+#' @export
+updateMetaInformation.meta.dt <- function(meta,
                                              con,
                                              schema = "timeseries",
                                              tbl = "meta_data_unlocalized",
@@ -157,3 +152,6 @@ updateMetaInformation.data.frame <- function(meta,
     if(is.null(md_ok2)) cat("Meta information updated.")  
   }
 }
+
+#' @export
+updateMetaInformation.data.table <- updateMetaInformation.meta.dt
