@@ -1,50 +1,56 @@
-as.meta.dt <- function(meta_list) {
-  UseMethod("as.meta.dt")
+#' @export
+as.tsmeta.dt <- function(meta_list) {
+  UseMethod("as.tsmeta.dt")
 }
 
-as.meta.dt.meta.list <- function(meta_list) {
+as.tsmeta.dt.tsmeta.list <- function(meta_list) {
   out <- rbindlist(meta_list, fill = TRUE)
-  if(ncol(out) != length(meta_list[[1]])) {
+  minlength <- min(sapply(meta_list, length))
+  if(ncol(out) != minlength) {
     warning("Fill-in occurred, not all fields were present in all meta data items!")
   }
   out[, ts_key := names(meta_list)]
-  class(out) <- c("meta.dt", class(out))
+  class(out) <- c("tsmeta.dt", class(out))
   out
 }
 
-as.meta.dt.list <- function(meta) {
-  as.meta.dt(as.meta.list(meta))
+as.tsmeta.dt.list <- function(meta) {
+  as.tsmeta.dt(as.tsmeta.list(meta))
 }
 
-as.meta.dt.data.frame <- function(meta) {
-  class(meta) <- c("meta.dt", class(meta))
+as.tsmeta.dt.data.frame <- function(meta) {
+  meta <- as.data.table(meta)
+  class(meta) <- c("tsmeta.dt", class(meta))
   meta
 }
 
-as.meta.dt.meta.dt <- identity
+as.tsmeta.dt.tsmeta.dt <- identity
 
-as.meta.list <- function(meta) {
-  UseMethod("as.meta.list")
+#' @export
+as.tsmeta.list <- function(meta) {
+  UseMethod("as.tsmeta.list")
 }
 
-as.meta.list.meta.dt <- function(meta) {
-  out <- lapply(split(meta, by = "ts_key"), as.list)
+as.tsmeta.list.tsmeta.dt <- function(meta) {
+  out <- lapply(split(meta, by = "ts_key"), function(x) {
+    as.list(x[, -"ts_key"])
+  })
   # Remove NA elements from list
   out <- lapply(out, function(x){x[!is.na(x)]})
-  class(out) <- c("meta.list", class(out))
+  class(out) <- c("tsmeta.list", class(out))
   out
 }
 
-as.meta.list.list <- function(meta) {
+as.tsmeta.list.list <- function(meta) {
   if(getListDepth(meta) != 2) {
     stop("A meta list must have exactly depth 2!")
   }
-  class(meta) <- c("meta.list", class(meta))
+  class(meta) <- c("tsmeta.list", class(meta))
   meta
 }
 
-as.meta.list.data.frame <- function(meta) {
-  as.meta.list(as.meta.dt(meta))
+as.tsmeta.list.data.frame <- function(meta) {
+  as.tsmeta.list(as.tsmeta.dt(meta))
 }
 
-as.meta.list.meta.list <- identity
+as.tsmeta.list.tsmeta.list <- identity
