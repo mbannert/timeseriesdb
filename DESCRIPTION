@@ -8,7 +8,8 @@ Depends:
     R (>= 3.0.0),
     RPostgreSQL,
     jsonlite (>= 1.1),
-    methods
+    methods,
+    data.table (>= 1.9.4),
 Imports:
     xts,
     zoo,
@@ -16,7 +17,6 @@ Imports:
     shiny,
     DBI,
     openxlsx,
-    data.table (>= 1.9.4),
 Suggests:
     knitr,
     testthat
