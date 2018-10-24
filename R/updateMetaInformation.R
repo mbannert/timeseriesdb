@@ -152,6 +152,13 @@ updateMetaInformation.tsmeta.dt <- function(meta,
   }
 }
 
-updateMetaInformation.data.table <- function(x) {
-  updateMetaInformation.tsmeta.dt(as.tsmeta.dt(x))
+updateMetaInformation.data.table <- function(meta,
+                                             con,
+                                             schema = "timeseries",
+                                             tbl = "meta_data_unlocalized",
+                                             locale = NULL,
+                                             keys = NULL,
+                                             quiet = F,
+                                             chunksize = 10000) {
+  updateMetaInformation.tsmeta.dt(as.tsmeta.dt(meta), con, schema, tbl, locale, keys, quiet, chunksize)
 }
