@@ -30,6 +30,12 @@ meta_dt <- function() {
   out
 }
 
+meta_env <- function() {
+  m <- new.env()
+  out <- addMetaInformation("ts_key1", list(key1 = "value1", key2 = "value2"))
+  addMetaInformation("ts_key2", list(key1 = "value3", key2 = "value4"), out)
+  out
+}
 
 # Tests
 #############################################
@@ -69,10 +75,13 @@ test_that("data.frame -> tsmeta.dt", {
   expect_equal(outv, meta_dt())
 })
 
+test_that("meta_env -> tsmeta.dt", {
+  expect_equal(as.tsmeta.dt(meta_env()), meta_dt())
+})
+
 test_that("tsmeta.dt -> tsmeta.dt", {
   expect_equal(as.tsmeta.dt(meta_dt()), meta_dt())
 })
-
 
 ########################################
 # To tsmeta.list
@@ -94,6 +103,10 @@ test_that("list -> tsmeta.list", {
 test_that("invalid list -> tsmeta.list", {
   inv <- list()
   expect_error(as.tsmeta.list(inv))
+})
+
+test_that("meta_env -> tsmeta.list", {
+  expect_equal(as.tsmeta.list(meta_env()), meta_list())
 })
 
 test_that("tsmeta.dt -> tsmeta.list", {

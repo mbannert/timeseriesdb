@@ -28,6 +28,11 @@ as.tsmeta.dt.data.frame <- function(meta) {
 }
 
 #' @export
+as.tsmeta.dt.meta_env <- function(meta) {
+  as.tsmeta.dt(as.list(meta))
+}
+
+#' @export
 as.tsmeta.dt.tsmeta.dt <- identity
 
 #' @export
@@ -61,6 +66,13 @@ as.tsmeta.list.list <- function(meta) {
 #' @export
 as.tsmeta.list.data.frame <- function(meta) {
   as.tsmeta.list(as.tsmeta.dt(meta))
+}
+
+#' @export
+as.tsmeta.list.meta_env <- function(meta) {
+  meta <- as.list(meta)
+  meta <- lapply(meta, `class<-`, "list")
+  as.tsmeta.list(meta)
 }
 
 #' @export

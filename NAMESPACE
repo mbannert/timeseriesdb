@@ -2,10 +2,12 @@
 
 S3method(as.tsmeta.dt,data.frame)
 S3method(as.tsmeta.dt,list)
+S3method(as.tsmeta.dt,meta_env)
 S3method(as.tsmeta.dt,tsmeta.dt)
 S3method(as.tsmeta.dt,tsmeta.list)
 S3method(as.tsmeta.list,data.frame)
 S3method(as.tsmeta.list,list)
+S3method(as.tsmeta.list,meta_env)
 S3method(as.tsmeta.list,tsmeta.dt)
 S3method(as.tsmeta.list,tsmeta.list)
 S3method(createHstore,data.frame)
