@@ -1,8 +1,9 @@
 #' @export
-as.tsmeta.dt <- function(meta_list) {
+as.tsmeta.dt <- function(meta) {
   UseMethod("as.tsmeta.dt")
 }
 
+#' @export
 as.tsmeta.dt.tsmeta.list <- function(meta_list) {
   out <- rbindlist(meta_list, fill = TRUE)
   minlength <- min(sapply(meta_list, length))
@@ -14,16 +15,19 @@ as.tsmeta.dt.tsmeta.list <- function(meta_list) {
   out
 }
 
+#' @export
 as.tsmeta.dt.list <- function(meta) {
   as.tsmeta.dt(as.tsmeta.list(meta))
 }
 
+#' @export
 as.tsmeta.dt.data.frame <- function(meta) {
   meta <- as.data.table(meta)
   class(meta) <- c("tsmeta.dt", class(meta))
   meta
 }
 
+#' @export
 as.tsmeta.dt.tsmeta.dt <- identity
 
 #' @export
@@ -31,6 +35,7 @@ as.tsmeta.list <- function(meta) {
   UseMethod("as.tsmeta.list")
 }
 
+#' @export
 as.tsmeta.list.tsmeta.dt <- function(meta) {
   out <- lapply(split(meta, by = "ts_key"), function(x) {
     as.list(x[, -"ts_key"])
@@ -40,6 +45,7 @@ as.tsmeta.list.tsmeta.dt <- function(meta) {
   as.tsmeta.list.list(out)
 }
 
+#' @export
 as.tsmeta.list.list <- function(meta) {
   if(getListDepth(meta) != 2) {
     stop("A meta list must have exactly depth 2!")
@@ -52,8 +58,10 @@ as.tsmeta.list.list <- function(meta) {
   meta
 }
 
+#' @export
 as.tsmeta.list.data.frame <- function(meta) {
   as.tsmeta.list(as.tsmeta.dt(meta))
 }
 
+#' @export
 as.tsmeta.list.tsmeta.list <- identity
