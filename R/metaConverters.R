@@ -37,14 +37,17 @@ as.tsmeta.list.tsmeta.dt <- function(meta) {
   })
   # Remove NA elements from list
   out <- lapply(out, function(x){x[!is.na(x)]})
-  class(out) <- c("tsmeta.list", class(out))
-  out
+  as.tsmeta.list.list(out)
 }
 
 as.tsmeta.list.list <- function(meta) {
   if(getListDepth(meta) != 2) {
     stop("A meta list must have exactly depth 2!")
   }
+  meta <- lapply(meta, function(x) {
+    class(x) <- c("tsmeta", class(x))
+    x
+  })
   class(meta) <- c("tsmeta.list", class(meta))
   meta
 }

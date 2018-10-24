@@ -12,6 +12,10 @@ meta_list <- function() {
       key2 = "value4"
     )
   )
+  out <- lapply(out, function(x) {
+    class(x) <- c("tsmeta", class(x))
+    x
+  })
   class(out) <- c("tsmeta.list", class(out))
   out
 }
@@ -74,7 +78,9 @@ test_that("tsmeta.dt -> tsmeta.dt", {
 # To tsmeta.list
 ########################################
 test_that("tsmeta.list -> tsmeta.list", {
-  expect_equal(as.tsmeta.list(meta_list()), meta_list())
+  outv <- as.tsmeta.list(meta_list())
+  expect_equal(outv, meta_list())
+  expect_is(outv[[1]], "tsmeta")
 })
 
 test_that("list -> tsmeta.list", {
@@ -82,6 +88,7 @@ test_that("list -> tsmeta.list", {
   class(inv) <- "list"
   outv <- as.tsmeta.list(inv)
   expect_equal(outv, meta_list())
+  expect_is(outv[[1]], c("tsmeta"))
 })
 
 test_that("invalid list -> tsmeta.list", {
@@ -90,7 +97,9 @@ test_that("invalid list -> tsmeta.list", {
 })
 
 test_that("tsmeta.dt -> tsmeta.list", {
-  expect_equal(as.tsmeta.list(meta_dt()), meta_list())
+  outv <- as.tsmeta.list(meta_dt())
+  expect_equal(outv, meta_list())
+  expect_is(outv[[1]], c("tsmeta"))
 })
 
 test_that("filled tsmeta.dt -> tsmeta.list", {
@@ -100,4 +109,5 @@ test_that("filled tsmeta.dt -> tsmeta.list", {
   outv <- as.tsmeta.list(inv)
   expect_equal(length(outv$ts_key2), 2)
   expect_true(!any(is.na(outv$ts_key2)))
+  expect_is(outv[[1]], c("tsmeta"))
 })
