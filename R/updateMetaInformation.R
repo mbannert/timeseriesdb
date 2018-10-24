@@ -33,7 +33,6 @@ updateMetaInformation <- function(meta,con,
 } 
 
 #' @rdname updateMetaInformation
-#' @export
 updateMetaInformation.meta_env <- function(meta,con,
                                            schema = "timeseries",
                                            tbl = "meta_data_unlocalized",
@@ -64,14 +63,14 @@ updateMetaInformation.meta_env <- function(meta,con,
   updateMetaInformation.data.table(md_df, con, schema, tbl, locale, keys, quiet, chunksize)
 }
 
-#' @export
+
 updateMetaInformation.list <- updateMetaInformation.meta_env
 
-#' @export
-updateMetaInformation.meta.list <- updateMetaInformation.meta_env
 
-#' @export
-updateMetaInformation.meta.dt <- function(meta,
+updateMetaInformation.tsmeta.list <- updateMetaInformation.meta_env
+
+
+updateMetaInformation.tsmeta.dt <- function(meta,
                                              con,
                                              schema = "timeseries",
                                              tbl = "meta_data_unlocalized",
@@ -153,5 +152,6 @@ updateMetaInformation.meta.dt <- function(meta,
   }
 }
 
-#' @export
-updateMetaInformation.data.table <- updateMetaInformation.meta.dt
+updateMetaInformation.data.table <- function(x) {
+  updateMetaInformation.tsmeta.dt(as.tsmeta.dt(x))
+}

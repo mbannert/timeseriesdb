@@ -6,7 +6,7 @@
 \usage{
 readMetaInformation(series, con, locale = "de", tbl = "meta_data_localized",
   overwrite_objects = F, overwrite_elements = T, meta_env = NULL,
-  schema = "timeseries")
+  schema = "timeseries", as_list = TRUE)
 }
 \arguments{
 \item{series}{character name of a time series object.}
