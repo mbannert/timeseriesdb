@@ -8,7 +8,13 @@ if (!on_cran) {
   con <- createConObj(dbhost = "localhost",
                       dbname = "sandbox",
                       passwd = "")
-  dbGetQuery(con, "DELETE from timeseriesdb_unit_tests.timeseries_vintages")
+  
+  # Cleanest of clean slates
+  dbGetQuery(con, "DROP SCHEMA timeseriesdb_unit_tests CASCADE")
+  dbGetQuery(con, "CREATE SCHEMA timeseriesdb_unit_tests")
+  
+  # Could also write a test for that
+  runCreateTables(con, "timeseriesdb_unit_tests")
 }
 
 # later time series

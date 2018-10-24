@@ -10,7 +10,12 @@ if (!on_cran) {
                     dbname = "sandbox",
                     passwd = "")
   
-  dbGetQuery(con, "DELETE from timeseriesdb_unit_tests.timeseries_main")
+  # Cleanest of clean slates
+  dbGetQuery(con, "DROP SCHEMA timeseriesdb_unit_tests CASCADE")
+  dbGetQuery(con, "CREATE SCHEMA timeseriesdb_unit_tests")
+  
+  # Could also write a test for that
+  runCreateTables(con, "timeseriesdb_unit_tests")
 }
 
 set.seed(123)
