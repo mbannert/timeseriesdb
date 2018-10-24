@@ -85,7 +85,7 @@ test_that("tsmeta.list -> tsmeta.list", {
 
 test_that("list -> tsmeta.list", {
   inv <- meta_list()
-  class(inv) <- "list"
+  inv <- lapply(inv, `class<-`, "list")
   outv <- as.tsmeta.list(inv)
   expect_equal(outv, meta_list())
   expect_is(outv[[1]], c("tsmeta"))
