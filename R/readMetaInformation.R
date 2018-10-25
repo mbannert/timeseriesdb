@@ -93,9 +93,9 @@ readMetaInformation <- function(series,
   # TODO: if(!is.null(meta_env)) { merge meta_env and meta_list }
   # For backwards comp
   if(as_list) {
-    as.meta.list(meta_list)
+    as.tsmeta.list(meta_list)
   } else {
-    as.meta.dt(meta_list)
+    as.tsmeta.dt(meta_list)
   }
 }
 

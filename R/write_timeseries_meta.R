@@ -1,6 +1,6 @@
 write_timeseries_meta <- function(..., path) {
   li <- list(...)
-  li <- lapply(li, as.meta.dt)
+  li <- lapply(li, as.tsmeta.dt)
   
   write.xlsx(li, path)
   
@@ -13,7 +13,7 @@ read_timeseries_meta <- function(path) {
   sheetNames <- wb$sheet_names
   
   out <- lapply(sheetNames, function(x) {
-    as.meta.dt(read.xlsx(path, sheet = x))
+    as.tsmeta.dt(read.xlsx(path, sheet = x))
   })
   names(out) <- sheetNames
   out
