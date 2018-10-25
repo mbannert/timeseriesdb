@@ -90,6 +90,8 @@ readMetaInformation <- function(series,
     names(meta_list) <- res[, ts_key]
   }
   
+  meta_list <- rapply(meta_list, stringSaveAsNumeric, how = "list")
+  
   # TODO: if(!is.null(meta_env)) { merge meta_env and meta_list }
   # For backwards comp
   if(as_list) {
