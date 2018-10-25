@@ -43,6 +43,9 @@ addMetaInformation("ts4",meta_ts4,meta_unlocalized)
 addMetaInformation("ts5",meta_ts5,meta_unlocalized)
 addMetaInformation("ts6",meta_ts6,meta_unlocalized)
 
+meta.tsmeta.list <- as.tsmeta.list(meta_unlocalized)
+
+meta.tsmeta.dt <- as.tsmeta.dt(meta_unlocalized)
 
 # Test that ..... ##################
 
@@ -108,13 +111,37 @@ test_that("After succesful store, delete is also successful,i.e., same amount of
   expect_equal(count_before,count_after)
 })
 
+# TOmaybeDO: this is not 100% kosher as it depends on an earlier test
+# but since there are no before/after each test methods for setting up
+# / tearing down DB state... meh.
 test_that("Unlocalized meta data can be written to db in chunks.", {
   skip_on_cran()
   
-  updateMetaInformation(meta_unlocalized,con,chunksize = 2, schema = "timeseriesdb_unit_tests")
+  updateMetaInformation(meta_unlocalized, con, chunksize = 2, schema = "timeseriesdb_unit_tests")
 
-  mdul_count <- dbGetQuery(con,"SELECT COUNT(*) FROM timeseriesdb_unit_tests.meta_data_unlocalized WHERE ts_key ~ 'ts[1-6]'")$count
+  mdul_count <- dbGetQuery(con,"SELECT COUNT(*) FROM timeseriesdb_unit_tests.meta_data_unlocalized WHERE ts_key ~ 'ts[1-6]' AND meta_data IS NOT NULL")$count
   expect_equal(mdul_count, 6)
+})
+
+test_that("storing tsmeta.list works", {
+  skip_on_cran()
+  
+  dbGetQuery(con, "DELETE FROM timeseriesdb_unit_tests.meta_data_localized")
+  updateMetaInformation(meta.tsmeta.list, con, schema = "timeseriesdb_unit_tests", locale = "de", tbl = "meta_data_localized")
+  m <- readMetaInformation("ts1", con, schema = "timeseriesdb_unit_tests")
+  expect_is(m, "tsmeta.list")
+  expect_is(m[[1]], "tsmeta")
+  expect_equal(m[[1]], meta.tsmeta.list[[1]])
+})
+
+test_that("storing tsmeta.dt works", {
+  skip_on_cran()
+  
+  dbGetQuery(con, "DELETE FROM timeseriesdb_unit_tests.meta_data_localized")
+  updateMetaInformation(meta.tsmeta.dt, con, schema = "timeseriesdb_unit_tests", locale = "de", tbl = "meta_data_localized")
+  m <- readMetaInformation("ts1", con, schema = "timeseriesdb_unit_tests", as_list = FALSE)
+  expect_is(m, "tsmeta.dt")
+  expect_equal(m[1, ], meta.tsmeta.dt[1, ])
 })
 
 if(!on_cran) {
