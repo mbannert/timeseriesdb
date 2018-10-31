@@ -7,11 +7,11 @@
 \usage{
 storeMetaInformation(meta, con, schema = "timeseries",
   tbl = "meta_data_unlocalized", locale = NULL, keys = NULL,
-  quiet = FALSE, chunksize = 10000)
+  chunksize = 10000)
 
 \method{storeMetaInformation}{meta_env}(meta, con, schema = "timeseries",
   tbl = "meta_data_unlocalized", locale = NULL, keys = NULL,
-  quiet = FALSE, chunksize = 10000)
+  chunksize = 10000)
 }
 \arguments{
 \item{meta}{a tsmeta.list or tsmets.dt object}
@@ -28,8 +28,6 @@ Defaults to 'meta_data_unlocalized'.}
 \item{keys}{character vector of time series. If specified only the selected 
 meta information is stored. Defaults to NULL which stores all meta information
 records in the environment.}
-
-\item{quiet}{logical should function be quiet instead of returning a message when done? Defaults to FALSE.}
 
 \item{chunksize}{integer max size of chunks to split large query in.}
 }
