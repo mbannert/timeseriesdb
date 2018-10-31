@@ -132,3 +132,24 @@
   class(sql_query) <- "SQL"
   sql_query
 }
+
+.queryGetExistingKeys <- function(keys,tbl,schema){
+  vals <- paste(paste0("('",
+                       paste(keys,sep="','"),
+                       "')"),
+                collapse = ",")
+  
+  sql_query <- sprintf("
+                       CREATE TEMPORARY TABLE 
+                       ts_search(ts_key varchar)
+                       ON COMMIT DROP;
+                       
+                       INSERT INTO ts_search(ts_key) VALUES %s;
+                       
+                       SELECT tm.ts_key FROM %s.%s tm
+                       JOIN ts_search ts ON (tm.ts_key = ts.ts_key);",
+                       vals,
+                       schema,tbl)
+  class(sql_query) <- "SQL"
+  sql_query
+}
