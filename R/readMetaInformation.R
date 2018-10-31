@@ -5,22 +5,18 @@
 #' 
 #' @param series character name of a time series object.
 #' @param con PostgreSQL connection object
-#' @param overwrite_objects logical should the entire object for a key be overwritten. Defaults to FALSE.
-#' @param overwrite_elements logical should single elements inside the environment be overwritten. Defaults to TRUE.
 #' @param locale character denoting the locale of the meta information that is queried.
 #' defaults to 'de' for German. At the KOF Swiss Economic Institute meta information should be available
 #' als in English 'en', French 'fr' and Italian 'it'. Set the locale to NULL to query unlocalized meta information. 
-#' @param tbl character name of the table that contains meta information. Defaults to 'meta_data_localized'. Choose meta 'meta_data_unlocalized' when locale is set to NULL. 
-#' @param meta_env environment to which the meta information should be added. Defaults to NULL. In this case an environment will be returned. If you run this function in a loop best create an empty environment before the loop or apply call and pass the environment to this function. By doing so new elements will be added to the environment. 
+#' @param tbl character name of the table that contains meta information. Defaults to 'meta_data_localized'.
+#' Choose meta 'meta_data_unlocalized' when locale is set to NULL. 
 #' @param schema SQL schema name. Defaults to timeseries.
+#' @param as_list Should the result be returned as a tsmeta.list instead of a tsmeta.dt? Default TRUE
 #' @export 
 readMetaInformation <- function(series,
                                 con,
                                 locale = 'de',
                                 tbl = 'meta_data_localized',
-                                overwrite_objects = F,
-                                overwrite_elements = T,
-                                meta_env = NULL,
                                 schema = 'timeseries',
                                 as_list = TRUE){
   
@@ -96,9 +92,6 @@ readMetaInformation <- function(series,
   # For backwards comp
   if(as_list) {
     out <- as.tsmeta.list(meta_list)
-    if(!is.null(meta_env)) {
-      
-    }
   } else {
     as.tsmeta.dt(meta_list)
   }

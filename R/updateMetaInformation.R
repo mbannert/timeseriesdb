@@ -72,7 +72,6 @@ storeMetaInformation.tsmeta.dt <- function(meta,
                                              tbl = "meta_data_unlocalized",
                                              locale = NULL,
                                              keys = NULL,
-                                             quiet = FALSE,
                                              chunksize = 10000) {
   tbl <- paste(schema, tbl, sep=".")
   
@@ -143,9 +142,6 @@ storeMetaInformation.tsmeta.dt <- function(meta,
   md_create <- DBI::dbGetQuery(con,query_meta_data_create)
   pgCopyDf(con, meta, q = query_meta_data_insert, chunksize = chunksize)
   md_ok2 <- DBI::dbGetQuery(con,query_meta_data_update)
-  if(!quiet) {
-    if(is.null(md_ok2)) cat("Meta information updated.")  
-  }
 }
 
 #' @export
