@@ -107,11 +107,18 @@ createMetaUnlocalized <- function(schema = "timeseries",
                         md_generated_by text,
                         md_resource_last_update timestamptz,
                         md_coverage_temp varchar,
-                        meta_data json,
+                        meta_data jsonb,
                         primary key (ts_key),
                         foreign key (ts_key) references %s.%s (ts_key) on delete cascade);",
                        schema,tbl,
                        schema,main)
+  class(sql_query) <- "SQL"
+  sql_query
+}
+
+alterMetaUnlocalized <- function(schema = "timeseries",
+                                 tbl = "meta_data_unlocalized") {
+  sql_query <- sprintf("ALTER TABLE %s.%s ALTER COLUMN meta_data TYPE JSONB USING meta_data::JSONB", schema, tbl)
   class(sql_query) <- "SQL"
   sql_query
 }
@@ -124,7 +131,7 @@ createMetaLocalized <- function(schema = "timeseries",
   sql_query <- sprintf("CREATE TABLE %s.%s (
                         ts_key varchar,
                         locale_info varchar, 
-                        meta_data json,
+                        meta_data jsonb,
                         primary key (ts_key, locale_info),
                         foreign key (ts_key) references %s.%s (ts_key) on delete cascade);",
                        schema,tbl,
@@ -133,6 +140,12 @@ createMetaLocalized <- function(schema = "timeseries",
   sql_query
 }
 
+alterMetaLocalized <- function(schema = "timeseries",
+                               tbl = "meta_data_localized") {
+  sql_query <- sprintf("ALTER TABLE %s.%s ALTER COLUMN meta_data TYPE JSONB USING meta_data::JSONB", schema, tbl)
+  class(sql_query) <- "SQL"
+  sql_query
+}
 
 #' @export
 #' @rdname createTable
@@ -189,9 +202,8 @@ runUpgradeTables <- function(con, schema = "timeseries") {
   status <- list()
   status$timeseries_main <- attributes(runDbQuery(con, addReleaseDateToTimeseriesMain(schema = schema)))
   status$timeseries_vintages <- attributes(runDbQuery(con, addReleaseDateToTimeseriesVintages(schema = schema)))
-  # TODO: add changes to meta_data field from hstore to JSON if that's not the case yet.
-  # also trigger migrate
-  
+  status$alter_meta_unlocalized <- attributes(runDbQuery(con, alterMetaUnlocalized(schema = schema)))
+  status$alter_meta_localized <- attributes(runDbQuery(con, alterMetaLocalized(schema = schema)))
   
   status
 }

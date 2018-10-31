@@ -25,8 +25,6 @@ indexToDate <- function (x, as.string = FALSE)
   }
   date
 }
-<<<<<<< HEAD
-
 
 stringSafeAsNumeric <- function(x) {
   y <- suppressWarnings(as.numeric(x))
@@ -36,5 +34,3 @@ stringSafeAsNumeric <- function(x) {
     y
   }
 }
-=======
->>>>>>> 8fbecd2feccd48c4e55513651de93a8091000efd

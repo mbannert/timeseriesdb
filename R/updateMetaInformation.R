@@ -161,14 +161,14 @@ storeMetaInformation.data.table <- function(meta,
 }
 
 #' @export
-updateMetaInformation(meta,
-                      con,
-                      schema = "timeseries",
-                      tbl = "meta_data_unlocalized",
-                      locale = NULL,
-                      keys = NULL,
-                      quiet = FALSE,
-                      chunksiize = 10000) {
+updateMetaInformation <- function(meta,
+                                  con,
+                                  schema = "timeseries",
+                                  tbl = "meta_data_unlocalized",
+                                  locale = NULL,
+                                  keys = NULL,
+                                  quiet = FALSE,
+                                  chunksiize = 10000) {
   warning("updateMetaInformation is deprecated. Please use storeMetaInformation instead.")
   storeMetaInformation(meta, con, schema, tbl, locale, keys, quiet, chunksize)
 }
