@@ -5,6 +5,7 @@
 # CSV:
 # write.csv(as.tsmeta.dt(x), row.names = FALSE, file = stdout())
 
+#' @importFrom openxlsx write.xlsx
 #' @export
 writeTsmetaToExcel <- function(..., path) {
   li <- list(...)
@@ -15,6 +16,7 @@ writeTsmetaToExcel <- function(..., path) {
   invisible(TRUE)
 }
 
+#' @importFrom openxlsx loadWorkbook read.xlsx
 #' @export
 readTsmetaFromExcel <- function(path) {
   wb <- loadWorkbook(path)
