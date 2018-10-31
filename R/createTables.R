@@ -189,5 +189,9 @@ runUpgradeTables <- function(con, schema = "timeseries") {
   status <- list()
   status$timeseries_main <- attributes(runDbQuery(con, addReleaseDateToTimeseriesMain(schema = schema)))
   status$timeseries_vintages <- attributes(runDbQuery(con, addReleaseDateToTimeseriesVintages(schema = schema)))
+  # TODO: add changes to meta_data field from hstore to JSON if that's not the case yet.
+  # also trigger migrate
+  
+  
   status
 }

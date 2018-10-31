@@ -25,6 +25,6 @@ deleteTimeSeries <- function(series, con,
     out <- dbGetQuery(con,del_statement)
   },tbl = tbl_main, schema = schema)
   
-  cat(sprintf("DELETE operations in %s chunk(s) performed.",length(s)))
+  message(sprintf("DELETE operations in %s chunk(s) performed.",length(s)))
   
 }
