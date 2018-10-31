@@ -34,6 +34,7 @@ updateMetaInformation <- function(meta,con,
 
 
 #' @rdname updateMetaInformation
+#' @importFrom jsonlite toJSON
 #' @export
 updateMetaInformation.meta_env <- function(meta,con,
                                            schema = "timeseries",
@@ -56,10 +57,10 @@ updateMetaInformation.meta_env <- function(meta,con,
   })
   
   
-  hstores <- lapply(l,createHstore)
+  jsons <- lapply(l,toJSON)
 
-  md_df <- data.frame(ts_key = names(hstores),
-                      meta_data = unlist(hstores),
+  md_df <- data.frame(ts_key = names(jsons),
+                      meta_data = unlist(jsons),
                       stringsAsFactors = F)
     
   updateMetaInformation.data.frame(md_df, con, schema, tbl, locale, keys, quiet, chunksize)
@@ -104,7 +105,7 @@ updateMetaInformation.data.frame <- function(meta,
     query_meta_data_create <- sprintf("BEGIN;
                                       CREATE TEMPORARY TABLE 
                                       md_updates(ts_key varchar,
-                                      meta_data hstore,
+                                      meta_data jsonb,
                                       locale varchar) ON COMMIT DROP;")
     
     query_meta_data_insert <- "COPY md_updates FROM STDIN;"

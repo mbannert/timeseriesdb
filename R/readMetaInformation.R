@@ -14,6 +14,8 @@
 #' @param meta_env environment to which the meta information should be added. Defaults to NULL. In this case an environment will be returned. If you run this function in a loop best create an empty environment before the loop or apply call and pass the environment to this function. By doing so new elements will be added to the environment. 
 #' @param schema SQL schema name. Defaults to timeseries.
 #' @export 
+#' @importFrom DBI dbgetQuery
+#' @importFrom jsonlite fromJSON
 readMetaInformation <- function(series,
                                 con,
                                 locale = 'de',
@@ -27,11 +29,14 @@ readMetaInformation <- function(series,
   tbl = paste(schema,tbl,sep='.')
   
   if(!is.null(locale)){
-    sql_statement <- sprintf("SELECT (each(meta_data)).key,
-                             (each(meta_data)).value
-                             FROM %s WHERE ts_key = '%s' AND locale_info = '%s'",
+    sql_statement <- sprintf("SELECT ts_key, meta_data
+                             FROM %s WHERE ts_key = '%s'
+                             AND locale_info = '%s'",
                              tbl,series,locale)
-    res <- DBI::dbGetQuery(con,sql_statement)
+    res <- dbGetQuery(con,sql_statement)
+    
+    jsonlite::stream_in(textConnection(gsub("\\n", "", res$meta_data)))
+    fromJSON(res$meta_data)
     res_list <- as.list(res$value)
     names(res_list) <- res$key
         
@@ -42,7 +47,9 @@ readMetaInformation <- function(series,
                        meta_env = meta_env)    
   } else {
     # sanity check
-    if(tbl != paste(schema,'meta_data_unlocalized',sep=".")) warning('DB table is not set to unlocalized, though locale is NULL!')
+    if(tbl != paste(schema,'meta_data_unlocalized',sep=".")){
+      warning('DB table is not set to unlocalized, though locale is NULL!')
+    } 
     sql_statement <- sprintf("SELECT
                              md_generated_by,
                              md_resource_last_update,

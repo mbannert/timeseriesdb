@@ -124,7 +124,7 @@ createMetaLocalized <- function(schema = "timeseries",
   sql_query <- sprintf("CREATE TABLE %s.%s (
                         ts_key varchar,
                         locale_info varchar, 
-                        meta_data hstore,
+                        meta_data jsonb,
                         primary key (ts_key, locale_info),
                         foreign key (ts_key) references %s.%s (ts_key) on delete cascade);",
                        schema,tbl,
