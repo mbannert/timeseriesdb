@@ -59,6 +59,117 @@ getListDepth <- function(this) {
   ifelse(is.list(this), 1L + max(sapply(this, getListDepth)), 0L)
 }
 
+.createValues <- function(li, validity = NULL, store_freq, release_date = NULL){
+  # CREATE ELEMENTS AND RECORDS ##########################
+  # use the form (..record1..),(..record2..),(..recordN..)
+  # to be able to store everything in one big query
+  hstores <- unlist(lapply(li,createHstore))
+  series <- names(li)
+  freqs <- sapply(li,function(x) {
+    ifelse(inherits(x,"zoo"),'NULL',stats::frequency(x))
+  })
+  
+  if(is.null(release_date)) {
+    release_date <- "DEFAULT"
+  } else {
+    tryCatch(
+      release_date <- strftime(release_date, format = "%F %T %z"),
+      error = function(e) {
+        msg <- sprintf("Failed to parse release_date \"%s\". Please make sure it is an object which can be converted to \"POSIXlt\" for strftime!", release_date)
+        stop(msg)
+      }
+    );
+  }
+  
+  if(is.null(validity)){
+    if(!store_freq){
+      values <- paste(paste0("('",
+                             paste(series,
+                                   hstores,
+                                   sep="','"),
+                             "', '", release_date, "')"),
+                      collapse = ",")
+    } else {
+      values <- paste(paste0("('",
+                             paste(series,
+                                   hstores,
+                                   freqs,
+                                   sep="','"),
+                             "', '", release_date, "')"),
+                      collapse = ",")
+    }
+  } else {
+    if(!store_freq){
+      values <- paste(paste0("('",
+                             paste(series,
+                                   validity,
+                                   hstores,
+                                   sep="','"),
+                             "', '", release_date, "')"),
+                      collapse = ",")
+    } else {
+      values <- paste(paste0("('",
+                             paste(series,
+                                   validity,
+                                   hstores,
+                                   freqs,
+                                   sep="','"),
+                             "', '", release_date, "')"),
+                      collapse = ",")
+    }
+  }
+  values <- gsub("''","'",values)
+  values <- gsub("::hstore'","::hstore",values)
+  values <- gsub("'NULL'","NULL",values)
+  values <- gsub("'DEFAULT'", "DEFAULT", values)
+  values
+}
+
+
+#'@importFrom stats tsp time
+.createValuesMeta <- function(li){
+  # CREATE META INFORMATION -------------------------------------------------
+  # automatically generated meta information
+  md_generated_by <- Sys.info()["user"]
+  md_resource_last_update <- Sys.time()
+  md_coverages <- unlist(lapply(li,function(x){
+    
+    if(inherits(x, "zoo")) {
+      idx <- time(x)
+      t0 <- min(idx)
+      t1 <- max(idx)
+      if(class(t0) == "Date") {
+        time_range <- as.character(c(t0, t1))
+      } else if(class(t0) == "character") {
+        time_range <- c(t0, t1)
+      } else {
+        time_range <- indexToDate(c(t0, t1), as.string = TRUE)
+      }
+    } else {
+      tsp.x <- tsp(x)
+      time_range <- indexToDate(tsp.x[c(1, 2)], as.string = TRUE)
+    }
+    
+    sprintf('%s to %s',
+            time_range[1],
+            time_range[2]
+    )}
+  ))
+  
+  series <- names(li)
+  
+  # same trick as for data itself, one query
+  md_values <- paste(paste0("('",
+                            paste(series,
+                                  md_generated_by,
+                                  md_resource_last_update,
+                                  md_coverages,
+                                  sep="','"),
+                            "')"),
+                     collapse = ",")
+  md_values
+}
+
 stringSafeAsNumeric <- function(x) {
   y <- suppressWarnings(as.numeric(x))
   if(any(is.na(x) != is.na(y))) {
