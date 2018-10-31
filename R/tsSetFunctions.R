@@ -6,6 +6,7 @@
 #' @param con PostgreSQL connection object
 #' @param set_name character name of a set time series in the database.
 #' @param set_keys list of keys contained in the set and their type of key. 
+#' @param key_type character A vector of key types to store the keys as. Will be recycled to match the length of set_keys.
 #' @param user_name character name of the user. Defaults to system user. 
 #' @param description character description of the set to be stored in the db.
 #' @param active logical should a set be active? Defaults to TRUE. If set to FALSE 
@@ -20,6 +21,7 @@
 storeTsSet <- function(con,
                        set_name,
                        set_keys,
+                       key_type = "ts_key",
                        user_name = Sys.info()['user'],
                        description = '',
                        active = TRUE,
@@ -29,7 +31,10 @@ storeTsSet <- function(con,
 }
 
 #' @importFrom DBI dbSendQuery
-storeTsSet.list <- function(con, set_name, set_keys,
+storeTsSet.list <- function(con,
+                            set_name,
+                            set_keys,
+                            key_type = "ts_key",
                        user_name = Sys.info()['user'],
                        description = '', active = TRUE,
                        tbl = 'timeseries_sets',
@@ -58,12 +63,13 @@ storeTsSet.list <- function(con, set_name, set_keys,
 storeTsSet.character <- function(con,
                                  set_name,
                                  set_keys,
+                                 key_type = "ts_key",
                                  user_name = Sys.info()['user'],
                                  description = '',
                                  active = TRUE,
                                  tbl = "timeseries_sets",
                                  schema = "timeseries") {
-  key_list <- as.list(rep("ts_key", length(set_keys)))
+  key_list <- as.list(rep_len(key_type, length(set_keys)))
   names(key_list) <- set_keys
   storeTsSet.list(con, set_name, key_list, user_name, description, active, tbl, schema)
 }
