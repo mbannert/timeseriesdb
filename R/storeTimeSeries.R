@@ -23,7 +23,7 @@
 #' @importFrom DBI dbGetQuery
 #' @export
 storeTimeSeries <- function(con,
-                            li = NULL,
+                            li,
                             series = names(li),
                             valid_from = NULL,
                             release_date = NULL,
@@ -36,10 +36,10 @@ storeTimeSeries <- function(con,
   
   if(is.character(con)) {
     warning("You are using this function in a deprecated fashion. Use storeTimeSeries(con, series, li, ...) in the future.")
-    t <- series
+    tx <- li
     li <- series
     series <- con
-    con <- t
+    con <- tx
   }
   
   # subset 
@@ -59,7 +59,10 @@ storeTimeSeries <- function(con,
   # are allowed to be stored. In that case we do not need to run 
   # through the entire write process.
   if(length(li) == 0){
-    cat("No time series in subset - returned empty list. Set overwrite=TRUE or add a valid_from argument, if you want to overwrite existing series or store different versions of a series.")
+    message("No time series in subset - returned empty list.
+            Set overwrite=TRUE or add a valid_from argument,
+            if you want to overwrite existing series or store
+            different versions of a series.")
     return(list())
   } 
   
@@ -70,7 +73,7 @@ storeTimeSeries <- function(con,
   if(all(keep)){
     NULL #cat("No corrupted series found. \n")
   } else {
-    cat("These elements are no valid time series objects: \n",
+    message("These elements are no valid time series objects: \n",
         paste0(names(series[dontkeep])," \n"))  
   }
   
