@@ -1,4 +1,12 @@
-write_timeseries_meta <- function(..., path) {
+# TODO: Different formats?
+# JSON:
+# jsonlite::toJSON(as.tsmeta.list(x), pretty = TRUE, auto_unbox = TRUE)
+# 
+# CSV:
+# write.csv(as.tsmeta.dt(x), row.names = FALSE, file = stdout())
+
+#' @export
+writeTsmetaToExcel <- function(..., path) {
   li <- list(...)
   li <- lapply(li, as.tsmeta.dt)
   
@@ -7,7 +15,8 @@ write_timeseries_meta <- function(..., path) {
   invisible(TRUE)
 }
 
-read_timeseries_meta <- function(path) {
+#' @export
+readTsmetaFromExcel <- function(path) {
   wb <- loadWorkbook(path)
   
   sheetNames <- wb$sheet_names

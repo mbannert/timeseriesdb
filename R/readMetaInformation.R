@@ -90,12 +90,15 @@ readMetaInformation <- function(series,
     names(meta_list) <- res[, ts_key]
   }
   
-  meta_list <- rapply(meta_list, stringSaveAsNumeric, how = "list")
+  meta_list <- rapply(meta_list, stringSafeAsNumeric, how = "list")
   
   # TODO: if(!is.null(meta_env)) { merge meta_env and meta_list }
   # For backwards comp
   if(as_list) {
-    as.tsmeta.list(meta_list)
+    out <- as.tsmeta.list(meta_list)
+    if(!is.null(meta_env)) {
+      
+    }
   } else {
     as.tsmeta.dt(meta_list)
   }

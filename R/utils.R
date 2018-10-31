@@ -170,7 +170,7 @@ print.SQL <- function(x,...){
 }
 
 
-stringSaveAsNumeric <- function(x) {
+stringSafeAsNumeric <- function(x) {
   y <- suppressWarnings(as.numeric(x))
   if(any(is.na(x) != is.na(y))) {
     x
