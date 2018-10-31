@@ -22,7 +22,8 @@
 #' @importFrom DBI dbGetQuery
 #' @importFrom jsonlite fromJSON
 #' @export
-readTimeSeries <- function(series, con,
+readTimeSeries <- function(con,
+                           series, 
                            valid_on = NULL,
                            tbl = "timeseries_main",
                            tbl_vintages = "timeseries_vintages",
@@ -32,6 +33,13 @@ readTimeSeries <- function(series, con,
                            chunksize = 10000,
                            respect_release_date = FALSE,
                            regex = FALSE){
+  
+  if(is.character(con)) {
+    warning("You are using this function in a deprecated fashion. Use readTimeSeries(con, series, ...) in the future.")
+    t <- series
+    series <- con
+    con <- t
+  }
   
   if(regex) {
     if(length(series) > 1) {

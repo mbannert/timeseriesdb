@@ -14,7 +14,6 @@
 #' @param keys character vector of time series. If specified only the selected 
 #' meta information is stored. Defaults to NULL which stores all meta information
 #' records in the environment.
-#' @param quiet logical should function be quiet instead of returning a message when done? Defaults to FALSE.  
 #' @param chunksize integer max size of chunks to split large query in. 
 #' @export
 storeMetaInformation <- function(meta,con,
@@ -22,7 +21,6 @@ storeMetaInformation <- function(meta,con,
                           tbl = "meta_data_unlocalized",
                           locale = NULL,
                           keys = NULL,
-                          quiet = FALSE,
                           chunksize = 10000) {
   UseMethod("storeMetaInformation")
 } 
@@ -34,7 +32,6 @@ storeMetaInformation.meta_env <- function(meta,con,
                                            tbl = "meta_data_unlocalized",
                                            locale = NULL,
                                            keys = NULL,
-                                           quiet = FALSE,
                                            chunksize = 10000){
   
   l <- as.list(meta)
@@ -56,7 +53,7 @@ storeMetaInformation.meta_env <- function(meta,con,
                       meta_data = unlist(json),
                       stringsAsFactors = F)
     
-  storeMetaInformation.data.table(md_df, con, schema, tbl, locale, keys, quiet, chunksize)
+  storeMetaInformation.data.table(md_df, con, schema, tbl, locale, keys, chunksize)
 }
 
 #' @export
@@ -151,9 +148,8 @@ storeMetaInformation.data.table <- function(meta,
                                              tbl = "meta_data_unlocalized",
                                              locale = NULL,
                                              keys = NULL,
-                                             quiet = FALSE,
                                              chunksize = 10000) {
-  storeMetaInformation.tsmeta.dt(as.tsmeta.dt(meta), con, schema, tbl, locale, keys, quiet, chunksize)
+  storeMetaInformation.tsmeta.dt(as.tsmeta.dt(meta), con, schema, tbl, locale, keys, chunksize)
 }
 
 #' @export
@@ -163,8 +159,7 @@ updateMetaInformation <- function(meta,
                                   tbl = "meta_data_unlocalized",
                                   locale = NULL,
                                   keys = NULL,
-                                  quiet = FALSE,
                                   chunksiize = 10000) {
   warning("updateMetaInformation is deprecated. Please use storeMetaInformation instead.")
-  storeMetaInformation(meta, con, schema, tbl, locale, keys, quiet, chunksize)
+  storeMetaInformation(meta, con, schema, tbl, locale, keys, chunksize)
 }

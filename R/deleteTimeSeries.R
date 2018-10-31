@@ -13,10 +13,18 @@
 #' main time series catalog. Defaults to 'timeseries_main'.
 #' @param schema SQL schema name. Defaults to 'timeseries'.
 #' @export
-deleteTimeSeries <- function(series, con,
+deleteTimeSeries <- function(con,
+                             series,
                              chunksize = 10000,
                              tbl_main = 'timeseries_main',
                              schema = 'timeseries'){
+  if(is.character(con)) {
+    warning("You are using this function in a deprecated fashion. Use deleteTimeSeries(con, series, ...) in the future.")
+    t <- con
+    con <- series
+    series <- t
+  }
+  
   s <- split(series,(seq(length(series))-1) %/% chunksize)
   lapply(s,function(x, tbl, schema){
     keys <- paste(x,collapse = "','")  

@@ -4,15 +4,15 @@
 \alias{readTimeSeries}
 \title{Read Time Series From PostgreSQL database}
 \usage{
-readTimeSeries(series, con, valid_on = NULL, tbl = "timeseries_main",
+readTimeSeries(con, series, valid_on = NULL, tbl = "timeseries_main",
   tbl_vintages = "timeseries_vintages", schema = "timeseries", env = NULL,
   pkg_for_irreg = "xts", chunksize = 10000, respect_release_date = FALSE,
   regex = FALSE)
 }
 \arguments{
-\item{series}{character vector of time series keys}
-
 \item{con}{a PostgreSQL connection object}
+
+\item{series}{character vector of time series keys}
 
 \item{valid_on}{character date string on which the series should be valid. Defaults to NULL. Only needed when different vintages of a time series are stored.}
 
