@@ -26,6 +26,25 @@ indexToDate <- function (x, as.string = FALSE)
   date
 }
 
+#' Check Validity of a PostgreSQL connection
+#' 
+#' Is the PostgreSQL connection expired?
+#' 
+#' @param dbObj PostgreSQL connection object.
+#' @importFrom DBI dbIsValid
+#' @importFrom DBI dbGetInfo
+#' @import RPostgreSQL
+#' @import methods
+#' @docType methods
+#' @aliases dbIsValid
+#' @rdname dbIsValid-methods
+#' @export
+setMethod("dbIsValid", "PostgreSQLConnection", function(dbObj) {
+  isValid <- tryCatch({DBI::dbGetInfo(dbObj)},
+                      error = function(e) NULL)
+  !is.null(isValid)  
+})
+
 stringSafeAsNumeric <- function(x) {
   y <- suppressWarnings(as.numeric(x))
   if(any(is.na(x) != is.na(y))) {
