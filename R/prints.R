@@ -5,7 +5,13 @@ print.SQL <- function(x, ...){
 
 #' @export 
 print.tsmeta <- function(x, ...) {
-  cat("That be a tsmeta object.")
+  cat("Time series metadata\n")
+  n <- names(x)
+  name_lengths <- sapply(n, nchar)
+  max_name_length <- max(name_lengths)
+  for(i in n) {
+    cat(sprintf("%s%s: %s\n", i, paste(rep(" ", max_name_length - name_lengths[i]), collapse = ""), x[[i]]))
+  }
 }
 
 #' @export 
@@ -16,5 +22,6 @@ print.tsmeta.list <- function(x, ...) {
 
 #' @export 
 print.tsmeta.dt <- function(x, ...) {
-  cat("tsmeta DT! tsmeta DT!")
+  cat("A tsmeta.dt object\n")
+  print(as.data.table(x))
 }
