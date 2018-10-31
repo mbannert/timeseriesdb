@@ -99,3 +99,36 @@
   class(sql_query) <- "SQL"
   sql_query
 }
+
+.queryStoreMeta <- function(vals,schema){
+  sql_query <- sprintf("BEGIN;
+                       CREATE TEMPORARY TABLE 
+                       md_updates(ts_key varchar, md_generated_by varchar,
+                       md_resource_last_update timestamptz,
+                       md_coverage_temp varchar, meta_data hstore) ON COMMIT DROP;
+                       
+                       INSERT INTO md_updates(ts_key, md_generated_by,
+                       md_resource_last_update,
+                       md_coverage_temp) VALUES %s;
+                       LOCK TABLE %s.meta_data_unlocalized IN EXCLUSIVE MODE;
+                       
+                       UPDATE %s.meta_data_unlocalized
+                       SET md_generated_by = md_updates.md_generated_by,
+                       md_resource_last_update = md_updates.md_resource_last_update,
+                       md_coverage_temp = md_updates.md_coverage_temp
+                       FROM md_updates
+                       WHERE md_updates.ts_key = %s.meta_data_unlocalized.ts_key;
+                       
+                       INSERT INTO %s.meta_data_unlocalized
+                       SELECT md_updates.ts_key, md_updates.md_generated_by,
+                       md_updates.md_resource_last_update,
+                       md_updates.md_coverage_temp
+                       FROM md_updates
+                       LEFT OUTER JOIN %s.meta_data_unlocalized
+                       ON (%s.meta_data_unlocalized.ts_key = md_updates.ts_key)
+                       WHERE %s.meta_data_unlocalized.ts_key IS NULL;
+                       COMMIT;",
+                       vals, schema, schema, schema, schema, schema, schema, schema)
+  class(sql_query) <- "SQL"
+  sql_query
+}
