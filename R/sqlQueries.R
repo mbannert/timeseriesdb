@@ -1,0 +1,101 @@
+# localized meta information does not HAVE to exist, which 
+# means we have to have an insert here!  
+.queryStoreNoVintage <- function(val,schema,tbl){
+  sql_query <- sprintf("BEGIN;
+                       -- temp table & join is much faster than where in clause
+                       CREATE TEMPORARY TABLE 
+                       ts_updates(ts_key varchar, 
+                       ts_data hstore,
+                       ts_frequency integer,
+                       ts_release_date timestamp with time zone DEFAULT '1900-01-01 00:00:00')
+                       ON COMMIT DROP;
+                       
+                       INSERT INTO ts_updates(ts_key,
+                       ts_data,
+                       ts_frequency,
+                       ts_release_date) VALUES %s;
+                       LOCK TABLE %s.%s IN EXCLUSIVE MODE;
+                       
+                       -- Update existing entries
+                       UPDATE %s.%s
+                       SET ts_data = ts_updates.ts_data,
+                       ts_frequency = ts_updates.ts_frequency,
+                       ts_release_date = ts_updates.ts_release_date
+                       FROM ts_updates
+                       WHERE ts_updates.ts_key = %s.%s.ts_key;
+                       
+                       -- Add new entries
+                       INSERT INTO %s.%s
+                       SELECT ts_updates.ts_key,
+                       ts_updates.ts_data,
+                       ts_updates.ts_frequency,
+                       ts_updates.ts_release_date
+                       FROM ts_updates
+                       LEFT OUTER JOIN %s.%s ON (%s.%s.ts_key = ts_updates.ts_key)
+                       WHERE %s.%s.ts_key IS NULL;
+                       COMMIT;",
+                       val,
+                       schema,tbl,
+                       schema,tbl,
+                       schema,tbl,
+                       schema,tbl,
+                       schema,tbl,
+                       schema,tbl,
+                       schema,tbl,
+                       schema,tbl
+  )
+  class(sql_query) <- "SQL"
+  sql_query
+}
+
+.queryStoreVintage <- function(val,schema,tbl,vintage_date){
+  sql_query <- sprintf("BEGIN;
+                       CREATE TEMPORARY TABLE 
+                       ts_updates(ts_key text, 
+                       ts_validity daterange,
+                       ts_data hstore,
+                       ts_frequency integer,
+                       ts_release_date timestamp with time zone DEFAULT '1900-01-01 00:00:00')
+                       ON COMMIT DROP;
+                       
+                       INSERT INTO ts_updates(ts_key,
+                       ts_validity,
+                       ts_data,
+                       ts_frequency,
+                       ts_release_date) VALUES %s;
+                       LOCK TABLE %s.%s IN EXCLUSIVE MODE;
+                       
+                       -- Update existing entries
+                       -- (Note: dependency will
+                       -- be updated automatically through FK)
+                       -- Use coalesce because lower statement produces NULL
+                       UPDATE %s.%s
+                       SET ts_validity = ('['|| 
+                       COALESCE(lower(%s.ts_validity)::TEXT,'') ||
+                       ','|| 
+                       COALESCE(lower(ts_updates.ts_validity)::TEXT,'') ||
+                       ')')::DATERANGE
+                       FROM ts_updates
+                       WHERE ts_updates.ts_key = %s.ts_key
+                       AND upper_inf(%s.ts_validity);
+                       
+                       -- Add new entries
+                       INSERT INTO %s.%s 
+                       SELECT ts_updates.ts_key,
+                       ts_updates.ts_validity,
+                       ts_updates.ts_data,
+                       ts_updates.ts_frequency,
+                       ts_updates.ts_release_date
+                       FROM ts_updates;
+                       COMMIT;",
+                       val,
+                       schema,tbl, # LOCK TABLE
+                       schema,tbl, # UPDATE
+                       tbl, # COALESCE
+                       tbl, # WHERE
+                       tbl, # AND
+                       schema,tbl
+  )
+  class(sql_query) <- "SQL"
+  sql_query
+}
