@@ -37,6 +37,10 @@ meta_unlocalized <- list(
 )
 
 meta.tsmeta.list <- as.tsmeta.list(meta_unlocalized)
+for(i in seq_along(meta.tsmeta.list)) {
+  attributes(meta.tsmeta.list[[i]]) <- c(attributes(meta.tsmeta.list[[i]]), list(locale = "de"))
+}
+attributes(meta.tsmeta.list) <- c(attributes(meta.tsmeta.list), list(locale = "de"))
 
 meta.tsmeta.dt <- as.tsmeta.dt(meta_unlocalized)
 
