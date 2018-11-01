@@ -5,7 +5,8 @@ print.SQL <- function(x, ...){
 
 #' @export 
 print.tsmeta <- function(x, ...) {
-  cat("Time series metadata\n")
+  atts <- attributes(x)
+  cat(sprintf("Time series metadata%s\n", ifelse(!is.null(atts$locale), sprintf(" (%s)", atts$locale), "")))
   n <- names(x)
   name_lengths <- sapply(n, nchar)
   max_name_length <- max(name_lengths)
@@ -16,12 +17,13 @@ print.tsmeta <- function(x, ...) {
 
 #' @export 
 print.tsmeta.list <- function(x, ...) {
-  cat("A tsmeta.list object\n")
+  atts <- attributes(x)
+  cat(sprintf("A tsmeta.list object%s\n", ifelse(!is.null(atts$locale), sprintf(" (%s)", atts$locale), "")))
   print(as.data.table(as.tsmeta.dt(x)))
 }
 
 #' @export 
 print.tsmeta.dt <- function(x, ...) {
-  cat("A tsmeta.dt object\n")
+  cat(sprintf("A tsmeta.dt object%s\n", ifelse(!is.null(atts$locale), sprintf(" (%s)", atts$locale), "")))
   print(as.data.table(x))
 }

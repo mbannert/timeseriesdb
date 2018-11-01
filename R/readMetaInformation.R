@@ -91,9 +91,21 @@ readMetaInformation <- function(series,
   # TODO: if(!is.null(meta_env)) { merge meta_env and meta_list }
   # For backwards comp
   if(as_list) {
-    as.tsmeta.list(meta_list)
+    out <- as.tsmeta.list(meta_list)
   } else {
-    as.tsmeta.dt(meta_list)
+    out <- as.tsmeta.dt(meta_list)
   }
+  
+  if(!is.null(locale)) {
+    attributes(out) <- c(attributes(out), list(locale = locale))
+    
+    if(as_list) {
+      for(i in seq_along(out)) {
+        attributes(out[[i]]) <- c(attributes(out[[i]]), list(locale = locale))
+      }
+    }
+  }
+  
+  out
 }
 
