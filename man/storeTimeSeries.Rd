@@ -4,7 +4,7 @@
 \alias{storeTimeSeries}
 \title{Write an R time series to a PostgreSQL database}
 \usage{
-storeTimeSeries(con, li = NULL, series = names(li), valid_from = NULL,
+storeTimeSeries(con, li, series = names(li), valid_from = NULL,
   release_date = NULL, store_freq = TRUE, tbl = "timeseries_main",
   tbl_vintages = "timeseries_vintages",
   md_unlocal = "meta_data_unlocalized", overwrite = TRUE,

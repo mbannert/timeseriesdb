@@ -26,7 +26,7 @@ readTimeSeries(con, series, valid_on = NULL, tbl = "timeseries_main",
 
 \item{pkg_for_irreg}{character name of package for irregular series. xts or zoo, defaults to xts.}
 
-\item{chunksize}{numeric value of threshold at which input vector should be processed in chunks. defaults to 70000.}
+\item{chunksize}{numeric value of threshold at which input vector should be processed in chunks. defaults to 10000.}
 
 \item{respect_release_date}{logical should the relaase set in the database be respected. If TRUE, the last observation will be cut off if server time is before release date. Reasonable for relesae date.}
 

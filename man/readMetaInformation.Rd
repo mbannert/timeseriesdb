@@ -4,13 +4,13 @@
 \alias{readMetaInformation}
 \title{Read Meta Information from a Time Series Database}
 \usage{
-readMetaInformation(series, con, locale = "de", tbl = "meta_data_localized",
+readMetaInformation(con, series, locale = "de", tbl = "meta_data_localized",
   schema = "timeseries", as_list = TRUE)
 }
 \arguments{
-\item{series}{character name of a time series object.}
-
 \item{con}{PostgreSQL connection object}
+
+\item{series}{character name of a time series object.}
 
 \item{locale}{character denoting the locale of the meta information that is queried.
 defaults to 'de' for German. At the KOF Swiss Economic Institute meta information should be available

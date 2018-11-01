@@ -4,9 +4,9 @@
 \alias{storeTsSet}
 \title{Store a New Set of Time Series}
 \usage{
-storeTsSet(con, set_name, set_keys, user_name = Sys.info()["user"],
-  description = "", active = TRUE, tbl = "timeseries_sets",
-  schema = "timeseries")
+storeTsSet(con, set_name, set_keys, key_type = "ts_key",
+  user_name = Sys.info()["user"], description = "", active = TRUE,
+  tbl = "timeseries_sets", schema = "timeseries")
 }
 \arguments{
 \item{con}{PostgreSQL connection object}
@@ -14,6 +14,8 @@ storeTsSet(con, set_name, set_keys, user_name = Sys.info()["user"],
 \item{set_name}{character name of a set time series in the database.}
 
 \item{set_keys}{list of keys contained in the set and their type of key.}
+
+\item{key_type}{character A vector of key types to store the keys as. Will be recycled to match the length of set_keys.}
 
 \item{user_name}{character name of the user. Defaults to system user.}
 

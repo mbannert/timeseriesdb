@@ -7,8 +7,8 @@ on_cran <- !identical(Sys.getenv("NOT_CRAN"), "true")
 
 if (!on_cran) {
   con <- createConObj(dbhost = "localhost",
-                    dbname = "sandbox",
-                    passwd = "")
+                      dbname = "sandbox",
+                      passwd = "")
   
   # Cleanest of clean slates
   dbGetQuery(con, "DROP SCHEMA timeseriesdb_unit_tests CASCADE")
@@ -72,7 +72,7 @@ test_that("Preventing overwrites works", {
 
 test_that("We have two localized meta data objects. I.e. one does not overwrite the other", {
   skip_on_cran()
-
+  
   # create some localized meta information
   # EN
   m_en <- list(ts1 = list(
@@ -82,24 +82,24 @@ test_that("We have two localized meta data objects. I.e. one does not overwrite 
   
   # DE
   m_de <- list(ts1 = list(
-      wording = "Wir müssen uns mal unterhalten......",
-      check = "Das ist deutsch. wirklich"
+    wording = "Wir müssen uns mal unterhalten......",
+    check = "Das ist deutsch. wirklich"
   ))
   
-  storeMetaInformation(m_en,
-                      con,
-                      locale = "en",
-                      tbl = "meta_data_localized",
-                      schema = "timeseriesdb_unit_tests")
-
-  storeMetaInformation(m_de,
-              con,
-              locale = "de",
-              tbl = "meta_data_localized",
-              schema = "timeseriesdb_unit_tests")
-
+  storeMetaInformation(con,
+                       m_en,
+                       locale = "en",
+                       tbl = "meta_data_localized",
+                       schema = "timeseriesdb_unit_tests")
+  
+  storeMetaInformation(con,
+                       m_de,
+                       locale = "de",
+                       tbl = "meta_data_localized",
+                       schema = "timeseriesdb_unit_tests")
+  
   mil_record_count <- dbGetQuery(con,"SELECT COUNT(*) FROM timeseriesdb_unit_tests.meta_data_localized WHERE ts_key = 'ts1'")$count
-    
+  
   expect_equal(mil_record_count,2)
 })
 
@@ -125,9 +125,13 @@ test_that("After succesful store, delete is also successful,i.e., same amount of
 test_that("Unlocalized meta data can be written to db in chunks.", {
   skip_on_cran()
   
-  storeMetaInformation(meta_unlocalized, con, chunksize = 2, schema = "timeseriesdb_unit_tests")
-
-  mdul_count <- dbGetQuery(con,"SELECT COUNT(*) FROM timeseriesdb_unit_tests.meta_data_unlocalized WHERE ts_key ~ 'ts[1-6]' AND meta_data IS NOT NULL")$count
+  storeMetaInformation(con, meta_unlocalized, chunksize = 2,
+                       schema = "timeseriesdb_unit_tests")
+  
+  mdul_count <- dbGetQuery(con,"SELECT COUNT(*) 
+                           FROM timeseriesdb_unit_tests.meta_data_unlocalized 
+                           WHERE ts_key ~ 'ts[1-6]' 
+                           AND meta_data IS NOT NULL")$count
   expect_equal(mdul_count, 6)
 })
 
@@ -135,8 +139,10 @@ test_that("storing tsmeta.list works", {
   skip_on_cran()
   
   dbGetQuery(con, "DELETE FROM timeseriesdb_unit_tests.meta_data_localized")
-  storeMetaInformation(meta.tsmeta.list, con, schema = "timeseriesdb_unit_tests", locale = "de", tbl = "meta_data_localized")
-  m <- readMetaInformation("ts1", con, schema = "timeseriesdb_unit_tests")
+  storeMetaInformation(con, meta.tsmeta.list,
+                       schema = "timeseriesdb_unit_tests",
+                       locale = "de", tbl = "meta_data_localized")
+  m <- readMetaInformation(con, "ts1", schema = "timeseriesdb_unit_tests")
   expect_is(m, "tsmeta.list")
   expect_is(m[[1]], "tsmeta")
   expect_equal(m[[1]], meta.tsmeta.list[[1]])
@@ -146,8 +152,8 @@ test_that("storing tsmeta.dt works", {
   skip_on_cran()
   
   dbGetQuery(con, "DELETE FROM timeseriesdb_unit_tests.meta_data_localized")
-  storeMetaInformation(meta.tsmeta.dt, con, schema = "timeseriesdb_unit_tests", locale = "de", tbl = "meta_data_localized")
-  m <- readMetaInformation("ts1", con, schema = "timeseriesdb_unit_tests", as_list = FALSE)
+  storeMetaInformation(con, meta.tsmeta.dt, schema = "timeseriesdb_unit_tests", locale = "de", tbl = "meta_data_localized")
+  m <- readMetaInformation(con, "ts1", schema = "timeseriesdb_unit_tests", as_list = FALSE)
   expect_is(m, "tsmeta.dt")
   expect_equal(m[1, ], meta.tsmeta.dt[1, ])
 })

@@ -15,12 +15,6 @@ print.tsmeta <- function(x, ...) {
   }
 }
 
-#' @export 
-print.tsmeta.list <- function(x, ...) {
-  atts <- attributes(x)
-  cat(sprintf("A tsmeta.list object%s\n", ifelse(!is.null(atts$locale), sprintf(" (%s)", atts$locale), "")))
-  print(as.data.table(as.tsmeta.dt(x)))
-}
 
 #' @export 
 print.tsmeta.dt <- function(x, ...) {

@@ -5,8 +5,8 @@
 #' generated. This meta information can be supplement using the storeMetaInformation
 #' method.
 #' 
-#' @param meta a tsmeta.list or tsmets.dt object
 #' @param con a PostgreSQL connection object
+#' @param meta a tsmeta.list or tsmets.dt object
 #' @param schema character name of the schema to write to. Defaults to 'timeseries'.
 #' @param tbl character name of the meta information table to write to. 
 #' Defaults to 'meta_data_unlocalized'.
@@ -16,18 +16,20 @@
 #' records in the environment.
 #' @param chunksize integer max size of chunks to split large query in. 
 #' @export
-storeMetaInformation <- function(meta,con,
+storeMetaInformation <- function(con,
+                                 meta,
                           schema = "timeseries",
                           tbl = "meta_data_unlocalized",
                           locale = NULL,
                           keys = NULL,
                           chunksize = 10000) {
-  UseMethod("storeMetaInformation")
+  UseMethod("storeMetaInformation",meta)
 } 
+
 
 #' @rdname storeMetaInformation
 #' @export
-storeMetaInformation.meta_env <- function(meta,con,
+storeMetaInformation.tsmeta.list <- function(con, meta,
                                            schema = "timeseries",
                                            tbl = "meta_data_unlocalized",
                                            locale = NULL,
@@ -53,18 +55,16 @@ storeMetaInformation.meta_env <- function(meta,con,
                       meta_data = unlist(json),
                       stringsAsFactors = F)
     
-  storeMetaInformation.data.table(md_df, con, schema, tbl, locale, keys, chunksize)
+  storeMetaInformation.data.table(con, md_df, schema, tbl,
+                                  locale, keys, chunksize)
 }
 
 #' @export
-storeMetaInformation.list <- storeMetaInformation.meta_env
+storeMetaInformation.list <- storeMetaInformation.tsmeta.list 
 
 #' @export
-storeMetaInformation.tsmeta.list <- storeMetaInformation.meta_env
-
-#' @export
-storeMetaInformation.tsmeta.dt <- function(meta,
-                                             con,
+storeMetaInformation.tsmeta.dt <- function(con,
+                                             meta,
                                              schema = "timeseries",
                                              tbl = "meta_data_unlocalized",
                                              locale = NULL,
@@ -138,28 +138,18 @@ storeMetaInformation.tsmeta.dt <- function(meta,
   
   md_create <- DBI::dbGetQuery(con,query_meta_data_create)
   pgCopyDf(con, meta, q = query_meta_data_insert, chunksize = chunksize)
-  md_ok2 <- DBI::dbGetQuery(con,query_meta_data_update)
+  md_ok2 <- DBI::dbGetQuery(con, query_meta_data_update)
 }
 
 #' @export
-storeMetaInformation.data.table <- function(meta,
-                                             con,
+storeMetaInformation.data.table <- function(con,
+                                             meta,
                                              schema = "timeseries",
                                              tbl = "meta_data_unlocalized",
                                              locale = NULL,
                                              keys = NULL,
                                              chunksize = 10000) {
-  storeMetaInformation.tsmeta.dt(as.tsmeta.dt(meta), con, schema, tbl, locale, keys, chunksize)
+  storeMetaInformation.tsmeta.dt(con, as.tsmeta.dt(meta), schema,
+                                 tbl, locale, keys, chunksize)
 }
 
-#' @export
-updateMetaInformation <- function(meta,
-                                  con,
-                                  schema = "timeseries",
-                                  tbl = "meta_data_unlocalized",
-                                  locale = NULL,
-                                  keys = NULL,
-                                  chunksiize = 10000) {
-  warning("updateMetaInformation is deprecated. Please use storeMetaInformation instead.")
-  storeMetaInformation(meta, con, schema, tbl, locale, keys, chunksize)
-}

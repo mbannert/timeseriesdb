@@ -3,8 +3,8 @@
 #' This function reads meta information from a timeseriesdb package PostgreSQL
 #' database and puts into a meta information environment. 
 #' 
-#' @param series character name of a time series object.
 #' @param con PostgreSQL connection object
+#' @param series character name of a time series object.
 #' @param locale character denoting the locale of the meta information that is queried.
 #' defaults to 'de' for German. At the KOF Swiss Economic Institute meta information should be available
 #' als in English 'en', French 'fr' and Italian 'it'. Set the locale to NULL to query unlocalized meta information. 
@@ -13,8 +13,8 @@
 #' @param schema SQL schema name. Defaults to timeseries.
 #' @param as_list Should the result be returned as a tsmeta.list instead of a tsmeta.dt? Default TRUE
 #' @export 
-readMetaInformation <- function(series,
-                                con,
+readMetaInformation <- function(con,
+                                series,
                                 locale = 'de',
                                 tbl = 'meta_data_localized',
                                 schema = 'timeseries',

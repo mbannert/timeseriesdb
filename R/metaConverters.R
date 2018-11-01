@@ -11,6 +11,7 @@ as.tsmeta.dt.tsmeta.list <- function(meta_list) {
     warning("Fill-in occurred, not all fields were present in all meta data items!")
   }
   out[, ts_key := names(meta_list)]
+  setcolorder(out,"ts_key")
   class(out) <- c("tsmeta.dt", class(out))
   out
 }
@@ -23,13 +24,9 @@ as.tsmeta.dt.list <- function(meta) {
 #' @export
 as.tsmeta.dt.data.frame <- function(meta) {
   meta <- as.data.table(meta)
+  setcolorder(meta,"ts_key")
   class(meta) <- c("tsmeta.dt", class(meta))
   meta
-}
-
-#' @export
-as.tsmeta.dt.meta_env <- function(meta) {
-  as.tsmeta.dt(as.list(meta))
 }
 
 #' @export
@@ -68,12 +65,6 @@ as.tsmeta.list.data.frame <- function(meta) {
   as.tsmeta.list(as.tsmeta.dt(meta))
 }
 
-#' @export
-as.tsmeta.list.meta_env <- function(meta) {
-  meta <- as.list(meta)
-  meta <- lapply(meta, `class<-`, "list")
-  as.tsmeta.list(meta)
-}
 
 #' @export
 as.tsmeta.list.tsmeta.list <- identity
