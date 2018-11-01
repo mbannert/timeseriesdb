@@ -9,8 +9,13 @@
 #' @export
 writeTsmetaToExcel <- function(..., path) {
   li <- list(...)
-  if(is.null(names(li))) {
-    names(li) <- "meta_data"
+  li_names <- names(li)
+  n <- length(li)
+  if(is.null(li_names)) {
+    names(li) <- sprintf("meta_data%d", 1:n)
+  } else if(any(li_names_empty <- sapply(li_names, nchar) == 0)) {
+    li_names[li_names_empty] <- sprintf("meta_data%d", (1:n)[li_names_empty])
+    names(li) <- li_names
   }
   li <- lapply(li, as.tsmeta.dt)
   
