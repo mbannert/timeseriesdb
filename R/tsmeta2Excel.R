@@ -9,6 +9,9 @@
 #' @export
 writeTsmetaToExcel <- function(..., path) {
   li <- list(...)
+  if(is.null(names(li))) {
+    names(li) <- "meta_data"
+  }
   li <- lapply(li, as.tsmeta.dt)
   
   write.xlsx(li, path)
