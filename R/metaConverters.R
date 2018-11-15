@@ -5,13 +5,15 @@ as.tsmeta.dt <- function(meta) {
 
 #' @export
 as.tsmeta.dt.tsmeta.list <- function(meta_list) {
-  out <- rbindlist(meta_list, fill = TRUE)
-  minlength <- min(sapply(meta_list, length))
-  if(ncol(out) != minlength) {
+  meta_lengths <- sapply(meta_list, length)
+  empty_metas <- meta_lengths == 0
+  
+  out <- rbindlist(meta_list, fill = TRUE, idcol = TRUE)[.(names(meta_list)), on = .(.id)]
+  minlength <- min(meta_lengths[!empty_metas])
+  if(ncol(out) != (minlength + 1)) {
     warning("Fill-in occurred, not all fields were present in all meta data items!")
   }
-  out[, ts_key := names(meta_list)]
-  setcolorder(out,"ts_key")
+  setnames(out, ".id", "ts_key")
   class(out) <- c("tsmeta.dt", class(out))
   out
 }

@@ -5,13 +5,17 @@ print.SQL <- function(x, ...){
 
 #' @export 
 print.tsmeta <- function(x, ...) {
-  atts <- attributes(x)
-  cat(sprintf("Time series metadata%s\n", ifelse(!is.null(atts$locale), sprintf(" (%s)", atts$locale), "")))
-  n <- names(x)
-  name_lengths <- sapply(n, nchar)
-  max_name_length <- max(name_lengths)
-  for(i in n) {
-    cat(sprintf("%s%s: %s\n", i, paste(rep(" ", max_name_length - name_lengths[i]), collapse = ""), x[[i]]))
+  if(length(x) > 0) {
+    atts <- attributes(x)
+    cat(sprintf("Time series metadata%s\n", ifelse(!is.null(atts$locale), sprintf(" (%s)", atts$locale), "")))
+    n <- names(x)
+    name_lengths <- sapply(n, nchar)
+    max_name_length <- max(name_lengths)
+    for(i in n) {
+      cat(sprintf("%s%s: %s\n", i, paste(rep(" ", max_name_length - name_lengths[i]), collapse = ""), x[[i]]))
+    }
+  } else {
+    cat("No metadata\n")
   }
 }
 

@@ -22,9 +22,9 @@ meta_list <- function() {
 
 meta_dt <- function() {
   out <- data.table(
+    ts_key = c("ts_key1", "ts_key2"),
     key1 = c("value1", "value3"),
-    key2 = c("value2", "value4"),
-    ts_key = c("ts_key1", "ts_key2")
+    key2 = c("value2", "value4")
   )
   class(out) <- c("tsmeta.dt", class(out))
   out
@@ -57,7 +57,7 @@ test_that("list with fillin -> tsmeta.dt", {
   expect_warning(outv <- as.tsmeta.dt(inv))
   expected <- meta_dt()
   expected$key3 <- c("valueX", NA)
-  setcolorder(expected, c("key1", "key2", "key3", "ts_key"))
+  setcolorder(expected, c("ts_key", "key1", "key2", "key3"))
   expect_equal(outv, expected)
 })
 
@@ -70,6 +70,15 @@ test_that("data.frame -> tsmeta.dt", {
 
 test_that("tsmeta.dt -> tsmeta.dt", {
   expect_equal(as.tsmeta.dt(meta_dt()), meta_dt())
+})
+
+
+test_that("list with empty -> tsmeta.dt", {
+  inv <- meta_list()
+  inv$tskey_3 <- list()
+  outv <- as.tsmeta.dt(inv)
+  expect_equal(nrow(outv), 3)
+  expect_equal(sum(is.na(outv[3, ])), 2)
 })
 
 ########################################
@@ -108,4 +117,13 @@ test_that("filled tsmeta.dt -> tsmeta.list", {
   expect_equal(length(outv$ts_key2), 2)
   expect_true(!any(is.na(outv$ts_key2)))
   expect_is(outv[[1]], c("tsmeta"))
+})
+
+test_that("tsmeta.dt with empty -> tsmeta.list", {
+  tsml <- meta_list()
+  tsml$ts_key3 <- list()
+  inv <- as.tsmeta.dt(tsml)
+  outv <- as.tsmeta.list(inv)
+  expect_is(outv$ts_key3, "list")
+  expect_equal(length(outv$ts_key3), 0)
 })
