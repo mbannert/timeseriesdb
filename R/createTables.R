@@ -86,16 +86,23 @@ createTimeseriesSets <- function(schema = "timeseries",
                         setname text,
                         username text,
                         tstamp timestamptz,
-                        key_set hstore,
+                        key_set text[],
                         set_description varchar,
-                        active bool,
+                        active bool default true,
                         primary key(setname, username));",
                        schema,tbl)
   class(sql_query) <- "SQL"
   sql_query
 }
 
-
+#' @export
+#' @rdname createTables
+alterTimeseriesSets <- function(schema = "timeseries",
+                                tbl = "timeseries_sets"){
+  sql_query <- sprintf("ALTER TABLE %s.%s ALTER COLUMN key_set TYPE TEXT[] using akeys(key_set);", schema, tbl)
+  class(sql_query) <- "SQL"
+  sql_query
+}
 
 #' @export
 #' @rdname createTable
@@ -204,6 +211,7 @@ runUpgradeTables <- function(con, schema = "timeseries") {
   status$timeseries_vintages <- attributes(runDbQuery(con, addReleaseDateToTimeseriesVintages(schema = schema)))
   status$alter_meta_unlocalized <- attributes(runDbQuery(con, alterMetaUnlocalized(schema = schema)))
   status$alter_meta_localized <- attributes(runDbQuery(con, alterMetaLocalized(schema = schema)))
+  status$alter_sets <- attributes(runDbQuery(con, alterTimeseriesSets(schema = schema)))
   
   status
 }
