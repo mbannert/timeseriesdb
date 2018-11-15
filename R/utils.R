@@ -56,7 +56,15 @@ setMethod("dbIsValid", "PostgreSQLConnection", function(dbObj) {
 #' @references http://stackoverflow.com/questions/13432863/determine-level-of-nesting-in-r
 #' @export
 getListDepth <- function(this) {
-  ifelse(is.list(this) && length(this) > 0, 1L + max(sapply(this, getListDepth)), 0L)
+  ifelse(
+    is.list(this), 
+    ifelse(
+      length(this) > 0,
+      1L + max(sapply(this, getListDepth)),
+      1L
+    ),
+    0L
+  )
 }
 
 .createValues <- function(li, validity = NULL, store_freq, release_date = NULL){
