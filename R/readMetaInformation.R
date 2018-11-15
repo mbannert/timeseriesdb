@@ -77,11 +77,16 @@ readMetaInformation <- function(con,
     }
     
     meta_list <- res[, {
-      md = jsonlite::fromJSON(meta_data)
-      md$md_generated_by <- md_generated_by
-      md$md_resource_last_update <- md_resource_last_update
-      md$md_coverage_temp <- md_coverage_temp
-      .(meta_data = list(md))
+      md <- list(
+        md_generated_by = md_generated_by,
+        md_resource_last_update = md_resource_last_update,
+        md_coverage_temp = md_coverage_temp
+      )
+      
+      if(!is.na(meta_data)) {
+        md <- c(md, jsonlite::fromJSON(meta_data))
+      }
+      list(meta_data = list(md))
     }, by = ts_key][, meta_data]
     names(meta_list) <- res[, ts_key]
   }
