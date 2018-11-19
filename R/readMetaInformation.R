@@ -72,7 +72,7 @@ readMetaInformation <- function(con,
   
   # We don't need the mets_data column anymore
   if(nrow(mdul_meta_expanded) > 0) {
-    mdul <- mdul_meta_expanded[mdul[, .id = 1:.N][, -"meta_data"], on = .(.id)][, -".id"]
+    mdul <- mdul_meta_expanded[mdul[, .id := 1:.N][, -"meta_data"], on = .(.id)][, -".id"]
   } else {
     mdul <- mdul[, -"meta_data"]
   }
