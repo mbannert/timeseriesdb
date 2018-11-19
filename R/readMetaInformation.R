@@ -23,6 +23,7 @@ readMetaInformation <- function(con,
   
   pg_series <- paste(sprintf("('%s')", series), collapse = ",")
   
+  # JOIN is much faster than WHERE IN with many keys
   query_create <- sprintf("
                                 BEGIN;
                                 CREATE TEMPORARY TABLE meta_read (ts_key text PRIMARY KEY) ON COMMIT DROP;
@@ -50,6 +51,7 @@ readMetaInformation <- function(con,
                                 ) t;",
                           schema, tbl_localized, locale)
   
+  # Need a helper to get proper results where meta_data is NA
   expand_meta <- function(json) {
     if(!is.na(json)) {
       jsonlite::fromJSON(json)
@@ -67,6 +69,8 @@ readMetaInformation <- function(con,
   commitTransaction(con)
   
   mdul_meta_expanded <- mdul[, rbindlist(lapply(meta_data, expand_meta), fill = TRUE, idcol = TRUE)]
+  
+  # We don't need the mets_data column anymore
   if(nrow(mdul_meta_expanded) > 0) {
     mdul <- mdul_meta_expanded[mdul[, .id = 1:.N][, -"meta_data"], on = .(.id)][, -".id"]
   } else {
@@ -76,9 +80,14 @@ readMetaInformation <- function(con,
   mdl_meta_expanded <- mdl[, rbindlist(lapply(meta_data, expand_meta), fill = TRUE, idcol = TRUE)]
   
   mdl <- mdl_meta_expanded[mdl[, .id := 1:.N][, -"meta_data"], on = .(.id)][, -".id"]
+  
+  # ts_key should appear on the left
   setcolorder(mdl, c("ts_key"))
   
   md <- merge(mdul, mdl, all.x = TRUE)
+  
+  # Attach missing series
+  md <- md[series]
   
   if(as_list) {
     out <- as.tsmeta.list(md)
