@@ -4,8 +4,10 @@
 \alias{readMetaInformation}
 \title{Read Meta Information from a Time Series Database}
 \usage{
-readMetaInformation(con, series, locale = "de", tbl = "meta_data_localized",
-  schema = "timeseries", as_list = TRUE)
+readMetaInformation(con, series, locale = "de",
+  tbl_localized = "meta_data_localized",
+  tbl_unlocalized = "meta_data_unlocalized", schema = "timeseries",
+  as_list = TRUE)
 }
 \arguments{
 \item{con}{PostgreSQL connection object}
@@ -16,8 +18,9 @@ readMetaInformation(con, series, locale = "de", tbl = "meta_data_localized",
 defaults to 'de' for German. At the KOF Swiss Economic Institute meta information should be available
 als in English 'en', French 'fr' and Italian 'it'. Set the locale to NULL to query unlocalized meta information.}
 
-\item{tbl}{character name of the table that contains meta information. Defaults to 'meta_data_localized'.
-Choose meta 'meta_data_unlocalized' when locale is set to NULL.}
+\item{tbl_localized}{character name of the table that contains localized meta information. Defaults to 'meta_data_localized'.}
+
+\item{tbl_unlocalized}{character name of the table that contains general meta information. Defaults to 'meta_data_unlocalized'.}
 
 \item{schema}{SQL schema name. Defaults to timeseries.}
 
