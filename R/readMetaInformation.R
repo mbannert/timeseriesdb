@@ -21,22 +21,34 @@ readMetaInformation <- function(con,
                                 schema = 'timeseries',
                                 as_list = TRUE){
   
-  pg_series <- sprintf("(%s)", paste(sprintf("'%s'", series), collapse = ","))
+  pg_series <- paste(sprintf("('%s')", series), collapse = ",")
+  
+  query_create <- sprintf("
+                                BEGIN;
+                                CREATE TEMPORARY TABLE meta_read (ts_key text PRIMARY KEY) ON COMMIT DROP;
+                                INSERT INTO meta_read(ts_key) VALUES %s;",
+                          pg_series)
   
   query_mdul <- sprintf("
-                  SELECT ts_key, md_generated_by, md_resource_last_update, md_coverage_temp, meta_data::text as meta_data
-                  FROM %s.%s
-                  WHERE ts_key in %s",
-                        schema, tbl_unlocalized,
-                        pg_series)
-
+                                SELECT *
+                                FROM (
+                                SELECT tm.ts_key, tm.md_generated_by, tm.md_resource_last_update, md_coverage_temp, meta_data::text
+                                FROM %s.%s tm
+                                JOIN meta_read tr
+                                ON (tm.ts_key = tr.ts_key)
+                                ) t;",
+                        schema, tbl_unlocalized)
+  
+  
   query_mdl <- sprintf("
-                      SELECT ts_key, meta_data::text 
-                      FROM %s.%s
-                      WHERE locale_info = '%s'
-                      AND ts_key in %s",
-                       schema, tbl_localized,
-                       locale, pg_series)
+                                SELECT *
+                                FROM (
+                                  SELECT tm.ts_key, meta_data::text
+                                  FROM %s.%s tm
+                                  JOIN meta_read tr
+                                  ON (tm.ts_key = tr.ts_key AND locale_info = '%s')
+                                ) t;",
+                          schema, tbl_localized, locale)
   
   expand_meta <- function(json) {
     if(!is.na(json)) {
@@ -46,8 +58,13 @@ readMetaInformation <- function(con,
     }
   }
   
-
+  runDbQuery(con, query_create)
+  
   mdul <- as.data.table(runDbQuery(con, query_mdul))
+  
+  mdl <- as.data.table(runDbQuery(con, query_mdl))
+  
+  commitTransaction(con)
   
   mdul_meta_expanded <- mdul[, rbindlist(lapply(meta_data, expand_meta), fill = TRUE, idcol = TRUE)]
   if(nrow(mdul_meta_expanded) > 0) {
@@ -56,7 +73,6 @@ readMetaInformation <- function(con,
     mdul <- mdul[, -"meta_data"]
   }
   
-  mdl <- as.data.table(runDbQuery(con, query_mdl))
   mdl_meta_expanded <- mdl[, rbindlist(lapply(meta_data, expand_meta), fill = TRUE, idcol = TRUE)]
   
   mdl <- mdl_meta_expanded[mdl[, .id := 1:.N][, -"meta_data"], on = .(.id)][, -".id"]
