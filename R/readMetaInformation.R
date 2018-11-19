@@ -68,43 +68,53 @@ readMetaInformation <- function(con,
   
   commitTransaction(con)
   
-  mdul_meta_expanded <- mdul[, rbindlist(lapply(meta_data, expand_meta), fill = TRUE, idcol = TRUE)]
-  
-  # We don't need the mets_data column anymore
-  if(nrow(mdul_meta_expanded) > 0) {
-    mdul <- mdul_meta_expanded[mdul[, .id := 1:.N][, -"meta_data"], on = .(.id)][, -".id"]
-  } else {
-    mdul <- mdul[, -"meta_data"]
-  }
-  
-  mdl_meta_expanded <- mdl[, rbindlist(lapply(meta_data, expand_meta), fill = TRUE, idcol = TRUE)]
-  
-  mdl <- mdl_meta_expanded[mdl[, .id := 1:.N][, -"meta_data"], on = .(.id)][, -".id"]
-  
-  # ts_key should appear on the left
-  setcolorder(mdl, c("ts_key"))
-  
-  md <- merge(mdul, mdl, all.x = TRUE)
-  
-  # Attach missing series
-  md <- md[series]
-  
-  if(as_list) {
-    out <- as.tsmeta.list(md)
-  } else {
-    out <- as.tsmeta.dt(md)
-  }
-  
-  if(!is.null(locale)) {
-    attributes(out) <- c(attributes(out), list(locale = locale))
+  if(nrow(mdul)) {
+    mdul_meta_expanded <- mdul[, rbindlist(lapply(meta_data, expand_meta), fill = TRUE, idcol = TRUE)]
+    
+    # We don't need the mets_data column anymore
+    if(nrow(mdul_meta_expanded) > 0) {
+      mdul <- mdul_meta_expanded[mdul[, .id := 1:.N][, -"meta_data"], on = .(.id)][, -".id"]
+    } else {
+      mdul <- mdul[, -"meta_data"]
+    }
+    
+    mdl_meta_expanded <- mdl[, rbindlist(lapply(meta_data, expand_meta), fill = TRUE, idcol = TRUE)]
+    
+    mdl <- mdl_meta_expanded[mdl[, .id := 1:.N][, -"meta_data"], on = .(.id)][, -".id"]
+    
+    # ts_key should appear on the left
+    setcolorder(mdl, c("ts_key"))
+    
+    md <- merge(mdul, mdl, all.x = TRUE)
+    
+    # Attach missing series
+    md <- md[series]
     
     if(as_list) {
-      for(i in seq_along(out)) {
-        attributes(out[[i]]) <- c(attributes(out[[i]]), list(locale = locale))
+      out <- as.tsmeta.list(md)
+    } else {
+      out <- as.tsmeta.dt(md)
+    }
+    
+    if(!is.null(locale)) {
+      attributes(out) <- c(attributes(out), list(locale = locale))
+      
+      if(as_list) {
+        for(i in seq_along(out)) {
+          attributes(out[[i]]) <- c(attributes(out[[i]]), list(locale = locale))
+        }
       }
     }
+    
+    out
+  } else {
+    if(as_list) {
+      out <- as.tsmeta.list(lapply(series, function(x){list()}))
+      names(out) <- series
+      out
+    } else {
+      data.table(ts_key = series)
+    }
   }
-  
-  out
 }
 
