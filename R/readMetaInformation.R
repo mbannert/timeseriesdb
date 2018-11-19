@@ -8,97 +8,66 @@
 #' @param locale character denoting the locale of the meta information that is queried.
 #' defaults to 'de' for German. At the KOF Swiss Economic Institute meta information should be available
 #' als in English 'en', French 'fr' and Italian 'it'. Set the locale to NULL to query unlocalized meta information. 
-#' @param tbl character name of the table that contains meta information. Defaults to 'meta_data_localized'.
-#' Choose meta 'meta_data_unlocalized' when locale is set to NULL. 
+#' @param tbl_localized character name of the table that contains localized meta information. Defaults to 'meta_data_localized'.
+#' @param tbl_unlocalized character name of the table that contains general meta information. Defaults to 'meta_data_unlocalized'.
 #' @param schema SQL schema name. Defaults to timeseries.
 #' @param as_list Should the result be returned as a tsmeta.list instead of a tsmeta.dt? Default TRUE
 #' @export 
 readMetaInformation <- function(con,
                                 series,
                                 locale = 'de',
-                                tbl = 'meta_data_localized',
+                                tbl_localized = 'meta_data_localized',
+                                tbl_unlocalized = 'meta_data_unlocalized',
                                 schema = 'timeseries',
                                 as_list = TRUE){
   
-  series <- paste(paste0("('", series, "')"), collapse=",")
+  pg_series <- sprintf("(%s)", paste(sprintf("'%s'", series), collapse = ","))
   
-  if(!is.null(locale)){
-    
-    read_SQL <-
-      sprintf("
-              BEGIN;
-              CREATE TEMPORARY TABLE meta_read (ts_key text PRIMARY KEY) ON COMMIT DROP;
-              INSERT INTO meta_read(ts_key) VALUES %s;
-              
-              SELECT *
-              FROM (
-              SELECT tm.ts_key, meta_data::text
-              FROM %s.%s tm
-              JOIN meta_read tr
-              ON (tm.ts_key = tr.ts_key AND locale_info = '%s')
-              ) t;",
-              series, schema, tbl, locale)
-    
-    res <- as.data.table(dbGetQuery(con, read_SQL))
-    commitTransaction(con)
-    
-    if(nrow(res) == 0) {
-      stop(sprintf("None of the provided series were found in %s.%s", schema, tbl))
+  query_mdul <- sprintf("
+                  SELECT ts_key, md_generated_by, md_resource_last_update, md_coverage_temp, meta_data::text as meta_data
+                  FROM %s.%s
+                  WHERE ts_key in %s",
+                        schema, tbl_unlocalized,
+                        pg_series)
+
+  query_mdl <- sprintf("
+                      SELECT ts_key, meta_data::text 
+                      FROM %s.%s
+                      WHERE locale_info = '%s'
+                      AND ts_key in %s",
+                       schema, tbl_localized,
+                       locale, pg_series)
+  
+  expand_meta <- function(json) {
+    if(!is.na(json)) {
+      jsonlite::fromJSON(json)
+    } else {
+      jsonlite::fromJSON("{}")
     }
-    
-    meta_list <- res[, .(meta_data = list(jsonlite::fromJSON(meta_data))), by = ts_key][, meta_data]
-    names(meta_list) <- res[, ts_key]
-  } else {
-    # sanity check
-    if(tbl != 'meta_data_unlocalized') {
-      warning('DB table is not set to unlocalized, though locale is set!')
-    }
-    
-    read_SQL <-
-      sprintf("
-              BEGIN;
-              CREATE TEMPORARY TABLE meta_read (ts_key text PRIMARY KEY) ON COMMIT DROP;
-              INSERT INTO meta_read(ts_key) VALUES %s;
-              
-              SELECT *
-              FROM (
-              SELECT tm.ts_key, tm.md_generated_by, tm.md_resource_last_update, md_coverage_temp, meta_data::text
-              FROM %s.%s tm
-              JOIN meta_read tr
-              ON (tm.ts_key = tr.ts_key)
-              ) t;",
-              series, schema, tbl)
-    
-    res <- as.data.table(dbGetQuery(con, read_SQL))
-    commitTransaction(con)
-    
-    if(nrow(res) == 0) {
-      stop(sprintf("None of the provided series were found in %s.%s", schema, tbl))
-    }
-    
-    meta_list <- res[, {
-      md <- list(
-        md_generated_by = md_generated_by,
-        md_resource_last_update = md_resource_last_update,
-        md_coverage_temp = md_coverage_temp
-      )
-      
-      if(!is.na(meta_data)) {
-        md <- c(md, jsonlite::fromJSON(meta_data))
-      }
-      list(meta_data = list(md))
-    }, by = ts_key][, meta_data]
-    names(meta_list) <- res[, ts_key]
   }
   
-  meta_list <- rapply(meta_list, stringSafeAsNumeric, how = "list")
+
+  mdul <- as.data.table(runDbQuery(con, query_mdul))
   
-  # TODO: if(!is.null(meta_env)) { merge meta_env and meta_list }
-  # For backwards comp
-  if(as_list) {
-    out <- as.tsmeta.list(meta_list)
+  mdul_meta_expanded <- mdul[, rbindlist(lapply(meta_data, expand_meta), fill = TRUE, idcol = TRUE)]
+  if(nrow(mdul_meta_expanded) > 0) {
+    mdul <- mdul_meta_expanded[mdul[, .id = 1:.N][, -"meta_data"], on = .(.id)][, -".id"]
   } else {
-    out <- as.tsmeta.dt(meta_list)
+    mdul <- mdul[, -"meta_data"]
+  }
+  
+  mdl <- as.data.table(runDbQuery(con, query_mdl))
+  mdl_meta_expanded <- mdl[, rbindlist(lapply(meta_data, expand_meta), fill = TRUE, idcol = TRUE)]
+  
+  mdl <- mdl_meta_expanded[mdl[, .id := 1:.N][, -"meta_data"], on = .(.id)][, -".id"]
+  setcolorder(mdl, c("ts_key"))
+  
+  md <- merge(mdul, mdl, all.x = TRUE)
+  
+  if(as_list) {
+    out <- as.tsmeta.list(md)
+  } else {
+    out <- as.tsmeta.dt(md)
   }
   
   if(!is.null(locale)) {
