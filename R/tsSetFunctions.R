@@ -16,7 +16,6 @@
 #' @param schema character name of the database schema. Defaults to timeseries.
 #' @author Ioan Gabriel Bucur, Matthias Bannert, Severin Thöni
 #' @export
-#' @importFrom DBI dbSendQuery
 #' @rdname storeTsSet
 storeTsSet <- function(con,
                        set_name,
@@ -30,7 +29,6 @@ storeTsSet <- function(con,
 }
 
 #' @export
-#' @importFrom DBI dbSendQuery
 storeTsSet.list <- function(con,
                             set_name,
                             set_keys,
@@ -52,7 +50,6 @@ storeTsSet.list <- function(con,
 }
 
 #' @export
-#' @importFrom DBI dbSendQuery
 storeTsSet.character <- function(con,
                                  set_name,
                                  set_keys,
@@ -95,7 +92,7 @@ storeTsSet.character <- function(con,
 #' @param schema The time series db schema to use
 #' @export
 #' @author Severin Thöni
-#' @importFrom DBI dbSendQuery
+# TODO: overwrite it set_name_new == set_name_1 or set_name2
 joinTsSets <- function(con,
                        set_name_1, set_name_2, set_name_new,
                        user_name1 = Sys.info()['user'],
@@ -184,7 +181,7 @@ loadTsSet <- function(con, set_name, user_name = Sys.info()['user'],
   
   result <- list()
   result$set_info <- set[1, c("setname","username","tstamp","set_description","active")]
-  result$keys <- result$ts_keys
+  result$keys <- set$ts_keys
   result
 }
 
@@ -257,7 +254,6 @@ activateTsSet <- function(con,set_name,
 #' @param schema Schema of the time series database to use
 #' @export
 #' @author Severin Thöni
-#' @importFrom DBI dbSendQuery
 overwriteTsSet <- function(con,
                            set_name,
                            ts_keys,
@@ -283,7 +279,6 @@ overwriteTsSet <- function(con,
 #' @param schema Schema of the time series database to use
 #' @export
 #' @author Severin Thöni
-#' @importFrom DBI dbSendQuery
 addKeysToTsSet <- function(con,
                            set_name,
                            ts_keys,
@@ -293,10 +288,10 @@ addKeysToTsSet <- function(con,
   set <- loadTsSet(con, set_name, user_name, tbl, schema)
   
   if(!is.null(set)) {
-    hstore <- paste(sprintf("%s => ts_key", unique(c(ts_keys, set$keys))), collapse = ", ")
-    sql_query <- sprintf("UPDATE %s.%s set key_set = '%s' WHERE username = '%s' and setname = '%s'",
-                         schema, tbl, hstore, user_name, set_name)
-    dbSendQuery(con, sql_query)
+    pg_keys <- paste(sprintf("'%s'", unique(c(ts_keys, set$keys))), collapse = ",")
+    sql_query <- sprintf("UPDATE %s.%s set key_set = ARRAY[%s] WHERE username = '%s' and setname = '%s'",
+                         schema, tbl, pg_keys, user_name, set_name)
+    runDbQuery(con, sql_query)
   } else {
     message("Set-User combination not found!")
   }
@@ -312,7 +307,6 @@ addKeysToTsSet <- function(con,
 #' @param schema Schema of the time series database to use.
 #' @export
 #' @author Severin Thöni
-#' @importFrom DBI dbSendQuery
 removeKeysFromTsSet <- function(con,
                                 set_name,
                                 ts_keys,
@@ -322,10 +316,10 @@ removeKeysFromTsSet <- function(con,
   set <- loadTsSet(con, set_name, user_name, tbl, schema)
   
   if(!is.null(set)) {
-    hstore <- paste(sprintf("%s => ts_key", setdiff(set$keys, ts_keys)), collapse = ", ")
-    sql_query <- sprintf("UPDATE %s.%s set key_set = '%s' WHERE username = '%s' and setname = '%s'",
-                         schema, tbl, hstore, user_name, set_name)
-    dbSendQuery(con, sql_query)
+    pg_keys <- paste(sprintf("'%s'", setdiff(set$keys, ts_keys)), collapse = ", ")
+    sql_query <- sprintf("UPDATE %s.%s set key_set = ARRAY[%s] WHERE username = '%s' and setname = '%s'",
+                         schema, tbl, pg_keys, user_name, set_name)
+    runDbQuery(con, sql_query)
   } else {
     message("Set-User combination not found!")
   }
@@ -341,7 +335,6 @@ removeKeysFromTsSet <- function(con,
 #' @param schema Schema of the time series database to use
 #' @export
 #' @author Severin Thöni
-#' @importFrom DBI dbSendQuery
 changeTsSetOwner <- function(con,
                              set_name,
                              old_owner = Sys.info()['user'],
@@ -350,7 +343,7 @@ changeTsSetOwner <- function(con,
                              schema = "timeseries") {
   sql_query <- sprintf("UPDATE %s.%s SET username = '%s' WHERE setname = '%s' AND username = '%s'",
                        schema, tbl, new_owner, set_name, old_owner);
-  dbSendQuery(con, sql_query)
+  runDbQuery(con, sql_query)
 }
 
 #' Permanently delete a Set of Time Series Keys
@@ -362,7 +355,6 @@ changeTsSetOwner <- function(con,
 #' @param schema Name of timeseries schema
 #' @author Severin Thöni
 #' @export
-#' @importFrom DBI dbSendQuery
 deleteTsSet <- function(con,
                         set_name,
                         user_name = Sys.info()['user'],
@@ -370,5 +362,5 @@ deleteTsSet <- function(con,
                         schema = "timeseries") {
   sql_query <- sprintf("DELETE FROM %s.%s WHERE username = '%s' AND setname = '%s'",
                        schema, tbl, user_name, set_name)
-  dbSendQuery(con, sql_query)
+  runDbQuery(con, sql_query)
 }
