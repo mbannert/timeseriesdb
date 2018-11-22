@@ -181,8 +181,8 @@ loadTsSet <- function(con, set_name, user_name = Sys.info()['user'],
   
   result <- list()
   result$set_info <- set[1, c("setname","username","tstamp","set_description","active")]
-  result$keys <- set$ts_keys
-  result
+  result$ts_key <- set$ts_keys
+  as.data.table(result)
 }
 
 
@@ -208,7 +208,7 @@ deactivateTsSet <- function(con,set_name,
                        WHERE username = '%s' AND setname = '%s'",
                        schema,tbl,user_name,set_name)
   class(sql_query) <- "SQL"
-  dbGetQuery(con,sql_query)
+  runDbQuery(con,sql_query)
 }
 
 
@@ -235,7 +235,7 @@ activateTsSet <- function(con,set_name,
                        WHERE username = '%s' AND setname = '%s'",
                        schema,tbl,user_name,set_name)
   class(sql_query) <- "SQL"
-  dbGetQuery(con,sql_query)
+  runDbQuery(con,sql_query)
 }
 
 #' Overwrite a Time Series set with a new one
@@ -264,8 +264,10 @@ overwriteTsSet <- function(con,
                            schema = "timeseries") {
     deleted <- deleteTsSet(con, set_name, user_name, tbl, schema)
     
-    if(dbGetException(deleted)$errorNum == 0) {
+    if(attributes(deleted)$query_status == "OK") {
       storeTsSet(con, set_name, ts_keys, user_name, description, active, tbl, schema)
+    } else {
+      deleted
     }
 }
 
