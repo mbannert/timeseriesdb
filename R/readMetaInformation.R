@@ -68,27 +68,29 @@ readMetaInformation <- function(con,
   
   commitTransaction(con)
   
-  if(nrow(mdul)) {
+  if(nrow(mdul) > 0) {
     mdul_meta_expanded <- mdul[, rbindlist(lapply(meta_data, expand_meta), fill = TRUE, idcol = TRUE)]
     
     # We don't need the mets_data column anymore
     if(nrow(mdul_meta_expanded) > 0) {
-      mdul <- mdul_meta_expanded[mdul[, .id := 1:.N][, -"meta_data"], on = .(.id)][, -".id"]
+      md <- mdul_meta_expanded[mdul[, .id := 1:.N][, -"meta_data"], on = .(.id)][, -".id"]
     } else {
-      mdul <- mdul[, -"meta_data"]
+      md <- mdul[, -"meta_data"]
     }
     
-    mdl_meta_expanded <- mdl[, rbindlist(lapply(meta_data, expand_meta), fill = TRUE, idcol = TRUE)]
-    
-    mdl <- mdl_meta_expanded[mdl[, .id := 1:.N][, -"meta_data"], on = .(.id)][, -".id"]
-    
-    # ts_key should appear on the left
-    setcolorder(mdl, c("ts_key"))
-    
-    md <- merge(mdul, mdl, all.x = TRUE)
+    if(nrow(mdl) > 0) {
+      mdl_meta_expanded <- mdl[, rbindlist(lapply(meta_data, expand_meta), fill = TRUE, idcol = TRUE)]
+      
+      mdl <- mdl_meta_expanded[mdl[, .id := 1:.N][, -"meta_data"], on = .(.id)][, -".id"]
+      
+      # ts_key should appear on the left
+      setcolorder(mdl, c("ts_key"))
+      
+      md <- merge(md, mdl, all.x = TRUE)
+    }
     
     # Attach missing series
-    md <- md[series]
+    md <- md[series, , on = "ts_key"]
     
     if(as_list) {
       out <- as.tsmeta.list(md)
