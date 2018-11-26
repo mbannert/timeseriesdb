@@ -161,8 +161,8 @@ listTsSets <- function(con, user_name = Sys.info()['user'],
 #' @export
 #' @importFrom DBI dbGetQuery
 #' @importFrom jsonlite fromJSON
-#' @rdname loadTsSet
-loadTsSet <- function(con, set_name, user_name = Sys.info()['user'],
+#' @rdname readTsSetKeys
+readTsSetKeys <- function(con, set_name, user_name = Sys.info()['user'],
                        tbl = 'timeseries_sets', schema = 'timeseries') {
   
   sql_query <- sprintf("SELECT setname,username,tstamp,
@@ -185,6 +185,20 @@ loadTsSet <- function(con, set_name, user_name = Sys.info()['user'],
   as.data.table(result)
 }
 
+#' @export
+#' @rdname readTsSetKeys
+loadTsSet <- function(...) {
+  warning("loadTsSet is deprecated and will be removed in future versions. Please use readTsSetKeys instead.")
+  
+  readTsSetKeys(...)
+}
+
+readTsSet <- function(con, set_name, user_name = Sys.info()['user'],
+                      tbl = 'timeseries_sets', schema = 'timeseries') {
+  # either select * from (select unnest(key_set) as ts_key from timeseriesdb_unit_tests.timeseries_sets where setname = 'set1') set join timeseriesdb_unit_tests.timeseries_main main on set.ts_key = main.ts_key;
+  # or readTsSetKeys -> readTimeSeries (easier as conversion and error handling are already there but uses 2 queries)
+  tstools::generate_random_ts(4)
+}
 
 #' Deactivate a Set of Time Series
 #' 
