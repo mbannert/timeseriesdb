@@ -12,6 +12,7 @@
 #' @param tbl_unlocalized character name of the table that contains general meta information. Defaults to 'meta_data_unlocalized'.
 #' @param schema SQL schema name. Defaults to timeseries.
 #' @param as_list Should the result be returned as a tsmeta.list instead of a tsmeta.dt? Default TRUE
+#' @param regex If set to TRUE, series will be interpreted as a regular exporession, so that metadata for all time series whose keys match the pattern will be returned.
 #' @export 
 readMetaInformation <- function(con,
                                 series,
@@ -19,7 +20,30 @@ readMetaInformation <- function(con,
                                 tbl_localized = 'meta_data_localized',
                                 tbl_unlocalized = 'meta_data_unlocalized',
                                 schema = 'timeseries',
-                                as_list = TRUE){
+                                as_list = TRUE,
+                                regex = FALSE){
+  
+  if(regex) {
+    if(length(series) > 1) {
+      stop("Only supports a single expression in series!")
+    }
+    
+    pattern <- series
+    
+    match_query <- sprintf("SELECT ts_key FROM %s.timeseries_main WHERE ts_key ~ '%s'",
+                           schema, pattern)
+    series <- runDbQuery(con, match_query)$ts_key
+    
+    if(length(series) == 0) {
+      return(NULL);
+    }
+  }
+  
+  useries <- unique(series)
+  if(length(useries) != length(series)){
+    warning("Input vector contains non-unique keys, stripped duplicates.")
+  } 
+  series <- useries
   
   pg_series <- paste(sprintf("('%s')", series), collapse = ",")
   
