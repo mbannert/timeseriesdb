@@ -23,6 +23,21 @@ print.tsmeta <- function(x, ...) {
 #' @export 
 print.tsmeta.dt <- function(x, ...) {
   atts <- attributes(x)
-  cat(sprintf("A tsmeta.dt object%s\n", ifelse(!is.null(atts$locale), sprintf(" (%s)", atts$locale), "")))
-  print(as.data.table(x))
+  if(nrow(x) > 0) {
+    cat(sprintf("A tsmeta.dt object%s\n", ifelse(!is.null(atts$locale), sprintf(" (%s)", atts$locale), "")))
+    print(as.data.table(x))
+  } else {
+    cat(sprintf("An empty tsmeta.dt object\n"))
+  }
+}
+
+#' @export
+print.tsmeta.list <- function(x, ...) {
+  atts <- attributes(x)
+  if(length(x) > 0) {
+    cat(sprintf("A tsmeta.list object%s\n", ifelse(!is.null(atts$locale), sprintf(" (%s)", atts$locale), "")))
+    print(unclass(x))
+  } else {
+    cat(sprintf("An empty tsmeta.list object\n"))
+  }
 }

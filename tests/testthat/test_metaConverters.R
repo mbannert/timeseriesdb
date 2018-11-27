@@ -32,11 +32,36 @@ meta_dt <- function() {
 
 # Tests
 #############################################
+# construct tsmeta.dt
+#############################################
+test_that("tsmeta.dt constructs a tsmeta.dt", {
+  dt <- meta_dt()
+  outv <- tsmeta.dt(
+    ts_key = dt$ts_key,
+    key1 = dt$key1,
+    key2 = dt$key2
+  )
+  expect_equal(outv, dt)
+})
+
+test_that("empty tsmeta.dt are possible", {
+  outv <- tsmeta.dt()
+  expect_is(outv, "tsmeta.dt")
+  expect_equal(nrow(outv), 0)
+})
+
+#############################################
 # To tsmeta.dt
 #############################################
 test_that("tsmeta.list -> tsmeta.dt", {
   outv <- as.tsmeta.dt(meta_list())
   expect_equal(outv, meta_dt())
+})
+
+test_that("empty tsmeta.list -> tsmeta.dt", {
+  outv <- as.tsmeta.dt(tsmeta.list())
+  expect_is(outv, "tsmeta.dt")
+  expect_equal(nrow(outv), 0)
 })
 
 test_that("list -> tsmeta.dt", {
@@ -46,8 +71,15 @@ test_that("list -> tsmeta.dt", {
   expect_equal(outv, meta_dt())
 })
 
-test_that("invalid list -> tsmeta.dt", {
+test_that("empty list -> tsmeta.dt", {
   inv <- list()
+  outv <- as.tsmeta.dt(inv)
+  expect_is(outv, "tsmeta.dt")
+  expect_equal(nrow(outv), 0)
+})
+
+test_that("invalid list -> tsmeta.dt", {
+  inv <- list(a = list(b = list(too_deep = TRUE)))
   expect_error(as.tsmeta.dt(inv))
 })
 
@@ -68,6 +100,12 @@ test_that("data.frame -> tsmeta.dt", {
   expect_equal(outv, meta_dt())
 })
 
+test_that(" empty data.frame -> tsmeta.dt", {
+  outv <- as.tsmeta.dt(data.frame())
+  expect_is(outv, "tsmeta.dt")
+  expect_equal(nrow(outv), 0)
+})
+
 test_that("tsmeta.dt -> tsmeta.dt", {
   expect_equal(as.tsmeta.dt(meta_dt()), meta_dt())
 })
@@ -80,6 +118,17 @@ test_that("list with empty -> tsmeta.dt", {
   expect_equal(nrow(outv), 3)
   expect_equal(sum(is.na(outv[3, ])), 2)
 })
+
+########################################
+# construct tsmeta.list
+########################################
+test_that("tsmeta.list constructs a tsmeta.list", {
+  inv <- unclass(meta_list())
+  inv <- lapply(inv, `class<-`, "list")
+  outv <- do.call(tsmeta.list, inv)
+  expect_equal(outv, meta_list())
+})
+
 
 ########################################
 # To tsmeta.list
@@ -98,8 +147,14 @@ test_that("list -> tsmeta.list", {
   expect_is(outv[[1]], c("tsmeta"))
 })
 
+test_that("empty list -> tsmeta.list", {
+  outv <- as.tsmeta.list(list())
+  expect_is(outv, "tsmeta.list")
+  expect_equal(length(outv), 0)
+})
+
 test_that("invalid list -> tsmeta.list", {
-  inv <- list()
+  inv <- list(a = list(b = list(too_deep = TRUE)))
   expect_error(as.tsmeta.list(inv))
 })
 
@@ -107,6 +162,12 @@ test_that("tsmeta.dt -> tsmeta.list", {
   outv <- as.tsmeta.list(meta_dt())
   expect_equal(outv, meta_list())
   expect_is(outv[[1]], c("tsmeta"))
+})
+
+test_that("empty tsmeta.dt -> tsmeta.list", {
+  outv <- as.tsmeta.list(tsmeta.dt())
+  expect_is(outv, "tsmeta.list")
+  expect_equal(length(outv), 0)
 })
 
 test_that("filled tsmeta.dt -> tsmeta.list", {

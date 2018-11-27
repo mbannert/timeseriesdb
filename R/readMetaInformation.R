@@ -35,7 +35,11 @@ readMetaInformation <- function(con,
     series <- runDbQuery(con, match_query)$ts_key
     
     if(length(series) == 0) {
-      return(NULL);
+      if(as_list) {
+        return(tsmeta.list)
+      } else {
+        return(tsmeta.dt)
+      }
     }
   }
   
