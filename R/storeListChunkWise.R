@@ -30,7 +30,7 @@ storeListChunkWise <- function(con,
     tx <- con
     con <- series
     series <- li
-    li <- con
+    li <- tx
   }
   
   name_chunks <- split(series,ceiling(seq_along(names(li))/chunksize))
