@@ -27,10 +27,10 @@ storeListChunkWise <- function(con,
  
   if(is.character(con)) {
     warning("You are using this function in a deprecated manner. Please use storeListChunkWise(con, li, series, ...) in the future.");
-    tx <- con
-    con <- series
-    series <- li
-    li <- tx
+    char_series <- con
+    con <- li # connection object
+    li <- series # list object
+    series <- char_series
   }
   
   name_chunks <- split(series,ceiling(seq_along(names(li))/chunksize))
