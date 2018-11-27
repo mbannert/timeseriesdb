@@ -39,7 +39,7 @@ storeTimeSeries <- function(con,
     tx <- con
     con <- series
     series <- li
-    li <- con
+    li <- tx
   }
   
   # subset 
