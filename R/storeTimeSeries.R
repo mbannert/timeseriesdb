@@ -36,10 +36,10 @@ storeTimeSeries <- function(con,
   
   if(is.character(con)) {
     warning("You are using this function in a deprecated fashion. Use storeTimeSeries(con, series, li, ...) in the future.")
-    tx <- li
-    li <- series
-    series <- con
-    con <- tx
+    tx <- con
+    con <- series
+    series <- li
+    li <- tx
   }
   
   # subset 

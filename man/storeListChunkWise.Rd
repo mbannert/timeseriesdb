@@ -4,16 +4,16 @@
 \alias{storeListChunkWise}
 \title{Store a List of Time Series Chunk Wise to Avoid Memory Problem}
 \usage{
-storeListChunkWise(series, con, li = NULL, tbl = "timeseries_main",
+storeListChunkWise(con, li, series = names(li), tbl = "timeseries_main",
   md_unlocal = "meta_data_unlocalized", overwrite = T, chunksize = 10000,
   schema = "timeseries", show_progress = FALSE)
 }
 \arguments{
-\item{series}{character name of a time series, S3 class ts. When used with lists it is convenient to set series to names(li). Note that the series name needs to be unique in the database!}
-
 \item{con}{a PostgreSQL connection object.}
 
 \item{li}{list of time series. Defaults to NULL to no break legacy calls that use lookup environments.}
+
+\item{series}{character name of a time series, S3 class ts. When used with lists it is convenient to set series to names(li). Note that the series name needs to be unique in the database!}
 
 \item{tbl}{character string denoting the name of the main time series table in the PostgreSQL database.}
 
