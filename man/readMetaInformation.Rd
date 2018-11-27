@@ -7,7 +7,7 @@
 readMetaInformation(con, series, locale = "de",
   tbl_localized = "meta_data_localized",
   tbl_unlocalized = "meta_data_unlocalized", schema = "timeseries",
-  as_list = TRUE)
+  as_list = TRUE, regex = FALSE)
 }
 \arguments{
 \item{con}{PostgreSQL connection object}
@@ -25,6 +25,8 @@ als in English 'en', French 'fr' and Italian 'it'. Set the locale to NULL to que
 \item{schema}{SQL schema name. Defaults to timeseries.}
 
 \item{as_list}{Should the result be returned as a tsmeta.list instead of a tsmeta.dt? Default TRUE}
+
+\item{regex}{If set to TRUE, series will be interpreted as a regular exporession, so that metadata for all time series whose keys match the pattern will be returned.}
 }
 \description{
 This function reads meta information from a timeseriesdb package PostgreSQL
