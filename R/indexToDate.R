@@ -12,7 +12,7 @@
 #' @export
 indexToDate <- function (x, as.string = FALSE) 
 {
-  years <- floor(x)
+  years <- floor(x + 1/24)
   months <- floor(12*(x - years + 1/24)) + 1
   # No support for days currently
   # datestr <- paste(years, months, 1, sep = "-")
