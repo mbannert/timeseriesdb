@@ -16,14 +16,23 @@ createJSON.data.frame <- function(data) {
   
   out <- data[, .(ts_key, meta_data = do.call(sprintf, c(meta_fmt, .SD[, -"ts_key"])))]
   
+  out[, meta_data := pgEscape(meta_data)] 
+  
   out
 }
 
 #' @export
 createJSON.list <- function(data) {
-  do.call(sprintf, c(list(create_meta_format(names(data))), as.character(unlist(data))))
+  do.call(sprintf, c(list(create_meta_format(names(data))), pgEscape(as.character(unlist(data)))))
 }
 
 create_meta_format <- function(dims) {
   paste0("{", paste(sprintf('"%s": "%%s"', dims), collapse = ", "), "}")
+}
+
+# Feel free to add to your heart's content
+pgEscape <- function(x) {
+  out <- gsub("\n", "\\\\n", x)
+  out <- gsub("\r", "\\\\r", out)
+  out
 }
