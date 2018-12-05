@@ -34,5 +34,6 @@ create_meta_format <- function(dims) {
 pgEscape <- function(x) {
   out <- gsub("\n", "\\\\n", x)
   out <- gsub("\r", "\\\\r", out)
+  out <- gsub("\"", "\\\"", out)
   out
 }
