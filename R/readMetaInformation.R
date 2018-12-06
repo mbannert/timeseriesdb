@@ -23,6 +23,14 @@ readMetaInformation <- function(con,
                                 as_list = TRUE,
                                 regex = FALSE){
   
+  if(length(series) == 0) {
+    if(as_list) {
+      return(list())
+    } else {
+      return(data.frame())
+    }
+  }
+  
   if(regex) {
     if(length(series) > 1) {
       stop("Only supports a single expression in series!")
