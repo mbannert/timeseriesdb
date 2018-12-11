@@ -4,8 +4,9 @@
 \alias{listTsSets}
 \title{List All Time Series Sets for a Particular User}
 \usage{
-listTsSets(con, user_name = Sys.info()["user"], tbl = "timeseries_sets",
-  schema = "timeseries", list_inactive = FALSE)
+listTsSets(con, user_name = Sys.info()["user"],
+  tbl = "timeseries_sets", schema = "timeseries",
+  list_inactive = FALSE)
 }
 \arguments{
 \item{con}{PostgreSQL connection object}

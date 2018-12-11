@@ -1,3 +1,26 @@
+#' Read All Vintages that Correspond to a Particular Time Series Key
+#' 
+#' Data in official statistics often get revised after being published. Hence it
+#' is imported for (academic) research to keep track of all vintages of a time series
+#' because the most recent version of a time series on an instution's website etc. might
+#' not correspond to what was used in an older research project. For the sake of 
+#' reproducibility timeseriesdb offers the opportunity to store time series 
+#' vintages and makes sure time series do not overlap and older vintages are not
+#' overwritten. This function reads all vintages for one single key and returns
+#' a list of time series vintages. 
+#' 
+#' 
+#' 
+#' @param con PostgreSQL connection object
+#' @param series character identiffier of the time series (ts_key).
+#' @param tbl_vintages character name of the vintages table. 
+#' Defaults to "timeseries_vintages"
+#' @param schema character name of the database schema. Defaults to "timeseries".
+#' @param pkg_for_irreg character name of the package used to handle irregular
+#' time series. Defaults to "xts".
+#' @param respect_release_date logical Should release dates be respected?
+#' Defaults to FALSE. Typically only used by APIs for external users.
+#'@export 
 readAllVintages <- function(
   con,
   series,

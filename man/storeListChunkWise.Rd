@@ -4,9 +4,10 @@
 \alias{storeListChunkWise}
 \title{Store a List of Time Series Chunk Wise to Avoid Memory Problem}
 \usage{
-storeListChunkWise(con, li, series = names(li), tbl = "timeseries_main",
-  md_unlocal = "meta_data_unlocalized", overwrite = T, chunksize = 10000,
-  schema = "timeseries", show_progress = FALSE)
+storeListChunkWise(con, li, series = names(li),
+  tbl = "timeseries_main", md_unlocal = "meta_data_unlocalized",
+  overwrite = T, chunksize = 10000, schema = "timeseries",
+  show_progress = FALSE)
 }
 \arguments{
 \item{con}{a PostgreSQL connection object.}

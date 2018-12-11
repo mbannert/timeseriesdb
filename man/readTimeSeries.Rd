@@ -5,9 +5,9 @@
 \title{Read Time Series From PostgreSQL database}
 \usage{
 readTimeSeries(con, series, valid_on = NULL, tbl = "timeseries_main",
-  tbl_vintages = "timeseries_vintages", schema = "timeseries", env = NULL,
-  pkg_for_irreg = "xts", chunksize = 10000, respect_release_date = FALSE,
-  regex = FALSE)
+  tbl_vintages = "timeseries_vintages", schema = "timeseries",
+  env = NULL, pkg_for_irreg = "xts", chunksize = 10000,
+  respect_release_date = FALSE, regex = FALSE)
 }
 \arguments{
 \item{con}{a PostgreSQL connection object}

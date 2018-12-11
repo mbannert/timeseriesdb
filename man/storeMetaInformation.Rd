@@ -9,9 +9,9 @@ storeMetaInformation(con, meta, schema = "timeseries",
   tbl = "meta_data_unlocalized", locale = NULL, keys = NULL,
   chunksize = 10000)
 
-\method{storeMetaInformation}{tsmeta.list}(con, meta, schema = "timeseries",
-  tbl = "meta_data_unlocalized", locale = NULL, keys = NULL,
-  chunksize = 10000)
+\method{storeMetaInformation}{tsmeta.list}(con, meta,
+  schema = "timeseries", tbl = "meta_data_unlocalized",
+  locale = NULL, keys = NULL, chunksize = 10000)
 }
 \arguments{
 \item{con}{a PostgreSQL connection object}

@@ -4,8 +4,8 @@
 \alias{changeTsSetOwner}
 \title{Change the owner of a Time Series set}
 \usage{
-changeTsSetOwner(con, set_name, old_owner = Sys.info()["user"], new_owner,
-  tbl = "timeseries_sets", schema = "timeseries")
+changeTsSetOwner(con, set_name, old_owner = Sys.info()["user"],
+  new_owner, tbl = "timeseries_sets", schema = "timeseries")
 }
 \arguments{
 \item{con}{PostgreSQL connection}
