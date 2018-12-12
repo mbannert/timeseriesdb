@@ -4,9 +4,9 @@
 #' according to memory limitations. This function uses INSERT INTO instead of the more convenient dbWritetable for performance reasons. DO NOT USE THIS FUNCTIONS IN LOOPS OR LAPPLY! This function can handle a set of time series on its own and is much faster than looping over a list. Non-unique primary keys are overwritten !
 #' 
 #' @author Matthias Bannert, Gabriel Bucur
-#' @param series character name of a time series, S3 class ts. When used with lists it is convenient to set series to names(li). Note that the series name needs to be unique in the database!
 #' @param con a PostgreSQL connection object.
 #' @param li list of time series. Defaults to NULL to no break legacy calls that use lookup environments.
+#' @param series character name of a time series, S3 class ts. When used with lists it is convenient to set series to names(li). Note that the series name needs to be unique in the database!
 #' @param tbl character string denoting the name of the main time series table in the PostgreSQL database.
 #' @param md_unlocal character string denoting the name of the table that holds unlocalized meta information.
 #' @param overwrite logical should existing records (same primary key) be overwritten? Defaults to TRUE.
@@ -15,9 +15,9 @@
 #' @param show_progress If TRUE, storeListChunkWise will print a progress indicator to the console. Default FALSE.
 #' @importFrom DBI dbGetQuery
 #' @export
-storeListChunkWise <- function(series,
-                               con,
-                               li = NULL,
+storeListChunkWise <- function(con,
+                               li,
+                               series = names(li),
                                tbl="timeseries_main",
                                md_unlocal = "meta_data_unlocalized",
                                overwrite = T,
@@ -25,6 +25,13 @@ storeListChunkWise <- function(series,
                                schema = "timeseries",
                                show_progress = FALSE){
  
+  if(is.character(con)) {
+    warning("You are using this function in a deprecated manner. Please use storeListChunkWise(con, li, series, ...) in the future.");
+    char_series <- con
+    con <- li # connection object
+    li <- series # list object
+    series <- char_series
+  }
   
   name_chunks <- split(series,ceiling(seq_along(names(li))/chunksize))
   
@@ -41,7 +48,7 @@ storeListChunkWise <- function(series,
   # loop over the chunks in order to store it chunk wise 
   # otherwise we run into stack limit on the server
   for(i in seq_along(name_chunks)){
-    storeTimeSeries(name_chunks[[i]],con,li = li[name_chunks[[i]]],
+    storeTimeSeries(con, li = li[name_chunks[[i]]],
                     overwrite = overwrite,
                     tbl = tbl,
                     schema = schema)  

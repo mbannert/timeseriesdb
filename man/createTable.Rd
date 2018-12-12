@@ -11,12 +11,13 @@
 \usage{
 createTimeseriesMain(schema = "timeseries", tbl = "timeseries_main")
 
-createTimeseriesVintages(schema = "timeseries", tbl = "timeseries_vintages")
+createTimeseriesVintages(schema = "timeseries",
+  tbl = "timeseries_vintages")
 
 createTimeseriesSets(schema = "timeseries", tbl = "timeseries_sets")
 
-createMetaUnlocalized(schema = "timeseries", tbl = "meta_data_unlocalized",
-  main = "timeseries_main")
+createMetaUnlocalized(schema = "timeseries",
+  tbl = "meta_data_unlocalized", main = "timeseries_main")
 
 createMetaLocalized(schema = "timeseries", tbl = "meta_data_localized",
   main = "timeseries_main")

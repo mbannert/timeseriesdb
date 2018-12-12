@@ -26,6 +26,8 @@ activated first.}
 \item{tbl}{character name of set tqble. Defaults to timeseries\_sets.}
 
 \item{schema}{character name of the database schema. Defaults to timeseries.}
+
+\item{key_type}{character A vector of key types to store the keys as. Will be recycled to match the length of set_keys.}
 }
 \description{
 Store a new set of Time Series to the database. Users can select the time series keys

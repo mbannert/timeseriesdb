@@ -2,31 +2,38 @@
 % Please edit documentation in R/storeMetaInformation.R
 \name{storeMetaInformation}
 \alias{storeMetaInformation}
-\title{Store Meta Information to the Database}
+\alias{storeMetaInformation.tsmeta.list}
+\title{Update Meta Information Records}
 \usage{
-storeMetaInformation(series, con, tbl = "meta_data_localized",
-  lookup_env = "meta_data_localized", locale = "de", overwrite = F,
-  quiet = F, schema = "timeseries")
+storeMetaInformation(con, meta, schema = "timeseries",
+  tbl = "meta_data_unlocalized", locale = NULL, keys = NULL,
+  chunksize = 10000)
+
+\method{storeMetaInformation}{tsmeta.list}(con, meta,
+  schema = "timeseries", tbl = "meta_data_unlocalized",
+  locale = NULL, keys = NULL, chunksize = 10000)
 }
 \arguments{
-\item{series}{a character name of an time series object}
-
 \item{con}{a PostgreSQL connection object}
 
-\item{tbl}{name of the meta information table, defaults to localized meta data: meta_data_localized. Alternatively choose meta_data_unlocalized if you are not translating meta information.}
+\item{meta}{a tsmeta.list or tsmets.dt object}
 
-\item{lookup_env}{name of the R environment in which to look for meta information objects}
+\item{schema}{character name of the schema to write to. Defaults to 'timeseries'.}
 
-\item{locale}{character locale fo the metainformation. Defaults to Germen 'de'. See also \code{\link{readMetaInformation}}.
-If locale is set to NULL unlocalized meta is updated. Make sure to change tbl to 'meta_data_unlocalized'.}
+\item{tbl}{character name of the meta information table to write to. 
+Defaults to 'meta_data_unlocalized'.}
 
-\item{overwrite}{logical, defaults to FALSE.}
+\item{locale}{character iso 2 digit locae description. Defaults to NULL.}
 
-\item{quiet}{logical, should there be console output for every query result ? Defaults to FALSE.}
+\item{keys}{character vector of time series. If specified only the selected 
+meta information is stored. Defaults to NULL which stores all meta information
+records in the environment.}
 
-\item{schema}{SQL schema name, defaults to 'timeseries'.}
+\item{chunksize}{integer max size of chunks to split large query in.}
 }
 \description{
-This function stores meta information to the database for a given time series.
-Make sure that corresponding time series had been inserted to the main table before.
+When a time series is stored to the database by \code{\link{storeTimeSeries}} 
+a minimal unlocalized (i.e. untranslatable) meta information record is being 
+generated. This meta information can be supplement using the storeMetaInformation
+method.
 }

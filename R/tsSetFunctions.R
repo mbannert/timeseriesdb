@@ -6,6 +6,7 @@
 #' @param con PostgreSQL connection object
 #' @param set_name character name of a set time series in the database.
 #' @param set_keys list of keys contained in the set and their type of key. 
+#' @param key_type character A vector of key types to store the keys as. Will be recycled to match the length of set_keys.
 #' @param user_name character name of the user. Defaults to system user. 
 #' @param description character description of the set to be stored in the db.
 #' @param active logical should a set be active? Defaults to TRUE. If set to FALSE 
@@ -15,7 +16,6 @@
 #' @param schema character name of the database schema. Defaults to timeseries.
 #' @author Ioan Gabriel Bucur, Matthias Bannert, Severin Thöni
 #' @export
-#' @importFrom DBI dbSendQuery
 #' @rdname storeTsSet
 storeTsSet <- function(con,
                        set_name,
@@ -28,33 +28,28 @@ storeTsSet <- function(con,
   UseMethod("storeTsSet", set_keys)
 }
 
-#' @importFrom DBI dbSendQuery
-storeTsSet.list <- function(con, set_name, set_keys,
+#' @export
+storeTsSet.list <- function(con,
+                            set_name,
+                            set_keys,
                        user_name = Sys.info()['user'],
                        description = '', active = TRUE,
                        tbl = 'timeseries_sets',
                        schema = 'timeseries') {
-  vector_values <-c(set_name,
-                    user_name, as.character(Sys.time()),
-                    createHstore(set_keys, fct = FALSE), description, active)
-  row_values <- paste(lapply(vector_values,
-                             function(str) {
-                               ifelse(grepl("hstore",str),
-                                      sprintf("%s", str),
-                                      sprintf("'%s'", str)
-                                      )
-                               }),
-                      collapse = ",")
-  
-  sql_query <- sprintf(
-    "INSERT INTO %s.%s VALUES (%s)",
-    schema,tbl, row_values
+  warning("Storing sets as lists is deprecated and will be removed in future versions.")
+  storeTsSet(
+    con,
+    set_name,
+    names(set_keys),
+    user_name,
+    description,
+    active,
+    tbl,
+    schema
   )
-  class(sql_query) <- "SQL"
-  dbSendQuery(con, sql_query)
 }
 
-#' @importFrom DBI dbSendQuery
+#' @export
 storeTsSet.character <- function(con,
                                  set_name,
                                  set_keys,
@@ -63,9 +58,17 @@ storeTsSet.character <- function(con,
                                  active = TRUE,
                                  tbl = "timeseries_sets",
                                  schema = "timeseries") {
-  key_list <- as.list(rep("ts_key", length(set_keys)))
-  names(key_list) <- set_keys
-  storeTsSet.list(con, set_name, key_list, user_name, description, active, tbl, schema)
+  sql_query <- sprintf("INSERT INTO %s.%s(setname, username, key_set, set_description, active)
+                       VALUES('%s', '%s', ARRAY[%s], '%s', %s)",
+                       schema,
+                       tbl,
+                       set_name,
+                       user_name,
+                       paste(sprintf("'%s'", set_keys), collapse=","),
+                       description,
+                       ifelse(active, "true", "false"))
+  class(sql_query) <- "SQL"
+  runDbQuery(con, sql_query)
 }
 
 #' Join two Time Series sets together
@@ -89,7 +92,7 @@ storeTsSet.character <- function(con,
 #' @param schema The time series db schema to use
 #' @export
 #' @author Severin Thöni
-#' @importFrom DBI dbSendQuery
+# TODO: overwrite it set_name_new == set_name_1 or set_name2
 joinTsSets <- function(con,
                        set_name_1, set_name_2, set_name_new,
                        user_name1 = Sys.info()['user'],
@@ -127,15 +130,19 @@ joinTsSets <- function(con,
 #' @param user_name character name of the user. Defaults to system user. 
 #' @param tbl character name of set tqble. Defaults to timeseries\_sets.
 #' @param schema character name of the database schema. Defaults to timeseries.
+#' @param list_inactive logical Should inactive sets be listed too?
 #' @author Matthias Bannert, Gabriel Bucur
 #' @export
 #' @importFrom DBI dbGetQuery
 #' @rdname listTsSets
-listTsSets <- function(con,user_name = Sys.info()['user'],tbl = "timeseries_sets", schema = "timeseries"){
+listTsSets <- function(con, user_name = Sys.info()['user'], 
+                       tbl = "timeseries_sets", schema = "timeseries",
+                       list_inactive = FALSE){
   sql_query <- sprintf("SELECT setname FROM %s.%s 
                        WHERE username = '%s' 
-                       AND active = TRUE",
-                       schema,tbl,user_name)
+                       %s",
+                       schema,tbl,user_name,
+                       ifelse(list_inactive, "", "AND active = TRUE"))
   class(sql_query) <- "SQL"
   dbGetQuery(con,sql_query)$setname
 }
@@ -154,15 +161,16 @@ listTsSets <- function(con,user_name = Sys.info()['user'],tbl = "timeseries_sets
 #' @export
 #' @importFrom DBI dbGetQuery
 #' @importFrom jsonlite fromJSON
-#' @rdname loadTsSet
-loadTsSet <- function(con, set_name, user_name = Sys.info()['user'],
+#' @rdname readTsSetKeys
+readTsSetKeys <- function(con, set_name, user_name = Sys.info()['user'],
                        tbl = 'timeseries_sets', schema = 'timeseries') {
   
   sql_query <- sprintf("SELECT setname,username,tstamp,
-                       set_description,active,
-                       key_set::json::text FROM %s.%s WHERE username = '%s'
+                       set_description, active,
+                       unnest(key_set) as ts_keys FROM %s.%s
+                       WHERE username = '%s'
                        AND setname = '%s'",
-                       schema, tbl, user_name,set_name)
+                       schema, tbl, user_name, set_name)
   class(sql_query) <- "SQL"
   set <- dbGetQuery(con, sql_query)
   if(nrow(set) == 0){
@@ -172,14 +180,25 @@ loadTsSet <- function(con, set_name, user_name = Sys.info()['user'],
   
   
   result <- list()
-  result$set_info <- set[,c("setname","username","tstamp","set_description","active")]
-  json_conversion <- fromJSON(set$key_set)
-  result$keys <- names(json_conversion)
-  result$key_type <- unique(json_conversion)
-  if(length(result$key_type) != 1) stop("Multiple key type are not allowed in the same set yet.")
-  result
+  result$set_info <- set[1, c("setname","username","tstamp","set_description","active")]
+  result$ts_key <- set$ts_keys
+  as.data.table(result)
 }
 
+#' @export
+#' @rdname readTsSetKeys
+loadTsSet <- function(...) {
+  warning("loadTsSet is deprecated and will be removed in future versions. Please use readTsSetKeys instead.")
+  
+  readTsSetKeys(...)
+}
+
+readTsSet <- function(con, set_name, user_name = Sys.info()['user'],
+                      tbl = 'timeseries_sets', schema = 'timeseries') {
+  # either select * from (select unnest(key_set) as ts_key from timeseriesdb_unit_tests.timeseries_sets where setname = 'set1') set join timeseriesdb_unit_tests.timeseries_main main on set.ts_key = main.ts_key;
+  # or readTsSetKeys -> readTimeSeries (easier as conversion and error handling are already there but uses 2 queries)
+  tstools::generate_random_ts(4)
+}
 
 #' Deactivate a Set of Time Series
 #' 
@@ -203,7 +222,7 @@ deactivateTsSet <- function(con,set_name,
                        WHERE username = '%s' AND setname = '%s'",
                        schema,tbl,user_name,set_name)
   class(sql_query) <- "SQL"
-  dbGetQuery(con,sql_query)
+  runDbQuery(con,sql_query)
 }
 
 
@@ -230,7 +249,7 @@ activateTsSet <- function(con,set_name,
                        WHERE username = '%s' AND setname = '%s'",
                        schema,tbl,user_name,set_name)
   class(sql_query) <- "SQL"
-  dbGetQuery(con,sql_query)
+  runDbQuery(con,sql_query)
 }
 
 #' Overwrite a Time Series set with a new one
@@ -249,7 +268,6 @@ activateTsSet <- function(con,set_name,
 #' @param schema Schema of the time series database to use
 #' @export
 #' @author Severin Thöni
-#' @importFrom DBI dbSendQuery
 overwriteTsSet <- function(con,
                            set_name,
                            ts_keys,
@@ -260,8 +278,10 @@ overwriteTsSet <- function(con,
                            schema = "timeseries") {
     deleted <- deleteTsSet(con, set_name, user_name, tbl, schema)
     
-    if(dbGetException(deleted)$errorNum == 0) {
+    if(attributes(deleted)$query_status == "OK") {
       storeTsSet(con, set_name, ts_keys, user_name, description, active, tbl, schema)
+    } else {
+      deleted
     }
 }
 
@@ -275,7 +295,6 @@ overwriteTsSet <- function(con,
 #' @param schema Schema of the time series database to use
 #' @export
 #' @author Severin Thöni
-#' @importFrom DBI dbSendQuery
 addKeysToTsSet <- function(con,
                            set_name,
                            ts_keys,
@@ -285,10 +304,10 @@ addKeysToTsSet <- function(con,
   set <- loadTsSet(con, set_name, user_name, tbl, schema)
   
   if(!is.null(set)) {
-    hstore <- paste(sprintf("%s => ts_key", unique(c(ts_keys, set$keys))), collapse = ", ")
-    sql_query <- sprintf("UPDATE %s.%s set key_set = '%s' WHERE username = '%s' and setname = '%s'",
-                         schema, tbl, hstore, user_name, set_name)
-    dbSendQuery(con, sql_query)
+    pg_keys <- paste(sprintf("'%s'", unique(c(ts_keys, set$keys))), collapse = ",")
+    sql_query <- sprintf("UPDATE %s.%s set key_set = ARRAY[%s] WHERE username = '%s' and setname = '%s'",
+                         schema, tbl, pg_keys, user_name, set_name)
+    runDbQuery(con, sql_query)
   } else {
     message("Set-User combination not found!")
   }
@@ -304,7 +323,6 @@ addKeysToTsSet <- function(con,
 #' @param schema Schema of the time series database to use.
 #' @export
 #' @author Severin Thöni
-#' @importFrom DBI dbSendQuery
 removeKeysFromTsSet <- function(con,
                                 set_name,
                                 ts_keys,
@@ -314,10 +332,10 @@ removeKeysFromTsSet <- function(con,
   set <- loadTsSet(con, set_name, user_name, tbl, schema)
   
   if(!is.null(set)) {
-    hstore <- paste(sprintf("%s => ts_key", setdiff(set$keys, ts_keys)), collapse = ", ")
-    sql_query <- sprintf("UPDATE %s.%s set key_set = '%s' WHERE username = '%s' and setname = '%s'",
-                         schema, tbl, hstore, user_name, set_name)
-    dbSendQuery(con, sql_query)
+    pg_keys <- paste(sprintf("'%s'", setdiff(set$keys, ts_keys)), collapse = ", ")
+    sql_query <- sprintf("UPDATE %s.%s set key_set = ARRAY[%s] WHERE username = '%s' and setname = '%s'",
+                         schema, tbl, pg_keys, user_name, set_name)
+    runDbQuery(con, sql_query)
   } else {
     message("Set-User combination not found!")
   }
@@ -333,7 +351,6 @@ removeKeysFromTsSet <- function(con,
 #' @param schema Schema of the time series database to use
 #' @export
 #' @author Severin Thöni
-#' @importFrom DBI dbSendQuery
 changeTsSetOwner <- function(con,
                              set_name,
                              old_owner = Sys.info()['user'],
@@ -342,7 +359,7 @@ changeTsSetOwner <- function(con,
                              schema = "timeseries") {
   sql_query <- sprintf("UPDATE %s.%s SET username = '%s' WHERE setname = '%s' AND username = '%s'",
                        schema, tbl, new_owner, set_name, old_owner);
-  dbSendQuery(con, sql_query)
+  runDbQuery(con, sql_query)
 }
 
 #' Permanently delete a Set of Time Series Keys
@@ -354,7 +371,6 @@ changeTsSetOwner <- function(con,
 #' @param schema Name of timeseries schema
 #' @author Severin Thöni
 #' @export
-#' @importFrom DBI dbSendQuery
 deleteTsSet <- function(con,
                         set_name,
                         user_name = Sys.info()['user'],
@@ -362,5 +378,5 @@ deleteTsSet <- function(con,
                         schema = "timeseries") {
   sql_query <- sprintf("DELETE FROM %s.%s WHERE username = '%s' AND setname = '%s'",
                        schema, tbl, user_name, set_name)
-  dbSendQuery(con, sql_query)
+  runDbQuery(con, sql_query)
 }

@@ -4,8 +4,9 @@
 \alias{listTsSets}
 \title{List All Time Series Sets for a Particular User}
 \usage{
-listTsSets(con, user_name = Sys.info()["user"], tbl = "timeseries_sets",
-  schema = "timeseries")
+listTsSets(con, user_name = Sys.info()["user"],
+  tbl = "timeseries_sets", schema = "timeseries",
+  list_inactive = FALSE)
 }
 \arguments{
 \item{con}{PostgreSQL connection object}
@@ -15,6 +16,8 @@ listTsSets(con, user_name = Sys.info()["user"], tbl = "timeseries_sets",
 \item{tbl}{character name of set tqble. Defaults to timeseries\_sets.}
 
 \item{schema}{character name of the database schema. Defaults to timeseries.}
+
+\item{list_inactive}{logical Should inactive sets be listed too?}
 }
 \description{
 Show the names of all sets that are available to a particular user.

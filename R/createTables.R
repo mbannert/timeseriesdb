@@ -86,16 +86,23 @@ createTimeseriesSets <- function(schema = "timeseries",
                         setname text,
                         username text,
                         tstamp timestamptz,
-                        key_set hstore,
+                        key_set text[],
                         set_description varchar,
-                        active bool,
+                        active bool default true,
                         primary key(setname, username));",
                        schema,tbl)
   class(sql_query) <- "SQL"
   sql_query
 }
 
-
+#' @export
+#' @rdname createTables
+alterTimeseriesSets <- function(schema = "timeseries",
+                                tbl = "timeseries_sets"){
+  sql_query <- sprintf("ALTER TABLE %s.%s ALTER COLUMN key_set TYPE TEXT[] using akeys(key_set);", schema, tbl)
+  class(sql_query) <- "SQL"
+  sql_query
+}
 
 #' @export
 #' @rdname createTable
@@ -107,11 +114,18 @@ createMetaUnlocalized <- function(schema = "timeseries",
                         md_generated_by text,
                         md_resource_last_update timestamptz,
                         md_coverage_temp varchar,
-                        meta_data hstore,
+                        meta_data jsonb,
                         primary key (ts_key),
                         foreign key (ts_key) references %s.%s (ts_key) on delete cascade);",
                        schema,tbl,
                        schema,main)
+  class(sql_query) <- "SQL"
+  sql_query
+}
+
+alterMetaUnlocalized <- function(schema = "timeseries",
+                                 tbl = "meta_data_unlocalized") {
+  sql_query <- sprintf("ALTER TABLE %s.%s ALTER COLUMN meta_data TYPE JSONB USING meta_data::JSONB", schema, tbl)
   class(sql_query) <- "SQL"
   sql_query
 }
@@ -124,7 +138,7 @@ createMetaLocalized <- function(schema = "timeseries",
   sql_query <- sprintf("CREATE TABLE %s.%s (
                         ts_key varchar,
                         locale_info varchar, 
-                        meta_data hstore,
+                        meta_data jsonb,
                         primary key (ts_key, locale_info),
                         foreign key (ts_key) references %s.%s (ts_key) on delete cascade);",
                        schema,tbl,
@@ -133,6 +147,12 @@ createMetaLocalized <- function(schema = "timeseries",
   sql_query
 }
 
+alterMetaLocalized <- function(schema = "timeseries",
+                               tbl = "meta_data_localized") {
+  sql_query <- sprintf("ALTER TABLE %s.%s ALTER COLUMN meta_data TYPE JSONB USING meta_data::JSONB", schema, tbl)
+  class(sql_query) <- "SQL"
+  sql_query
+}
 
 #' @export
 #' @rdname createTable
@@ -189,5 +209,9 @@ runUpgradeTables <- function(con, schema = "timeseries") {
   status <- list()
   status$timeseries_main <- attributes(runDbQuery(con, addReleaseDateToTimeseriesMain(schema = schema)))
   status$timeseries_vintages <- attributes(runDbQuery(con, addReleaseDateToTimeseriesVintages(schema = schema)))
+  status$alter_meta_unlocalized <- attributes(runDbQuery(con, alterMetaUnlocalized(schema = schema)))
+  status$alter_meta_localized <- attributes(runDbQuery(con, alterMetaLocalized(schema = schema)))
+  status$alter_sets <- attributes(runDbQuery(con, alterTimeseriesSets(schema = schema)))
+  
   status
 }

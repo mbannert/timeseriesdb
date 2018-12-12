@@ -1,14 +1,30 @@
-# recursive function to check depth of list. hat tip flodel 
-# at stackoverflow: http://stackoverflow.com/questions/13432863/determine-level-of-nesting-in-r
-#' Determine depth of a list
+#' Convert ts style time index Date representation
 #' 
-#' This function recursively checks the depth of a list and returns an integer value of depth
+#' Helper function to convert time series indices of the form 2005.75
+#' to a date representation like 2005-07-01.
+#' Does not currently support sub-monthly frequencies.
 #' 
-#' @param this an object of class list 
-#' @details Hat tip to flodel at stackoverflow for suggesting this light weight way analyze depth of a nested list. Further complexity needs to be added to cover the fact that data.frame are lists, too. A more sophisticated recursive function can be found in the gatveys2 package.
-#' @references http://stackoverflow.com/questions/13432863/determine-level-of-nesting-in-r
+#' @param x numeric A vector of time series time indices (e.g. from stats::time)
+#' @param as.string logical If as.string is TRUE the string representation of the 
+#' Date is returned, otherwise a Date object.
+#' 
+#' @author Severin Thöni
 #' @export
-getListDepth <- function(this) ifelse(is.list(this), 1L + max(sapply(this, getListDepth)), 0L)
+indexToDate <- function (x, as.string = FALSE) 
+{
+  years <- floor(x + 1/24)
+  months <- floor(12*(x - years + 1/24)) + 1
+  # No support for days currently
+  # datestr <- paste(years, months, 1, sep = "-")
+  datestr <- sprintf("%d-%02d-01", years, months)
+  
+  if(!as.string) {
+    date <- as.Date(datestr)
+  } else {
+    date <- datestr
+  }
+  date
+}
 
 #' Check Validity of a PostgreSQL connection
 #' 
@@ -29,33 +45,26 @@ setMethod("dbIsValid", "PostgreSQLConnection", function(dbObj) {
   !is.null(isValid)  
 })
 
-
-
-#' Delete all objects except for specific objects
+# recursive function to check depth of list. hat tip flodel 
+# at stackoverflow: http://stackoverflow.com/questions/13432863/determine-level-of-nesting-in-r
+#' Determine depth of a list
 #' 
-#' Run rm(list=ls()) but sparing some objects from being deleted. 
-#' This function is particularly handy when you want to clear the memory but want to keep the 
-#' the database connection object.
+#' This function recursively checks the depth of a list and returns an integer value of depth
 #' 
-#' @param but character vector of variables that should not be deleted. 
-#' @param env environment to clean up. Defaults to .Globalenv
-#' @param quiet logical should functions print output? Defaults to falase.
-#' @rdname rmAllBut
+#' @param this an object of class list 
+#' @details Hat tip to flodel at stackoverflow for suggesting this light weight way analyze depth of a nested list. Further complexity needs to be added to cover the fact that data.frame are lists, too. A more sophisticated recursive function can be found in the gatveys2 package.
+#' @references http://stackoverflow.com/questions/13432863/determine-level-of-nesting-in-r
 #' @export
-rmAllBut <- function(but,env = .GlobalEnv, quiet = F){
-  vars <- ls(envir = env)
-  del <- vars[!vars %in% but]
-  rm(list = del,envir = env)
-  if(!quiet){
-    cat(sprintf("All objects but '%s' deleted.",
-                paste(but,collapse = ", ")))
-  }
-  
-}
-
-#' @export 
-print.SQL <- function(x,...){
-  cat(gsub("\n[ \t]+","\n",x))
+getListDepth <- function(this) {
+  ifelse(
+    is.list(this), 
+    ifelse(
+      length(this) > 0,
+      1L + max(sapply(this, getListDepth)),
+      1L
+    ),
+    0L
+  )
 }
 
 .createValues <- function(li, validity = NULL, store_freq, release_date = NULL){
@@ -150,8 +159,8 @@ print.SQL <- function(x,...){
     }
     
     sprintf('%s to %s',
-      time_range[1],
-      time_range[2]
+            time_range[1],
+            time_range[2]
     )}
   ))
   
@@ -169,4 +178,11 @@ print.SQL <- function(x,...){
   md_values
 }
 
-
+stringSafeAsNumeric <- function(x) {
+  y <- suppressWarnings(as.numeric(x))
+  if(any(is.na(x) != is.na(y))) {
+    x
+  } else {
+    y
+  }
+}

@@ -4,8 +4,9 @@
 \alias{removeKeysFromTsSet}
 \title{Remove keys from a Time Series set (if present)}
 \usage{
-removeKeysFromTsSet(con, set_name, ts_keys, user_name = Sys.info()["user"],
-  tbl = "timeseries_sets", schema = "timeseries")
+removeKeysFromTsSet(con, set_name, ts_keys,
+  user_name = Sys.info()["user"], tbl = "timeseries_sets",
+  schema = "timeseries")
 }
 \arguments{
 \item{con}{PostgreSQL connection}

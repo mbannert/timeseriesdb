@@ -4,18 +4,18 @@
 \alias{storeTimeSeries}
 \title{Write an R time series to a PostgreSQL database}
 \usage{
-storeTimeSeries(series, con, li = NULL, valid_from = NULL,
-  release_date = NULL, store_freq = T, tbl = "timeseries_main",
+storeTimeSeries(con, li, series = names(li), valid_from = NULL,
+  release_date = NULL, store_freq = TRUE, tbl = "timeseries_main",
   tbl_vintages = "timeseries_vintages",
-  md_unlocal = "meta_data_unlocalized", lookup_env = .GlobalEnv,
-  overwrite = T, schema = "timeseries")
+  md_unlocal = "meta_data_unlocalized", overwrite = TRUE,
+  schema = "timeseries")
 }
 \arguments{
-\item{series}{character name of a time series, S3 class ts. When used with lists it is convenient to set series to names(li). Note that the series name needs to be unique in the database!}
-
 \item{con}{a PostgreSQL connection object.}
 
 \item{li}{list of time series. Defaults to NULL to no break legacy calls that use lookup environments.}
+
+\item{series}{character name of a time series, S3 class ts. When used with lists it is convenient to set series to names(li). Note that the series name needs to be unique in the database!}
 
 \item{valid_from}{character date lower bound of a date range.}
 
@@ -29,11 +29,11 @@ storeTimeSeries(series, con, li = NULL, valid_from = NULL,
 
 \item{md_unlocal}{character string denoting the name of the table that holds unlocalized meta information.}
 
-\item{lookup_env}{environment to look in for timeseries. Defaults to .GobalEnv.}
-
 \item{overwrite}{logical should existing records (same primary key) be overwritten? Defaults to TRUE.}
 
 \item{schema}{SQL schema name. Defaults to timeseries.}
+
+\item{lookup_env}{environment to look in for timeseries. Defaults to .GobalEnv.}
 }
 \description{
 This function writes time series object into a relational PostgreSQL database make use 

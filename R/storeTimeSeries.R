@@ -22,25 +22,26 @@
 #'
 #' @importFrom DBI dbGetQuery
 #' @export
-storeTimeSeries <- function(series,
-                            con,
-                            li = NULL,
+storeTimeSeries <- function(con,
+                            li,
+                            series = names(li),
                             valid_from = NULL,
                             release_date = NULL,
-                            store_freq = T,
+                            store_freq = TRUE,
                             tbl = "timeseries_main",
                             tbl_vintages = "timeseries_vintages",
                             md_unlocal = "meta_data_unlocalized",
-                            lookup_env = .GlobalEnv,
-                            overwrite = T,
+                            overwrite = TRUE,
                             schema = "timeseries"){
-  # backwards compatibility
-  # make storeTimeSeries calls work
-  # with former versions of timeseriesdb
-  # that used environments. 
-  if(is.null(li)){
-    li <- as.list.environment(lookup_env)
+  
+  if(is.character(con)) {
+    warning("You are using this function in a deprecated fashion. Use storeTimeSeries(con, series, li, ...) in the future.")
+    char_series <- con
+    con <- li # connection object
+    li <- series # list object
+    series <- char_series
   }
+  
   # subset 
   li <- li[series]
   # avoid overwrite totally, 
@@ -58,7 +59,10 @@ storeTimeSeries <- function(series,
   # are allowed to be stored. In that case we do not need to run 
   # through the entire write process.
   if(length(li) == 0){
-    cat("No time series in subset - returned empty list. Set overwrite=TRUE or add a valid_from argument, if you want to overwrite existing series or store different versions of a series.")
+    message("No time series in subset - returned empty list.
+            Set overwrite=TRUE or add a valid_from argument,
+            if you want to overwrite existing series or store
+            different versions of a series.")
     return(list())
   } 
   
@@ -69,7 +73,7 @@ storeTimeSeries <- function(series,
   if(all(keep)){
     NULL #cat("No corrupted series found. \n")
   } else {
-    cat("These elements are no valid time series objects: \n",
+    message("These elements are no valid time series objects: \n",
         paste0(names(series[dontkeep])," \n"))  
   }
   
