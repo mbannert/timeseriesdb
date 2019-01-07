@@ -235,7 +235,7 @@ test_set("activateTsSet leaves an active set unaffected", {
 })
 
 test_set("overwriteTsSet", {
-  skip_in_cran()
+  skip_on_cran()
   
   out <- overwriteTsSet(con,
                         fixture[1, setname],
