@@ -145,7 +145,12 @@ test_that("storing tsmeta.list works", {
   m <- readMetaInformation(con, "ts1", schema = "timeseriesdb_unit_tests")
   expect_is(m, "tsmeta.list")
   expect_is(m[[1]], "tsmeta")
-  expect_equal(m[[1]], meta.tsmeta.list[[1]])
+  expect_equal(m[[1]]$legacy_key, meta.tsmeta.list[[1]]$legacy_key)
+  expect_equal(as.numeric(m[[1]]$seed), meta.tsmeta.list[[1]]$seed)
+  expect_true(length(setdiff(
+    names(m[[1]]),
+    c("seed", "legacy_key", "md_generated_by", "md_resource_last_update", "md_coverage_temp"))
+    ) == 0)
 })
 
 test_that("storing tsmeta.dt works", {
@@ -155,7 +160,12 @@ test_that("storing tsmeta.dt works", {
   storeMetaInformation(con, meta.tsmeta.dt, schema = "timeseriesdb_unit_tests", locale = "de", tbl = "meta_data_localized")
   m <- readMetaInformation(con, "ts1", schema = "timeseriesdb_unit_tests", as_list = FALSE)
   expect_is(m, "tsmeta.dt")
-  expect_equal(m[1, ], meta.tsmeta.dt[1, ])
+  expect_equal(m[1, as.numeric(seed)], meta.tsmeta.dt[1, seed])
+  expect_equal(m[1, legacy_key], meta.tsmeta.dt[1, legacy_key])
+  expect_true(length(setdiff(
+    names(m),
+    c("ts_key", "seed", "legacy_key", "md_generated_by", "md_resource_last_update", "md_coverage_temp"))
+  ) == 0)
 })
 
 if(!on_cran) {
