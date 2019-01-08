@@ -143,8 +143,48 @@ test_set("listTsSets", {
   skip("unimplemented")
 })
 
-test_set("loadTsSet", {
+test_set("readTsSetKeys", {
   skip_on_cran()
+  out <- readTsSetKeys(con,
+                       fixture[1, setname],
+                       fixture[1, username],
+                       schema = "timeseriesdb_unit_tests")
+  
+  expect_true(all(out$set_info.setname == fixture[1, setname]))
+  expect_true(all(out$set_info.username == fixture[1, username]))
+  expect_true(all(out$set_info.set_description == fixture[1, set_description]))
+  expect_true(all(out$set_info.active))
+  expect_equal(out$ts_key, fixture[1, key_set[[1]]])
+})
+
+test_set("reatTsSetKeys displays message if not found", {
+  skip_on_cran()
+  expect_message(readTsSetKeys(con,
+                       fixture[1, setname],
+                       "notauser",
+                       schema = "timeseriesdb_unit_tests"))
+})
+
+test_set("loadTsSet throws a deprecation warning", {
+  skip_on_cran()
+  expect_warning(out <- loadTsSet(con,
+                                      fixture[1, setname],
+                                      fixture[1, username],
+                                      schema = "timeseriesdb_unit_tests"))
+})
+
+test_set("loadTsSet still works", {
+  skip_on_cran()
+  out <- suppressWarnings(loadTsSet(con,
+                       fixture[1, setname],
+                       fixture[1, username],
+                       schema = "timeseriesdb_unit_tests"))
+  
+  expect_true(all(out$set_info.setname == fixture[1, setname]))
+  expect_true(all(out$set_info.username == fixture[1, username]))
+  expect_true(all(out$set_info.set_description == fixture[1, set_description]))
+  expect_true(all(out$set_info.active))
+  expect_equal(out$ts_key, fixture[1, key_set[[1]]])
 })
 
 test_set("deactivateTsSet deactivates an active set", {
