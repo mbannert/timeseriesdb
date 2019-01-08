@@ -180,11 +180,11 @@ test_set("loadTsSet still works", {
                        fixture[1, username],
                        schema = "timeseriesdb_unit_tests"))
   
-  expect_true(all(out$set_info.setname == fixture[1, setname]))
-  expect_true(all(out$set_info.username == fixture[1, username]))
-  expect_true(all(out$set_info.set_description == fixture[1, set_description]))
-  expect_true(all(out$set_info.active))
-  expect_equal(out$ts_key, fixture[1, key_set[[1]]])
+  expect_true(all(out$set_info$setname == fixture[1, setname]))
+  expect_true(all(out$set_info$username == fixture[1, username]))
+  expect_true(all(out$set_info$set_description == fixture[1, set_description]))
+  expect_true(all(out$set_info$active))
+  expect_equal(out$keys, fixture[1, key_set[[1]]])
 })
 
 test_set("deactivateTsSet deactivates an active set", {

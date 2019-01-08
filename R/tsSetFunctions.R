@@ -182,7 +182,9 @@ readTsSetKeys <- function(con, set_name, user_name = Sys.info()['user'],
   result <- list()
   result$set_info <- set[1, c("setname","username","tstamp","set_description","active")]
   result$ts_key <- set$ts_keys
-  as.data.table(result)
+  out <- as.data.table(result)
+  names(out) <- gsub("set_info\\.", "", names(out))
+  out
 }
 
 #' @export
@@ -190,7 +192,12 @@ readTsSetKeys <- function(con, set_name, user_name = Sys.info()['user'],
 loadTsSet <- function(...) {
   warning("loadTsSet is deprecated and will be removed in future versions. Please use readTsSetKeys instead.")
   
-  readTsSetKeys(...)
+  result <- readTsSetKeys(...)
+  
+  list(
+    set_info = result[1, c("setname", "username", "tstamp", "set_description", "active")],
+    keys = result[, ts_key]
+  ) 
 }
 
 readTsSet <- function(con, set_name, user_name = Sys.info()['user'],
