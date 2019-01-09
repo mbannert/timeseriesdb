@@ -107,7 +107,7 @@ readMetaInformation <- function(con,
   if(nrow(mdul) > 0) {
     mdul_meta_expanded <- mdul[, rbindlist(lapply(meta_data, expand_meta), fill = TRUE, idcol = TRUE)]
     
-    # We don't need the mets_data column anymore
+    # We don't need the meta_data column anymore
     if(nrow(mdul_meta_expanded) > 0) {
       md <- mdul_meta_expanded[mdul[, .id := 1:.N][, -"meta_data"], on = .(.id)][, -".id"]
     } else {
@@ -121,8 +121,9 @@ readMetaInformation <- function(con,
       
       # ts_key should appear on the left
       setcolorder(mdl, c("ts_key"))
-      
-      md <- merge(md, mdl, all.x = TRUE)
+      setcolorder(md, c("ts_key"))
+      setnames(md,c("ts_key",paste0("unlocal_",names(md)[-1])))
+      md <- merge(md, mdl, all.x = TRUE, by = "ts_key")
     }
     
     # Attach missing series
