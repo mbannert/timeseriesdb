@@ -102,8 +102,8 @@ joinTsSets <- function(con,
                        active = NULL,
                        tbl = "timeseries_sets",
                        schema = "timeseries") {
-  contents1 <- loadTsSet(con, set_name_1, user_name1, tbl, schema)
-  contents2 <- loadTsSet(con, set_name_2, user_name2, tbl, schema)
+  contents1 <- readTsSetKeys(con, set_name_1, user_name1, tbl, schema)
+  contents2 <- readTsSetKeys(con, set_name_2, user_name2, tbl, schema)
   
   if(is.null(contents1)) {
     message(sprintf("Could not find set %s belonging to %s.", set_name_1, user_name1))
@@ -308,7 +308,7 @@ addKeysToTsSet <- function(con,
                            user_name = Sys.info()['user'],
                            tbl = "timeseries_sets",
                            schema = "timeseries") {
-  set <- loadTsSet(con, set_name, user_name, tbl, schema)
+  set <- readTsSetKeys(con, set_name, user_name, tbl, schema)
   
   if(!is.null(set)) {
     pg_keys <- paste(sprintf("'%s'", unique(c(ts_keys, set$keys))), collapse = ",")
@@ -336,7 +336,7 @@ removeKeysFromTsSet <- function(con,
                                 user_name = Sys.info()['user'],
                                 tbl = "timeseries_sets",
                                 schema = "timeseries") {
-  set <- loadTsSet(con, set_name, user_name, tbl, schema)
+  set <- readTsSetKeys(con, set_name, user_name, tbl, schema)
   
   if(!is.null(set)) {
     pg_keys <- paste(sprintf("'%s'", setdiff(set$keys, ts_keys)), collapse = ", ")
