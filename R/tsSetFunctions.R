@@ -311,7 +311,7 @@ addKeysToTsSet <- function(con,
   set <- readTsSetKeys(con, set_name, user_name, tbl, schema)
   
   if(!is.null(set)) {
-    pg_keys <- paste(sprintf("'%s'", unique(c(ts_keys, set$keys))), collapse = ",")
+    pg_keys <- paste(sprintf("'%s'", unique(c(ts_keys, set$ts_key))), collapse = ",")
     sql_query <- sprintf("UPDATE %s.%s set key_set = ARRAY[%s] WHERE username = '%s' and setname = '%s'",
                          schema, tbl, pg_keys, user_name, set_name)
     runDbQuery(con, sql_query)
@@ -339,7 +339,7 @@ removeKeysFromTsSet <- function(con,
   set <- readTsSetKeys(con, set_name, user_name, tbl, schema)
   
   if(!is.null(set)) {
-    pg_keys <- paste(sprintf("'%s'", setdiff(set$keys, ts_keys)), collapse = ", ")
+    pg_keys <- paste(sprintf("'%s'", setdiff(set$ts_key, ts_keys)), collapse = ", ")
     sql_query <- sprintf("UPDATE %s.%s set key_set = ARRAY[%s] WHERE username = '%s' and setname = '%s'",
                          schema, tbl, pg_keys, user_name, set_name)
     runDbQuery(con, sql_query)
