@@ -14,9 +14,9 @@ createJSON.data.frame <- function(data) {
   
   meta_fmt <- create_meta_format(dims)
   
-  out <- data[, .(ts_key, meta_data = do.call(sprintf, c(meta_fmt, .SD[, -"ts_key"])))]
+  data <- data[, lapply(.SD, pgEscape)]
   
-  out[, meta_data := pgEscape(meta_data)] 
+  out <- data[, .(ts_key, meta_data = do.call(sprintf, c(meta_fmt, .SD[, -"ts_key"])))]
   
   out
 }
@@ -32,8 +32,9 @@ create_meta_format <- function(dims) {
 
 # Feel free to add to your heart's content
 pgEscape <- function(x) {
-  out <- gsub("\n", "\\\\n", x)
-  out <- gsub("\r", "\\\\r", out)
-  out <- gsub("\"", "\\\"", out)
+  out <- gsub("\n", " ", x)
+  out <- gsub("\r", " ", out)
+  out <- gsub("\"", "", out)
+  out <- gsub("'", "", out)
   out
 }

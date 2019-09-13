@@ -102,8 +102,8 @@ joinTsSets <- function(con,
                        active = NULL,
                        tbl = "timeseries_sets",
                        schema = "timeseries") {
-  contents1 <- loadTsSet(con, set_name_1, user_name1, tbl, schema)
-  contents2 <- loadTsSet(con, set_name_2, user_name2, tbl, schema)
+  contents1 <- readTsSetKeys(con, set_name_1, user_name1, tbl, schema)
+  contents2 <- readTsSetKeys(con, set_name_2, user_name2, tbl, schema)
   
   if(is.null(contents1)) {
     message(sprintf("Could not find set %s belonging to %s.", set_name_1, user_name1))
@@ -204,7 +204,8 @@ readTsSet <- function(con, set_name, user_name = Sys.info()['user'],
                       tbl = 'timeseries_sets', schema = 'timeseries') {
   # either select * from (select unnest(key_set) as ts_key from timeseriesdb_unit_tests.timeseries_sets where setname = 'set1') set join timeseriesdb_unit_tests.timeseries_main main on set.ts_key = main.ts_key;
   # or readTsSetKeys -> readTimeSeries (easier as conversion and error handling are already there but uses 2 queries)
-  tstools::generate_random_ts(4)
+  #tstools::generate_random_ts(4)
+  stop("This method is not implemented yet. Sorry!")
 }
 
 #' Deactivate a Set of Time Series
@@ -308,10 +309,10 @@ addKeysToTsSet <- function(con,
                            user_name = Sys.info()['user'],
                            tbl = "timeseries_sets",
                            schema = "timeseries") {
-  set <- loadTsSet(con, set_name, user_name, tbl, schema)
+  set <- readTsSetKeys(con, set_name, user_name, tbl, schema)
   
   if(!is.null(set)) {
-    pg_keys <- paste(sprintf("'%s'", unique(c(ts_keys, set$keys))), collapse = ",")
+    pg_keys <- paste(sprintf("'%s'", unique(c(ts_keys, set$ts_key))), collapse = ",")
     sql_query <- sprintf("UPDATE %s.%s set key_set = ARRAY[%s] WHERE username = '%s' and setname = '%s'",
                          schema, tbl, pg_keys, user_name, set_name)
     runDbQuery(con, sql_query)
@@ -336,10 +337,10 @@ removeKeysFromTsSet <- function(con,
                                 user_name = Sys.info()['user'],
                                 tbl = "timeseries_sets",
                                 schema = "timeseries") {
-  set <- loadTsSet(con, set_name, user_name, tbl, schema)
+  set <- readTsSetKeys(con, set_name, user_name, tbl, schema)
   
   if(!is.null(set)) {
-    pg_keys <- paste(sprintf("'%s'", setdiff(set$keys, ts_keys)), collapse = ", ")
+    pg_keys <- paste(sprintf("'%s'", setdiff(set$ts_key, ts_keys)), collapse = ", ")
     sql_query <- sprintf("UPDATE %s.%s set key_set = ARRAY[%s] WHERE username = '%s' and setname = '%s'",
                          schema, tbl, pg_keys, user_name, set_name)
     runDbQuery(con, sql_query)
