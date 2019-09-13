@@ -2,7 +2,9 @@
 % Please edit documentation in R/utils.R
 \name{indexToDate}
 \alias{indexToDate}
-\title{Convert ts style time index Date representation}
+\title{Helper function to convert time series indices of the form 2005.75
+to a date representation like 2005-07-01.
+Does not currently support sub-monthly frequencies.}
 \usage{
 indexToDate(x, as.string = FALSE)
 }

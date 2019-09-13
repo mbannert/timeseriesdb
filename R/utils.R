@@ -1,4 +1,3 @@
-#' Convert ts style time index Date representation
 #' 
 #' Helper function to convert time series indices of the form 2005.75
 #' to a date representation like 2005-07-01.
@@ -79,15 +78,7 @@ getListDepth <- function(this) {
   
   if(is.null(release_date)) {
     release_date <- "DEFAULT"
-  } else {
-    tryCatch(
-      release_date <- strftime(release_date, format = "%F %T %z"),
-      error = function(e) {
-        msg <- sprintf("Failed to parse release_date \"%s\". Please make sure it is an object which can be converted to \"POSIXlt\" for strftime!", release_date)
-        stop(msg)
-      }
-    );
-  }
+  } 
   
   if(is.null(validity)){
     if(!store_freq){
