@@ -14,6 +14,8 @@
 #' This is also the target schema if vintage_schema is not set. 
 #' @param vintage_schema character name of the schema snapshots should be stored to. 
 #' Defaults to NULL, using the schema parameter. 
+#' @importFrom DBI dbGetQuery
+#' @export
 createSnapshot <- function(con, series,
                            valid_from = Sys.Date(),
                            schema, 
