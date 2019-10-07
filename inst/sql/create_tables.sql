@@ -13,7 +13,6 @@ CREATE TABLE timeseries_1_0.timeseries_main (
     ts_key text,
     ts_validity daterange, 
     ts_data json,
-    ts_frequency integer, 
     release text,
     access text, 
     primary key (ts_key, ts_validity),
