@@ -3,7 +3,7 @@
 CREATE TABLE timeseries_1_0.releases(
     release text,
     ts_validity daterange,
-    set_validity daterange,
+    release_validity tstzrange,
     release_description text,
     primary key (release, ts_validity)
 );
@@ -13,7 +13,6 @@ CREATE TABLE timeseries_1_0.timeseries_main (
     ts_key text,
     ts_validity daterange, 
     ts_data json,
-    ts_frequency integer, 
     release text,
     access text, 
     primary key (ts_key, ts_validity),
