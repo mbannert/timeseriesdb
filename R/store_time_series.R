@@ -1,6 +1,13 @@
-# TODO: add arguments
+# TODO: re-add removed arguments - the old name needs to keep the signature
 #' @export
-storeTimeSeries <- function(){
+storeTimeSeries <- function(con,
+                            li,
+                            subset = names(li),
+                            valid_from = NULL, # Is there a need for valid_from != today? For building vintages from scratch I guess?
+                            release_date = NULL,
+                            tbl = "timeseries_main",
+                            overwrite = TRUE, # Might keep that to indicate whether old vintages should be deleted when storing single record?
+                            schema = "timeseries") {
   .Deprecated("storeTimeSeries")
   # back in the days the argument order was different, 
   # so if con is a character we know we need to flip things and continue 
@@ -11,31 +18,43 @@ storeTimeSeries <- function(){
             Use store_time_series(con, series, li, ...) in the future.")
     char_series <- con
     con <- li # connection object
-    li <- series # list object
-    series <- char_series
+    li <- subset # list object
+    subset <- char_series
   }
   
-  store_time_series() # TODO: proper call to new function
-  
+  store_time_series(con, li, subset, valid_from, release_Date, tbl, overwrite, schema)
 }
 
 
 #' @export
-store_time_series <- function(con, x, subset){
+store_time_series <- function(con,
+                              x,
+                              subset,
+                              valid_from,
+                              release_date,
+                              tbl,
+                              overwrite,
+                              schema){
   UseMethod("store_time_series", object = x)
 }
 
-store_time_series.tslist <- function(con, x, subset){
-
-  x <- x[subset]
+store_time_series.tslist <- function(con,
+                                     tsl,
+                                     subset = names(tsl),
+                                     valid_from = NULL,
+                                     release_date = NULL,
+                                     tbl = "timeseries_main",
+                                     overwrite = TRUE,
+                                     schema = "timeseries"){
+  tsl <- tsl[subset]
   
-  if(length(x) == 0){
+  if(length(tsl) == 0){
     message("No time series in subset - returned empty list.")
     return(list())
   } 
   
   # SANITY CHECK ##############
-  keep <- sapply(x, function(x) inherits(x,c("ts","zoo","xts")))
+  keep <- sapply(tsl, function(x) inherits(x,c("ts","zoo","xts")))
   dontkeep <- !keep
   
   if(!all(keep)){
@@ -43,39 +62,48 @@ store_time_series.tslist <- function(con, x, subset){
             paste0(names(subset[dontkeep])," \n"))  
   }
   
-  x <- x[keep]
+  tsl <- tsl[keep]
+  class(tsl) <- c("tslist", "list")
   
-  ts_json <- to_ts_json(x)
+  # Alternatively: `[.tslist` <- function(x, i){x <- unclass(x); out <- x[i]; class(out) <- c("tslist", "list"); out}
+  # But where does the tslist class live i.e. which package should define this selector?
   
+  store_time_series(con, to_ts_json(tsl), subset, valid_from, release_date, tbl, overwrite, schema)
+}
+
+store_time_series.ts_dt <- function(con,
+                                    dt,
+                                    subset = dt[, id],
+                                    valid_from = NULL, # Is there a need for valid_from != today?
+                                    release_date = NULL,
+                                    tbl = "timeseries_main",
+                                    overwrite = TRUE, # Might keep that to indicate whether old vintages should be deleted when storing single record?
+                                    schema = "timeseries") {
+  dt <- dt[id %in% subset]
+  
+  if(dt[, .N] == 0) {
+    message("No time series in subset - returned empty list.")
+    return(list())
+  } 
+  
+  store_time_series(con, to_ts_json(dt), subset, valid_from, release_date, tbl, overwrite, schema)
 }
 
 
-
-store_time_series.ts_json <- function(){
+store_time_series.ts_json <- function(con,
+                                      tsj,
+                                      subset = names(tsj),
+                                      valid_from = NULL, # Is there a need for valid_from != today?
+                                      release_date = NULL,
+                                      tbl = "timeseries_main",
+                                      overwrite = TRUE, # Might keep that to indicate whether old vintages should be deleted when storing single record?
+                                      schema = "timeseries"){
   
   # some_sql
+  message("Here to store the following ts json:")
+  print(tsj)
+  message("*cheap party horn sound*")
 }
-
-
-
-
-store_time_series <- function(
-  con,
-  li,
-  series = names(li),
-  valid_from = NULL,
-  tbl = "timeseries_main",
-  schema = "timeseries"){
-  
-  
-  
-  
-  
-  
-  
-  
-}
-
 
 
 
