@@ -16,7 +16,8 @@ Imports:
     openxlsx,
 Suggests:
     knitr,
-    testthat
+    testthat,
+    mockery
 VignetteBuilder: knitr
 Date: 2018-07-19
 License: GPL-2
