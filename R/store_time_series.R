@@ -35,8 +35,12 @@ store_time_series.tslist <- function(con,
   }
   
   tsl <- tsl[keep]
-  
-  store_time_series.ts_json(con, to_ts_json(tsl), subset, valid_from, release_date, tbl, overwrite, schema)
+  # Avoid runs through dispatcher by calling methods directly.
+  # save some time here. Also, it fosters mockery when testing.
+  store_time_series.ts_json(con, to_ts_json(tsl),
+                            subset, valid_from,
+                            release_date, tbl,
+                            overwrite, schema)
 }
 
 store_time_series.data.table <- function(con,
@@ -48,7 +52,7 @@ store_time_series.data.table <- function(con,
                                     overwrite = TRUE, # Might keep that to indicate whether old vintages should be deleted when storing single record?
                                     schema = "timeseries") {
   if(!all(c("id", "time", "value") %in% names(dt))) {
-    stop("This does not look like a ts data.table. Expected column names id, time and value!")
+    stop("This does not look like a ts data.table. Expected column names id, time and value.")
   }
   
   dt <- dt[id %in% subset]
@@ -57,7 +61,8 @@ store_time_series.data.table <- function(con,
     message("No time series in subset - returned empty list.")
     return(list())
   } 
-  
+  # Avoid runs through dispatcher by calling methods directly.
+  # save some time here. Also, it fosters mockery when testing.
   store_time_series.ts_json(con, to_ts_json(dt), subset, valid_from, release_date, tbl, overwrite, schema)
 }
 

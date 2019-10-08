@@ -16,7 +16,8 @@ https://community.rstudio.com/t/inserting-json-objects-in-postgres-table/1705/2
 - auto vacuum, check bulk deletes and updates, reclaim space...
 
 ```docker
-docker run --rm --name pg -p 1111:5432 -e POSTGRES_PASSWORD=pgpass -d postgres
+docker run --rm --name pg -p 1111:5432 -e POSTGRES_PASSWORD=pgpass -d postgres -v ~/Desktop/dockerfolder:/var/lib/postgresql/data
+
 
 docker container ls
 

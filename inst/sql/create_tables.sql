@@ -1,3 +1,4 @@
+CREATE SCHEMA timeseries_1_0;
 
 -- links public validity on dataset level to series
 CREATE TABLE timeseries_1_0.releases(
