@@ -11,3 +11,12 @@ test_that("class is kept", {
   x <- tsl[1:2]
   expect_is(x, "tslist")
 })
+
+test_that("subset works",{
+  x <- tsl[1]
+  tsl_copy <- tsl
+  tsl_copy[[2]] <- NULL
+  expect_equal(x, tsl_copy)
+  
+  
+})

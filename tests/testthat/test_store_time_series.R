@@ -1,5 +1,5 @@
-suppressWarnings(library(mockery)) # TODO: How to make this a "dev dependency" that gets loaded on test?
-# put it in testthat.R perhaps?
+suppressWarnings(library(mockery))
+
 
 tsl <- list(
   ts1 = ts(1:2, 2019, frequency = 12),
@@ -13,6 +13,8 @@ dt <- data.table(
   value = 1:4
 )
 
+
+# store time series from lists  ##########################
 context("store_time_series.tslist")
 
 test_that("it calls through to store_time_series.ts_json", {
@@ -34,7 +36,6 @@ test_that("it subsets the list", {
     {
       xx <- store_time_series("con", tsl, "ts2")
       only_ts2 <- tsl[2]
-      class(only_ts2) <- c("tslist", "list") # This is getting annoying quick...
       expect_args(store_ts_json, 1, "con", to_ts_json(only_ts2), "ts2", NULL, NULL, "timeseries_main", TRUE, "timeseries")
     }
   )
@@ -59,6 +60,8 @@ test_that("it handles non-ts-likes", {
   )
 })
 
+
+# store time series from data.table  ##########################
 
 context("store_time_series.data.table")
 

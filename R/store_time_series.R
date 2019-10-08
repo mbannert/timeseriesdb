@@ -35,10 +35,6 @@ store_time_series.tslist <- function(con,
   }
   
   tsl <- tsl[keep]
-  class(tsl) <- c("tslist", "list")
-  
-  # Alternatively: `[.tslist` <- function(x, i){x <- unclass(x); out <- x[i]; class(out) <- c("tslist", "list"); out}
-  # But where does the tslist class live i.e. which package should define this selector?
   
   store_time_series.ts_json(con, to_ts_json(tsl), subset, valid_from, release_date, tbl, overwrite, schema)
 }

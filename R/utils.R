@@ -7,7 +7,6 @@
 #' @param as.string logical If as.string is TRUE the string representation of the 
 #' Date is returned, otherwise a Date object.
 #' 
-#' @author Severin Thöni
 #' @export
 index_to_date <- function (x, as.string = FALSE) 
 {
@@ -22,4 +21,13 @@ index_to_date <- function (x, as.string = FALSE)
   } else {
     return(datestr)
   }
+}
+
+
+#' @export
+`[.tslist` <- function(x, i) {
+  x <- unclass(x)
+  out <- x[i]
+  class(out) <- c("tslist", "list")
+  out
 }

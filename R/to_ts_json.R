@@ -16,6 +16,7 @@ to_ts_json.tslist <- function(x, ...){
   l
 }
 
+#' @import data.table
 to_ts_json.data.table <- function(x, ...){
   dt <- x[, .(json = toJSON(list(time = time, value = value))), by = "id"]
   out <- list(dt[, json])
