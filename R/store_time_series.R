@@ -37,8 +37,8 @@ store_time_series.tslist <- function(con,
   tsl <- tsl[keep]
   # Avoid runs through dispatcher by calling methods directly.
   # save some time here. Also, it fosters mockery when testing.
-  store_time_series.ts_json(con, to_ts_json(tsl),
-                            subset, valid_from,
+  store_records(con, to_ts_json(tsl),
+                            valid_from,
                             release_date, tbl,
                             overwrite, schema)
 }
@@ -63,23 +63,7 @@ store_time_series.data.table <- function(con,
   } 
   # Avoid runs through dispatcher by calling methods directly.
   # save some time here. Also, it fosters mockery when testing.
-  store_time_series.ts_json(con, to_ts_json(dt), subset, valid_from, release_date, tbl, overwrite, schema)
-}
-
-
-store_time_series.ts_json <- function(con,
-                                      tsj,
-                                      subset = names(tsj),
-                                      valid_from = NULL, # Is there a need for valid_from != today?
-                                      release_date = NULL,
-                                      tbl = "timeseries_main",
-                                      overwrite = TRUE, # Might keep that to indicate whether old vintages should be deleted when storing single record?
-                                      schema = "timeseries"){
-  
-  # some_sql
-  message("Here to store the following ts json:")
-  print(tsj)
-  message("*cheap party horn sound*")
+  store_records(con, to_ts_json(dt), valid_from, release_date, tbl, overwrite, schema)
 }
 
 # TODO: re-add removed arguments - the old name needs to keep the signature
