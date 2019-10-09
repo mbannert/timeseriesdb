@@ -22,6 +22,7 @@ test_that("it calls through to store_records", {
   store_recs <- mock()
   with_mock(
     store_records = store_recs,
+    to_ts_json = mock("ts_json"), # Oh how I love isolating units under test. You are going to die all alone, little function...
     {
       store_time_series(
         "con",
@@ -42,9 +43,10 @@ test_that("it calls through to store_records", {
         store_recs,
         1,
         "con",
-        to_ts_json(tsl),
+        "ts_json",
         "release",
         "access",
+        "timeseries_main",
         "release_desc",
         "valid_from",
         "release_date",
@@ -57,7 +59,9 @@ test_that("it calls through to store_records", {
 
 test_that("it subsets the list", {
   store_recs <- mock()
-  with_mock(store_records = store_recs,
+  with_mock(
+            store_records = store_recs,
+            to_ts_json = mock("ts_json"),
             {
               xx <- store_time_series(
                 "con",
@@ -78,9 +82,10 @@ test_that("it subsets the list", {
                 store_recs,
                 1,
                 "con",
-                to_ts_json(only_ts2),
+                "ts_json",
                 "release",
                 "access",
+                "timeseries_main",
                 "release_desc",
                 "valid_from",
                 "release_date",
@@ -119,6 +124,7 @@ test_that("it calls through to store_records", {
   store_recs <- mock()
   with_mock(
     store_records = store_recs,
+    to_ts_json = mock("ts_json"),
     {
       store_time_series(
         "con",
@@ -139,9 +145,10 @@ test_that("it calls through to store_records", {
         store_recs,
         1,
         "con",
-        to_ts_json(dt),
+        "ts_json",
         "release",
         "access",
+        "timeseries_main",
         "release_desc",
         "valid_from",
         "release_date",
@@ -154,7 +161,9 @@ test_that("it calls through to store_records", {
 
 test_that("it subsets the list", {
   store_recs <- mock()
-  with_mock(store_records = store_recs,
+  with_mock(
+            store_records = store_recs,
+            to_ts_json = mock("ts_json"), # I guess to make it watertight we'd need to generate a random string here on every test run.
             {
               xx <- store_time_series(
                 "con",
@@ -175,9 +184,10 @@ test_that("it subsets the list", {
                 store_recs,
                 1,
                 "con",
-                to_ts_json(only_ts2),
+                "ts_json",
                 "release",
                 "access",
+                "timeseries_main",
                 "release_desc",
                 "valid_from",
                 "release_date",
