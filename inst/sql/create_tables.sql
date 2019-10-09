@@ -17,7 +17,7 @@ CREATE TABLE timeseries_1_0.timeseries_main (
     release text,
     access text, 
     primary key (ts_key, ts_validity),
-    foreign key (release, ts_validity) references timeseries_1_0.releases
+    foreign key (release, ts_validity) references timeseries_1_0.releases DEFERRABLE INITIALLY DEFERRED
 );
 
 
