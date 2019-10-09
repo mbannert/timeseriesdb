@@ -1,5 +1,3 @@
-suppressWarnings(library(mockery))
-
 # TODO: tests for default args
 
 tsl <- list(
