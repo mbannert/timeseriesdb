@@ -28,3 +28,14 @@ test_that("it works on ts_dts", {
   tsj <- to_ts_json(dt)
   test_tsj(tsj)
 })
+
+test_that("assigning names works with nTs > 1", {
+  dt <- data.table(
+    id = c("ts1", "ts2"),
+    time = seq(as.Date("2019-01-01"), length.out = 2, by = "1 month"),
+    value = 1:4
+  )
+  
+  # This is testthat for "expect to not throw an error"
+  expect_error(to_ts_json(dt), NA)
+})
