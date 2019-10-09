@@ -1,10 +1,12 @@
 #' @export
 store_time_series <- function(con,
                               x,
+                              release,
+                              access,
                               subset,
+                              release_desc,
                               valid_from,
                               release_date,
-                              tbl,
                               overwrite,
                               schema){
   UseMethod("store_time_series", object = x)
@@ -12,10 +14,12 @@ store_time_series <- function(con,
 
 store_time_series.tslist <- function(con,
                                      tsl,
+                                     release,
+                                     access,
                                      subset = names(tsl),
+                                     release_desc = "",
                                      valid_from = NULL,
                                      release_date = NULL,
-                                     tbl = "timeseries_main",
                                      overwrite = TRUE,
                                      schema = "timeseries"){
   tsl <- tsl[subset]
@@ -35,21 +39,27 @@ store_time_series.tslist <- function(con,
   }
   
   tsl <- tsl[keep]
-  # Avoid runs through dispatcher by calling methods directly.
-  # save some time here. Also, it fosters mockery when testing.
-  store_records(con, to_ts_json(tsl),
-                            valid_from,
-                            release_date, tbl,
-                            overwrite, schema)
+
+  store_records(con,
+                to_ts_json(tsl),
+                release,
+                access,
+                release_desc,
+                valid_from,
+                release_date,
+                overwrite,
+                schema)
 }
 
 store_time_series.data.table <- function(con,
                                     dt,
+                                    release,
+                                    access,
                                     subset = dt[, id],
-                                    valid_from = NULL, # Is there a need for valid_from != today?
+                                    release_desc = "",
+                                    valid_from = NULL,
                                     release_date = NULL,
-                                    tbl = "timeseries_main",
-                                    overwrite = TRUE, # Might keep that to indicate whether old vintages should be deleted when storing single record?
+                                    overwrite = TRUE,
                                     schema = "timeseries") {
   if(!all(c("id", "time", "value") %in% names(dt))) {
     stop("This does not look like a ts data.table. Expected column names id, time and value.")
@@ -61,9 +71,16 @@ store_time_series.data.table <- function(con,
     message("No time series in subset - returned empty list.")
     return(list())
   } 
-  # Avoid runs through dispatcher by calling methods directly.
-  # save some time here. Also, it fosters mockery when testing.
-  store_records(con, to_ts_json(dt), valid_from, release_date, tbl, overwrite, schema)
+  
+  store_records(con,
+                to_ts_json(dt),
+                release,
+                access,
+                release_desc,
+                valid_from,
+                release_date,
+                overwrite,
+                schema)
 }
 
 # TODO: re-add removed arguments - the old name needs to keep the signature
