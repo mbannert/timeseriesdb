@@ -72,7 +72,7 @@ test_that("it calls through to store_records", {
     {
       store_time_series("con", dt)
       expect_called(store_ts_json, 1)
-      # expect_args(store_ts_json, 1, "con", to_ts_json(dt), NULL, NULL, "timeseries_main", TRUE, "timeseries")
+      expect_args(store_ts_json, 1, "con", to_ts_json(dt), NULL, NULL, "timeseries_main", TRUE, "timeseries")
     }
   )
 })
