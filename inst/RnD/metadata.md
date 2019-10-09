@@ -25,3 +25,9 @@ All metadata are (is?) stored in a single JSON object:
 
 this way no separate logic is needed for meta data: ts- and meta-data are just versioned "records".
 All meta data can live in a single table.
+Problem:
+what is now known as md unlocalized is updated for each release, localized need not be?
+
+## In fact
+Why not just cram ts data in there as well and build us a monolithic table?
+At the cost of possible metadata optimization
