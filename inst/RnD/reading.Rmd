@@ -1,0 +1,58 @@
+---
+title: "Grundlagenforschung on how to read ts_data"
+output: html_notebook
+---
+
+```{r}
+library(data.table)
+library(RPostgres)
+library(xts)
+
+con <- dbConnect(Postgres(), "postgres", "localhost", 1111, "pgpass", "postgres")
+dbExecute(con, "DELETE FROM timeseries.timeseries_main")
+dbExecute(con, "DELETE FROM timeseries.releases")
+
+tsl <- tstools::generate_random_ts(5000, lengths = 200)
+class(tsl) <- c("tslist", "list")
+t0 <- Sys.time()
+store_time_series(con, tsl, "lotsaseries", "public", valid_from = "2019-01-01")
+difftime(Sys.time(), t0, units = "secs")
+```
+
+```{r}
+n_to_read <- 1000
+
+keys_to_read <- paste0("('", paste(sample(names(tsl), n_to_read), collapse = "','"), "')")
+
+dt_way <- function(con) {
+  dt <- data.table(dbGetQuery(con, 
+                   sprintf("select
+                            ts_key,
+                            json_array_elements(ts_data->'time') as time,
+                            json_array_elements(ts_data->'value') as value
+                            from timeseries.timeseries_main
+                            where ts_key in %s", keys_to_read)
+                   ))
+  
+  
+  tsl <- dt[ts_key == ts_key[1], {
+    .(ts_obj = list(
+      xts(value, order.by = as.Date(time))
+    ))
+  }]
+}
+
+json_way <- function(con) {
+  xx <- data.table(dbGetQuery(
+    con,
+    sprintf("SELECT ts_key, ts_data FROM timeseries.timeseries_main where ts_key in %s", keys_to_read)
+  ))
+  
+  xx[1, fromJSON(ts_data)]
+  
+  xx[1, {
+      dta <- fromJSON(ts_data)
+      .(list(bla = xts(dta$value, order.by = as.Date(dta$time))))
+    }, by = ts_key][, V1[[1]]]
+}
+```
