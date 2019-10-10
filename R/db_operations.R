@@ -41,19 +41,28 @@ db_populate_ts_updates <- function(con,
                                 valid_from,
                                 records,
                                 access) {
-  dbExecute(con, query_create_ts_updates(schema))
+
+  dt <- data.table(
+    ts_key = names(records),
+    ts_validity = sprintf("[%s,)", valid_from),
+    ts_data = unlist(records),
+    release = release,
+    access = access
+  )
   
-  n_records <- length(records)
-  
-  dbExecute(con,
-            query_insert_ts_updates(),
-            list(
-              names(records),
-              rep(valid_from, n_records),
-              unlist(records),
-              rep(release, n_records),
-              rep(access, n_records)
-            ))
+  dbWriteTable(con,
+               "ts_updates",
+               dt,
+               temporary = TRUE, # Praise be for this parameter!
+               overwrite = TRUE,
+               field.types = c(
+                 ts_key = "text",
+                 ts_validity = "daterange",
+                 ts_data = "json",
+                 release = "text",
+                 access = "text"
+               )
+  )
 }
 
 db_close_validity_main <- function(con,

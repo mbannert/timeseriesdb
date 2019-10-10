@@ -1,21 +1,5 @@
 ### GENERAL (release date independent)
 
-query_create_ts_updates <- function(schema) {
-  sprintf("
-    CREATE TEMPORARY TABLE ts_updates (
-      LIKE %s.timeseries_main
-    ) ON COMMIT DROP",
-    schema
-  )
-}
-
-query_insert_ts_updates <- function() {
-  "
-    INSERT INTO ts_updates VALUES
-    ($1, daterange($2, null, '[)'), $3, $4, $5)
-  "
-}
-
 query_close_main <- function(schema, tbl) {
   sprintf("
       UPDATE %s.%s
