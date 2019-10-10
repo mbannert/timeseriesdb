@@ -1,0 +1,86 @@
+---
+title: "Too many little inserts make one sad"
+output: html_notebook
+---
+
+```{r}
+library(RPostgres)
+library(microbenchmark)
+library(data.table)
+
+con <- dbConnect(Postgres(), "postgres", "localhost", 1111, "pgpass", "postgres")
+
+dbExecute(con, "CREATE TABLE IF NOT EXISTS insert_rnd (
+          id integer primary key,
+          some_field text,
+          some_other_field text)")
+```
+## Performance: Multiple inserts vs one big one
+
+```{r}
+n_records <- 10000
+records <- data.table(
+  id = seq(n_records),
+  some_field = sprintf("some data %d", seq(n_records)),
+  some_other_field = sprintf("i r data too %d", seq(n_records)),
+  stringsAsFactors = FALSE
+)
+```
+
+```{r}
+microbenchmark(
+  dbExecute(con, "INSERT INTO insert_rnd VALUES ($1, $2, $3)",
+            list(
+              records$id,
+              records$some_field,
+              records$some_other_field
+            )),
+  dbExecute(con,
+              records[,
+                      sprintf("INSERT INTO insert_rnd VALUES %s", paste(
+                        sprintf(
+                          "(%d, '%s', '%s')",
+                          id,
+                          some_field,
+                          some_other_field),
+                        collapse = ","))
+                      ]
+            ),
+  times = 2,
+  setup = { message('setting back up'); dbExecute(con, "DELETE FROM insert_rnd"); message('let the test commence!'); }
+)
+```
+
+More need not be said.
+
+## Bringing whoever buckles first to their knees
+
+This chunk is to be run manually. Just crank up n_records until something breaks. *evil*
+
+  1k: Nothing
+ 10k: query weighs 456816 bytes
+100k: 4866824 bytes, takes a bit, one "could not reconnect to R session"
+  1m: 51666824 bytes, seems ok
+ 10m: machine crash w/ Error: memory exhausted (limit reached?) when assigning records (i.e. not necessarily a db issue)
+```{r}
+n_records <- 10000000
+records <- data.table(
+  id = seq(n_records),
+  some_field = sprintf("some data %d", seq(n_records)),
+  some_other_field = sprintf("i r data too %d", seq(n_records))
+)
+
+query <- records[,
+                    sprintf("INSERT INTO insert_rnd VALUES %s", paste(
+                      sprintf(
+                        "(%d, '%s', '%s')",
+                        id,
+                        some_field,
+                        some_other_field),
+                      collapse = ","))
+                    ]
+object.size(query)
+
+dbExecute(con, "DELETE FROM insert_rnd")
+dbExecute(con, query)
+```
