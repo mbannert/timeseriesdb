@@ -53,17 +53,62 @@ microbenchmark(
 
 More need not be said.
 
+## dbWriteTable?
+
+```{r}
+dbWriteTable(con, "another_table", records)
+```
+
+Rather blazing fast.
+Question is: how is table sent to postgres stdin?
+
+probably does the type conversion but what about excaping?
+
+Uses these commands (From log)
+```
+2019-10-10 09:54:16.519 UTC [57] LOG:  execute <unnamed>: CREATE TABLE "another_table" (
+	  "id" INTEGER,
+	  "some_field" TEXT,
+	  "some_other_field" TEXT
+	)
+	
+2019-10-10 09:54:16.574 UTC [57] LOG:  statement: COPY "another_table" ("id", "some_field", "some_other_field") FROM STDIN
+```
+
 ## Bringing whoever buckles first to their knees
 
 This chunk is to be run manually. Just crank up n_records until something breaks. *evil*
 
+```
   1k: Nothing
  10k: query weighs 456816 bytes
 100k: 4866824 bytes, takes a bit, one "could not reconnect to R session"
   1m: 51666824 bytes, seems ok
+  1.5m: Error in result_create(conn@ptr, statement) : 
+        Failed to fetch row: server closed the connection unexpectedly
+      	This probably means the server terminated abnormally
+      	before or while processing the request.
+      	
+        2019-10-10 09:35:20.072 UTC [1] LOG:  server process (PID 48) was terminated by signal 9: Killed
+        2019-10-10 09:35:20.072 UTC [1] DETAIL:  Failed process was running: INSERT INTO insert_rnd VALUES (1, 'some data 1', 'i r data too 1'),(2, 'some data 2', 'i r data too 2'),(3, 'some data 3', 'i r data too 3'),(4, 'some data 4', 'i r data too 4'),(5, 'some data 5', 'i r data too 5'),(6, 'some data 6', 'i r data too 6'),(7, 'some data 7', 'i r data too 7'),(8, 'some data 8', 'i r data too 8'),(9, 'some data 9', 'i r data too 9'),(10, 'some data 10', 'i r data too 10'),(11, 'some data 11', 'i r data too 11'),(12, 'some data 12', 'i r data too 12'),(13, 'some data 13', 'i r data too 13'),(14, 'some data 14', 'i r data too 14'),(15, 'some data 15', 'i r data too 15'),(16, 'some data 16', 'i r data too 16'),(17, 'some data 17', 'i r data too 17'),(18, 'some data 18', 'i r data too 18'),(19, 'some data 19', 'i r data too 19'),(20, 'some data 20', 'i r data too 20'),(21, 'some data 21', 'i r data too 21'),(22, 'some data 22', 'i r data too 22'),(23, 'some data 23', 'i r data too 23'),(24, 'some data 24', 'i r data too 24'),(25, 'some data 25', 'i r data too 25'),(26, 'some data 26',
+        2019-10-10 09:35:20.075 UTC [1] LOG:  terminating any other active server processes
+        2019-10-10 09:35:20.088 UTC [45] WARNING:  terminating connection because of crash of another server process
+        2019-10-10 09:35:20.088 UTC [45] DETAIL:  The postmaster has commanded this server process to roll back the current transaction and exit, because another server process exited abnormally and possibly corrupted shared memory.
+        2019-10-10 09:35:20.088 UTC [45] HINT:  In a moment you should be able to reconnect to the database and repeat your command.
+        2019-10-10 09:35:20.179 UTC [1] LOG:  all server processes terminated; reinitializing
+        2019-10-10 09:35:20.201 UTC [50] LOG:  database system was interrupted; last known up at 2019-10-10 09:32:22 UTC
+        2019-10-10 09:35:20.370 UTC [50] LOG:  database system was not properly shut down; automatic recovery in progress
+        2019-10-10 09:35:20.373 UTC [50] LOG:  redo starts at 0/4E578848
+        2019-10-10 09:35:20.374 UTC [50] LOG:  invalid record length at 0/4E579340: wanted 24, got 0
+        2019-10-10 09:35:20.374 UTC [50] LOG:  redo done at 0/4E579308
+        2019-10-10 09:35:20.389 UTC [1] LOG:  database system is ready to accept connections
+  
+  
  10m: machine crash w/ Error: memory exhausted (limit reached?) when assigning records (i.e. not necessarily a db issue)
+      though admittedly a lot of other crap was also running on the machine
+```
 ```{r}
-n_records <- 10000000
+n_records <- 5000000
 records <- data.table(
   id = seq(n_records),
   some_field = sprintf("some data %d", seq(n_records)),

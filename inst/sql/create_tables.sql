@@ -1,7 +1,7 @@
-CREATE SCHEMA timeseries_1_0;
+CREATE SCHEMA timeseries;
 
 -- links public validity on dataset level to series
-CREATE TABLE timeseries_1_0.releases(
+CREATE TABLE timeseries.releases(
     release text,
     ts_validity daterange,
     release_validity tstzrange,
@@ -10,14 +10,14 @@ CREATE TABLE timeseries_1_0.releases(
 );
 
 -- store different versions of time series
-CREATE TABLE timeseries_1_0.timeseries_main (
+CREATE TABLE timeseries.timeseries_main (
     ts_key text,
     ts_validity daterange, 
     ts_data json,
     release text,
     access text, 
     primary key (ts_key, ts_validity),
-    foreign key (release, ts_validity) references timeseries_1_0.releases DEFERRABLE INITIALLY DEFERRED
+    foreign key (release, ts_validity) references timeseries.releases DEFERRABLE INITIALLY DEFERRED
 );
 
 
