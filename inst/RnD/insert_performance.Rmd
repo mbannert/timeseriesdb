@@ -46,6 +46,7 @@ microbenchmark(
                         collapse = ","))
                       ]
             ),
+  dbWriteTable(con, "another_table", records, overwrite = TRUE),
   times = 2,
   setup = { message('setting back up'); dbExecute(con, "DELETE FROM insert_rnd"); message('let the test commence!'); }
 )
