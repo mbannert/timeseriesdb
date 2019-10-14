@@ -23,6 +23,17 @@ index_to_date <- function (x, as.string = FALSE)
   }
 }
 
+#' Convert date-likes to time index
+#'
+#' @param x The Date or Y-m-d string to convert 
+#'
+#' @return The numeric representation of the date that can be used with ts
+#' @export
+date_to_index <- function(x) {
+  x <- as.character(x)
+  components <- as.numeric(unlist(strsplit(x, "-")))
+  components[1] + (components[2] - 1)/12
+}
 
 #' @export
 `[.tslist` <- function(x, i) {
