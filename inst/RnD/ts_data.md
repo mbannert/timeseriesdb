@@ -24,3 +24,7 @@ but it is not needed for any other purpose.
   "ts_data": [2, 3, 4]
 }
 ```
+
+# And the reason why we shouldn't do it
+
+is that the db is also consumed by non-R clients.
