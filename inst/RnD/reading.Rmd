@@ -28,7 +28,7 @@ dt_way <- function(con) {
   dt <- data.table(dbGetQuery(con, 
                    sprintf("select
                             ts_key,
-                            json_array_elements(ts_data->'time') as time,
+                            json_array_elements(ts_data->'time')::text as time,
                             json_array_elements(ts_data->'value') as value
                             from timeseries.timeseries_main
                             where ts_key in %s", keys_to_read)

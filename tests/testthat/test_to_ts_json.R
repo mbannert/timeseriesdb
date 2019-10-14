@@ -5,7 +5,7 @@ context("ts_to_json")
 test_tsj <- function(tsj) {
   expect_is(tsj, "ts_json")
   expect_is(tsj[[1]], "json")
-  expect_equal(unclass(tsj[[1]]), '{"time":["2019-01-01","2019-02-01","2019-03-01","2019-04-01","2019-05-01"],"value":[1,2,3,4,5]}')
+  expect_equal(unclass(tsj[[1]]), '{"frequency":12,"time":["2019-01-01","2019-02-01","2019-03-01","2019-04-01","2019-05-01"],"value":[1,2,3,4,5]}')
 }
 
 test_that("it works on tslists", {
@@ -18,15 +18,49 @@ test_that("it works on tslists", {
   test_tsj(tsj)
 })
 
+test_that("it pretty-unboxes ts of length 1", {
+  tsl <- list(
+    my_ts = ts(1, start = 2019, frequency = 12)
+  )
+  class(tsl) <- c("tslist", "list")
+  
+  tsj <- to_ts_json(tsl)
+  expect_equal(unclass(tsj[[1]]), '{"frequency":12,"time":["2019-01-01"],"value":[1]}')
+})
+
 test_that("it works on ts_dts", {
   dt <- data.table(
     id = "my_ts",
     time = seq(as.Date("2019-01-01"), length.out = 5, by = "1 month"),
-    value = 1:5
+    value = 1:5,
+    freq = 12
   )
   
   tsj <- to_ts_json(dt)
   test_tsj(tsj)
+})
+
+test_that("it pretty-unboxes ts of length 1", {
+  dt <- data.table(
+    id = "my_ts",
+    time = seq(as.Date("2019-01-01"), length.out = 1, by = "1 month"),
+    value = 1,
+    freq = 12
+  )
+  
+  tsj <- to_ts_json(dt)
+  expect_equal(unclass(tsj[[1]]), '{"frequency":12,"time":["2019-01-01"],"value":[1]}')
+})
+
+test_that("it sets frequency to null when unknown", {
+  dt <- data.table(
+    id = "my_ts",
+    time = seq(as.Date("2019-01-01"), length.out = 1, by = "1 month"),
+    value = 1
+  )
+  
+  tsj <- to_ts_json(dt)
+  expect_equal(unclass(tsj[[1]]), '{"frequency":null,"time":["2019-01-01"],"value":[1]}')
 })
 
 test_that("assigning names works with nTs > 1", {
