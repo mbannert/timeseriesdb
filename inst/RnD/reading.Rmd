@@ -6,6 +6,7 @@ output: html_notebook
 ```{r}
 library(data.table)
 library(RPostgres)
+library(jsonlite)
 library(xts)
 
 con <- dbConnect(Postgres(), "postgres", "localhost", 1111, "pgpass", "postgres")
@@ -24,22 +25,34 @@ n_to_read <- 1000
 
 keys_to_read <- paste0("('", paste(sample(names(tsl), n_to_read), collapse = "','"), "')")
 
+# To test jsonb: replace json_array_elements with jsonb_array_elements and create table with JSONB type
 dt_way <- function(con) {
   dt <- data.table(dbGetQuery(con, 
                    sprintf("select
                             ts_key,
-                            json_array_elements(ts_data->'time')::text as time,
-                            json_array_elements(ts_data->'value') as value
+                            json_array_elements(ts_data->'time')#>>'{}' as time,
+                            json_array_elements(ts_data->'value') as value,
+                            ts_data->'frequency' as freq
                             from timeseries.timeseries_main
                             where ts_key in %s", keys_to_read)
                    ))
   
   
-  tsl <- dt[ts_key == ts_key[1], {
-    .(ts_obj = list(
-      xts(value, order.by = as.Date(time))
-    ))
-  }]
+  tsl <- dt[, {
+    if(is.null(freq[1])) {
+      
+    } else {
+      .(ts_obj = list(ts(
+        as.numeric(value),
+        start = date_to_index(time[1]),
+        frequency = as.numeric(freq[1])
+      )))
+    }
+  }, by = ts_key]
+  
+  out <- tsl$ts_obj
+  names(out) <- tsl[, ts_key]
+  out
 }
 
 json_way <- function(con) {
@@ -48,11 +61,31 @@ json_way <- function(con) {
     sprintf("SELECT ts_key, ts_data FROM timeseries.timeseries_main where ts_key in %s", keys_to_read)
   ))
   
-  xx[1, fromJSON(ts_data)]
-  
-  xx[1, {
+  tsl <- xx[, {
       dta <- fromJSON(ts_data)
-      .(list(bla = xts(dta$value, order.by = as.Date(dta$time))))
-    }, by = ts_key][, V1[[1]]]
+      if(is.null(dta$frequency)) {
+        
+      } else {
+         .(ts_obj = list(ts(
+           dta$value,
+           start = date_to_index(dta$time[1]),
+           frequency = as.numeric(dta$frequency[1])
+         )))
+      }
+    }, by = ts_key]
+  
+  out <- tsl$ts_obj
+  names(out) <- tsl$ts_key
+  out
 }
+
+microbenchmark(
+  dt_way(con),
+  json_way(con),
+  times = 3
+)
 ```
+
+With JSON column type, the json_way is a breezy ~20x times faster.
+With JSONB, still ~3x faster, plus inserts take a slight performance hit.
+-> let's go with the tsl way!
