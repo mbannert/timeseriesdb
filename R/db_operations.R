@@ -3,12 +3,22 @@ db_close_releases <- function(con,
                             release,
                             valid_from,
                             release_date) {
-  if (!is.null(valid_from) && is.null(release_date)) {
+  use_case <- get_use_case(valid_from, release_date)
+  
+  if (use_case == 1) {
     dbExecute(
       con,
       query_close_releases(schema, valid_from, release_date),
       list(valid_from,
            valid_from,
+           release)
+    )
+  } else if (use_case == 2) {
+    dbExecute(
+      con,
+      query_close_releases(schema, valid_from, release_date),
+      list(valid_from,
+           release_date,
            release)
     )
   } else {
@@ -22,13 +32,26 @@ db_insert_releases <- function(con,
                              release_desc,
                              valid_from,
                              release_date) {
-  if (!is.null(valid_from) && is.null(release_date)) {
+  use_case <- get_use_case(valid_from, release_date)
+  
+  if (use_case == 1) {
     dbExecute(
       con,
       query_insert_releases(schema, valid_from, release_date),
       list(release,
            sprintf("[%s,)", valid_from),
            release_desc)
+    )
+  } else if (use_case == 2) {
+    dbExecute(
+      con,
+      query_insert_releases(schema, valid_from, release_date),
+      list(
+        release,
+        sprintf("[%s,)", valid_from),
+        sprintf("[%s,)", release_date),
+        release_desc
+      )
     )
   } else {
     stop("Unimplemented")

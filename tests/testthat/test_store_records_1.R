@@ -1,4 +1,4 @@
-context("store_records with vintage and no release date")
+context("store_records with vintage and no release date (use case 1)")
 
 tsl <- list(
   ts1 = ts(1:4, 2019, frequency = 12),
@@ -6,7 +6,7 @@ tsl <- list(
 )
 class(tsl) <- c("tslist", "list")
 
-### Test data generated with following code:
+## Test data generated with following code:
 # 
 # 
 # dbExecute(con, "DELETE FROM timeseries.timeseries_main")
@@ -34,7 +34,7 @@ class(tsl) <- c("tslist", "list")
 #   main_after_insert_2,
 #   releases_after_insert_3,
 #   main_after_insert_3,
-#   file = "tests/testdata/store_records_data.RData"
+#   file = "tests/testdata/c1_store_records_data.RData"
 # )
 
 con <- NULL
@@ -42,7 +42,7 @@ if(is_test_db_reachable()) {
   con <- connect_to_test_db()
 }
 
-load("../testdata/store_records_data.RData")
+load("../testdata/c1_store_records_data.RData")
 
 test_that("Inserts produce valid state", {
   skip_on_cran()
