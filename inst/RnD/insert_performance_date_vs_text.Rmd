@@ -1,0 +1,46 @@
+---
+title: "R Notebook"
+output: html_notebook
+---
+
+```{r}
+library(RPostgres)
+library(microbenchmark)
+library(data.table)
+
+some_dates <- as.character(seq(as.Date("1900-01-01"), length.out = 100000, by = "1 day"))
+
+con <- dbConnect(Postgres(), "postgres", "localhost", 1111, "pgpass", "postgres")
+
+dbExecute(con, "CREATE TABLE IF NOT EXISTS date_vs_string (
+          x date)")
+
+query <- sprintf("insert into date_vs_string values %s", paste(sprintf("('%s')", some_dates), collapse=","))
+
+w_date <- microbenchmark(
+  dbExecute(con, query),
+  times = 10,
+  setup = dbExecute(con, "DELETE FROM date_vs_string"))
+
+dbExecute(con, "DROP TABLE date_vs_string")
+
+w_date
+```
+
+```{r}
+dbExecute(con, "CREATE TABLE IF NOT EXISTS date_vs_string(
+          x text)")
+
+w_string <- microbenchmark(
+  dbExecute(con, query),
+  times = 10,
+  setup = dbExecute(con, "DELETE FROM date_vs_string")
+)
+
+dbExecute(con, "DROP TABLE date_vs_string")
+dbDisconnect(con)
+
+w_string
+```
+
+So I guess parsing strings into dates costs nothing on postgres. Could make a ts_time, ts_data column structure (instead of json) viable? How does one insert pg arrays via RPostgres though?
