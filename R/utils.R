@@ -42,3 +42,24 @@ date_to_index <- function(x) {
   class(out) <- c("tslist", "list")
   out
 }
+
+
+#' Get internal use case number
+#' 
+#' This is a little helper to calculate a use case number
+#' from whether vintage and/or release_date are NULL.
+#' This helps by establishing a common frame of reference and
+#' enhances readability of db_ and query_ functions
+#'
+#' @details 
+#' The use cases are numbered thusly:
+#' 1 - Keep vintages but no release date specifiec
+#' 2 - Keep vintages and withold latest vintage until release date
+#' 3 - Neither vintages nor release date
+#' 4 - No vintages but withold newer version until release date
+#'
+#' @param vintage 
+#' @param release_date 
+get_use_case <- function(vintage, release_date) {
+  1 + 2*is.null(vintage) + !is.null(release_date) # Because coding fun
+}
