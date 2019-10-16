@@ -1,88 +1,53 @@
-db_close_releases <- function(con,
-                            schema,
-                            release,
-                            valid_from,
-                            release_date) {
-  use_case <- get_use_case(valid_from, release_date)
-  
-  if (use_case == 1) {
-    dbExecute(
-      con,
-      query_close_releases(schema, valid_from, release_date),
-      list(valid_from,
-           valid_from,
-           release)
-    )
-  } else if (use_case == 2) {
-    dbExecute(
-      con,
-      query_close_releases(schema, valid_from, release_date),
-      list(valid_from,
-           release_date,
-           release)
-    )
-  } else {
-    stop("You seem to have reached a point of unimplemented code. sorries!")
-  }
-}
-
-db_insert_releases <- function(con,
-                             schema,
-                             release,
-                             release_desc,
-                             valid_from,
-                             release_date) {
-  use_case <- get_use_case(valid_from, release_date)
-  
-  if (use_case == 1) {
-    dbExecute(
-      con,
-      query_insert_releases(schema, valid_from, release_date),
-      list(release,
-           sprintf("[%s,)", valid_from),
-           release_desc)
-    )
-  } else if (use_case == 2) {
-    dbExecute(
-      con,
-      query_insert_releases(schema, valid_from, release_date),
-      list(
-        release,
-        sprintf("[%s,)", valid_from),
-        sprintf("[%s,)", release_date),
-        release_desc
-      )
-    )
-  } else {
-    stop("Unimplemented")
-  }
+db_create_release <- function(con,
+                              schema,
+                              release,
+                              release_desc) {
+  dbGetQuery(con,
+             query_create_release(schema),
+             list(
+               release,
+               release_desc
+             ))$id
 }
 
 db_populate_ts_updates <- function(con,
-                                schema,
-                                release,
-                                valid_from,
-                                records,
-                                access) {
+                                   schema,
+                                   release_id,
+                                   valid_from,
+                                   release_date,
+                                   records,
+                                   access) {
 
+  use_case <- get_use_case(valid_from, release_date)
+  
+  ts_validity <- ifelse(use_case %in% c(1, 2),
+                        sprintf("[%s,)", valid_from),
+                        "(,)")
+  
+  release_validity <- ifelse(use_case %in% c(2, 4),
+                             sprintf("[%s,)", release_date),
+                             "(,)")
+  
   dt <- data.table(
     ts_key = names(records),
-    ts_validity = sprintf("[%s,)", valid_from),
     ts_data = unlist(records),
-    release = release,
+    release_id = release_id,
+    ts_validity = ts_validity,
+    release_validity = release_validity,
     access = access
   )
   
   dbWriteTable(con,
                "ts_updates",
                dt,
-               temporary = TRUE, # Praise be for this parameter!
+               temporary = TRUE,
                overwrite = TRUE,
                field.types = c(
                  ts_key = "text",
-                 ts_validity = "daterange",
                  ts_data = "json",
-                 release = "text",
+                 release_id = "uuid",
+                 ts_validity = "daterange",
+                 release_validity = "tstzrange",
                  access = "text"
                )
   )
@@ -90,13 +55,11 @@ db_populate_ts_updates <- function(con,
 
 ## TODO: remove these two.
 ## If there is only a single statement and no branching there is no point in these wrappers.
-db_close_validity_main <- function(con,
+db_close_ranges_main <- function(con,
                                 schema,
-                                tbl,
-                                valid_from,
-                                release_date) {
+                                tbl) {
   dbExecute(con,
-            query_close_main(schema, tbl))
+            query_close_ranges_main(schema, tbl))
 }
 
 db_insert_new_records <- function(con,
@@ -115,9 +78,6 @@ db_cleanup_empty_versions <- function(con,
                                    release_date) {
   dbExecute(con, 
             query_delete_empty_validity_main(schema, tbl))
-  
-  dbExecute(con,
-            query_delete_empty_validity_releases(schema))
 }
 
 db_populate_ts_read <- function(con,

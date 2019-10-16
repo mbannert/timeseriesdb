@@ -1,23 +1,27 @@
+-- remove this line before going into production! ;)
+DROP SCHEMA timeseries CASCADE;
+
+CREATE EXTENSION IF NOT EXISTS "uuid-ossp";
+
 CREATE SCHEMA timeseries;
 
 -- links public validity on dataset level to series
 CREATE TABLE timeseries.releases(
+    id UUID NOT NULL DEFAULT uuid_generate_v1() PRIMARY KEY,
     release text,
-    ts_validity daterange,
-    release_validity tstzrange,
-    release_description text,
-    primary key (release, ts_validity)
+    release_description text
 );
 
 -- store different versions of time series
 CREATE TABLE timeseries.timeseries_main (
     ts_key text,
-    ts_validity daterange, 
     ts_data json,
-    release text,
-    access text, 
+    release_id UUID,
+    ts_validity daterange,
+    release_validity tstzrange,
+    access text,
     primary key (ts_key, ts_validity),
-    foreign key (release, ts_validity) references timeseries.releases DEFERRABLE INITIALLY DEFERRED
+    foreign key (release_id) references timeseries.releases(id) DEFERRABLE INITIALLY DEFERRED
 );
 
 

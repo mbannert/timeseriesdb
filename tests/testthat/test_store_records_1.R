@@ -44,6 +44,19 @@ if(is_test_db_reachable()) {
 
 load("../testdata/c1_store_records_data.RData")
 
+test_that("release_id is a uuid", {
+  skip_on_cran()
+  skip_if_not(is_test_db_reachable())
+  
+  reset_db(con)
+  
+  store_time_series(con, tsl, "test", "public", valid_from = "2019-01-01")
+  
+  rls <- dbGetQuery(con, "SELECT * FROM timeseries.releases")
+  
+  expect_match(rls$id, "[0-9a-fA-F]{8}\\-[0-9a-fA-F]{4}\\-[0-9a-fA-F]{4}\\-[0-9a-fA-F]{4}\\-[0-9a-fA-F]{12}")
+})
+
 test_that("Inserts produce valid state", {
   skip_on_cran()
   skip_if_not(is_test_db_reachable())
@@ -52,32 +65,32 @@ test_that("Inserts produce valid state", {
   
   store_time_series(con, tsl, "test", "public", valid_from = "2019-01-01")
   expect_equal(
-    dbGetQuery(con, "SELECT * FROM timeseries.releases"),
-    releases_after_insert_1
+    dbGetQuery(con, "SELECT * FROM timeseries.releases")[, -1],
+    releases_after_insert_1[, -1]
   )
   expect_equal(
-    dbGetQuery(con, "SELECT * FROM timeseries.timeseries_main"),
-    main_after_insert_1
+    dbGetQuery(con, "SELECT * FROM timeseries.timeseries_main")[, -3],
+    main_after_insert_1[, -3]
   )
   
   store_time_series(con, tsl, "test", "public", valid_from = "2019-02-01")
   expect_equal(
-    dbGetQuery(con, "SELECT * FROM timeseries.releases"),
-    releases_after_insert_2
+    dbGetQuery(con, "SELECT * FROM timeseries.releases")[, -1],
+    releases_after_insert_2[, -1]
   )
   expect_equal(
-    dbGetQuery(con, "SELECT * FROM timeseries.timeseries_main"),
-    main_after_insert_2
+    dbGetQuery(con, "SELECT * FROM timeseries.timeseries_main")[, -3],
+    main_after_insert_2[, -3]
   )
   
   store_time_series(con, tsl, "test", "public", valid_from = "2019-03-01")
   expect_equal(
-    dbGetQuery(con, "SELECT * FROM timeseries.releases"),
-    releases_after_insert_3
+    dbGetQuery(con, "SELECT * FROM timeseries.releases")[, -1],
+    releases_after_insert_3[, -1]
   )
   expect_equal(
-    dbGetQuery(con, "SELECT * FROM timeseries.timeseries_main"),
-    main_after_insert_3
+    dbGetQuery(con, "SELECT * FROM timeseries.timeseries_main")[, -3],
+    main_after_insert_3[, -3]
   )
 })
 
@@ -96,11 +109,7 @@ test_that("storing multiple times on the same day is a range-wise noop", {
   store_time_series(con, tsl, "test", "public", valid_from = "2019-03-01")
   
   expect_equal(
-    dbGetQuery(con, "SELECT * FROM timeseries.releases"),
-    releases_after_insert_3
-  )
-  expect_equal(
-    dbGetQuery(con, "SELECT * FROM timeseries.timeseries_main"),
-    main_after_insert_3
+    dbGetQuery(con, "SELECT * FROM timeseries.timeseries_main")[, -3],
+    main_after_insert_3[, -3]
   )
 })
