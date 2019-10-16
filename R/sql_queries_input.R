@@ -29,8 +29,7 @@ query_insert_main <- function(schema, tbl) {
 query_delete_empty_validity_main <- function(schema, tbl) {
   sprintf("
       DELETE FROM %s.%s
-      WHERE release = (SELECT release FROM ts_updates LIMIT 1)
-      AND isempty(ts_validity)
+      WHERE isempty(ts_validity)
     ",
     schema,
     tbl
@@ -40,8 +39,7 @@ query_delete_empty_validity_main <- function(schema, tbl) {
 query_delete_empty_validity_releases <- function(schema) {
   sprintf("
       DELETE FROM %s.releases
-      WHERE release = (SELECT release FROM ts_updates LIMIT 1)
-      AND isempty(ts_validity)
+      WHERE isempty(ts_validity)
     ",
     schema
   )
