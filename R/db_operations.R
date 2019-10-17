@@ -73,7 +73,7 @@ db_remove_previous_versions <- function(con,
     dbExecute(con,
               sprintf("DELETE FROM %s.%s
                       WHERE usage_case = 4
-                      AND NOT release_validity @> now()",
+                      AND upper(release_validity) <= now()",
                       schema,
                       tbl))
   }
