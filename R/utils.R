@@ -10,6 +10,10 @@
 #' @export
 index_to_date <- function (x, as.string = FALSE) 
 {
+  # If called as index_to_date(time(a_ts))
+  # x is a ts. Unclass it so we can work with the faster basic operators
+  x <- c(x)
+  
   years <- floor(x + 1/24)
   months <- floor(12*(x - years + 1/24)) + 1
   # No support for days currently
