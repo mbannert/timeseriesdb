@@ -2,12 +2,14 @@
 DROP SCHEMA timeseries CASCADE;
 
 CREATE EXTENSION IF NOT EXISTS "uuid-ossp";
+CREATE EXTENSION IF NOT EXISTS btree_gist;
 
 CREATE SCHEMA timeseries;
 
 -- links public validity on dataset level to series
 CREATE TABLE timeseries.releases(
-    id UUID NOT NULL DEFAULT uuid_generate_v1() PRIMARY KEY,
+    id UUID NOT NULL DEFAULT uuid_generate_v1() PRIMARY KEY, -- guess a sequence would be fine too
+                                                             -- or even release as FK to allow sharing
     release text,
     release_description text
 );
@@ -20,8 +22,12 @@ CREATE TABLE timeseries.timeseries_main (
     ts_validity daterange,
     release_validity tstzrange,
     access text,
-    primary key (ts_key, ts_validity),
-    foreign key (release_id) references timeseries.releases(id) DEFERRABLE INITIALLY DEFERRED
+    usage_type integer, -- ???
+    primary key (ts_key, ts_validity, release_validity),
+    foreign key (release_id) references timeseries.releases(id) DEFERRABLE INITIALLY DEFERRED,
+    EXCLUDE USING GIST (ts_key WITH =, ts_validity WITH &&) WHERE (usage_type = 1 OR usage_type = 2), -- this only applies to 1 and 2
+    EXCLUDE USING GIST (ts_key WITH =, release_validity WITH &&) WHERE (usage_type = 2 OR usage_type = 4) -- this only applies to 2 and 4
+    -- 3 doesn't care, 1 will collide in second, 4 in first excludes
 );
 
 

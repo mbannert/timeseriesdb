@@ -6,7 +6,7 @@ tsl <- list(
 )
 class(tsl) <- c("tslist", "list")
 
-## Test data generated with following code:
+# ## Test data generated with following code:
 # 
 # 
 # dbExecute(con, "DELETE FROM timeseries.timeseries_main")

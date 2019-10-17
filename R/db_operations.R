@@ -34,7 +34,8 @@ db_populate_ts_updates <- function(con,
     release_id = release_id,
     ts_validity = ts_validity,
     release_validity = release_validity,
-    access = access
+    access = access,
+    usage_type = use_case
   )
   
   dbWriteTable(con,
@@ -48,7 +49,8 @@ db_populate_ts_updates <- function(con,
                  release_id = "uuid",
                  ts_validity = "daterange",
                  release_validity = "tstzrange",
-                 access = "text"
+                 access = "text",
+                 usage_type = "integer"
                )
   )
 }
