@@ -124,9 +124,6 @@ test_that("it removes stale releases with empty intervals", {
   server_time <- dbGetQuery(con, "SELECT now()")$now
   store_time_series(con, tsl_a, "test", "public", release_date = server_time)
   
-  Sys.sleep(0.1)
-  
-  server_time <- dbGetQuery(con, "SELECT now()")$now
   store_time_series(con, tsl_b, "test", "public", release_date = server_time)
   
   expect_equal(
