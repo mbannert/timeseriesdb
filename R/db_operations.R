@@ -21,11 +21,11 @@ db_populate_ts_updates <- function(con,
   use_case <- get_use_case(valid_from, release_date)
   
   ts_validity <- ifelse(use_case %in% c(1, 2),
-                        sprintf("[%s,)", valid_from),
+                        sprintf("[%s,)", format(valid_from, "%Y-%m-%d")),
                         "(,)")
   
   release_validity <- ifelse(use_case %in% c(2, 4),
-                             sprintf("[%s,)", release_date),
+                             sprintf("[%s,)", format(release_date, "%Y-%m-%d %T %z")),
                              "(,)")
   
   dt <- data.table(
@@ -73,7 +73,7 @@ db_remove_previous_versions <- function(con,
     dbExecute(con,
               sprintf("DELETE FROM %s.%s
                       WHERE usage_type = 4
-                      AND upper(release_validity) <= now()",
+                      AND (upper(release_validity) <= now() OR isempty(release_validity))",
                       schema,
                       tbl))
   }

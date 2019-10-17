@@ -42,9 +42,11 @@ query_close_ranges_main <- function(schema, tbl) {
       release_validity = tstzrange(lower(%s.release_validity), lower(ts_updates.release_validity))
       FROM ts_updates
       WHERE ts_updates.ts_key = %s.ts_key
-      AND upper_inf(%s.ts_validity);
+      AND upper_inf(%s.ts_validity)
+      AND upper_inf(%s.release_validity);
     ",
           schema,
+          tbl,
           tbl,
           tbl,
           tbl,

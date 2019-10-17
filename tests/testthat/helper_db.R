@@ -1,7 +1,8 @@
 connect_to_test_db <- function() {
-  dbConnect(Postgres(), "postgres", "localhost", 1111, "pgpass", "postgres")
+  dbConnect(Postgres(), "postgres", "localhost", 1111, "pgpass", "postgres", bigint = "integer")
 }
 
+# TODO: see ?dbCanConnect
 is_test_db_reachable <- function(){
   tryCatch({
     con <- connect_to_test_db()
