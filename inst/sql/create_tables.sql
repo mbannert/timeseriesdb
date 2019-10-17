@@ -24,7 +24,7 @@ CREATE TABLE timeseries.timeseries_main (
     access text,
     usage_type integer, -- ???
     primary key (ts_key, ts_validity, release_validity),
-    foreign key (release_id) references timeseries.releases(id) DEFERRABLE INITIALLY DEFERRED,
+    foreign key (release_id) references timeseries.releases(id),
     EXCLUDE USING GIST (ts_key WITH =, ts_validity WITH &&) WHERE (usage_type = 1 OR usage_type = 2), -- this only applies to 1 and 2
     EXCLUDE USING GIST (ts_key WITH =, release_validity WITH &&) WHERE (usage_type = 2 OR usage_type = 4) -- this only applies to 2 and 4
     -- 3 doesn't care, 1 will collide in second, 4 in first excludes
