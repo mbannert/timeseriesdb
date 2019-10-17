@@ -44,6 +44,7 @@ if(is_test_db_reachable()) {
 
 load("../testdata/c1_store_records_data.RData")
 
+## TODO: move this to separate test file 
 test_that("release_id is a uuid", {
   skip_on_cran()
   skip_if_not(is_test_db_reachable())

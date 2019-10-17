@@ -64,7 +64,7 @@ db_remove_previous_versions <- function(con,
   if(use_case == 3) {
     dbExecute(con,
               sprintf("DELETE FROM %s.%s
-                      WHERE usage_case == 3
+                      WHERE usage_type = 3
                       AND ts_key IN (SELECT ts_key FROM ts_updates)",
                       schema,
                       tbl))
@@ -72,7 +72,7 @@ db_remove_previous_versions <- function(con,
     # clean up stale versions, they are not needed anymore
     dbExecute(con,
               sprintf("DELETE FROM %s.%s
-                      WHERE usage_case = 4
+                      WHERE usage_type = 4
                       AND upper(release_validity) <= now()",
                       schema,
                       tbl))
