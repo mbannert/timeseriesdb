@@ -13,7 +13,11 @@ store_records <- function(con,
     # anyway, if it is to be done then HERE is the spot. right here vvv 
     release_id <- db_create_release(con, schema, release, release_desc)
     db_populate_ts_updates(con, schema, release_id, valid_from, release_date, records, access)
+    db_remove_previous_versions(con, schema, tbl, valid_from, release_date)
     db_close_ranges_main(con, schema, tbl)
+    # This will throw an error in case already versioned ts are stored w/o valid_from
+    # 1) either build in checks before even making this call
+    # 2) catch it and return some more understandable error
     db_insert_new_records(con, schema, tbl, valid_from, release_date)
     db_cleanup_empty_versions(con, schema, tbl, valid_from, release_date)
   })

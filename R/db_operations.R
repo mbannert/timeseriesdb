@@ -55,6 +55,30 @@ db_populate_ts_updates <- function(con,
   )
 }
 
+db_remove_previous_versions <- function(con,
+                                        schema,
+                                        tbl,
+                                        valid_from,
+                                        release_date) {
+  use_case <- get_use_case(valid_from, release_date)
+  if(use_case == 3) {
+    dbExecute(con,
+              sprintf("DELETE FROM %s.%s
+                      WHERE usage_case == 3
+                      AND ts_key IN (SELECT ts_key FROM ts_updates)",
+                      schema,
+                      tbl))
+  } else if (use_case == 4) {
+    # clean up stale versions, they are not needed anymore
+    dbExecute(con,
+              sprintf("DELETE FROM %s.%s
+                      WHERE usage_case = 4
+                      AND NOT release_validity @> now()",
+                      schema,
+                      tbl))
+  }
+}
+
 ## TODO: remove these two.
 ## If there is only a single statement and no branching there is no point in these wrappers.
 db_close_ranges_main <- function(con,
