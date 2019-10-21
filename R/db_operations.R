@@ -1,3 +1,13 @@
+#' Populate temporary ts_updates table with records
+#' first properly formatting validity ranges
+#'
+#' @param con 
+#' @param schema 
+#' @param release_id 
+#' @param valid_from 
+#' @param release_date 
+#' @param records 
+#' @param access 
 db_populate_ts_updates <- function(con,
                                    schema,
                                    release_id,
@@ -16,6 +26,7 @@ db_populate_ts_updates <- function(con,
                              sprintf("[%s,)", format(release_date, "%Y-%m-%d %T %z")),
                              "(,)")
   
+  # TODO: add mechanism for setting column names (for e.g. metadata)
   dt <- data.table(
     ts_key = names(records),
     ts_data = unlist(records),
@@ -43,6 +54,15 @@ db_populate_ts_updates <- function(con,
   )
 }
 
+#' Helper for removing rows no longer needed in use case 3 and 4
+#' In 3: Simply delete everything with the ts_key to be inserted
+#' In 4: Delete rows whose release_validity lies in the past
+#' 
+#' @param con 
+#' @param schema 
+#' @param tbl 
+#' @param valid_from 
+#' @param release_date 
 db_remove_previous_versions <- function(con,
                                         schema,
                                         tbl,
@@ -51,6 +71,7 @@ db_remove_previous_versions <- function(con,
   use_case <- get_use_case(valid_from, release_date)
   if(use_case == 3) {
     dbExecute(con,
+              # TODO: Make these into query_s
               sprintf("DELETE FROM %s.%s
                       WHERE usage_type = 3
                       AND ts_key IN (SELECT ts_key FROM ts_updates)",
@@ -68,6 +89,17 @@ db_remove_previous_versions <- function(con,
 }
 
 
+#' Create and populate a temporary table ts_read with desired (ts_key, ts_validity) pairs for
+#' joining against timeseries_main and reading.
+#'
+#' if regex == TRUE the first entry of ts_keys will be used as the pattern
+#'
+#' @param con 
+#' @param ts_keys 
+#' @param regex 
+#' @param schema 
+#' @param valid_on 
+#' @param respect_release_date 
 db_populate_ts_read <- function(con,
                                 ts_keys,
                                 regex,
