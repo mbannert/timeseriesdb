@@ -20,6 +20,7 @@ read_time_series <- function(con,
                              regex = FALSE,
                              respect_release_date = FALSE,
                              schema = "timeseries",
+                             table = "timeseries_main",
                              chunksize = 10000) {
   if(regex) {
     if(length(ts_keys) > 1) {
@@ -34,6 +35,7 @@ read_time_series <- function(con,
     ts_keys,
     regex,
     schema,
+    table,
     valid_on,
     respect_release_date
   )
@@ -55,10 +57,13 @@ read_time_series <- function(con,
   while(!dbHasCompleted(res)) {
     chunk <- data.table(dbFetch(res, n = chunksize))
     
+    # TODO!!!
     tsl <- chunk[, .(ts_obj = list(json_to_ts(ts_data))), by = ts_key]$ts_obj
     names(tsl) <- chunk[, ts_key]
   }
   dbClearResult(res)
+  
+  class(tsl) <- c("tslist", "list")
   
   tsl
 }

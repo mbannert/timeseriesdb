@@ -95,44 +95,43 @@ db_populate_ts_read <- function(con,
                                 ts_keys,
                                 regex,
                                 schema,
+                                table,
                                 valid_on,
                                 respect_release_date) {
   if(!is.null(valid_on)) {
-    valid_on <- as.POSIXct(valid_on)
+    valid_on <- as.Date(valid_on)
   }
   
   dbExecute(con, "DROP TABLE IF EXISTS ts_read")
+  dbExecute(con, "DROP TABLE IF EXISTS ts_read_keys")
   
   if(regex) {
     dbExecute(con,
-              query_populate_ts_read_regex(con,
-                                           schema,
-                                           ts_keys[1],
-                                           valid_on,
-                                           respect_release_date))
+              query_populate_ts_read_keys_regex(con,
+                                                schema,
+                                                ts_keys[1]))
   } else {
-    
-    # Including ts_validity here saves us an ALTER TABLE
     dt <- data.table(
-      ts_key = ts_keys,
-      ts_validity = NA
+      ts_key = ts_keys
     )
-  
+    
     dbWriteTable(con,
-                 "ts_read",
+                 "ts_read_keys",
                  dt,
                  temporary = TRUE, # Praise be for this parameter!
                  overwrite = TRUE,
                  field.types = c(
-                   ts_key = "text",
-                   ts_validity = "daterange"
+                   ts_key = "text"
                  )
     )
-    
-    dbExecute(con,
-              query_update_ts_read(con,
-                                   schema,
-                                   valid_on,
-                                   respect_release_date))
   }
+  
+  dbExecute(con,
+            query_populate_ts_read(
+              con,
+              schema,
+              table,
+              valid_on,
+              respect_release_date
+            ))
 }
