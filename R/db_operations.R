@@ -1,16 +1,3 @@
-db_create_release <- function(con,
-                              schema,
-                              release,
-                              release_desc) {
-  dbGetQuery(con,
-             query_create_release(con,
-                                  schema),
-             list(
-               release,
-               release_desc
-             ))$id
-}
-
 db_populate_ts_updates <- function(con,
                                    schema,
                                    release_id,
@@ -80,38 +67,6 @@ db_remove_previous_versions <- function(con,
   }
 }
 
-## TODO: remove these two.
-## If there is only a single statement and no branching there is no point in these wrappers.
-db_close_ranges_main <- function(con,
-                                schema,
-                                tbl) {
-  dbExecute(con,
-            query_close_ranges_main(con,
-                                    schema,
-                                    tbl))
-}
-
-db_insert_new_records <- function(con,
-                               schema,
-                               tbl,
-                               valid_from,
-                               release_date) {
-  dbExecute(con,
-            query_insert_main(con,
-                              schema,
-                              tbl))
-}
-
-db_cleanup_empty_versions <- function(con,
-                                   schema,
-                                   tbl,
-                                   valid_from,
-                                   release_date) {
-  dbExecute(con, 
-            query_delete_empty_validity_main(con,
-                                             schema,
-                                             tbl))
-}
 
 db_populate_ts_read <- function(con,
                                 ts_keys,

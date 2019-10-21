@@ -1,3 +1,17 @@
+# TODO: these are outdated. rewrite kthxbai.
+
+#' Create a query to populate a temporary "ts_read" table with ts_keys matching pattern
+#' and optionally excluding those which are not available yet due to a release date
+#' 
+#' This is the one to be used when reading ts based on regex pattern
+#' 
+#' @param con 
+#'
+#' @param schema 
+#' @param pattern 
+#' @param valid_on 
+#' @param respect_release_date 
+#'
 #' @importFrom RPostgres Id dbQuoteIdentifier
 query_populate_ts_read_regex <- function(con,
                                          schema,
@@ -7,10 +21,10 @@ query_populate_ts_read_regex <- function(con,
   if(respect_release_date) {
     sprintf("
             CREATE TEMPORARY TABLE ts_read AS(
-            SELECT ts_key, ts_validity FROM %s
-            JOIN %s
-            ON timeseries_main.ts_key ~ %s
-            AND releases.release_validity @> '%s'::timestamptz
+            SELECT ts_key, ts_validity FROM %s                      -- schema.releases
+            JOIN %s                                                 -- schema.timeseries_main
+            ON timeseries_main.ts_key ~ %s                          -- pattern
+            AND releases.release_validity @> '%s'::timestamptz      -- valid_on
             AND timeseries_main.release = releases.release
             AND timeseries_main.ts_validity = releases.ts_validity)",
             dbQuoteIdentifier(con, Id(schema = schema, table = "releases")),
@@ -20,15 +34,26 @@ query_populate_ts_read_regex <- function(con,
   } else {
     sprintf("
             CREATE TEMPORARY TABLE ts_read AS(
-            SELECT ts_key, ts_validity FROM %s
-            WHERE ts_key ~ %s
-            AND ts_validity @> '%s'::date)",
+            SELECT ts_key, ts_validity FROM %s                      -- schema.timeseries_main
+            WHERE ts_key ~ %s                                       -- pattern
+            AND ts_validity @> '%s'::date)                          -- valid_on",
             dbQuoteIdentifier(con, Id(schema = schema, table = "timeseries_main")),
             dbQuoteLiteral(con, pattern),
             valid_on)
   }
 }
 
+#' Create a query to set proper ts_validity on a ts_read that has already been populated with ts_keys
+#' If release date does not matter, pick the one where ts_validity contains valid_on
+#' If release date is to be respected, pick the one
+#' 
+#' 
+#' @param con 
+#'
+#' @param schema 
+#' @param valid_on 
+#' @param respect_release_date 
+#'
 #' @importFrom RPostgres Id dbQuoteIdentifier
 query_update_ts_read <- function(con,
                                  schema,
