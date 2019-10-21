@@ -97,6 +97,10 @@ db_populate_ts_read <- function(con,
                                 schema,
                                 valid_on,
                                 respect_release_date) {
+  if(!is.null(valid_on)) {
+    valid_on <- as.POSIXct(valid_on)
+  }
+  
   dbExecute(con, "DROP TABLE IF EXISTS ts_read")
   
   if(regex) {
