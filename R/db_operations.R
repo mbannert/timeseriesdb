@@ -71,20 +71,11 @@ db_remove_previous_versions <- function(con,
   use_case <- get_use_case(valid_from, release_date)
   if(use_case == 3) {
     dbExecute(con,
-              # TODO: Make these into query_s
-              sprintf("DELETE FROM %s.%s
-                      WHERE usage_type = 3
-                      AND ts_key IN (SELECT ts_key FROM ts_updates)",
-                      schema,
-                      tbl))
+              query_delete_old_versions(con, schema, tbl))
   } else if (use_case == 4) {
     # clean up stale versions, they are not needed anymore
     dbExecute(con,
-              sprintf("DELETE FROM %s.%s
-                      WHERE usage_type = 4
-                      AND (upper(release_validity) <= now() OR isempty(release_validity))",
-                      schema,
-                      tbl))
+              query_delete_stale_versions(con, schema, tbl))
   }
 }
 

@@ -106,4 +106,38 @@ query_close_ranges_main <- function(con,
   )
 }
 
-### Use case specific queries
+#' Create a query that deletes all rows from schema.tbl with ts_key in ts_updates
+#' Needed for use case 3
+#' 
+#' @param con 
+#'
+#' @param schema 
+#' @param tbl 
+#'
+#' @importFrom RPostgres Id dbQuoteIdentifier
+query_delete_old_versions <- function(con,
+                                      schema,
+                                      tbl) {
+  sprintf("DELETE FROM %s
+                      WHERE usage_type = 3
+                      AND ts_key IN (SELECT ts_key FROM ts_updates)",
+          dbQuoteIdentifier(con, Id(schema = schema, table = tbl)))
+}
+
+#' Create query to remove all rows from schema.tbl whose release_validity lies entirely in the past
+#' Sort of a lazy clean up for use case 4
+#' 
+#' @param con 
+#'
+#' @param schema 
+#' @param tbl 
+#'
+#' @importFrom RPostgres Id dbQuoteIdentifier
+query_delete_stale_versions <- function(con,
+                                        schema,
+                                        tbl) {
+  sprintf("DELETE FROM %s
+                      WHERE usage_type = 4
+                      AND (upper(release_validity) <= now() OR isempty(release_validity))",
+          dbQuoteIdentifier(con, Id(schema = schema, table = tbl)))
+}
