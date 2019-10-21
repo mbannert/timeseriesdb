@@ -63,14 +63,10 @@ query_update_ts_read <- function(con,
     sprintf("
               UPDATE ts_read
               SET ts_validity = (
-                SELECT releases.ts_validity FROM %s
-                JOIN %s
-                ON releases.release = timeseries_main.release
-                AND releases.release_validity @> '%s'::timestamptz
-                AND ts_read.ts_key = timeseries_main.ts_key
-                AND releases.ts_validity = timeseries_main.ts_validity)",
+                SELECT ts_validity FROM %s
+                WHERE release_validity @> '%s'::timestamptz
+                AND ts_read.ts_key = timeseries_main.ts_key)",
             dbQuoteIdentifier(con, Id(schema = schema, table = "timeseries_main")),
-            dbQuoteIdentifier(con, Id(schema = schema, table = "releases")),
             valid_on)
   } else {
     sprintf("
@@ -79,8 +75,8 @@ query_update_ts_read <- function(con,
             SELECT ts_validity FROM %s
             WHERE ts_read.ts_key = timeseries_main.ts_key
             AND timeseries_main.ts_validity @> '%s'::date)",
-            dbQuoteIdentifier(con, Id(schema = schema, table = "timeseries_main")),
-            valid_on)
+          dbQuoteIdentifier(con, Id(schema = schema, table = "timeseries_main")),
+          valid_on)
   }
 }
 
@@ -92,5 +88,5 @@ query_select_time_series <- function(con,
           JOIN %s
           ON ts_read.ts_key = timeseries_main.ts_key
           AND ts_read.ts_validity = timeseries_main.ts_validity",
-          dbQuoteIdentifier(con, Id(schema = "schema", table = "timeseries_main")))
+          dbQuoteIdentifier(con, Id(schema = schema, table = "timeseries_main")))
 }
