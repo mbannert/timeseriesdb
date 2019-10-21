@@ -3,7 +3,8 @@ db_create_release <- function(con,
                               release,
                               release_desc) {
   dbGetQuery(con,
-             query_create_release(schema),
+             query_create_release(con,
+                                  schema),
              list(
                release,
                release_desc
@@ -85,7 +86,9 @@ db_close_ranges_main <- function(con,
                                 schema,
                                 tbl) {
   dbExecute(con,
-            query_close_ranges_main(schema, tbl))
+            query_close_ranges_main(con,
+                                    schema,
+                                    tbl))
 }
 
 db_insert_new_records <- function(con,
@@ -94,7 +97,9 @@ db_insert_new_records <- function(con,
                                valid_from,
                                release_date) {
   dbExecute(con,
-            query_insert_main(schema, tbl))
+            query_insert_main(con,
+                              schema,
+                              tbl))
 }
 
 db_cleanup_empty_versions <- function(con,
@@ -103,7 +108,9 @@ db_cleanup_empty_versions <- function(con,
                                    valid_from,
                                    release_date) {
   dbExecute(con, 
-            query_delete_empty_validity_main(schema, tbl))
+            query_delete_empty_validity_main(con,
+                                             schema,
+                                             tbl))
 }
 
 db_populate_ts_read <- function(con,
@@ -116,7 +123,11 @@ db_populate_ts_read <- function(con,
   
   if(regex) {
     dbExecute(con,
-              query_populate_ts_read_regex(schema, ts_keys[1], valid_on, respect_release_date))
+              query_populate_ts_read_regex(con,
+                                           schema,
+                                           ts_keys[1],
+                                           valid_on,
+                                           respect_release_date))
   } else {
     
     # Including ts_validity here saves us an ALTER TABLE
@@ -137,6 +148,9 @@ db_populate_ts_read <- function(con,
     )
     
     dbExecute(con,
-              query_update_ts_read(schema, valid_on, respect_release_date))
+              query_update_ts_read(con,
+                                   schema,
+                                   valid_on,
+                                   respect_release_date))
   }
 }

@@ -1,43 +1,57 @@
 ### GENERAL (release date independent)
 
-query_insert_main <- function(schema, tbl) {
+#' @importFrom RPostgres Id dbQuoteIdentifier
+query_insert_main <- function(con,
+                              schema,
+                              tbl) {
   sprintf("
-      INSERT INTO %s.%s
+      INSERT INTO %s
       SELECT * FROM ts_updates
     ",
-    schema,
-    tbl
+    dbQuoteIdentifier(con, Id(schema = schema, table = tbl))
   )
 }
 
-query_delete_empty_validity_main <- function(schema, tbl) {
+#' @importFrom RPostgres Id dbQuoteIdentifier
+query_delete_empty_validity_main <- function(con,
+                                             schema,
+                                             tbl) {
   sprintf("
-      DELETE FROM %s.%s
+      DELETE FROM %s
       WHERE isempty(ts_validity)
     ",
-    schema,
-    tbl
+    dbQuoteIdentifier(con, Id(schema = schema, table = tbl))
   )
 }
 
-query_delete_empty_validity_releases <- function(schema) {
+#' @importFrom RPostgres Id dbQuoteIdentifier
+query_delete_empty_validity_releases <- function(con,
+                                                 schema) {
   sprintf("
-      DELETE FROM %s.releases
+      DELETE FROM %s
       WHERE isempty(ts_validity)
     ",
-    schema
+    dbQuoteIdentifier(con, Id(schema = schema, table = "releases"))
   )
 }
 
-query_create_release <- function(schema) {
-  sprintf("INSERT INTO %s.releases(release, release_description) VALUES ($1, $2) RETURNING id",
-          schema)
+#' @importFrom RPostgres Id dbQuoteIdentifier
+query_create_release <- function(con,
+                                 schema) {
+  sprintf("INSERT INTO %s(release, release_description) VALUES ($1, $2) RETURNING id",
+          dbQuoteIdentifier(con, Id(schema = schema, table = "releases"))
+          )
 }
 
-query_close_ranges_main <- function(schema, tbl) {
+#' @importFrom RPostgres Id dbQuoteIdentifier
+query_close_ranges_main <- function(con,
+                                    schema,
+                                    tbl) {
+  schema_table <- dbQuoteIdentifier(con, Id(schema = schema, table = tbl))
+  table <- dbQuoteIdentifier(con, Id(table = tbl))
   
   sprintf("
-      UPDATE %s.%s
+      UPDATE %s
       SET ts_validity = daterange(lower(%s.ts_validity), lower(ts_updates.ts_validity)),
       release_validity = tstzrange(lower(%s.release_validity), lower(ts_updates.release_validity))
       FROM ts_updates
@@ -45,13 +59,12 @@ query_close_ranges_main <- function(schema, tbl) {
       AND upper_inf(%s.ts_validity)
       AND upper_inf(%s.release_validity);
     ",
-          schema,
-          tbl,
-          tbl,
-          tbl,
-          tbl,
-          tbl,
-          tbl
+          schema_table,
+          table,
+          table,
+          table,
+          table,
+          table
   )
 }
 

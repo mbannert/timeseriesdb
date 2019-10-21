@@ -49,7 +49,8 @@ read_time_series <- function(con,
   }
   
   res <- dbSendQuery(con,
-    query_select_time_series(schema))
+    query_select_time_series(con,
+                             schema))
 
   while(!dbHasCompleted(res)) {
     chunk <- data.table(dbFetch(res, n = chunksize))
