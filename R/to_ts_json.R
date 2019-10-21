@@ -11,7 +11,8 @@ to_ts_json.tslist <- function(x, ...){
         frequency = unbox(frequency(xx)),
         time = index_to_date(time(xx), as.string = TRUE), 
         value = xx
-      )
+      ),
+      digits = NA
     )
   })
   class(l) <- "ts_json"
@@ -32,7 +33,8 @@ to_ts_json.data.table <- function(x, ...){
           frequency = unbox(freq[1]),
           time = time,
           value = value
-        )
+        ),
+        digits = NA
       )
     )
   ), by = "id"]
