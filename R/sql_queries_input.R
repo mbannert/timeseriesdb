@@ -1,5 +1,12 @@
 ### GENERAL (release date independent)
 
+#' Create a query to insert contents of ts_updats into schema.tbl
+#' 
+#' @param con 
+#'
+#' @param schema 
+#' @param tbl 
+#'
 #' @importFrom RPostgres Id dbQuoteIdentifier
 query_insert_main <- function(con,
                               schema,
@@ -12,6 +19,13 @@ query_insert_main <- function(con,
   )
 }
 
+#' Create a query to delete all rows from schema.tbl where ts_validity is empty
+#' 
+#' @param con 
+#'
+#' @param schema 
+#' @param tbl 
+#'
 #' @importFrom RPostgres Id dbQuoteIdentifier
 query_delete_empty_validity_main <- function(con,
                                              schema,
@@ -24,6 +38,12 @@ query_delete_empty_validity_main <- function(con,
   )
 }
 
+#' Create a query to delete all rows in schema."releases" where ts_validity is empty
+#' 
+#' @param con 
+#'
+#' @param schema 
+#'
 #' @importFrom RPostgres Id dbQuoteIdentifier
 query_delete_empty_validity_releases <- function(con,
                                                  schema) {
@@ -35,14 +55,32 @@ query_delete_empty_validity_releases <- function(con,
   )
 }
 
+#' Create a query to insert ($1, $2) into schema."releases"(release, release_description) returning the release id
+#' 
+#' @param con 
+#'
+#' @param schema 
+#'
 #' @importFrom RPostgres Id dbQuoteIdentifier
 query_create_release <- function(con,
                                  schema) {
-  sprintf("INSERT INTO %s(release, release_description) VALUES ($1, $2) RETURNING id",
-          dbQuoteIdentifier(con, Id(schema = schema, table = "releases"))
-          )
+  sprintf("
+    INSERT INTO %s(release, release_description)
+    VALUES ($1, $2)
+    RETURNING id
+  ",
+  dbQuoteIdentifier(con, Id(schema = schema, table = "releases"))
+  )
 }
 
+#' Create a query to appropriately close validity ranges in schema.table based on ts_updates
+#' 
+#' 
+#' @param con 
+#'
+#' @param schema 
+#' @param tbl 
+#'
 #' @importFrom RPostgres Id dbQuoteIdentifier
 query_close_ranges_main <- function(con,
                                     schema,
