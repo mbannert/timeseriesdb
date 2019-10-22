@@ -35,10 +35,12 @@ query_populate_ts_read <- function(con,
               SELECT ts_read_keys.ts_key, ts_validity, release_validity FROM %s
               JOIN ts_read_keys
               ON %s.ts_key = ts_read_keys.ts_key
-              AND %s.release_validity @> now()
-              AND %s.ts_validity @> %s)",
+              AND %s.release_validity @> '%s'::timestamptz
+              AND NOT lower(%s.release_validity) >= now())",
             dbQuoteIdentifier(con, Id(schema = schema, table = table)),
             dbQuoteIdentifier(con, Id(table = table)),
+            dbQuoteIdentifier(con, Id(table = table)),
+            valid_on,
             dbQuoteIdentifier(con, Id(table = table)),
             dbQuoteIdentifier(con, Id(table = table)),
             dbQuoteLiteral(con, valid_on))
