@@ -1,6 +1,5 @@
 context("read_time_series, case 4")
 
-# Ooh, this gon' be fun!
 con <- NULL
 if(is_test_db_reachable()) {
   con <- connect_to_test_db()
@@ -29,7 +28,7 @@ test_that("it does not respect release date by default", {
   expect_equal(tsl_read, tsl_state_2)
 })
 
-test_that("it retruns the proper version when respecting release date", {
+test_that("it returns the proper version when respecting release date", {
   skip_on_cran()
   skip_if_not(is_test_db_reachable())
   

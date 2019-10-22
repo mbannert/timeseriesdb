@@ -1,6 +1,5 @@
 context("read_time_series, case 3")
 
-# Ooh, this gon' be fun!
 con <- NULL
 if(is_test_db_reachable()) {
   con <- connect_to_test_db()
