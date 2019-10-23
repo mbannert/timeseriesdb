@@ -16,6 +16,7 @@ Suggests:
     openxlsx,
     knitr,
     testthat,
+    covr,
     mockery
 VignetteBuilder: knitr
 Date: 2018-07-19
