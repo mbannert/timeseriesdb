@@ -19,8 +19,9 @@ context("store_time_series.tslist")
 test_that("it calls through to store_records", {
   store_recs <- mock()
   with_mock(
-    store_records = store_recs,
-    to_ts_json = mock("ts_json"), # Oh how I love isolating units under test. You are going to die all alone, little function...
+    # https://github.com/r-lib/testthat/issues/734#issuecomment-377367516
+    "timeseriesdb:::store_records" = store_recs,
+    "timeseriesdb:::to_ts_json" = mock("ts_json"), # Oh how I love isolating units under test. You are going to die all alone, little function...
     {
       store_time_series(
         "con",
@@ -58,39 +59,39 @@ test_that("it calls through to store_records", {
 test_that("it subsets the list", {
   store_recs <- mock()
   with_mock(
-            store_records = store_recs,
-            to_ts_json = mock("ts_json"),
-            {
-              xx <- store_time_series(
-                "con",
-                tsl,
-                "release",
-                "access",
-                "ts2",
-                "release_desc",
-                "valid_from",
-                "release_date",
-                "overwrite",
-                "schema"
-              )
-              
-              only_ts2 <- tsl[2]
-              
-              expect_args(
-                store_recs,
-                1,
-                "con",
-                "ts_json",
-                "release",
-                "access",
-                "timeseries_main",
-                "release_desc",
-                "valid_from",
-                "release_date",
-                "overwrite",
-                "schema"
-              )
-            })
+    "timeseriesdb:::store_records" = store_recs,
+    "timeseriesdb:::to_ts_json" = mock("ts_json"),
+    {
+      xx <- store_time_series(
+        "con",
+        tsl,
+        "release",
+        "access",
+        "ts2",
+        "release_desc",
+        "valid_from",
+        "release_date",
+        "overwrite",
+        "schema"
+      )
+      
+      only_ts2 <- tsl[2]
+      
+      expect_args(
+        store_recs,
+        1,
+        "con",
+        "ts_json",
+        "release",
+        "access",
+        "timeseries_main",
+        "release_desc",
+        "valid_from",
+        "release_date",
+        "overwrite",
+        "schema"
+      )
+    })
 })
 
 test_that("it handles empty lists", {
@@ -104,13 +105,14 @@ test_that("it handles non-ts-likes", {
   local_tsl <- tsl
   local_tsl$not_a_ts <- "Mwahahaha!"
   store_recs <- mock()
-  with_mock(store_records = store_recs,
-            {
-              expect_message(
-                store_time_series("con", local_tsl, "release", "access"),
-                "no valid time series objects.*not_a_ts"
-              )
-            })
+  with_mock(
+    "timeseriesdb:::store_records"= store_recs,
+    {
+      expect_message(
+        store_time_series("con", local_tsl, "release", "access"),
+        "no valid time series objects.*not_a_ts"
+      )
+    })
 })
 
 
@@ -121,8 +123,8 @@ context("store_time_series.data.table")
 test_that("it calls through to store_records", {
   store_recs <- mock()
   with_mock(
-    store_records = store_recs,
-    to_ts_json = mock("ts_json"),
+    "timeseriesdb:::store_records" = store_recs,
+    "timeseriesdb:::to_ts_json" = mock("ts_json"),
     {
       store_time_series(
         "con",
@@ -160,39 +162,39 @@ test_that("it calls through to store_records", {
 test_that("it subsets the list", {
   store_recs <- mock()
   with_mock(
-            store_records = store_recs,
-            to_ts_json = mock("ts_json"), # I guess to make it watertight we'd need to generate a random string here on every test run.
-            {
-              xx <- store_time_series(
-                "con",
-                dt,
-                "release",
-                "access",
-                "ts2",
-                "release_desc",
-                "valid_from",
-                "release_date",
-                "overwrite",
-                "schema"
-              )
-              
-              only_ts2 <- dt[id == "ts2"]
-              
-              expect_args(
-                store_recs,
-                1,
-                "con",
-                "ts_json",
-                "release",
-                "access",
-                "timeseries_main",
-                "release_desc",
-                "valid_from",
-                "release_date",
-                "overwrite",
-                "schema"
-              )
-            })
+    "timeseriesdb:::store_records" = store_recs,
+    "timeseriesdb:::to_ts_json" = mock("ts_json"), # I guess to make it watertight we'd need to generate a random string here on every test run.
+    {
+      xx <- store_time_series(
+        "con",
+        dt,
+        "release",
+        "access",
+        "ts2",
+        "release_desc",
+        "valid_from",
+        "release_date",
+        "overwrite",
+        "schema"
+      )
+      
+      only_ts2 <- dt[id == "ts2"]
+      
+      expect_args(
+        store_recs,
+        1,
+        "con",
+        "ts_json",
+        "release",
+        "access",
+        "timeseries_main",
+        "release_desc",
+        "valid_from",
+        "release_date",
+        "overwrite",
+        "schema"
+      )
+    })
 })
 
 test_that("it handles empty lists", {
