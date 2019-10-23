@@ -30,16 +30,20 @@ class(tsl_c) <- c("tslist", "list")
 # 
 # releases_after_insert_1 <- dbGetQuery(con, "SELECT * FROM timeseries.releases")
 # main_after_insert_1 <- dbGetQuery(con, "SELECT * FROM timeseries.timeseries_main")
+# # Db will sometimes return rows in "wrong" order so sort them to a known state
+# main_after_insert_1 <- main_after_insert_1[order(nchar(main_after_insert_1$ts_data)), ]
 # 
 # store_time_series(con, tsl_b, "test", "public", release_date = "2119-02-01")
 # 
 # releases_after_insert_2 <- dbGetQuery(con, "SELECT * FROM timeseries.releases")
 # main_after_insert_2 <- dbGetQuery(con, "SELECT * FROM timeseries.timeseries_main")
+# main_after_insert_2 <- main_after_insert_2[order(nchar(main_after_insert_2$ts_data)), ]
 # 
 # store_time_series(con, tsl_c, "test", "public", release_date = "2119-03-01")
 # 
 # releases_after_insert_3 <- dbGetQuery(con, "SELECT * FROM timeseries.releases")
 # main_after_insert_3 <- dbGetQuery(con, "SELECT * FROM timeseries.timeseries_main")
+# main_after_insert_3 <- main_after_insert_3[order(nchar(main_after_insert_3$ts_data)), ]
 # 
 # save(
 #   releases_after_insert_1,
@@ -61,36 +65,49 @@ load("../testdata/c4_store_records_data.RData")
 test_that("Inserts produce valid state", {
   skip_on_cran()
   skip_if_not(is_test_db_reachable())
-  
+
   reset_db(con)
-  
+
   store_time_series(con, tsl_a, "test", "public", release_date = "2119-01-01")
-  expect_equal(
+  main_actual <- dbGetQuery(con, "SELECT * FROM timeseries.timeseries_main")
+  
+  # Db will sometimes return rows in "wrong" order so sort them to a known state
+  main_actual <- main_actual[order(nchar(main_actual$ts_data)), ]
+  expect_equal(nrow(main_actual), 2)
+  expect_equivalent(
     dbGetQuery(con, "SELECT * FROM timeseries.releases")[, -1],
     releases_after_insert_1[, -1]
   )
-  expect_equal(
-    dbGetQuery(con, "SELECT * FROM timeseries.timeseries_main")[, -3],
+  expect_equivalent(
+    main_actual[, -3],
     main_after_insert_1[, -3]
   )
-  
+
+  # In semi rare cases, ts_b ends up in spot 1
   store_time_series(con, tsl_b, "test", "public", release_date = "2119-02-01")
-  expect_equal(
+  main_actual <- dbGetQuery(con, "SELECT * FROM timeseries.timeseries_main")
+  main_actual <- main_actual[order(nchar(main_actual$ts_data)), ]
+  expect_equal(nrow(main_actual), 4)
+  expect_equivalent(
     dbGetQuery(con, "SELECT * FROM timeseries.releases")[, -1],
     releases_after_insert_2[, -1]
   )
-  expect_equal(
-    dbGetQuery(con, "SELECT * FROM timeseries.timeseries_main")[, -3],
+  expect_equivalent(
+    main_actual[, -3],
     main_after_insert_2[, -3]
   )
   
   store_time_series(con, tsl_c, "test", "public", release_date = "2119-03-01")
-  expect_equal(
+  main_actual <- dbGetQuery(con, "SELECT * FROM timeseries.timeseries_main")
+  main_actual <- main_actual[order(nchar(main_actual$ts_data)), ]
+  
+  expect_equal(nrow(main_actual), 6)
+  expect_equivalent(
     dbGetQuery(con, "SELECT * FROM timeseries.releases")[, -1],
     releases_after_insert_3[, -1]
   )
-  expect_equal(
-    dbGetQuery(con, "SELECT * FROM timeseries.timeseries_main")[, -3],
+  expect_equivalent(
+    main_actual[, -3],
     main_after_insert_3[, -3]
   )
 })
