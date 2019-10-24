@@ -10,10 +10,9 @@
 #' @param respect_release_date 
 #'
 #' @importFrom RPostgres Id dbQuoteIdentifier
-query_populate_ts_read_regex <- function(con,
+query_populate_ts_read_keys_regex <- function(con,
                                          schema,
-                                         pattern,
-                                         valid_on) {
+                                         pattern) {
   sprintf("
           CREATE TEMPORARY TABLE ts_read_keys AS(
             SELECT ts_key FROM %s

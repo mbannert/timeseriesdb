@@ -22,12 +22,7 @@ read_time_series <- function(con,
                              schema = "timeseries",
                              table = "timeseries_main",
                              chunksize = 10000) {
-  if(regex) {
-    if(length(ts_keys) > 1) {
-      warning("regex = TRUE but length of ts_keys > 1, using only first element as pattern!")
-    }
-  }
-  
+
   # timeseriesdb makes use of a temporary table that is joined against
   # to get the right data. This is much faster than WHERE clauses.
   n_to_read <- db_populate_ts_read(

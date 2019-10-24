@@ -98,6 +98,12 @@ db_populate_ts_read <- function(con,
                                 table,
                                 valid_on,
                                 respect_release_date) {
+  if(regex) {
+    if(length(ts_keys) > 1) {
+      warning("regex = TRUE but length of ts_keys > 1, using only first element as pattern!")
+    }
+  }
+  
   if(!is.null(valid_on)) {
     valid_on <- as.Date(valid_on)
   }
