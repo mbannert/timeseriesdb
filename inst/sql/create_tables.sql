@@ -30,7 +30,8 @@ CREATE TABLE timeseries.timeseries_main (
     -- 3 doesn't care, 1 will collide in second, 4 in first excludes
 );
 
-
+ALTER TABLE timeseries.timeseries_main ENABLE ROW LEVEL SECURITY;
+CREATE POLICY timeseries_access ON timeseries.timeseries_main USING (pg_has_role(access, 'usage'));
 
 
 /* 
