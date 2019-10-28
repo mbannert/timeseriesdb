@@ -38,23 +38,6 @@ query_delete_empty_validity_main <- function(con,
   )
 }
 
-#' Create a query to delete all rows in schema."releases" where ts_validity is empty
-#' 
-#' @param con 
-#'
-#' @param schema 
-#'
-#' @importFrom RPostgres Id dbQuoteIdentifier
-query_delete_empty_validity_releases <- function(con,
-                                                 schema) {
-  sprintf("
-      DELETE FROM %s
-      WHERE isempty(ts_validity)
-    ",
-    dbQuoteIdentifier(con, Id(schema = schema, table = "releases"))
-  )
-}
-
 #' Create a query to insert ($1, $2) into schema."releases"(release, release_description) returning the release id
 #' 
 #' @param con 
