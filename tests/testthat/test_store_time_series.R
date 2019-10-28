@@ -33,7 +33,8 @@ test_that("it calls through to store_records", {
         "valid_from",
         "release_date",
         "overwrite",
-        "schema"
+        "schema",
+        "chunksize"
       )
       
       expect_called(store_recs, 1)
@@ -50,7 +51,8 @@ test_that("it calls through to store_records", {
         "valid_from",
         "release_date",
         "overwrite",
-        "schema"
+        "schema",
+        "chunksize"
       )
     }
   )
@@ -72,7 +74,8 @@ test_that("it subsets the list", {
         "valid_from",
         "release_date",
         "overwrite",
-        "schema"
+        "schema",
+        "chunksize"
       )
       
       only_ts2 <- tsl[2]
@@ -89,7 +92,8 @@ test_that("it subsets the list", {
         "valid_from",
         "release_date",
         "overwrite",
-        "schema"
+        "schema",
+        "chunksize"
       )
     })
 })
@@ -136,7 +140,8 @@ test_that("it calls through to store_records", {
         "valid_from",
         "release_date",
         "overwrite",
-        "schema"
+        "schema",
+        "chunksize"
       )
       
       expect_called(store_recs, 1)
@@ -153,7 +158,8 @@ test_that("it calls through to store_records", {
         "valid_from",
         "release_date",
         "overwrite",
-        "schema"
+        "schema",
+        "chunksize"
       )
     }
   )
@@ -175,7 +181,8 @@ test_that("it subsets the list", {
         "valid_from",
         "release_date",
         "overwrite",
-        "schema"
+        "schema",
+        "chunksize"
       )
       
       only_ts2 <- dt[id == "ts2"]
@@ -192,7 +199,8 @@ test_that("it subsets the list", {
         "valid_from",
         "release_date",
         "overwrite",
-        "schema"
+        "schema",
+        "chunksize"
       )
     })
 })

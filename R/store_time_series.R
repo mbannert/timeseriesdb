@@ -8,7 +8,8 @@ store_time_series <- function(con,
                               valid_from,
                               release_date,
                               overwrite,
-                              schema){
+                              schema,
+                              chunk_size){
   UseMethod("store_time_series", object = x)
 }
 
@@ -21,7 +22,8 @@ store_time_series.tslist <- function(con,
                                      valid_from = NULL,
                                      release_date = NULL,
                                      overwrite = TRUE,
-                                     schema = "timeseries"){
+                                     schema = "timeseries",
+                                     chunk_size = 10000){
   tsl <- tsl[subset]
   
   if(length(tsl) == 0){
@@ -49,7 +51,8 @@ store_time_series.tslist <- function(con,
                 valid_from,
                 release_date,
                 overwrite,
-                schema)
+                schema,
+                chunk_size)
 }
 
 store_time_series.data.table <- function(con,
@@ -61,7 +64,8 @@ store_time_series.data.table <- function(con,
                                     valid_from = NULL,
                                     release_date = NULL,
                                     overwrite = TRUE,
-                                    schema = "timeseries") {
+                                    schema = "timeseries",
+                                    chunk_size = 10000) {
   if(!all(c("id", "time", "value") %in% names(dt))) {
     stop("This does not look like a ts data.table. Expected column names id, time and value.")
   }
@@ -82,7 +86,8 @@ store_time_series.data.table <- function(con,
                 valid_from,
                 release_date,
                 overwrite,
-                schema)
+                schema,
+                chunk_size)
 }
 
 # TODO: re-add removed arguments - the old name needs to keep the signature
