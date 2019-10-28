@@ -108,8 +108,8 @@ storeTimeSeries <- function(con,
             Use store_time_series(con, series, li, ...) in the future.")
     char_series <- con
     con <- li # connection object
-    li <- subset # list object
-    subset <- char_series
+    li <- series # list object
+    series <- char_series
   }
   
   warning("This is the old version of storeTimeSeries! You should strongly consider upgrading to
@@ -120,10 +120,11 @@ storeTimeSeries <- function(con,
   
   store_time_series(con,
                     li,
-                    sprintf("legacy_call_%s", format(Sys.time(), "%Y%m%d_%H%M%S")),
+                    release = sprintf("legacy_call_%s", format(Sys.time(), "%Y%m%d_%H%M%S")),
                     "???", # TODO!! Maybe we should just drop support for the old syntax altogether.
                     series,
                     valid_from = valid_from,
+                    release_description = "a summary of arguments used",
                     release_date = release_date,
                     overwrite = overwrite,
                     schema = "schema")
