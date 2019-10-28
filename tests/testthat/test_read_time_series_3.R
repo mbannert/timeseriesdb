@@ -1,7 +1,8 @@
 context("read_time_series, case 3")
 
 tsl_case_3 <- list(
-  just_the_one = ts(rep(3, 10), 2019, frequency = 4)
+  just_the_one = ts(rep(3, 10), 2019, frequency = 4),
+  another_one = ts(rep(4, 10), 2019, frequency = 4)
 )
 class(tsl_case_3) <- c("tslist", "list")
 
@@ -18,5 +19,14 @@ test_that("reading a simple ts works", {
   skip_if_not(is_test_db_reachable())
 
   tsl_read <- read_time_series(con, "just_the_one")
+  expect_equal(tsl_read, tsl_case_3[1])
+})
+
+test_that("reading via regex works", {
+  skip_on_cran()
+  skip_if_not(is_test_db_reachable())
+  
+  tsl_read <- read_time_series(con, "_one", regex = TRUE)
+  tsl_read <- tsl_read[names(tsl_case_3)]
   expect_equal(tsl_read, tsl_case_3)
 })
