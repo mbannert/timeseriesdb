@@ -89,11 +89,14 @@ store_time_series.data.table <- function(con,
 #' @export
 storeTimeSeries <- function(con,
                             li,
-                            subset = names(li),
-                            valid_from = NULL, # Is there a need for valid_from != today? For building vintages from scratch I guess?
+                            series = names(li),
+                            valid_from = NULL,
                             release_date = NULL,
+                            store_freq = TRUE,
                             tbl = "timeseries_main",
-                            overwrite = TRUE, # Might keep that to indicate whether old vintages should be deleted when storing single record?
+                            tbl_vintages = "timeseries_vintages",
+                            md_unlocal = "meta_data_unlocalized",
+                            overwrite = TRUE,
                             schema = "timeseries") {
   .Deprecated("storeTimeSeries")
   # back in the days the argument order was different, 
@@ -109,5 +112,19 @@ storeTimeSeries <- function(con,
     subset <- char_series
   }
   
-  store_time_series(con, li, subset, valid_from, release_Date, tbl, overwrite, schema)
+  warning("This is the old version of storeTimeSeries! You should strongly consider upgrading to
+          store_time_series for the following reasons:\n
+          1) all time series are stored with ??? access when using storeTimeSeries\n
+          2) the tbl argiments are ignored, all time series are stored in the table \"timeseries_main\"\n
+          3) I'm sure there are more reasons")
+  
+  store_time_series(con,
+                    li,
+                    sprintf("legacy_call_%s", format(Sys.time(), "%Y%m%d_%H%M%S")),
+                    "???", # TODO!! Maybe we should just drop support for the old syntax altogether.
+                    series,
+                    valid_from = valid_from,
+                    release_date = release_date,
+                    overwrite = overwrite,
+                    schema = "schema")
 }
