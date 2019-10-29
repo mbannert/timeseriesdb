@@ -43,3 +43,26 @@ test_that("it can deal with string release_date", {
   expect_error(store_time_series(con, tsl, "test", "public", release_date = "2019-01-01"),
                NA)
 })
+
+
+# TODO: Maybe we should separate unit from integration tests
+test_that("it performs store operations in chunks", {
+  fake_dbWithTransaction <- function(con, code) {
+    xy <- code # just execute the block. It works anyway...
+  }
+  
+  fake_db_populate_ts_updates = mock() # the one we will test against
+  
+  with_mock(
+    dbWithTransaction = fake_dbWithTransaction,
+    dbGetQuery = mock(),
+    "timeseriesdb:::db_populate_ts_updates" = fake_db_populate_ts_updates,
+    dbExecute = mock(),
+    "timeseriesdb:::db_remove_previous_versions" = mock(),
+    {
+      store_time_series(con, tsl, "test", "public", chunk_size = 1)
+      
+      expect_called(fake_db_populate_ts_updates, 2)
+    }
+  )
+})
