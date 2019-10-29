@@ -8,6 +8,7 @@
 #' @param release_date 
 #' @param records 
 #' @param access 
+#' @importFrom RPostgres dbWriteTable
 db_populate_ts_updates <- function(con,
                                    schema,
                                    release_id,
@@ -63,6 +64,7 @@ db_populate_ts_updates <- function(con,
 #' @param tbl 
 #' @param valid_from 
 #' @param release_date 
+#' @importFrom RPostgres dbExecute
 db_remove_previous_versions <- function(con,
                                         schema,
                                         tbl,
@@ -91,6 +93,7 @@ db_remove_previous_versions <- function(con,
 #' @param schema 
 #' @param valid_on 
 #' @param respect_release_date 
+#' @importFrom RPostgres dbExecute dbWriteTable
 db_populate_ts_read <- function(con,
                                 ts_keys,
                                 regex,
