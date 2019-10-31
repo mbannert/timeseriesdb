@@ -1,3 +1,16 @@
+#' @param con RPostgres database connection
+#'
+#' @param x Object containing time series to store
+#' @param release Title for the release
+#' @param access Access level for all ts to be stored
+#' @param subset Ts keys of the subset of x to store
+#' @param release_desc Description for the release
+#' @param valid_from Start of vintage validity for all ts in x
+#' @param release_date Release date of all ts in x
+#' @param overwrite Not currently used
+#' @param schema 
+#' @param chunk_size 
+#'
 #' @export
 store_time_series <- function(con,
                               x,
