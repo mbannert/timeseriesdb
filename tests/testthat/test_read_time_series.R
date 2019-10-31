@@ -1,6 +1,6 @@
 # And now for something completely tricky... *liberty bell*
 
-context("read_time_series, case 2")
+context("read_time_series")
 
 tsl_state_0 <- list(
   ts1 = ts(rep(1.9, 10), 2019, frequency = 4)
@@ -85,4 +85,12 @@ test_that("reading vintages, respecting release date", {
 
   tsl_read <- read_time_series(con, "ts1", valid_on = Sys.Date() - 2, respect_release_date = TRUE)
   expect_equal(tsl_read, tsl_state_0)
+})
+
+test_that("reading via regex works", {
+  skip_on_cran()
+  skip_if_not(is_test_db_reachable())
+
+  tsl_read <- read_time_series(con, "^ts", regex = TRUE)
+  expect_equal(names(tsl_read), "ts1")
 })

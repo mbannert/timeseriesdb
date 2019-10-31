@@ -16,16 +16,10 @@ db_populate_ts_updates <- function(con,
                                    release_date,
                                    records,
                                    access) {
-
-  use_case <- get_use_case(valid_from, release_date)
   
-  ts_validity <- ifelse(use_case %in% c(1, 2),
-                        sprintf("[%s,)", format(valid_from, "%Y-%m-%d")),
-                        "(,)")
+  ts_validity <- sprintf("[%s,)", format(valid_from, "%Y-%m-%d"))
   
-  release_validity <- ifelse(use_case %in% c(2, 4),
-                             sprintf("[%s,)", format(release_date, "%Y-%m-%d %T %z")),
-                             "(,)")
+  release_validity <- sprintf("[%s,)", format(release_date, "%Y-%m-%d %T %z"))
   
   # TODO: add mechanism for setting column names (for e.g. metadata)
   dt <- data.table(
@@ -34,8 +28,7 @@ db_populate_ts_updates <- function(con,
     release_id = release_id,
     ts_validity = ts_validity,
     release_validity = release_validity,
-    access = access,
-    usage_type = use_case
+    access = access
   )
   
   dbWriteTable(con,
@@ -49,36 +42,9 @@ db_populate_ts_updates <- function(con,
                  release_id = "uuid",
                  ts_validity = "daterange",
                  release_validity = "tstzrange",
-                 access = "text",
-                 usage_type = "integer"
+                 access = "text"
                )
   )
-}
-
-#' Helper for removing rows no longer needed in use case 3 and 4
-#' In 3: Simply delete everything with the ts_key to be inserted
-#' In 4: Delete rows whose release_validity lies in the past
-#' 
-#' @param con 
-#' @param schema 
-#' @param tbl 
-#' @param valid_from 
-#' @param release_date 
-#' @importFrom RPostgres dbExecute
-db_remove_previous_versions <- function(con,
-                                        schema,
-                                        tbl,
-                                        valid_from,
-                                        release_date) {
-  use_case <- get_use_case(valid_from, release_date)
-  if(use_case == 3) {
-    dbExecute(con,
-              query_delete_old_versions(con, schema, tbl))
-  } else if (use_case == 4) {
-    # clean up stale versions, they are not needed anymore
-    dbExecute(con,
-              query_delete_stale_versions(con, schema, tbl))
-  }
 }
 
 

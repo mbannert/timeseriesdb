@@ -58,7 +58,6 @@ test_that("it performs store operations in chunks", {
     dbGetQuery = mock(),
     "timeseriesdb:::db_populate_ts_updates" = fake_db_populate_ts_updates,
     dbExecute = mock(),
-    "timeseriesdb:::db_remove_previous_versions" = mock(),
     {
       store_time_series(con, tsl, "test", "public", chunk_size = 1)
       

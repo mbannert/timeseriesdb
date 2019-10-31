@@ -4,8 +4,8 @@ store_records <- function(con,
                           access,
                           tbl,
                           release_desc = "",
-                          valid_from = NULL,
-                          release_date = NULL,
+                          valid_from = Sys.Date(),
+                          release_date = Sys.time(),
                           overwrite = TRUE,
                           schema = "timeseries",
                           chunk_size = 10000){
@@ -41,8 +41,6 @@ store_records <- function(con,
                 query_close_ranges_main(con,
                                         schema,
                                         tbl))
-      
-      db_remove_previous_versions(con, schema, tbl, valid_from, release_date)
       
       # This will throw an error in case already versioned ts are stored w/o valid_from
       # 1) either build in checks before even making this call
