@@ -3,11 +3,8 @@
 #' This is the one to be used when reading ts based on regex pattern
 #' 
 #' @param con 
-#'
 #' @param schema 
 #' @param pattern 
-#' @param valid_on 
-#' @param respect_release_date 
 #'
 #' @importFrom RPostgres Id dbQuoteIdentifier dbQuoteLiteral
 query_populate_ts_read_keys_regex <- function(con,

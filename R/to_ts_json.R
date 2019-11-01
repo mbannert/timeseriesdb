@@ -1,5 +1,5 @@
 #' @importFrom jsonlite toJSON unbox
-#' @importFrom stats frequency
+#' @importFrom stats frequency time
 to_ts_json <- function(x, ...){
   UseMethod("to_ts_json")
 }

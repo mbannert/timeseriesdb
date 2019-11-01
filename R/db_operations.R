@@ -59,6 +59,7 @@ db_populate_ts_updates <- function(con,
 #' @param ts_keys 
 #' @param regex 
 #' @param schema 
+#' @param table 
 #' @param valid_on 
 #' @param respect_release_date 
 #' @importFrom RPostgres dbExecute dbWriteTable

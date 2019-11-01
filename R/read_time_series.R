@@ -20,7 +20,6 @@ read_time_series <- function(con,
                              regex = FALSE,
                              respect_release_date = FALSE,
                              schema = "timeseries",
-                             table = "timeseries_main",
                              chunksize = 10000) {
 
   # timeseriesdb makes use of a temporary table that is joined against
@@ -30,7 +29,7 @@ read_time_series <- function(con,
     ts_keys,
     regex,
     schema,
-    table,
+    "timeseries_main",
     valid_on,
     respect_release_date
   )
