@@ -1,3 +1,5 @@
+#' Store a set of time series to database
+#' 
 #' @param con RPostgres database connection
 #'
 #' @param x Object containing time series to store
