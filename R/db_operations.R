@@ -17,6 +17,8 @@ db_populate_ts_updates <- function(con,
                                    records,
                                    access) {
   
+  # TODO: Would be nice to use current_date and current_timestamp from DB here
+  # set validities to NA in dt if param is null, then do an update (requires 2 extra queries...)
   ts_validity <- sprintf("[%s,)", format(valid_from, "%Y-%m-%d"))
   
   release_validity <- sprintf("[%s,)", format(release_date, "%Y-%m-%d %T %z"))
