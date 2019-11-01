@@ -1,3 +1,4 @@
+#' @importFrom RPostgres dbGetQuery dbWithTransaction dbExecute
 store_records <- function(con,
                           records,
                           release,

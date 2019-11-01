@@ -10,7 +10,7 @@
 #'
 #' @return
 #' @import data.table
-#' @importFrom RPostgres dbSendQuery dbFetch dbClearResult
+#' @importFrom RPostgres dbSendQuery dbFetch dbClearResult dbHasCompleted
 #' @export
 #'
 #' @examples

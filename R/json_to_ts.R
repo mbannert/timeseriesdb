@@ -5,6 +5,7 @@
 #' 
 #' @import data.table
 #' @importFrom xts xts
+#' @importFrom stats ts
 #' @importFrom jsonlite fromJSON
 #' 
 #' @export

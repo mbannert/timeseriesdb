@@ -9,7 +9,7 @@
 #' @param valid_on 
 #' @param respect_release_date 
 #'
-#' @importFrom RPostgres Id dbQuoteIdentifier
+#' @importFrom RPostgres Id dbQuoteIdentifier dbQuoteLiteral
 query_populate_ts_read_keys_regex <- function(con,
                                          schema,
                                          pattern) {
@@ -23,7 +23,7 @@ query_populate_ts_read_keys_regex <- function(con,
 }
 
 # https://stackoverflow.com/questions/24042359/how-to-join-only-one-row-in-joined-table-with-postgres
-#' @importFrom RPostgres Id dbQuoteIdentifier
+#' @importFrom RPostgres Id dbQuoteIdentifier dbQuoteLiteral
 query_populate_ts_read <- function(con,
                                     schema,
                                     table,
