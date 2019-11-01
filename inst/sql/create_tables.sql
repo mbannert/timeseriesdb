@@ -37,21 +37,21 @@ favorite type of datasets.
 collections are an approach to store
 user selections within the timeseriesdb schema
 */
-CREATE TABLE timeseries_1_0.collections(
+CREATE TABLE timeseries.collections(
+    collection_id bigserial primary key,
     collection_name text,
     collection_owner text,
-    collection_description text,
-    primary key (collection_name, collection_owner)
-)
+    collection_description text
+);
 
 -- collections to time series
-CREATE TABLE timeseries_1_0.c_ts(
-    collection_name text,
+CREATE TABLE timeseries.c_ts(
+    collection_id,
     ts_key text,
-    primary key (collection_name, ts_key),
-    foreign key (collection_name) references timeseries_1_0.collections,
-    foreign key (ts_key) references timeseries_1_0.timeseries_main
-)
+    primary key (collection_id, ts_key),
+    foreign key (collection_id) references timeseries.collections(collection_id),
+    foreign key (ts_key) references timeseries.timeseries_main(ts_key)
+);
 
 
 /* 
@@ -61,6 +61,9 @@ this costs disk space /w little in return
 as is unlikely to change most of the time,
 yet updating validity would screw FKs and
 the opportunity to 
+
+could e.g. check hash of meta_data when storing
+and update range if not changed?s
 */
 CREATE TABLE timeseries_1_0.meta_data_unlocalized(
     ts_key text,
