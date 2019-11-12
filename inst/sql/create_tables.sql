@@ -8,10 +8,10 @@ CREATE SCHEMA timeseries;
 
 -- links public validity on dataset level to series
 CREATE TABLE timeseries.releases(
-    id UUID NOT NULL DEFAULT uuid_generate_v1() PRIMARY KEY, -- guess a sequence would be fine too
-                                                             -- or even release as FK to allow sharing
-    release text,
-    release_description text
+    id UUID NOT NULL DEFAULT uuid_generate_v1() PRIMARY KEY,
+    comment TEXT,
+    stored_by TEXT NOT NULL,
+    stored_at TIMESTAMPTZ NOT NULL DEFAULT current_timestamp
 );
 
 -- store different versions of time series
@@ -19,9 +19,9 @@ CREATE TABLE timeseries.timeseries_main (
     ts_key text,
     ts_data json,
     release_id UUID,
-    ts_validity daterange,
-    release_validity tstzrange,
-    access text,
+    internal_validity DATERANGE NOT NULL,
+    public_validity TSTZRANGE NOT NULL,
+    access TEXT NOT NULL DEFAULT 'public',
     primary key (ts_key, ts_validity),
     foreign key (release_id) references timeseries.releases(id),
     EXCLUDE USING GIST (ts_key WITH =, ts_validity WITH &&, release_validity WITH &&)
@@ -67,12 +67,11 @@ and update range if not changed?s
 */
 CREATE TABLE timeseries_1_0.meta_data_unlocalized(
     ts_key text,
-    ts_validity daterange,
+    meta_validity daterange,
     md_generated_by text,
     md_resource_last_update timestamptz,
-    md_coverage_temp varchar,
-    meta_data jsonb,
-    primary key (ts_key, ts_validity),
+    meta_data json,
+    primary key (ts_key, meta_validity),
     foreign key (ts_key) references timeseries_1_0.timeseries_main (ts_key) on delete cascade
 )
 

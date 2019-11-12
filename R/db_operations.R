@@ -80,6 +80,7 @@ db_populate_ts_read <- function(con,
     valid_on <- as.Date(valid_on)
   }
   
+  # TODO: How to suppress notices if they do not exist?
   dbExecute(con, "DROP TABLE IF EXISTS ts_read")
   dbExecute(con, "DROP TABLE IF EXISTS ts_read_keys")
   
