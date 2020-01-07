@@ -1,102 +1,83 @@
--- remove this line before going into production! ;)
-DROP SCHEMA timeseries CASCADE;
-
+CREATE SCHEMA timeseries;
 CREATE EXTENSION IF NOT EXISTS "uuid-ossp";
 CREATE EXTENSION IF NOT EXISTS btree_gist;
 
-CREATE SCHEMA timeseries;
-
--- links public validity on dataset level to series
-CREATE TABLE timeseries.releases(
-    id UUID NOT NULL DEFAULT uuid_generate_v1() PRIMARY KEY, -- guess a sequence would be fine too
-                                                             -- or even release as FK to allow sharing
-    release text,
-    release_description text
-);
-
--- store different versions of time series
-CREATE TABLE timeseries.timeseries_main (
-    ts_key text,
-    ts_data json,
-    release_id UUID,
-    ts_validity daterange,
-    release_validity tstzrange,
-    access text,
-    primary key (ts_key, ts_validity),
-    foreign key (release_id) references timeseries.releases(id),
-    EXCLUDE USING GIST (ts_key WITH =, ts_validity WITH &&, release_validity WITH &&)
-);
-
-ALTER TABLE timeseries.timeseries_main ENABLE ROW LEVEL SECURITY;
-CREATE POLICY timeseries_access ON timeseries.timeseries_main USING (pg_has_role(access, 'usage'));
-
-
-/* 
-collections are user specific
-favorite type of datasets.
-collections are an approach to store
-user selections within the timeseriesdb schema
-*/
-CREATE TABLE timeseries.collections(
-    collection_id bigserial primary key,
-    collection_name text,
-    collection_owner text,
-    collection_description text
-);
-
--- collections to time series
-CREATE TABLE timeseries.c_ts(
-    collection_id,
-    ts_key text,
-    primary key (collection_id, ts_key),
-    foreign key (collection_id) references timeseries.collections(collection_id),
-    foreign key (ts_key) references timeseries.timeseries_main(ts_key)
-);
-
-
-/* 
-established meta data approach 
-extended /w validity
-this costs disk space /w little in return
-as is unlikely to change most of the time,
-yet updating validity would screw FKs and
-the opportunity to 
-
-could e.g. check hash of meta_data when storing
-and update range if not changed?s
-*/
-CREATE TABLE timeseries_1_0.meta_data_unlocalized(
-    ts_key text,
-    ts_validity daterange,
-    md_generated_by text,
-    md_resource_last_update timestamptz,
-    md_coverage_temp varchar,
-    meta_data jsonb,
-    primary key (ts_key, ts_validity),
-    foreign key (ts_key) references timeseries_1_0.timeseries_main (ts_key) on delete cascade
+CREATE TABLE timeseries.timeseries_main(
+  id UUID NOT NULL DEFAULT uuid_generate_v1() PRIMARY KEY,
+  ts_key text, [ref: > series.ts_key]
+  validity daterange,
+  coverage daterange,
+  release_date timestamptz DEFAULT CURRENT_TIMESTAMP, -- users are expected to give release time plus tz by its name
+  ts_data json,
+  UNIQUE (ts_key, ts_validity),
+  FOREIGN KEY (ts_key) REFERENCES timeseries.timeseries_catalog(ts_key),
+  EXCLUDE USING GIST (ts_key WITH =, validity WITH &&)
 )
 
-CREATE TABLE timeseries_1_0.meta_data_localized(
-    ts_key varchar,
-    locale_info varchar, 
-    md_validity daterange,
-    meta_data jsonb,
-    primary key (ts_key, locale_info, md_validity),
-    foreign key (ts_key) references timeseries_1_0.timeseries_main (ts_key) 
-    foreign key (md_validity) references timeseries_1_0.md_ts_validity (md_validity) 
+
+CREATE TABLE timeseries.timeseries_catalog(
+    ts_key text PRIMARY KEY,
+    set_id text,
+    created_by text,
+    created_at timestamptz DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (set_id) REFERENCES timeseries.datasets(set_id)
 )
 
-/*
-md: [1.1.,31.10), ts_validity [1.1.,2.1.)
-md: [1.1.,31.10), ts_validity [1.1.,2.1.)
-Maybe cleaning metadata function for when no vintages is available 
-anymore is more practical.
-
-*/
-CREATE TABLE timeseries_1_0.md_ts_validity(
-    ts_validity daterange,
-    md_validity daterange
+CREATE TABLE timeseries.datasets(
+    set_id text PRIMARY KEY,
+    set_md json
 )
+
+CREATE TABLE timeseries.md_local_ts {
+  ts_key text,
+  lang text,
+  data_desc json,
+  PRIMARY KEY(ts_key, lang),
+  FOREIGN KEY (ts_key) REFERENCES timeseries.catalog(ts_key)
+}
+
+
+CREATE TABLE timeseries.md_local_vintages{
+  vintage_key text,
+  lang text, 
+  meta_data json,
+  PRIMARY KEY(vintage_key, lang),
+  FOREIGN KEY (vintage_key) REFERENCES timeseries.vintages(vintage_key)
+}
+
+
+CREATE TABLE timeseries.md_vintages{
+  vintage_key text,
+  meta_data json,
+  PRIMARY KEY(vintage_key),
+  FOREIGN KEY (vintage_key) REFERENCES timeseries.vintages(vintage_key)
+}
+
+CREATE TABLE timeseries.collections {
+  id UUID NOT NULL DEFAULT uuid_generate_v1() PRIMARY KEY,
+  name text,
+  owner text, 
+  description text,
+  UNIQUE (name, owner)
+}
+
+CREATE TABLE timeseries.collect_catalog {
+  id UUID, 
+  ts_key text, 
+  PRIMARY KEY (id,ts_key),
+  FOREIGN KEY (id) REFERENCES timeseries.collections(id),
+  FOREIGN KEY (ts_key) REFERENCES timeseries.catalog(ts_key)
+}
+
+
+
+
+
+
+
+
+
+
 
 
 
