@@ -1,0 +1,28 @@
+- db_store_log
+    * rework create release
+- db_store_ts
+    * rename store_time_series
+- db_read_ts
+    * remane read_time_series
+- db_read_all_vintages
+    * implement
+- db_delete_all_vintages
+    * implement
+- db_delete_last_vintage
+    * implment
+- db_trim_before
+    * implement
+- db_read_range
+    * implement (get start/end of ts)
+- db_create_tables
+    * implement
+
+
+- db_store_md
+    * implement (last)
+
+questions:
+    is it even possible to enforce ts_key =, xx_validity && across multiple tables?
+        no
+    stored procedures?? whai dafuq not?
+    column names?

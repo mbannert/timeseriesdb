@@ -1,3 +1,23 @@
+# approach
+
+- language agnostic REST
+  - disadvantage: stringify / jsonify is an extra step not suitable for our bulk use
+  
+- COPY is faster than large strings args -> 
+  https://www.postgresql.org/docs/current/libpq-copy.html#LIBPQ-COPY-SEND
+
+
+
+
+## hash partitioning
+https://blog.dbi-services.com/postgresql-partitioning-4-hash-partitioning/
+
+
+
+## Rcpp for everyone
+https://teuder.github.io/rcpp4everyone_en/
+
+
 http://jmoiron.net/blog/thoughts-on-timeseries-databases/
 
 
