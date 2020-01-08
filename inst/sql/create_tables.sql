@@ -9,13 +9,15 @@ CREATE EXTENSION IF NOT EXISTS btree_gist;
 
 CREATE TABLE datasets(
     set_id TEXT PRIMARY KEY,
+    set_description TEXT,
     set_md JSON
 );
 
+INSERT INTO datasets VALUES ('default', 'A set that is used if no other set is specified. Every time series needs to be part of a dataset', NULL);
+
 CREATE TABLE catalog(
     ts_key TEXT PRIMARY KEY,
-    set_id TEXT,
-    
+    set_id TEXT DEFAULT 'default',
     FOREIGN KEY (set_id) REFERENCES datasets(set_id)
 );
 

@@ -2,34 +2,30 @@
 #' first properly formatting validity ranges
 #'
 #' @param con 
-#' @param schema 
-#' @param release_id 
+#' @param records 
 #' @param valid_from 
 #' @param release_date 
-#' @param records 
 #' @param access 
+#' @param schema
 #' @importFrom RPostgres dbWriteTable
-db_populate_ts_updates <- function(con,
-                                   schema,
-                                   release_id,
-                                   valid_from,
-                                   release_date,
-                                   records,
-                                   access) {
+db_tmp_store <- function(con,
+                         records,
+                         valid_from,
+                         release_date,
+                         access,
+                         schema = "timeseriesd") {
   
   # TODO: Would be nice to use current_date and current_timestamp from DB here
   # set validities to NA in dt if param is null, then do an update (requires 2 extra queries...)
-  ts_validity <- sprintf("[%s,)", format(valid_from, "%Y-%m-%d"))
-  
-  release_validity <- sprintf("[%s,)", format(release_date, "%Y-%m-%d %T %z"))
+  ts_validity <- format(valid_from, "%Y-%m-%d")
+  release_validity <- format(release_date, "%Y-%m-%d %T %z")
   
   # TODO: add mechanism for setting column names (for e.g. metadata)
   dt <- data.table(
     ts_key = names(records),
     ts_data = unlist(records),
-    release_id = release_id,
-    ts_validity = ts_validity,
-    release_validity = release_validity,
+    validity = ts_validity,
+    release_date = release_validity,
     access = access
   )
   
@@ -41,9 +37,8 @@ db_populate_ts_updates <- function(con,
                field.types = c(
                  ts_key = "text",
                  ts_data = "json",
-                 release_id = "uuid",
-                 ts_validity = "daterange",
-                 release_validity = "tstzrange",
+                 validity = "date",
+                 release_date = "timestamptz",
                  access = "text"
                )
   )
