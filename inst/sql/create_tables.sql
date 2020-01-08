@@ -15,8 +15,7 @@ CREATE TABLE datasets(
 CREATE TABLE catalog(
     ts_key TEXT PRIMARY KEY,
     set_id TEXT,
-    created_by TEXT,
-    created_at TIMESTAMPTZ DEFAULT CURRENT_TIMESTAMP,
+    
     FOREIGN KEY (set_id) REFERENCES datasets(set_id)
 );
 
@@ -26,6 +25,8 @@ CREATE TABLE timeseries_main(
   validity DATE,
   coverage DATERANGE,
   release_date TIMESTAMPTZ DEFAULT CURRENT_TIMESTAMP, -- users are expected to give release time plus tz by its name
+  created_by TEXT,
+  created_at TIMESTAMPTZ DEFAULT CURRENT_TIMESTAMP,
   ts_data JSON,
   UNIQUE (ts_key, validity),
   FOREIGN KEY (ts_key) REFERENCES catalog(ts_key)

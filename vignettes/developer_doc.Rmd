@@ -31,6 +31,41 @@ In case a *ts_key* already exists in the time series catalog it is **NOT** updat
 
 In the process the validity of the previous versions of that time series will be closed (updated) at ```Sys.Date()``` unless another, future date is specified. The new version of the series is inserted into the *timeseries_main* table and its validity is set to start at ```Sys.Date()``` (or the specified future date) enforcing a non-overlapping constraint for time series versions (vintages).
 
+## Launch a Docker Based Dev Environment
+
+{timeseriesdb} ships with a routine to start up a development environment running 
+PostgreSQL 11. Simply run the *start_dev_docker.sh* located in the /inst folder of the {timeseriesdb} package. Make sure the shell script is executable by your user (type ```chmod +x start_dev_docker.sh``` if it's not). 
+
+```
+./start_dev_docker.sh
+```
+
+Given you have a docker environment such as docker Desktop up an running, the above
+shell script will fire up a docker container running PostgreSQL 11 which contains a fully working {timeseriesdb} schema. Once your container is up and running you can reach out on port 1111 using R. 
+
+```{r}
+library(RPostgres)
+
+con <- dbConnect(RPostgres::Postgres(),
+                 dbname = "postgres",
+                 user = "postgres",
+                 host = "localhost",
+                 password = "",
+                 port = 1111)
+```
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
