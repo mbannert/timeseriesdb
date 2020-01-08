@@ -34,6 +34,9 @@ ts_store <- function(con, series,
     } 
   }
   
+  # TODO: describe concept of *ts_json* in the dev docu
+  ts_json <- to_ts_json(series)
+  
   dbWriteTable()
   
   
