@@ -45,10 +45,18 @@ db_store_ts <- function(con, series,
   ts_json <- to_ts_json(series)
   # store records to a temp table in order to use dbWriteTable
   # which is fast because of STDIN usage as opposed to simple inserts
-  # or sending around huge strings
+  # or sending around huge strings. 
   db_tmp_store(con, ts_json, valid_from, release_date, access)
   dbExecute(con, "CALL SOME SQL FUNCTION")
 
 }
+
+library(jsonlite)
+tsl <- tstools::generate_random_ts(10)
+class(tsl) <- c("tslist",class(tsl))
+xx <- to_ts_json(tsl)
+xx$ts1
+
+
 
 

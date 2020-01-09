@@ -43,7 +43,7 @@ PostgreSQL 11. Simply run the *start_dev_docker.sh* located in the /inst folder 
 Given you have a docker environment such as docker Desktop up an running, the above
 shell script will fire up a docker container running PostgreSQL 11 which contains a fully working {timeseriesdb} schema. Once your container is up and running you can reach out on port 1111 using R. 
 
-```{r}
+```{r,eval = FALSE}
 library(RPostgres)
 
 con <- dbConnect(RPostgres::Postgres(),

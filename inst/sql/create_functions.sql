@@ -50,6 +50,11 @@ BEGIN
   -- either on DB level or in R, in R this would be a matter of 
   /* R
   convert_index_datestr(range(index(series)))
+  SQL 
+  could run an update on the temp table and
+  add a coverage column.. 
+  then do some json operation and populate it. 
+  
   */
   INSERT INTO timeseries.timeseries_main
   SELECT ts_key, validity, coverage, release_date, created_by, created_at, ts_data
