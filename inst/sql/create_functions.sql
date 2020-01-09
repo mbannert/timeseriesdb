@@ -33,21 +33,32 @@ BEGIN
 END;
 $$ LANGUAGE PLPGSQL;
 
-
-CREATE FUNCTION timeseries.perform_insert(/*name of temp table?*/)
+-- Ask charles for schemas as params
+CREATE FUNCTION timeseries.insert_from_tmp()
 RETURNS ???
 AS $$
 BEGIN
-  -- 1) close the necessary ranges
-  UPDATE timeseries.timeseries_main
-  SET validity = daterange(lower(timeseries_main.validity), lower(ts_updates.validity)),
-  FROM ts_updates
-  WHERE ts_updates.ts_key = timeseries_main.ts_key
-  AND upper_inf(timeseries_main.validity);
-
-  -- 2) inser the new data
+  -- after this insert the set_id is 'default' because we don't want a set parameter in our
+  -- store functions
+  INSERT INTO timeseries.catalog
+  SELECT tmp_ts_updates.ts_key,
+  FROM tmp_ts_updates
+  LEFT OUTER JOIN timeseries.catalog ON (timeseries.catalog.ts_key = tmp_ts_updates.ts_key)
+  WHERE timeseries.catalog.ts_key IS NULL;
+  
+  -- TODO: Coverage needs to computed
+  -- either on DB level or in R, in R this would be a matter of 
+  /* R
+  convert_index_datestr(range(index(series)))
+  */
   INSERT INTO timeseries.timeseries_main
-  SELECT * FROM ts_updates;
+  SELECT ts_key, validity, coverage, release_date, created_by, created_at, ts_data
+  FROM tmp_ts_updates;
+  
+  
+  
+  
+  
 END;
 $$ LANGUAGE PLPGSQL;
 COMMIT;

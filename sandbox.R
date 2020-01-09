@@ -14,11 +14,18 @@ db_create_ds <- function(){
   
 }
 
-
+#' Store New Version of a Time Series to PostgreSQL
+#' 
+#' 
+#'  
+#' @param con PostgreSQL connection object created with Rpostgres.
+#' @param series tslist or data.table containing time series. 
+#' @param release_date character date with time
+#' @param schema character schema name, defaults to 'timeseries'.
+#' @param chunksize 
 #' importFrom @RPostgres dbWriteTable
 #' @export
-ts_store <- function(con, series,
-                     set_id = NULL,
+db_store_ts <- function(con, series,
                      access,
                      valid_from = NULL, 
                      release_date = NULL,
@@ -36,10 +43,12 @@ ts_store <- function(con, series,
   
   # TODO: describe concept of *ts_json* in the dev docu
   ts_json <- to_ts_json(series)
-  
-  dbWriteTable()
-  
-  
+  # store records to a temp table in order to use dbWriteTable
+  # which is fast because of STDIN usage as opposed to simple inserts
+  # or sending around huge strings
+  db_tmp_store(con, ts_json, valid_from, release_date, access)
+  dbExecute(con, "CALL SOME SQL FUNCTION")
+
 }
 
 
