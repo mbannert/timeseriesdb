@@ -26,13 +26,9 @@ test_that("it calls through to store_records", {
       store_time_series(
         "con",
         tsl,
-        "release",
         "access",
-        names(tsl),
-        "release_desc",
         "valid_from",
         "release_date",
-        "overwrite",
         "schema",
         "chunksize"
       )
@@ -44,13 +40,10 @@ test_that("it calls through to store_records", {
         1,
         "con",
         "ts_json",
-        "release",
         "access",
         "timeseries_main",
-        "release_desc",
         "valid_from",
         "release_date",
-        "overwrite",
         "schema",
         "chunksize"
       )
@@ -58,50 +51,10 @@ test_that("it calls through to store_records", {
   )
 })
 
-test_that("it subsets the list", {
-  store_recs <- mock()
-  with_mock(
-    "timeseriesdb:::store_records" = store_recs,
-    "timeseriesdb:::to_ts_json" = mock("ts_json"),
-    {
-      xx <- store_time_series(
-        "con",
-        tsl,
-        "release",
-        "access",
-        "ts2",
-        "release_desc",
-        "valid_from",
-        "release_date",
-        "overwrite",
-        "schema",
-        "chunksize"
-      )
-      
-      only_ts2 <- tsl[2]
-      
-      expect_args(
-        store_recs,
-        1,
-        "con",
-        "ts_json",
-        "release",
-        "access",
-        "timeseries_main",
-        "release_desc",
-        "valid_from",
-        "release_date",
-        "overwrite",
-        "schema",
-        "chunksize"
-      )
-    })
-})
-
 test_that("it handles empty lists", {
   tsl <- list()
   class(tsl) <- c("tslist", "list")
-  expect_message(xx <- store_time_series("con", tsl), "No time series in subset")
+  expect_warning(xx <- store_time_series("con", tsl), "no-op")
   expect_equal(xx, list())
 })
 
@@ -133,31 +86,24 @@ test_that("it calls through to store_records", {
       store_time_series(
         "con",
         dt,
-        "release",
         "access",
-        dt[, id],
-        "release_desc",
         "valid_from",
         "release_date",
-        "overwrite",
         "schema",
         "chunksize"
       )
-      
+
       expect_called(store_recs, 1)
-      
+
       expect_args(
         store_recs,
         1,
         "con",
         "ts_json",
-        "release",
         "access",
         "timeseries_main",
-        "release_desc",
         "valid_from",
         "release_date",
-        "overwrite",
         "schema",
         "chunksize"
       )
@@ -165,49 +111,9 @@ test_that("it calls through to store_records", {
   )
 })
 
-test_that("it subsets the list", {
-  store_recs <- mock()
-  with_mock(
-    "timeseriesdb:::store_records" = store_recs,
-    "timeseriesdb:::to_ts_json" = mock("ts_json"), # I guess to make it watertight we'd need to generate a random string here on every test run.
-    {
-      xx <- store_time_series(
-        "con",
-        dt,
-        "release",
-        "access",
-        "ts2",
-        "release_desc",
-        "valid_from",
-        "release_date",
-        "overwrite",
-        "schema",
-        "chunksize"
-      )
-      
-      only_ts2 <- dt[id == "ts2"]
-      
-      expect_args(
-        store_recs,
-        1,
-        "con",
-        "ts_json",
-        "release",
-        "access",
-        "timeseries_main",
-        "release_desc",
-        "valid_from",
-        "release_date",
-        "overwrite",
-        "schema",
-        "chunksize"
-      )
-    })
-})
-
 test_that("it handles empty lists", {
   dt <- data.table(id = numeric(), time = numeric(), value = numeric())
-  expect_message(xx <- store_time_series("con", dt, "release", "access"), "No time series in subset")
+  expect_warning(xx <- store_time_series("con", dt, "release", "access"), "no-op")
   expect_equal(xx, list())
 })
 

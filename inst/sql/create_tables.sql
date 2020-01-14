@@ -24,12 +24,13 @@ CREATE TABLE catalog(
 CREATE TABLE timeseries_main(
   id UUID NOT NULL DEFAULT uuid_generate_v1() PRIMARY KEY,
   ts_key TEXT NOT NULL,
-  validity DATE NOT NULL,
+  validity DATE NOT NULL DEFAULT CURRENT_DATE,
   coverage DATERANGE,
   release_date TIMESTAMPTZ DEFAULT CURRENT_TIMESTAMP, -- users are expected to give release time plus tz by its name
   created_by TEXT DEFAULT CURRENT_USER,
   created_at TIMESTAMPTZ DEFAULT CURRENT_TIMESTAMP,
   ts_data JSON,
+  access TEXT,
   UNIQUE (ts_key, validity),
   FOREIGN KEY (ts_key) REFERENCES catalog(ts_key)
 );

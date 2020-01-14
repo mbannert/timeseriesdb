@@ -10,29 +10,29 @@ class(tsl) <- c("tslist", "list")
 # 
 # 
 # dbExecute(con, "DELETE FROM timeseries.timeseries_main")
-# dbExecute(con, "DELETE FROM timeseries.releases")
+# dbExecute(con, "DELETE FROM timeseries.catalog")
 # 
 # store_time_series(con, tsl, "test", "public", valid_from = "2019-01-01", release_date = "2019-01-02")
 # 
-# releases_after_insert_1 <- dbGetQuery(con, "SELECT * FROM timeseries.releases")
+# catalog_after_insert_1 <- dbGetQuery(con, "SELECT * FROM timeseries.catalog")
 # main_after_insert_1 <- dbGetQuery(con, "SELECT * FROM timeseries.timeseries_main")
 # 
 # store_time_series(con, tsl, "test", "public", valid_from = "2019-02-01", release_date = "2019-02-02")
 # 
-# releases_after_insert_2 <- dbGetQuery(con, "SELECT * FROM timeseries.releases")
+# catalog_after_insert_2 <- dbGetQuery(con, "SELECT * FROM timeseries.catalog")
 # main_after_insert_2 <- dbGetQuery(con, "SELECT * FROM timeseries.timeseries_main")
 # 
 # store_time_series(con, tsl, "test", "public", valid_from = "2019-03-01", release_date = "2019-03-02")
 # 
-# releases_after_insert_3 <- dbGetQuery(con, "SELECT * FROM timeseries.releases")
+# catalog_after_insert_3 <- dbGetQuery(con, "SELECT * FROM timeseries.catalog")
 # main_after_insert_3 <- dbGetQuery(con, "SELECT * FROM timeseries.timeseries_main")
 # 
 # save(
-#   releases_after_insert_1,
+#   catalog_after_insert_1,
 #   main_after_insert_1,
-#   releases_after_insert_2,
+#   catalog_after_insert_2,
 #   main_after_insert_2,
-#   releases_after_insert_3,
+#   catalog_after_insert_3,
 #   main_after_insert_3,
 #   file = "tests/testdata/store_records_data.RData"
 # )
@@ -52,51 +52,54 @@ test_that("Inserts produce valid state", {
   
   store_time_series(con, tsl, "test", "public", valid_from = "2019-01-01", release_date = "2019-01-02")
   expect_equal(
-    dbGetQuery(con, "SELECT * FROM timeseries.releases")[, -1],
-    releases_after_insert_1[, -1]
+    dbGetQuery(con, "SELECT * FROM timeseries.catalog"),
+    catalog_after_insert_1
   )
+  main_names <- c("id", "ts_key", "validity", "coverage", "release_date", "created_by", 
+                  "created_at", "ts_data", "access")
+  names_to_test <- setdiff(main_names, c("id", "created_by", "created_at"))
   expect_equal(
-    dbGetQuery(con, "SELECT * FROM timeseries.timeseries_main")[, -3],
-    main_after_insert_1[, -3]
+    dbGetQuery(con, "SELECT * FROM timeseries.timeseries_main")[, names_to_test],
+    main_after_insert_1[, names_to_test]
   )
   
   store_time_series(con, tsl, "test", "public", valid_from = "2019-02-01", release_date = "2019-02-02")
   expect_equal(
-    dbGetQuery(con, "SELECT * FROM timeseries.releases")[, -1],
-    releases_after_insert_2[, -1]
+    dbGetQuery(con, "SELECT * FROM timeseries.catalog"),
+    catalog_after_insert_2
   )
   expect_equal(
-    dbGetQuery(con, "SELECT * FROM timeseries.timeseries_main")[, -3],
-    main_after_insert_2[, -3]
+    dbGetQuery(con, "SELECT * FROM timeseries.timeseries_main")[, names_to_test],
+    main_after_insert_2[, names_to_test]
   )
   
   store_time_series(con, tsl, "test", "public", valid_from = "2019-03-01", release_date = "2019-03-02")
   expect_equal(
-    dbGetQuery(con, "SELECT * FROM timeseries.releases")[, -1],
-    releases_after_insert_3[, -1]
+    dbGetQuery(con, "SELECT * FROM timeseries.catalog"),
+    catalog_after_insert_3
   )
   expect_equal(
-    dbGetQuery(con, "SELECT * FROM timeseries.timeseries_main")[, -3],
-    main_after_insert_3[, -3]
+    dbGetQuery(con, "SELECT * FROM timeseries.timeseries_main")[, names_to_test],
+    main_after_insert_3[, names_to_test]
   )
 })
 
-test_that("storing multiple times on the same day is a range-wise noop", {
-  skip_on_cran()
-  skip_if_not(is_test_db_reachable())
-
-  reset_db(con)
-
-  store_time_series(con, tsl, "test", "public", valid_from = "2019-01-01", release_date = "2019-01-02")
-
-  store_time_series(con, tsl, "test", "public", valid_from = "2019-02-01", release_date = "2019-02-02")
-
-  store_time_series(con, tsl, "test", "public", valid_from = "2019-03-01", release_date = "2019-03-02")
-
-  store_time_series(con, tsl, "test", "public", valid_from = "2019-03-01", release_date = "2019-03-02")
-
-  expect_equal(
-    dbGetQuery(con, "SELECT * FROM timeseries.timeseries_main")[, -3],
-    main_after_insert_3[, -3]
-  )
-})
+# test_that("storing multiple times on the same day is a range-wise noop", {
+#   skip_on_cran()
+#   skip_if_not(is_test_db_reachable())
+# 
+#   reset_db(con)
+# 
+#   store_time_series(con, tsl, "test", "public", valid_from = "2019-01-01", release_date = "2019-01-02")
+# 
+#   store_time_series(con, tsl, "test", "public", valid_from = "2019-02-01", release_date = "2019-02-02")
+# 
+#   store_time_series(con, tsl, "test", "public", valid_from = "2019-03-01", release_date = "2019-03-02")
+# 
+#   store_time_series(con, tsl, "test", "public", valid_from = "2019-03-01", release_date = "2019-03-02")
+# 
+#   expect_equal(
+#     dbGetQuery(con, "SELECT * FROM timeseries.timeseries_main")[, -3],
+#     main_after_insert_3[, -3]
+#   )
+# })

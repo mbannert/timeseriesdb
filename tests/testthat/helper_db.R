@@ -1,5 +1,5 @@
 connect_to_test_db <- function() {
-  dbConnect(Postgres(), "postgres", "localhost", 1111, "pgpass", "postgres", bigint = "integer")
+  dbConnect(Postgres(), "postgres", "localhost", 1111, "", "postgres", bigint = "integer")
 }
 
 # TODO: see ?dbCanConnect
@@ -15,5 +15,4 @@ is_test_db_reachable <- function(){
 
 reset_db <- function(con) {
   dbExecute(con, "DELETE FROM timeseries.timeseries_main")
-  dbExecute(con, "DELETE FROM timeseries.releases")
 }

@@ -13,24 +13,24 @@ db_tmp_store <- function(con,
                          valid_from,
                          release_date,
                          access,
-                         schema = "timeseriesd") {
+                         schema = "timeseries") {
   
   # TODO: Would be nice to use current_date and current_timestamp from DB here
   # set validities to NA in dt if param is null, then do an update (requires 2 extra queries...)
   ts_validity <- format(valid_from, "%Y-%m-%d")
-  release_validity <- format(release_date, "%Y-%m-%d %T %z")
+  release_date <- format(release_date, "%Y-%m-%d %T %z")
   
   # TODO: add mechanism for setting column names (for e.g. metadata)
   dt <- data.table(
     ts_key = names(records),
     ts_data = unlist(records),
     validity = ts_validity,
-    release_date = release_validity,
+    release_date = release_date,
     access = access
   )
   
   dbWriteTable(con,
-               "ts_updates",
+               "tmp_ts_updates",
                dt,
                temporary = TRUE,
                overwrite = TRUE,

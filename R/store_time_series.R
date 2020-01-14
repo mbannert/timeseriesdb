@@ -16,13 +16,9 @@
 #' @export
 store_time_series <- function(con,
                               x,
-                              release,
                               access,
-                              subset,
-                              release_desc,
                               valid_from,
                               release_date,
-                              overwrite,
                               schema,
                               chunk_size){
   UseMethod("store_time_series", object = x)
@@ -30,21 +26,15 @@ store_time_series <- function(con,
 
 store_time_series.tslist <- function(con,
                                      tsl,
-                                     release,
                                      access,
-                                     subset = names(tsl),
-                                     release_desc = "",
-                                     valid_from = Sys.Date(),
-                                     release_date = Sys.time(),
-                                     overwrite = TRUE,
+                                     valid_from = NA,
+                                     release_date = NA,
                                      schema = "timeseries",
                                      chunk_size = 10000){
-  tsl <- tsl[subset]
-  
-  if(length(tsl) == 0){
-    message("No time series in subset - returned empty list.")
+  if(length(tsl) == 0) {
+    warning("Ts list is empty. This is a no-op.")
     return(list())
-  } 
+  }
   
   # SANITY CHECK ##############
   keep <- sapply(tsl, function(x) inherits(x,c("ts","zoo","xts")))
@@ -59,48 +49,36 @@ store_time_series.tslist <- function(con,
 
   store_records(con,
                 to_ts_json(tsl),
-                release,
                 access,
                 "timeseries_main",
-                release_desc,
                 valid_from,
                 release_date,
-                overwrite,
                 schema,
                 chunk_size)
 }
 
 store_time_series.data.table <- function(con,
                                     dt,
-                                    release,
                                     access,
-                                    subset = dt[, id],
-                                    release_desc = "",
-                                    valid_from = Sys.Date(),
-                                    release_date = Sys.time(),
-                                    overwrite = TRUE,
+                                    valid_from = NA,
+                                    release_date = NA,
                                     schema = "timeseries",
                                     chunk_size = 10000) {
   if(!all(c("id", "time", "value") %in% names(dt))) {
     stop("This does not look like a ts data.table. Expected column names id, time and value.")
   }
   
-  dt <- dt[id %in% subset]
-  
   if(dt[, .N] == 0) {
-    message("No time series in subset - returned empty list.")
+    warning("No time series in data.table. This is a no-op.")
     return(list())
   } 
   
   store_records(con,
                 to_ts_json(dt),
-                release,
                 access,
                 "timeseries_main",
-                release_desc,
                 valid_from,
                 release_date,
-                overwrite,
                 schema,
                 chunk_size)
 }
