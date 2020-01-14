@@ -19,16 +19,11 @@ CREATE FUNCTION timeseries.create_dataset(dataset_name TEXT,
                                           dataset_md JSON DEFAULT NULL)
 RETURNS TEXT
 AS $$
-DECLARE
-  v_id TEXT;
 BEGIN
-  -- TODO: is this necessary?
   INSERT INTO timeseries.datasets(set_id, set_md) VALUES(dataset_name, dataset_md)
   RETURNING set_id
-  INTO v_id;
-  RETURN v_id;
 END;
-$$ LANGUAGE PLPGSQL;
+$$ LANGUAGE SQL;
 
 -- Ask charles for schemas as params
 CREATE FUNCTION timeseries.insert_from_tmp()
