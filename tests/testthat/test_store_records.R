@@ -50,10 +50,9 @@ test_that("It returns a status json", {
   
   reset_db(con)
   
-  out <-   store_time_series(con, tsl, "public", valid_from = "2019-01-01", release_date = "2019-01-02")
-  expect_is(out, "pq_json")
-  out_parsed <- jsonlite::parse_json(out)
-  expect_equal(out_parsed$status, "ok")
+  out <- store_time_series(con, tsl, "public", valid_from = "2019-01-01", release_date = "2019-01-02")
+  expect_is(out, "list")
+  expect_equal(out$status, "ok")
 })
 
 test_that("Inserts produce valid state", {
@@ -105,9 +104,7 @@ test_that("storing series with invalid vintages is an error", {
   store_time_series(con, tsl, "public", valid_from = "2019-01-01", release_date = "2019-01-02")
   store_time_series(con, tsl, "public", valid_from = "2019-02-01", release_date = "2019-02-02")
   store_time_series(con, tsl, "public", valid_from = "2019-03-01", release_date = "2019-03-02")
-  failed <- jsonlite::parse_json(
-    store_time_series(con, tsl[1], "public", valid_from = "2019-03-01", release_date = "2019-03-02"),
-    simplifyVector = TRUE)
+  failed <- store_time_series(con, tsl[1], "public", valid_from = "2019-03-01", release_date = "2019-03-02")
   expect_equal(names(failed), c("status", "reason", "offending_keys"))
   expect_equal(failed$status, "failure")
   expect_equal(failed$offending_keys, "ts1")
