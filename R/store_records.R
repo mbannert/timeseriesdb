@@ -5,8 +5,7 @@ store_records <- function(con,
                           tbl,
                           valid_from = Sys.Date(),
                           release_date = Sys.time(),
-                          schema = "timeseries",
-                          chunk_size = 10000){
+                          schema = "timeseries"){
   n_records <- length(records)
   
   if(!is.null(valid_from)) {
@@ -18,17 +17,15 @@ store_records <- function(con,
   }
   
   dbWithTransaction(con, {
-    for(i in seq(1, n_records, chunk_size)) {
-      db_tmp_store(con,
-                   records[i:min(n_records, i+chunk_size)],
-                   valid_from,
-                   release_date,
-                   access,
-                   schema)
-      
-      # TODO: Error handling
-      dbExecute(con,
-                "SELECT * FROM timeseries.insert_from_tmp()")
-    }
+    db_tmp_store(con,
+                 records,
+                 valid_from,
+                 release_date,
+                 access,
+                 schema)
+    
+    # ALSO: move this out of the loop, the db can handle that
+    dbGetQuery(con,
+              "SELECT * FROM timeseries.insert_from_tmp()")$insert_from_tmp
   })
 }

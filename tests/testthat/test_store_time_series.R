@@ -29,8 +29,7 @@ test_that("it calls through to store_records", {
         "access",
         "valid_from",
         "release_date",
-        "schema",
-        "chunksize"
+        "schema"
       )
       
       expect_called(store_recs, 1)
@@ -44,8 +43,7 @@ test_that("it calls through to store_records", {
         "timeseries_main",
         "valid_from",
         "release_date",
-        "schema",
-        "chunksize"
+        "schema"
       )
     }
   )
@@ -89,8 +87,7 @@ test_that("it calls through to store_records", {
         "access",
         "valid_from",
         "release_date",
-        "schema",
-        "chunksize"
+        "schema"
       )
 
       expect_called(store_recs, 1)
@@ -104,8 +101,7 @@ test_that("it calls through to store_records", {
         "timeseries_main",
         "valid_from",
         "release_date",
-        "schema",
-        "chunksize"
+        "schema"
       )
     }
   )
