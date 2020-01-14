@@ -19,10 +19,8 @@ CREATE FUNCTION timeseries.create_dataset(dataset_name TEXT,
                                           dataset_md JSON DEFAULT NULL)
 RETURNS TEXT
 AS $$
-BEGIN
   INSERT INTO timeseries.datasets(set_id, set_md) VALUES(dataset_name, dataset_md)
   RETURNING set_id
-END;
 $$ LANGUAGE SQL;
 
 -- Ask charles for schemas as params
@@ -68,4 +66,13 @@ BEGIN
   RETURN '{"status": "ok", "reason": "the world is full of rainbows"}'::JSON;
 END;
 $$ LANGUAGE PLPGSQL;
+
+CREATE FUNCTION timeseries.create_read_tmp_regex(pattern TEXT)
+RETURNS VOID
+AS $$
+  CREATE TEMPORARY TABLE tmp_ts_read_keys AS(
+  SELECT ts_key FROM timeseries.catalog
+  WHERE ts_key ~ 'ts');
+$$ LANGUAGE SQL;
+
 COMMIT;
