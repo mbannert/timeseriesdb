@@ -70,9 +70,24 @@ $$ LANGUAGE PLPGSQL;
 CREATE FUNCTION timeseries.create_read_tmp_regex(pattern TEXT)
 RETURNS VOID
 AS $$
+  DROP TABLE IF EXISTS tmp_ts_read_keys;
   CREATE TEMPORARY TABLE tmp_ts_read_keys AS(
   SELECT ts_key FROM timeseries.catalog
   WHERE ts_key ~ 'ts');
 $$ LANGUAGE SQL;
+
+CREATE FUNCTION timeseries.read_ts_raw(valid_on DATE DEFAULT CURRENT_DATE, respect_release_date BOOLEAN DEFAULT false)
+RETURNS TABLE(ts_key TEXT, ts_data JSON)
+AS $$
+BEGIN
+  RETURN QUERY SELECT distinct on (rd.ts_key) rd.ts_key, mn.ts_data
+    FROM tmp_ts_read_keys as rd
+    JOIN timeseries.timeseries_main as mn
+    ON rd.ts_key = mn.ts_key
+    AND ((NOT respect_release_date) OR mn.release_date <= CURRENT_TIMESTAMP)
+    AND mn.validity <= valid_on
+    ORDER BY rd.ts_key, mn.validity DESC;
+END;
+$$ LANGUAGE PLPGSQL; -- plpgsql because plain sql would (somewhat rightly) complain that the tmp table does not exist
 
 COMMIT;

@@ -10,7 +10,7 @@
 #'
 #' @return
 #' @import data.table
-#' @importFrom RPostgres dbSendQuery dbFetch dbClearResult dbHasCompleted
+#' @importFrom RPostgres dbSendQuery dbFetch dbClearResult dbHasCompleted, dbQuoteIdentifier, Id, dbQuoteLiteral
 #' @export
 #'
 #' @examples
@@ -24,36 +24,25 @@ read_time_series <- function(con,
 
   # timeseriesdb makes use of a temporary table that is joined against
   # to get the right data. This is much faster than WHERE clauses.
-  n_to_read <- db_populate_ts_read(
+  # Populate said table with keys
+  db_tmp_read(
     con,
     ts_keys,
     regex,
-    schema,
-    "timeseries_main",
-    valid_on,
-    respect_release_date
+    schema
   )
-
-  if(n_to_read == 0) {
-    if(regex) {
-      warning(sprintf("No series found matching '%s'!", ts_keys[1]))
-      return(list())
-    } else {
-      warning("No series matching criteria found.")
-      return(list())
-    }
-  }
   
-  res <- dbSendQuery(con,
-    query_select_time_series(con,
-                             schema))
-
+  res <- dbSendQuery(con, sprintf("select * from %sread_ts_raw(%s, %s)",
+                                  dbQuoteIdentifier(con, Id(schema = schema)),
+                                  dbQuoteLiteral(con, valid_on),
+                                  dbQuoteLiteral(con, respect_release_date)))
+  
+  tsl <- list()
+  
   while(!dbHasCompleted(res)) {
     chunk <- data.table(dbFetch(res, n = chunksize))
     
-    # TODO!!!
-    tsl <- chunk[, .(ts_obj = list(json_to_ts(ts_data))), by = ts_key]$ts_obj
-    names(tsl) <- chunk[, ts_key]
+    tsl[chunk[, ts_key]] <- chunk[, .(ts_obj = list(json_to_ts(ts_data))), by = ts_key]$ts_obj
   }
   dbClearResult(res)
   

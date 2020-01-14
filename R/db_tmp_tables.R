@@ -58,39 +58,28 @@ db_tmp_store <- function(con,
 #' @param valid_on 
 #' @param respect_release_date 
 #' @importFrom RPostgres dbExecute dbWriteTable
-db_populate_ts_read <- function(con,
-                                ts_keys,
-                                regex,
-                                schema,
-                                table,
-                                valid_on,
-                                respect_release_date) {
+db_tmp_read <- function(con,
+                        ts_keys,
+                        regex,
+                        schema) {
   if(regex) {
     if(length(ts_keys) > 1) {
       warning("regex = TRUE but length of ts_keys > 1, using only first element as pattern!")
     }
   }
   
-  if(!is.null(valid_on)) {
-    valid_on <- as.Date(valid_on)
-  }
-  
-  # TODO: How to suppress notices if they do not exist?
-  dbExecute(con, "DROP TABLE IF EXISTS ts_read")
-  dbExecute(con, "DROP TABLE IF EXISTS ts_read_keys")
-  
   if(regex) {
     dbExecute(con,
-              query_populate_ts_read_keys_regex(con,
-                                                schema,
-                                                ts_keys[1]))
+              sprintf("SELECT 1 FROM %screate_read_tmp_regex(%s)",
+                      dbQuoteIdentifier(con, Id(schema = schema)),
+                      dbQuoteLiteral(con, ts_keys[1])))
   } else {
     dt <- data.table(
       ts_key = ts_keys
     )
     
     dbWriteTable(con,
-                 "ts_read_keys",
+                 "tmp_ts_read_keys",
                  dt,
                  temporary = TRUE, # Praise be for this parameter!
                  overwrite = TRUE,
@@ -99,13 +88,4 @@ db_populate_ts_read <- function(con,
                  )
     )
   }
-  
-  dbExecute(con,
-            query_populate_ts_read(
-              con,
-              schema,
-              table,
-              valid_on,
-              respect_release_date
-            ))
 }
