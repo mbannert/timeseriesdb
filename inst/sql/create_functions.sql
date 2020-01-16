@@ -1,11 +1,3 @@
-BEGIN;
--- delete function if exists
-
--- don't think the search path trick works here
--- Well, it probably would, schema could be a parameter
--- CC will know a trick
-
--- figure out if there is a standard way of documenting psql functions
 CREATE FUNCTION timeseries.dataset_exists(dataset_name TEXT)
 RETURNS BOOL
 AS $$
@@ -90,4 +82,4 @@ BEGIN
 END;
 $$ LANGUAGE PLPGSQL; -- plpgsql because plain sql would (somewhat rightly) complain that the tmp table does not exist
 
-COMMIT;
+
