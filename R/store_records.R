@@ -25,6 +25,7 @@ store_records <- function(con,
                  schema)
     
     jsonlite::parse_json(dbGetQuery(con,
-              "SELECT * FROM timeseries.insert_from_tmp()")$insert_from_tmp, simplifyVector = TRUE)
+              "SELECT * FROM timeseries.insert_from_tmp()")$insert_from_tmp,
+              simplifyVector = TRUE)
   })
 }
