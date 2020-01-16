@@ -20,6 +20,17 @@ meta.default <- function(...) {
   meta.list(list(...))
 }
 
+#' @export
+as.meta <- function(x) {
+  if(is.na(x) || is.null(x)) {
+    x
+  } else if(!is.list(x)) {
+    stop("Only lists can be converted to meta objects!")
+  } else {
+    meta(x)
+  }
+}
+
 # tsmeta.dt ---------------------------------------------------------------
 
 #' @export

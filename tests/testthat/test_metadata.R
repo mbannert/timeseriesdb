@@ -58,19 +58,43 @@ test_that("meta.default constructs meta", {
 })
 
 test_that("meta.list errors when not all fields are named", {
-  expect_error(meta(list(a = 1, 2)))
+  expect_error(meta(list(a = 1, 2)), "named")
 })
 
 test_that("meta.list errors when no fields are named", {
-  expect_error(meta(list(1, 2)))
+  expect_error(meta(list(1, 2)), "named")
 })
 
 test_that("meta.default errors when not all fields are named", {
-  expect_error(meta(a = 1, 2))
+  expect_error(meta(a = 1, 2), "named")
 })
 
 test_that("meta.default errors when no fields are named", {
-  expect_error(meta(1, 2))
+  expect_error(meta(1, 2), "named")
+})
+
+# converting to meta object -----------------------------------------------
+
+test_that("as.meta does NA", {
+  expect_true(is.na(as.meta(NA)))
+})
+
+test_that("as.meta does NULL", {
+  expect_true(is.null(as.meta(NULL)))
+})
+
+test_that("as.meta does lists", {
+  mt <- meta_object()
+  outv <- as.meta(list(
+    key1 = "value1",
+    key2 = "value2"
+  ))
+  
+  expect_equal(mt, outv)
+})
+
+test_that("as.meta does not to non-lists", {
+  expect_error(as.meta(1), "lists")
 })
 
 # test constructing tsmeta.dt ---------------------------------------------
