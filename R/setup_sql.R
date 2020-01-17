@@ -4,7 +4,7 @@
 #' 
 #' @param con PostgreSQL connection object
 #' @export
-setup_sql_extentions <- function(con, schema){
+setup_sql_extentions <- function(con, schema = "timeseries"){
   sql <- readLines(system.file("sql/create_extensions.sql",
                                package = "timeseriesdb"))
   sql <- gsub("timeseries\\.", sprintf("%s.", schema), sql)

@@ -7,6 +7,21 @@ END;
 $$ LANGUAGE PLPGSQL;
 
 
+
+CREATE FUNCTION timeseries.add_collection(collection_name TEXT,
+                                          owner TEXT,
+                                          description TEXT)
+RETURNS uuid
+AS $$
+  INSERT INTO timeseries.collections(name, owner, description) 
+  VALUES(collection_name, owner, description) 
+  ON CONFLICT (name, owner) DO NOTHING
+  RETURNING id
+$$ LANGUAGE SQL;
+
+
+
+
 CREATE FUNCTION timeseries.create_dataset(dataset_name TEXT,
                                           dataset_md JSON DEFAULT NULL)
 RETURNS TEXT
@@ -15,7 +30,39 @@ AS $$
   RETURNING set_id
 $$ LANGUAGE SQL;
 
--- Ask charles for schemas as params
+
+CREATE FUNCTION timeseries.insert_collect_from_tmp()
+RETURNS JSON
+AS $$
+DECLARE
+  v_invalid_keys JSON;
+BEGIN
+  SELECT json_agg(DISTINCT tmp_collect_updates.ts_key)
+  INTO v_invalid_keys
+  FROM tmp_collect_updates
+  LEFT OUTER JOIN timeseries.catalog
+  ON timeseries.catalog.ts_key = tmp_collect_updates.ts_key 
+  WHERE timeseries.catalog.ts_key IS NULL;
+  
+  IF json_array_length(v_invalid_keys) > 0 THEN
+    RETURN json_build_object('status', 'failure',
+                             'reason', 'Some ts_keys could not be found in catalog',
+                             'offending_keys', v_invalid_keys);
+  END IF;
+  
+  INSERT INTO timeseries.collect_catalog (id, ts_key) 
+  SELECT c_id, ts_key FROM tmp_collect_updates
+  WHERE ts_key NOT IN (SELECT json_array_elements(v_invalid_keys));
+  
+    -- All went well
+  RETURN '{"status": "ok", "reason": "the world is full of rainbows"}'::JSON;
+END;
+$$ LANGUAGE PLPGSQL;
+
+
+
+
+
 CREATE FUNCTION timeseries.insert_from_tmp()
 RETURNS JSON
 AS $$
