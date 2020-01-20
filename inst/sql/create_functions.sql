@@ -15,7 +15,7 @@ RETURNS uuid
 AS $$
   INSERT INTO timeseries.collections(name, owner, description) 
   VALUES(collection_name, owner, description) 
-  ON CONFLICT (name, owner) DO NOTHING
+  ON CONFLICT DO NOTHING
   RETURNING id
 $$ LANGUAGE SQL;
 
@@ -37,25 +37,32 @@ AS $$
 DECLARE
   v_invalid_keys JSON;
 BEGIN
-  SELECT json_agg(DISTINCT tmp_collect_updates.ts_key)
-  INTO v_invalid_keys
-  FROM tmp_collect_updates
-  LEFT OUTER JOIN timeseries.catalog
-  ON timeseries.catalog.ts_key = tmp_collect_updates.ts_key 
-  WHERE timeseries.catalog.ts_key IS NULL;
-  
-  IF json_array_length(v_invalid_keys) > 0 THEN
-    RETURN json_build_object('status', 'failure',
-                             'reason', 'Some ts_keys could not be found in catalog',
-                             'offending_keys', v_invalid_keys);
-  END IF;
+  CREATE TEMPORARY TABLE tmp_invalid_keys (ts_key TEXT PRIMARY KEY) ON COMMIT DROP;
+  INSERT INTO tmp_invalid_keys (
+    SELECT DISTINCT tmp_collect_updates.ts_key
+    FROM tmp_collect_updates
+    LEFT OUTER JOIN timeseries.catalog
+    ON timeseries.catalog.ts_key = tmp_collect_updates.ts_key 
+    WHERE timeseries.catalog.ts_key IS NULL
+  );
   
   INSERT INTO timeseries.collect_catalog (id, ts_key) 
   SELECT c_id, ts_key FROM tmp_collect_updates
-  WHERE ts_key NOT IN (SELECT json_array_elements(v_invalid_keys));
+  WHERE ts_key NOT IN (SELECT * FROM tmp_invalid_keys)
+  ON CONFLICT DO NOTHING;
   
-    -- All went well
-  RETURN '{"status": "ok", "reason": "the world is full of rainbows"}'::JSON;
+  SELECT json_agg(DISTINCT tmp_invalid_keys.ts_key)
+  INTO v_invalid_keys
+  FROM tmp_invalid_keys;
+  
+  IF json_array_length(v_invalid_keys) > 0 THEN
+    RETURN json_build_object('status', 'ok',
+                             'message', 'Some series could not be added to the user specific collection because these series were not found in the database.',
+                             'invalid_keys', v_invalid_keys);
+  END IF;
+  
+  -- All went well
+  RETURN '{"status": "ok", "message": "All keys have been successfully added to the collection."}'::JSON;
 END;
 $$ LANGUAGE PLPGSQL;
 
