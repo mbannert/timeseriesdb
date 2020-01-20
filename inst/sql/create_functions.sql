@@ -8,7 +8,7 @@ $$ LANGUAGE PLPGSQL;
 
 
 
-CREATE FUNCTION timeseries.add_collection(collection_name TEXT,
+CREATE FUNCTION timeseries.collection_add(collection_name TEXT,
                                           owner TEXT,
                                           description TEXT)
 RETURNS uuid
