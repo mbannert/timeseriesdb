@@ -21,10 +21,14 @@ db_collection_add <- function(con, collection_name,
   # https://www.postgresql.org/docs/9.5/sql-insert.html#SQL-ON-CONFLICT
   q <- sprintf(
     "SELECT * FROM %scollection_add($1, $2, $3)", schema)
-  c_id <- dbSendQuery(con, q)
-  dbBind(c_id, list("collection_name", "user", "description"))
-  c_id <- dbFetch(c_id)$collection_add
+  c_id_q <- dbSendQuery(con, q)
+  dbBind(c_id_q, list(collection_name, user, description))
+  c_id <- dbFetch(c_id_q)$collection_add
+  if(dbHasCompleted(c_id_q)) dbClearResult(c_id_q)
   
+  # in case of DO NOTHING NA is returned for c_id
+  # hence we're looking up the id of the created collection 
+  # instead of using the one of the freshly created collection
   if(is.na(c_id)){
     # need this sprintf hack to allow a schema parameter
     q <- sprintf("SELECT id FROM %scollections
@@ -89,10 +93,10 @@ db_collection_remove <- function(con,
                 WHERE name = $1
                 AND owner = $2",
                schema)
-  c_id <- dbSendQuery(con, q)
-  dbBind(c_id, list("collection_name", "user"))
-  c_id <- dbFetch(c_id)$id
-  # TODO END this query
+  c_id_q <- dbSendQuery(con, q)
+  dbBind(c_id_q, list(collection_name, user))
+  c_id <- dbFetch(c_id_q)$id
+  if(dbHasCompleted(c_id_q)) dbClearResult(c_id_q)
   
   
   # write temp table
@@ -104,18 +108,16 @@ db_collection_remove <- function(con,
                temporary = TRUE,
                overwrite = TRUE,
                field.types = c(
-                 c_id = "text",
+                 c_id = "uuid",
                  ts_key = "text")
   )
   
-  
-  # call remove collection
-  q <- sprintf("DELETE FROM %scollect_catalog cc
-               USING tmp_collection_remove rm
-               WHERE cc.ts_key = rm.ts_key
-               RETURNING *", schema)
+  q <- sprintf("SELECT * FROM %scollection_remove()", schema)
   q_rmv <- dbSendQuery(con, q)
-  q_rmv_res <- dbFetch(c_id)
+  q_rmv_res <- dbFetch(q_rmv)$collection_remove
+  if(dbHasCompleted(q_rmv)) dbClearResult(q_rmv)
+  
+  fromJSON(q_rmv_res)
   
 }
 
