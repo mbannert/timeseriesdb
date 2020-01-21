@@ -4,3 +4,4 @@ sleep 2
 psql -p 1111 -h 'localhost' -d postgres -U postgres -f sql/create_extensions.sql
 psql -p 1111 -h 'localhost' -d postgres -U postgres -f sql/create_tables.sql
 psql -p 1111 -h 'localhost' -d postgres -U postgres -f sql/create_functions.sql
+psql -p 1111 -h 'localhost' -d postgres -U postgres -f sql/create_triggers.sql

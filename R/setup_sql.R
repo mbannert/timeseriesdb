@@ -70,4 +70,26 @@ setup_sql_functions <- function(con, schema = "timeseries"){
 }
 
 
-
+#' Install {timeseriesdb} Triggers
+#' 
+#' Installs functions needed for timeseriesdb triggers and sets up these triggers in 
+#' a given PostgreSQL schema. The functions uses a default SQL file installed 
+#' with the package to generate SQL functions. The default schema 'timeseries'
+#' can be replaced using the 'schema' parameter. 
+#' 
+#' @param con PostgreSQL connection object created by the RPostgres package.
+#' @param schema character schema name, defaults to 'timeseries'.
+#' @export
+setup_sql_functions <- function(con, schema = "timeseries"){
+  sql <- readLines(system.file("sql/create_triggers.sql",
+                               package = "timeseriesdb"))
+  sql <- gsub("timeseries\\.", sprintf("%s.", schema), sql)
+  # split up SQL by a new set of lines everytime CREATE FUNCTION 
+  # occurs in order to send single statements using multiple execute calls
+  # which is DBI / RPostgres compliant 
+  lapply(split(sql, cumsum(grepl("CREATE FUNCTION|CREATE TRIGGER",sql))),
+         function(x){
+           dbExecute(con, paste(x, collapse = "\n"))
+         })
+  
+}
