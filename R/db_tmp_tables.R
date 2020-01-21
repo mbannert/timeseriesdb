@@ -15,8 +15,6 @@ db_tmp_store <- function(con,
                          access,
                          schema = "timeseries") {
   
-  # TODO: Would be nice to use current_date and current_timestamp from DB here
-  # set validities to NA in dt if param is null, then do an update (requires 2 extra queries...)
   ts_validity <- format(valid_from, "%Y-%m-%d")
   release_date <- format(release_date, "%Y-%m-%d %T %z")
   

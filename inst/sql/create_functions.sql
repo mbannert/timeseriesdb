@@ -1,11 +1,3 @@
-BEGIN;
--- delete function if exists
-
--- don't think the search path trick works here
--- Well, it probably would, schema could be a parameter
--- CC will know a trick
-
--- figure out if there is a standard way of documenting psql functions
 CREATE FUNCTION timeseries.dataset_exists(dataset_name TEXT)
 RETURNS BOOL
 AS $$
@@ -13,6 +5,21 @@ BEGIN
   RETURN EXISTS(SELECT 1 FROM timeseries.datasets WHERE set_id = dataset_name);
 END;
 $$ LANGUAGE PLPGSQL;
+
+
+
+CREATE FUNCTION timeseries.collection_add(collection_name TEXT,
+                                          owner TEXT,
+                                          description TEXT)
+RETURNS uuid
+AS $$
+  INSERT INTO timeseries.collections(name, owner, description) 
+  VALUES(collection_name, owner, description) 
+  ON CONFLICT DO NOTHING
+  RETURNING id
+$$ LANGUAGE SQL;
+
+
 
 
 CREATE FUNCTION timeseries.create_dataset(dataset_name TEXT,
@@ -25,7 +32,46 @@ AS $$
   RETURNING set_id
 $$ LANGUAGE SQL;
 
--- Ask charles for schemas as params
+
+CREATE FUNCTION timeseries.insert_collect_from_tmp()
+RETURNS JSON
+AS $$
+DECLARE
+  v_invalid_keys JSON;
+BEGIN
+  CREATE TEMPORARY TABLE tmp_invalid_keys (ts_key TEXT PRIMARY KEY) ON COMMIT DROP;
+  INSERT INTO tmp_invalid_keys (
+    SELECT DISTINCT tmp_collect_updates.ts_key
+    FROM tmp_collect_updates
+    LEFT OUTER JOIN timeseries.catalog
+    ON timeseries.catalog.ts_key = tmp_collect_updates.ts_key 
+    WHERE timeseries.catalog.ts_key IS NULL
+  );
+  
+  INSERT INTO timeseries.collect_catalog (id, ts_key) 
+  SELECT c_id, ts_key FROM tmp_collect_updates
+  WHERE ts_key NOT IN (SELECT * FROM tmp_invalid_keys)
+  ON CONFLICT DO NOTHING;
+  
+  SELECT json_agg(DISTINCT tmp_invalid_keys.ts_key)
+  INTO v_invalid_keys
+  FROM tmp_invalid_keys;
+  
+  IF json_array_length(v_invalid_keys) > 0 THEN
+    RETURN json_build_object('status', 'ok',
+                             'message', 'Some series could not be added to the user specific collection because these series were not found in the database.',
+                             'invalid_keys', v_invalid_keys);
+  END IF;
+  
+  -- All went well
+  RETURN '{"status": "ok", "message": "All keys have been successfully added to the collection."}'::JSON;
+END;
+$$ LANGUAGE PLPGSQL;
+
+
+
+
+
 CREATE FUNCTION timeseries.insert_from_tmp()
 RETURNS JSON
 AS $$
