@@ -5,6 +5,8 @@ BEGIN
   IF OLD.set_id = 'default' THEN
     RETURN NULL;
   END IF;
+  
+  RETURN OLD;
 END;
 $$ LANGUAGE PLPGSQL;
 

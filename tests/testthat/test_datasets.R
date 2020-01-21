@@ -13,17 +13,14 @@ if(is_test_db_reachable()) {
 
 datasets <- data.frame(
   set_id = c(
-    "default",
     "set1",
     "set2"
   ),
   set_description = c(
-    "Yon default dataset",
     "test set 1",
     "test set 2"
   ),
   set_md = c(
-    NA,
     '{"testno": 1}',
     '{"testno": 2}'
   )
@@ -49,7 +46,7 @@ catalog <- data.frame(
 prepare_db <- function(con,
                        init_datasets = FALSE,
                        init_catalog = FALSE) {
-  reset_db(con, remove_default_set = TRUE)
+  reset_db(con)
   if(init_datasets) {
     dbWriteTable(con,
                  DBI::Id(schema = "timeseries", table = "datasets"),
@@ -92,9 +89,13 @@ test_with_fresh_db("creating dataset", hard_reset = TRUE, {
   result$set_md <- as.character(result$set_md)
   
   expect_equal(result, data.frame(
-    set_id = "testset",
-    set_description = "a set for testing",
-    set_md = '{"field":"value"}',
+    set_id = c("default", "testset"),
+    set_description = c(
+      "A set that is used if no other set is specified. Every time series needs to be part of a dataset",
+      "a set for testing"),
+    set_md = c(
+      NA_character_,
+      '{"field":"value"}'),
     stringsAsFactors = FALSE
   ))
 })
@@ -115,9 +116,15 @@ test_with_fresh_db("defaults for description and md", hard_reset = TRUE, {
     
   expect_equal(result, 
                data.frame(
-                 set_id = "defaulttestset",
-                 set_description = NA_character_,
-                 set_md = NA_character_,
+                 set_id = c(
+                   "default",
+                   "defaulttestset"),
+                 set_description = c(
+                   "A set that is used if no other set is specified. Every time series needs to be part of a dataset",
+                   NA_character_),
+                 set_md = c(
+                   NA_character_,
+                   NA_character_),
                  stringsAsFactors = FALSE
                ))
 })
