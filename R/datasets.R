@@ -48,7 +48,7 @@ db_create_dataset <- function(con,
 #' @export
 #'
 #' @examples
-db_keys_in_dataset <- function(con,
+db_get_dataset_keys <- function(con,
                                set_name,
                                schema = "timeseries") {
   dbGetQuery(con,
@@ -69,7 +69,7 @@ db_keys_in_dataset <- function(con,
 #' @export
 #'
 #' @examples
-db_dataset_of_keys <- function(con,
+db_get_dataset_id <- function(con,
                                ts_keys,
                                schema = "timeseries") {
   dbWriteTable(con,
@@ -122,6 +122,14 @@ db_assign_dataset <- function(con,
                set_name
              ))
   
-  # TODO: error/warn here or just pass status on?
-  jsonlite::fromJSON(out$assign_dataset)
+  out_parsed <- jsonlite::fromJSON(out$assign_dataset)
+  
+  if(out_parsed$status == "failure") {
+    stop(out_parsed$reason)
+  } else if(out_parsed$status == "warning") {
+    warning(sprintf("%s\n%s", out_parsed$reason, paste(out_parsed$offending_keys, collapse = ",\n")))
+  }
+  
+  # Why not both (well, one and a half)?
+  out_parsed
 }
