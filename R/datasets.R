@@ -10,10 +10,13 @@
 #' @param con PostgreSQL connection
 #' @param set_name character The name of the set to be created
 #' @param set_md meta Metadata about the set
+#' @param schema character Name of timeseries schema
 #'
 #' @importFrom RPostgres dbGetQuery dbQuoteIdentifier
 #' @importFrom DBI Id
 #' 
+#' @return character name of the created set
+#' @export
 db_create_dataset <- function(con,
                               set_name,
                               set_description = NA,
@@ -38,16 +41,14 @@ db_create_dataset <- function(con,
 }
 
 
-#' Title
+#' Get all ts keys contained in a given set
 #'
-#' @param con 
-#' @param set_name 
-#' @param schema 
+#' @param con PostgreSQL connection
+#' @param set_name character Name of the set to get keys for
+#' @param schema character Name of timeseries schema
 #'
-#' @return
+#' @return character A vector of ts keys contained in the set
 #' @export
-#'
-#' @examples
 db_get_dataset_keys <- function(con,
                                set_name,
                                schema = "timeseries") {
@@ -59,16 +60,16 @@ db_get_dataset_keys <- function(con,
              ))$ts_key
 }
 
-#' Title
+#' Get datasets ts keys are in
 #'
-#' @param con 
-#' @param ts_keys 
-#' @param schema 
+#' If a ts key does not exist in the catalog, set_id will be NA.
 #'
-#' @return
+#' @param con PostgreSQL connection
+#' @param ts_keys character
+#' @param schema character Name of timeseries schema
+#'
+#' @return data.frame A data.frame with columns `ts_key` and `set_id`
 #' @export
-#'
-#' @examples
 db_get_dataset_id <- function(con,
                                ts_keys,
                                schema = "timeseries") {
@@ -86,18 +87,22 @@ db_get_dataset_id <- function(con,
                 dbQuoteIdentifier(con, Id(schema = schema))))
 }
 
-## TODO: Name of function up for discussion.
-#' Title
+#' Assign ts keys to a dataset
 #'
-#' @param con 
-#' @param ts_keys 
-#' @param set_name 
-#' @param schema 
+#' `db_assign_dataset` returns a list with status information.
+#' status `"ok"` means all went well.
+#' status `"warning"` means some keys are not in the catalog. The vector of 
+#' those keys is in the `offending_keys` field.
+#' 
+#' Trying to assign keys to a nonexistent dataset is an error.
 #'
-#' @return
+#' @param con PostgreSQL connection
+#' @param ts_keys character Vector of ts keys to assign to dataset
+#' @param set_name character Id of the set to assign `ts_keys` to
+#' @param schema character Name of timeseries schema
+#'
+#' @return list A status list
 #' @export
-#'
-#' @examples
 db_assign_dataset <- function(con,
                               ts_keys,
                               set_name,
