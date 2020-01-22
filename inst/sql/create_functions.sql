@@ -93,6 +93,8 @@ AS $$
 DECLARE
   v_invalid_keys JSON;
 BEGIN
+  --! I suppose a v_invalid_keys TEXT[] would do
+  --! Not sure if creating a tmp table is such a big thing though
   CREATE TEMPORARY TABLE tmp_invalid_keys (ts_key TEXT PRIMARY KEY) ON COMMIT DROP;
   INSERT INTO tmp_invalid_keys (
     SELECT DISTINCT tmp_collect_updates.ts_key
@@ -112,6 +114,9 @@ BEGIN
   FROM tmp_invalid_keys;
 
   IF json_array_length(v_invalid_keys) > 0 THEN
+    --! insert_from_tmp (which maybe should be renamed to insert_ts_from_tmp)
+    --! returns status "warning" in this case
+    --! I like "message" though, better than "reason"
     RETURN json_build_object('status', 'ok',
                              'message', 'Some series could not be added to the user specific collection because these series were not found in the database.',
                              'invalid_keys', v_invalid_keys);
