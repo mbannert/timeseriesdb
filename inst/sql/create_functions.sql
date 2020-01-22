@@ -13,8 +13,8 @@ CREATE FUNCTION timeseries.collection_add(collection_name TEXT,
                                           description TEXT)
 RETURNS uuid
 AS $$
-  INSERT INTO timeseries.collections(name, owner, description) 
-  VALUES(collection_name, owner, description) 
+  INSERT INTO timeseries.collections(name, owner, description)
+  VALUES(collection_name, owner, description)
   ON CONFLICT DO NOTHING
   RETURNING id
 $$ LANGUAGE SQL;
@@ -24,12 +24,12 @@ $$ LANGUAGE SQL;
 CREATE FUNCTION timeseries.collection_remove()
 RETURNS JSON
 AS $$
-DECLARE 
+DECLARE
   result JSON;
 BEGIN
   CREATE TEMP TABLE removed_keys (ts_key TEXT PRIMARY KEY) ON COMMIT DROP;
   CREATE TEMP TABLE removed_collect (id TEXT PRIMARY KEY) ON COMMIT DROP;
-  
+
   WITH del_q AS (
     DELETE FROM timeseries.collect_catalog cc
     USING tmp_collection_remove rm
@@ -38,11 +38,11 @@ BEGIN
   )
   INSERT INTO removed_keys
   SELECT ts_key FROM del_q;
-  
+
   WITH del_collect AS (
   -- 'der letzte macht das licht aus'
-  -- keeping an entirely empty set makes no sense, 
-  -- hence we delete a set that does not contain 
+  -- keeping an entirely empty set makes no sense,
+  -- hence we delete a set that does not contain
   -- any series after removing keys.
     DELETE FROM timeseries.collections c
     USING tmp_collection_remove r
@@ -53,16 +53,16 @@ BEGIN
   )
   INSERT INTO removed_collect
   SELECT DISTINCT(id) FROM del_collect;
-  
-  
+
+
   SELECT json_build_object('number_of_removed_keys', count(k.ts_key),
                            'removed_keys', json_agg(k.ts_key),
                            'removed_collections', json_agg(DISTINCT(c.id)))
   INTO result
   FROM removed_keys k
-  -- this is needed cause a comma separated FROM is basically 
-  -- an inner join which does not work with no key to join on. 
-  LEFT JOIN removed_collect c ON(TRUE); 
+  -- this is needed cause a comma separated FROM is basically
+  -- an inner join which does not work with no key to join on.
+  LEFT JOIN removed_collect c ON(TRUE);
 
   RETURN result;
 END;
@@ -93,30 +93,35 @@ AS $$
 DECLARE
   v_invalid_keys JSON;
 BEGIN
+  --! I suppose a v_invalid_keys TEXT[] would do
+  --! Not sure if creating a tmp table is such a big thing though
   CREATE TEMPORARY TABLE tmp_invalid_keys (ts_key TEXT PRIMARY KEY) ON COMMIT DROP;
   INSERT INTO tmp_invalid_keys (
     SELECT DISTINCT tmp_collect_updates.ts_key
     FROM tmp_collect_updates
     LEFT OUTER JOIN timeseries.catalog
-    ON timeseries.catalog.ts_key = tmp_collect_updates.ts_key 
+    ON timeseries.catalog.ts_key = tmp_collect_updates.ts_key
     WHERE timeseries.catalog.ts_key IS NULL
   );
-  
-  INSERT INTO timeseries.collect_catalog (id, ts_key) 
+
+  INSERT INTO timeseries.collect_catalog (id, ts_key)
   SELECT c_id, ts_key FROM tmp_collect_updates
   WHERE ts_key NOT IN (SELECT * FROM tmp_invalid_keys)
   ON CONFLICT DO NOTHING;
-  
+
   SELECT json_agg(DISTINCT tmp_invalid_keys.ts_key)
   INTO v_invalid_keys
   FROM tmp_invalid_keys;
-  
+
   IF json_array_length(v_invalid_keys) > 0 THEN
+    --! insert_from_tmp (which maybe should be renamed to insert_ts_from_tmp)
+    --! returns status "warning" in this case
+    --! I like "message" though, better than "reason"
     RETURN json_build_object('status', 'ok',
                              'message', 'Some series could not be added to the user specific collection because these series were not found in the database.',
                              'invalid_keys', v_invalid_keys);
   END IF;
-  
+
   -- All went well
   RETURN '{"status": "ok", "message": "All keys have been successfully added to the collection."}'::JSON;
 END;
@@ -138,13 +143,13 @@ BEGIN
   INNER JOIN timeseries.timeseries_main
   ON tmp_ts_updates.ts_key = timeseries.timeseries_main.ts_key
   AND tmp_ts_updates.validity <= timeseries.timeseries_main.validity;
-  
+
   IF json_array_length(v_invalid_keys) > 0 THEN
     RETURN json_build_object('status', 'failure',
                              'reason', 'keys with invalid vintages',
                              'offending_keys', v_invalid_keys);
   END IF;
-  
+
   -- after this insert the set_id is 'default' because we don't want a set parameter in our
   -- store functions
   INSERT INTO timeseries.catalog
@@ -153,17 +158,17 @@ BEGIN
   LEFT OUTER JOIN timeseries.catalog ON (timeseries.catalog.ts_key = tmp_ts_updates.ts_key)
   WHERE timeseries.catalog.ts_key IS NULL;
 
-  -- Generate computed property "coverage"  
+  -- Generate computed property "coverage"
   ALTER TABLE tmp_ts_updates
   ADD COLUMN coverage DATERANGE;
   UPDATE tmp_ts_updates
   SET coverage = concat('[', ts_data->'time'->0, ',', ts_data->'time'->-1, ')')::daterange;
 
-  -- Main insert  
+  -- Main insert
   INSERT INTO timeseries.timeseries_main(ts_key, validity, coverage, release_date, ts_data, access)
   SELECT ts_key, COALESCE(validity, CURRENT_DATE), coverage, COALESCE(release_date, CURRENT_TIMESTAMP), ts_data, access
   FROM tmp_ts_updates;
-  
+
   -- All went well
   RETURN '{"status": "ok", "reason": "the world is full of rainbows"}'::JSON;
 END;
@@ -222,12 +227,12 @@ BEGIN
   IF NOT EXISTS(SELECT 1 FROM timeseries.datasets WHERE set_id = id) THEN
     RETURN ('{"status": "failure", "reason": "Dataset ' || id || ' does not exist!"}')::JSON;
   END IF; -- Welcome to the stone age of programming
-  
+
   UPDATE timeseries.catalog AS cat
   SET set_id = id
   FROM tmp_set_assign AS tmp -- "FROM" ;P
   WHERE cat.ts_key = tmp.ts_key;
-  
+
   SELECT array_agg(tmp.ts_key)
   FROM tmp_set_assign AS tmp
   LEFT JOIN
@@ -235,7 +240,7 @@ BEGIN
   ON tmp.ts_key = cat.ts_key
   WHERE cat.ts_key IS NULL
   INTO v_keys_not_in_catalog;
-  
+
   IF array_length(v_keys_not_in_catalog, 1) != 0 THEN
     RETURN ('{"status": "warning",'
     '"reason": "Some keys are not in catalog!",'
