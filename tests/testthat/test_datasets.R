@@ -52,7 +52,7 @@ prepare_db <- function(con,
                  DBI::Id(schema = "timeseries", table = "datasets"),
                  datasets,
                  append = TRUE)
-    
+
     if(init_catalog) {
       dbWriteTable(con,
                    DBI::Id(schema = "timeseries", table = "catalog"),
@@ -68,7 +68,7 @@ prepare_db <- function(con,
 test_with_fresh_db <- function(description, code, hard_reset = FALSE) {
   skip_on_cran()
   skip_if_not(is_test_db_reachable())
-  
+
   prepare_db(con, !hard_reset, !hard_reset)
 
   test_that(description, code)
@@ -76,18 +76,18 @@ test_with_fresh_db <- function(description, code, hard_reset = FALSE) {
 
 test_with_fresh_db("creating dataset returns id of set", hard_reset = TRUE, {
   out <- db_create_dataset(con, "testset", "a set for testing", meta(field = "value"))
-  
+
   expect_equal(out, "testset")
 })
 
 test_with_fresh_db("creating dataset", hard_reset = TRUE, {
   db_create_dataset(con, "testset", "a set for testing", meta(field = "value"))
   result <- dbGetQuery(con, "SELECT * FROM timeseries.datasets")
-  
+
   expect_is(result$set_md, "pq_json")
-  
+
   result$set_md <- as.character(result$set_md)
-  
+
   expect_equal(result, data.frame(
     set_id = c("default", "testset"),
     set_description = c(
@@ -109,12 +109,12 @@ test_with_fresh_db("no duplicated set ids", hard_reset = TRUE, {
 
 test_with_fresh_db("defaults for description and md", hard_reset = TRUE, {
   db_create_dataset(con, "defaulttestset")
-  
+
   result <- dbGetQuery(con, "SELECT * FROM timeseries.datasets")
 
   result$set_md <- as.character(result$set_md)
-    
-  expect_equal(result, 
+
+  expect_equal(result,
                data.frame(
                  set_id = c(
                    "default",
@@ -147,7 +147,7 @@ test_with_fresh_db("db_get_dataset_id gets the correct set", {
     set_id = "set1",
     stringsAsFactors = FALSE
   )
-  
+
   expect_equal(out, expected)
 })
 
@@ -158,7 +158,7 @@ test_with_fresh_db("db_get_dataset_id spanning multiple sets", {
     set_id = c("set1", "set2"),
     stringsAsFactors = FALSE
   )
-  
+
   expect_equal(out, expected)
 })
 
@@ -169,7 +169,7 @@ test_with_fresh_db("db_get_dataset_id with missing key", {
     set_id = NA_character_,
     stringsAsFactors = FALSE
   )
-  
+
   expect_equal(out, expected)
 })
 
@@ -178,16 +178,16 @@ test_with_fresh_db("db_get_dataset_id with missing key", {
 
 test_with_fresh_db("db_assign_dataset returns status object", {
   out <- db_assign_dataset(con, c("ts3", "ts4"), "set1")
-  
+
   expect_is(out, "list")
   expect_true("status" %in% names(out))
 })
 
 test_with_fresh_db("db_assign_dataset works", {
   db_assign_dataset(con, c("ts3", "ts4"), "set1")
-  
+
   result <- dbGetQuery(con, "SELECT set_id FROM timeseries.catalog WHERE ts_key ~ '[34]'")$set_id
-  
+
   expect_equal(result, c("set1", "set1"))
 })
 
@@ -199,7 +199,7 @@ test_with_fresh_db("db_assign_dataset warns if some keys don't exist", {
 
 test_with_fresh_db("db_assign_dataset returns list of offending keys", {
   suppressWarnings(out <- db_assign_dataset(con, c("ts1", "tsx"), "set2"))
-  
+
   expect_equal(out$offending_keys, "tsx")
 })
 
@@ -208,4 +208,38 @@ test_with_fresh_db("db_assign_dataset errors if set does not exist", {
     db_assign_dataset(con, "ts1", "notaset"),
     "notaset does not exist"
   )
+})
+
+
+# db_dataset_delete -------------------------------------------------------
+
+test_with_fresh_db("SQL dataset_delete deletes a set", {
+  dbGetQuery(con, "SELECT * FROM timeseries.dataset_delete('set1', 'set1')")$dataset_delete
+
+  result_cat <- dbGetQuery(con, "SELECT set_id FROM timeseries.catalog WHERE set_id = 'set1'")$set_id
+  result_sets <- dbGetQuery(con, "SELECT set_id FROM timeseries.datasets WHERE set_id = 'set1'")$set_id
+
+  expect_equal(length(result_cat), 0)
+  expect_equal(length(result_sets), 0)
+})
+
+test_with_fresh_db("SQL dataset_delete returns the name of the deleted set", {
+  result <- dbGetQuery(con, "SELECT * FROM timeseries.dataset_delete('set1', 'set1')")$dataset_delete
+
+  expect_equal(result, "set1")
+})
+
+test_with_fresh_db("SQL dataset_delete does nothing with wrong confirm", {
+  result <- dbGetQuery(con, "SELECT * FROM timeseries.dataset_delete('set1', 'le_set_numero_un')")$dataset_delete
+  expect_true(is.na(result))
+  result_set <- dbGetQuery(con, "SELECT count(*) FROM timeseries.datasets WHERE set_id = 'set1'")$count
+  expect_equal(result_set, 1)
+})
+
+test_that("db_dataset_delete_ errors if confirmation is wrong", {
+  expect_error(db_dataset_delete_("", "a", "b"), "Confirmation")
+})
+
+test_that("db_dataset_delete_ errors when called directly, even with correct confirmation", {
+  expect_error(db_dataset_delete_("", "a", "a"), "directly")
 })
