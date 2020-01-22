@@ -21,6 +21,60 @@ $$ LANGUAGE SQL;
 
 
 
+CREATE FUNCTION timeseries.collection_remove()
+RETURNS JSON
+AS $$
+DECLARE 
+  result JSON;
+BEGIN
+  CREATE TEMP TABLE removed_keys (ts_key TEXT PRIMARY KEY) ON COMMIT DROP;
+  CREATE TEMP TABLE removed_collect (id TEXT PRIMARY KEY) ON COMMIT DROP;
+  
+  WITH del_q AS (
+    DELETE FROM timeseries.collect_catalog cc
+    USING tmp_collection_remove rm
+    WHERE cc.ts_key = rm.ts_key
+    RETURNING rm.ts_key
+  )
+  INSERT INTO removed_keys
+  SELECT ts_key FROM del_q;
+  
+  WITH del_collect AS (
+  -- 'der letzte macht das licht aus'
+  -- keeping an entirely empty set makes no sense, 
+  -- hence we delete a set that does not contain 
+  -- any series after removing keys.
+    DELETE FROM timeseries.collections c
+    USING tmp_collection_remove r
+    WHERE c.id = r.c_id
+    AND NOT EXISTS(SELECT 1 FROM timeseries.collect_catalog
+    WHERE id IN (SELECT DISTINCT(r.c_id) FROM tmp_collection_remove r))
+    RETURNING c.id
+  )
+  INSERT INTO removed_collect
+  SELECT DISTINCT(id) FROM del_collect;
+  
+  
+  SELECT json_build_object('number_of_removed_keys', count(k.ts_key),
+                           'removed_keys', json_agg(k.ts_key),
+                           'removed_collections', json_agg(DISTINCT(c.id)))
+  INTO result
+  FROM removed_keys k
+  -- this is needed cause a comma separated FROM is basically 
+  -- an inner join which does not work with no key to join on. 
+  LEFT JOIN removed_collect c ON(TRUE); 
+
+  RETURN result;
+END;
+$$ LANGUAGE PLPGSQL;
+
+
+
+
+
+
+
+
 
 CREATE FUNCTION timeseries.create_dataset(dataset_name TEXT,
                                           dataset_description TEXT DEFAULT NULL,
