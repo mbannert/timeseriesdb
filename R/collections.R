@@ -20,28 +20,8 @@ db_collection_add <- function(con, collection_name,
   # classic UPSERT case, we use it in the DO NOTHING flavor
   # https://www.postgresql.org/docs/9.5/sql-insert.html#SQL-ON-CONFLICT
   #! Why not just dbGetQuery?
-  q <- sprintf(
-    "SELECT * FROM %scollection_add($1, $2, $3)", schema)
-  c_id_q <- dbSendQuery(con, q)
-  dbBind(c_id_q, list(collection_name, user, description))
-  c_id <- dbFetch(c_id_q)$collection_add
-  if(dbHasCompleted(c_id_q)) dbClearResult(c_id_q)
-
-  # in case of DO NOTHING NA is returned for c_id
-  # hence we're looking up the id of the created collection
-  # instead of using the one of the freshly created collection
-  #! Alternatively we could have the sql function check and return id of existing set in one go
-  if(is.na(c_id)){
-    # need this sprintf hack to allow a schema parameter
-    q <- sprintf("SELECT id FROM %scollections
-                  WHERE name = $1
-                  AND owner = $2", schema)
-    c_id_na_q <- dbSendQuery(con, q)
-    dbBind(c_id_na_q, list("collection_name", "user"))
-    c_id <- dbFetch(c_id_na_q)$id
-    if(dbHasCompleted(c_id_na_q)) dbClearResult(c_id_na_q)
-  }
-
+  q <- sprintf("SELECT * FROM %scollection_add($1, $2, $3)", schema)
+  c_id <- dbGetQuery(con, q, list(collection_name, user, description))$collection_add
 
   # by now collection should exist,
   # let's add keys: fill a temp table, anti-join the keys

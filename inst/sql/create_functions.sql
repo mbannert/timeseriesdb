@@ -9,15 +9,35 @@ $$ LANGUAGE PLPGSQL;
 
 
 CREATE FUNCTION timeseries.collection_add(collection_name TEXT,
-                                          owner TEXT,
+                                          col_owner TEXT,
                                           description TEXT)
 RETURNS uuid
 AS $$
-  INSERT INTO timeseries.collections(name, owner, description)
-  VALUES(collection_name, owner, description)
-  ON CONFLICT DO NOTHING
-  RETURNING id
-$$ LANGUAGE SQL;
+DECLARE
+  v_id uuid;
+BEGIN
+  SELECT id FROM timeseries.collections
+  WHERE name = collection_name
+  AND owner = col_owner
+  INTO v_id;
+            
+  IF v_id IS NOT NULL THEN
+  
+    RETURN v_id;
+  
+  ELSE
+  
+    INSERT INTO timeseries.collections(name, owner, description)
+    VALUES(collection_name, col_owner, description)
+    ON CONFLICT DO NOTHING
+    RETURNING id
+    INTO v_id;
+    
+    RETURN v_id;
+  END IF;
+  
+END;
+$$ LANGUAGE PLPGSQL;
 
 
 
