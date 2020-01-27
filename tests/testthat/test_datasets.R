@@ -10,13 +10,13 @@ if(is_test_db_reachable()) {
 
 # test db_create_dataset --------------------------------------------------
 
-test_with_fresh_db("creating dataset returns id of set", hard_reset = TRUE, {
+test_with_fresh_db(con, "creating dataset returns id of set", hard_reset = TRUE, {
   out <- db_create_dataset(con, "testset", "a set for testing", meta(field = "value"))
 
   expect_equal(out, "testset")
 })
 
-test_with_fresh_db("creating dataset", hard_reset = TRUE, {
+test_with_fresh_db(con, "creating dataset", hard_reset = TRUE, {
   db_create_dataset(con, "testset", "a set for testing", meta(field = "value"))
   result <- dbGetQuery(con, "SELECT * FROM timeseries.datasets")
 
@@ -36,14 +36,14 @@ test_with_fresh_db("creating dataset", hard_reset = TRUE, {
   ))
 })
 
-test_with_fresh_db("no duplicated set ids", hard_reset = TRUE, {
+test_with_fresh_db(con, "no duplicated set ids", hard_reset = TRUE, {
   db_create_dataset(con, "testset", "a set for testing", meta(field = "value"))
   expect_error(
     db_create_dataset(con, "testset", "a set for testing", meta(field = "value")),
     "violates unique constraint")
 })
 
-test_with_fresh_db("defaults for description and md", hard_reset = TRUE, {
+test_with_fresh_db(con, "defaults for description and md", hard_reset = TRUE, {
   db_create_dataset(con, "defaulttestset")
 
   result <- dbGetQuery(con, "SELECT * FROM timeseries.datasets")
@@ -67,7 +67,7 @@ test_with_fresh_db("defaults for description and md", hard_reset = TRUE, {
 
 # test db_get_dataset_keys ------------------------------------------------
 
-test_with_fresh_db("db_get_dataset_keys", {
+test_with_fresh_db(con, "db_get_dataset_keys", {
   expect_equal(
     db_get_dataset_keys(con, "set1"),
     c("ts1", "ts2")
@@ -76,7 +76,7 @@ test_with_fresh_db("db_get_dataset_keys", {
 
 # test db_get_dataset_id --------------------------------------------------
 
-test_with_fresh_db("db_get_dataset_id gets the correct set", {
+test_with_fresh_db(con, "db_get_dataset_id gets the correct set", {
   out <- db_get_dataset_id(con, "ts1")
   expected <- data.frame(
     ts_key = "ts1",
@@ -87,7 +87,7 @@ test_with_fresh_db("db_get_dataset_id gets the correct set", {
   expect_equal(out, expected)
 })
 
-test_with_fresh_db("db_get_dataset_id spanning multiple sets", {
+test_with_fresh_db(con, "db_get_dataset_id spanning multiple sets", {
   out <- db_get_dataset_id(con, c("ts1", "ts3"))
   expected <- data.frame(
     ts_key = c("ts1", "ts3"),
@@ -98,7 +98,7 @@ test_with_fresh_db("db_get_dataset_id spanning multiple sets", {
   expect_equal(out, expected)
 })
 
-test_with_fresh_db("db_get_dataset_id with missing key", {
+test_with_fresh_db(con, "db_get_dataset_id with missing key", {
   out <- db_get_dataset_id(con, "notatskey")
   expected <- data.frame(
     ts_key = "notatskey",
@@ -112,14 +112,14 @@ test_with_fresh_db("db_get_dataset_id with missing key", {
 # test db_assign_dataset --------------------------------------------------
 
 
-test_with_fresh_db("db_assign_dataset returns status object", {
+test_with_fresh_db(con, "db_assign_dataset returns status object", {
   out <- db_assign_dataset(con, c("ts3", "ts4"), "set1")
 
   expect_is(out, "list")
   expect_true("status" %in% names(out))
 })
 
-test_with_fresh_db("db_assign_dataset works", {
+test_with_fresh_db(con, "db_assign_dataset works", {
   db_assign_dataset(con, c("ts3", "ts4"), "set1")
 
   result <- dbGetQuery(con, "SELECT set_id FROM timeseries.catalog WHERE ts_key ~ '[34]'")$set_id
@@ -127,19 +127,19 @@ test_with_fresh_db("db_assign_dataset works", {
   expect_equal(result, c("set1", "set1"))
 })
 
-test_with_fresh_db("db_assign_dataset warns if some keys don't exist", {
+test_with_fresh_db(con, "db_assign_dataset warns if some keys don't exist", {
   expect_warning(
     db_assign_dataset(con, c("ts1", "tsx"), "set2"),
     "tsx")
 })
 
-test_with_fresh_db("db_assign_dataset returns list of offending keys", {
+test_with_fresh_db(con, "db_assign_dataset returns list of offending keys", {
   suppressWarnings(out <- db_assign_dataset(con, c("ts1", "tsx"), "set2"))
 
   expect_equal(out$offending_keys, "tsx")
 })
 
-test_with_fresh_db("db_assign_dataset errors if set does not exist", {
+test_with_fresh_db(con, "db_assign_dataset errors if set does not exist", {
   expect_error(
     db_assign_dataset(con, "ts1", "notaset"),
     "notaset does not exist"

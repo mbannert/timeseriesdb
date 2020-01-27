@@ -71,7 +71,7 @@ prepare_db <- function(con,
   }
 }
 
-test_with_fresh_db <- function(description, code, hard_reset = FALSE) {
+test_with_fresh_db <- function(con, description, code, hard_reset = FALSE) {
   skip_on_cran()
   skip_if_not(is_test_db_reachable())
 

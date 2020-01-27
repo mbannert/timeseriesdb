@@ -36,7 +36,7 @@ meta_unlocal_fixture_df <- function(ts_key,
 }
 
 
-test_with_fresh_db("db_store_ts_metadata stores metadata", {
+test_with_fresh_db(con, "db_store_ts_metadata stores metadata", {
   db_store_ts_metadata(con, tsmeta.list(ts1 = list(field = "value")), "de")
 
   result <- dbGetQuery(con, "SELECT * FROM timeseries.md_local_ts")
@@ -46,7 +46,7 @@ test_with_fresh_db("db_store_ts_metadata stores metadata", {
   )
 })
 
-test_with_fresh_db("db_store_ts_metadata can add fields", {
+test_with_fresh_db(con, "db_store_ts_metadata can add fields", {
   db_store_ts_metadata(con, tsmeta.list(ts1 = list(field = "value")), "de")
   db_store_ts_metadata(con, tsmeta.list(ts1 = list(field2 = 3)), "de")
 
@@ -57,7 +57,7 @@ test_with_fresh_db("db_store_ts_metadata can add fields", {
   )
 })
 
-test_with_fresh_db("db_store_ts_metadata can override fields", {
+test_with_fresh_db(con, "db_store_ts_metadata can override fields", {
   db_store_ts_metadata(con, tsmeta.list(ts1 = list(field = "value")), "de")
   db_store_ts_metadata(con, tsmeta.list(ts1 = list(field = "new_value")), "de")
 
