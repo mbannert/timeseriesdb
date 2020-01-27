@@ -29,9 +29,9 @@ CREATE TABLE timeseries.timeseries_main(
 CREATE TABLE timeseries.md_local_ts (
   ts_key TEXT,
   lang TEXT,
-  data_desc JSON,
+  data_desc JSONB,
   PRIMARY KEY(ts_key, lang),
-  FOREIGN KEY (ts_key) REFERENCES timeseries.catalog(ts_key)
+  FOREIGN KEY (ts_key) REFERENCES timeseries.catalog(ts_key) ON DELETE CASCADE
 );
 
 
@@ -54,13 +54,13 @@ CREATE TABLE timeseries.md_vintages (
 CREATE TABLE timeseries.collections (
   id UUID NOT NULL DEFAULT uuid_generate_v1() PRIMARY KEY,
   name TEXT,
-  owner TEXT, 
+  owner TEXT,
   description TEXT,
   UNIQUE (name, owner)
 );
 
 CREATE TABLE timeseries.collect_catalog (
-  id UUID, 
+  id UUID,
   ts_key TEXT,
   PRIMARY KEY (id,ts_key),
   FOREIGN KEY (id) REFERENCES timeseries.collections(id),

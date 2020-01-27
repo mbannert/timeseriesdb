@@ -48,7 +48,7 @@ as.tsmeta.dt.tsmeta.list <- function(meta_list) {
   if(length(meta_list) > 0) {
     meta_lengths <- sapply(meta_list, length)
     empty_metas <- meta_lengths == 0
-    
+
     out <- rbindlist(meta_list, fill = TRUE, idcol = TRUE)[.(names(meta_list)), on = .(.id)]
     minlength <- min(meta_lengths[!empty_metas])
     if(ncol(out) != (minlength + 1)) {
@@ -134,7 +134,7 @@ as.tsmeta.list.tsmeta.list <- identity
 
 # printers ----------------------------------------------------------------
 
-#' @export 
+#' @export
 print.meta <- function(x, ...) {
   if(length(x) > 0) {
     atts <- attributes(x)
@@ -151,7 +151,7 @@ print.meta <- function(x, ...) {
 }
 
 
-#' @export 
+#' @export
 print.tsmeta.dt <- function(x, ...) {
   atts <- attributes(x)
   if(nrow(x) > 0) {
@@ -171,4 +171,65 @@ print.tsmeta.list <- function(x, ...) {
   } else {
     cat(sprintf("An empty tsmeta.list object\n"))
   }
+}
+
+
+# functions ---------------------------------------------------------------
+
+db_store_ts_metadata <- function(con,
+                                 metadata,
+                                 locale,
+                                 schema = "timeseries") {
+  UseMethod("db_store_ts_metadata", metadata)
+}
+
+#' Title
+#'
+#' @param con
+#' @param metadata
+#' @param locale
+#' @param schema
+#'
+#' @return
+#'
+#' @importFrom jsonlite fromJSON
+#' @importFrom RPostgres dbWriteTable
+#' @export
+#'
+#' @examples
+db_store_ts_metadata.tsmeta.list <- function(con,
+                                             metadata,
+                                             locale,
+                                             schema = "timeseries") {
+  metadata <- lapply(metadata, toJSON, auto_unbox = TRUE, digits = NA)
+
+  md_table <- data.frame(
+    ts_key = names(metadata),
+    lang = locale,
+    data_desc = unlist(metadata),
+    stringsAsFactors = FALSE
+  )
+
+  dbWriteTable(con,
+               "tmp_md_insert",
+               md_table,
+               temporary = TRUE,
+               overwrite = TRUE,
+               field.types = c(
+                 ts_key = "text",
+                 lang = "text",
+                 data_desc = "jsonb")
+  )
+
+  fromJSON(db_call_function(con, "md_local_ts_upsert"))
+}
+
+db_store_ts_metadata.tsmeta.dt <- function(con,
+                                           metadata,
+                                           locale,
+                                           schema = "timeseries") {
+  db_store_ts_metadata.tsmeta.list(con,
+                                   as.tsmeta.list(metadata),
+                                   locale,
+                                   schema)
 }
