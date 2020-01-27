@@ -191,7 +191,7 @@ db_store_ts_metadata <- function(con,
 #'
 #' @return
 #'
-#' @importFrom jsonlite fromJSON
+#' @importFrom jsonlite fromJSON toJSON
 #' @importFrom RPostgres dbWriteTable
 #' @export
 #'
@@ -200,7 +200,7 @@ db_store_ts_metadata.tsmeta.list <- function(con,
                                              metadata,
                                              locale,
                                              schema = "timeseries") {
-  metadata <- create_meta_json(metadata)
+  metadata <- lapply(metadata, toJSON, auto_unbox = TRUE, digits = NA)
 
   md_table <- data.frame(
     ts_key = names(metadata),
