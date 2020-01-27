@@ -98,9 +98,8 @@ as.tsmeta.list <- function(meta) {
 #' @export
 as.tsmeta.list.tsmeta.dt <- function(meta) {
   if(nrow(meta) > 0) {
-    out <- lapply(split(meta, by = "ts_key"), function(x) {
-      as.list(x[, -"ts_key"])
-    })
+    out <- meta[, .(md = list(as.list(.SD))), by = ts_key][, md]
+    names(out) <- meta$ts_key
     # Remove NA elements from list
     out <- lapply(out, function(x){x[!is.na(x)]})
     as.tsmeta.list.list(out)
