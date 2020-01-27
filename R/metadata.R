@@ -201,7 +201,7 @@ db_store_ts_metadata.tsmeta.list <- function(con,
                                              metadata,
                                              locale,
                                              schema = "timeseries") {
-  metadata <- lapply(metadata, toJSON, auto_unbox = TRUE, digits = NA)
+  metadata <- create_meta_json(metadata)
 
   md_table <- data.frame(
     ts_key = names(metadata),
