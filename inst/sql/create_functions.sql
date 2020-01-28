@@ -284,12 +284,11 @@ AS $$
 DECLARE
   v_missing_keys TEXT[];
 BEGIN
-  INSERT INTO timeseries.catalog(ts_key, data_desc)
-  SELECT ts_key, data_desc
-  FROM tmp_md_insert
-  ON CONFLICT (ts_key) DO UPDATE
+  UPDATE timeseries.catalog cat
   SET
-    data_desc = COALESCE(timeseries.catalog.data_desc, '{}'::JSONB) || EXCLUDED.data_desc;
+    data_desc = COALESCE(cat.data_desc, '{}'::JSONB) || tmp.data_desc
+  FROM tmp_md_insert AS tmp
+  WHERE tmp.ts_key = cat.ts_key;
 
   SELECT array_agg(DISTINCT tmp.ts_key)
   FROM tmp_md_insert AS tmp
@@ -301,7 +300,7 @@ BEGIN
   IF array_length(v_missing_keys, 1) > 0 THEN
     RETURN json_build_object('status', 'warning',
                              'message', 'Some keys not found in catalog',
-                             'offending_keys', to_json(v_invalid_keys));
+                             'offending_keys', to_json(v_missing_keys));
   ELSE
     RETURN json_build_object('status', 'ok');
   END IF;
