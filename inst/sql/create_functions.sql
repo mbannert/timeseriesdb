@@ -253,24 +253,25 @@ DECLARE
   v_missing_keys TEXT[];
 BEGIN
   INSERT INTO timeseries.md_local_ts(ts_key, lang, data_desc)
-  SELECT ts_key, lang, data_desc
-  FROM tmp_md_insert
+  SELECT tmp.ts_key, lang, tmp.data_desc
+  FROM tmp_md_insert AS tmp
+  INNER JOIN timeseries.catalog AS cat
+  ON tmp.ts_key = cat.ts_key
   ON CONFLICT (ts_key, lang) DO UPDATE
   SET
     data_desc = timeseries.md_local_ts.data_desc || EXCLUDED.data_desc;
 
   SELECT array_agg(DISTINCT tmp.ts_key)
   FROM tmp_md_insert AS tmp
-  LEFT JOIN timeseries.md_local_ts AS md
-  ON tmp.ts_key = md.ts_key
-  AND tmp.lang = md.lang
-  WHERE md.ts_key IS NULL
+  LEFT JOIN timeseries.catalog AS cat
+  ON tmp.ts_key = cat.ts_key
+  WHERE cat.ts_key IS NULL
   INTO v_missing_keys;
 
   IF array_length(v_missing_keys, 1) > 0 THEN
     RETURN json_build_object('status', 'warning',
                              'message', 'Some keys not found in catalog',
-                             'offending_keys', to_json(v_invalid_keys));
+                             'offending_keys', to_json(v_missing_keys));
   ELSE
     RETURN json_build_object('status', 'ok');
   END IF;
