@@ -177,7 +177,8 @@ print.tsmeta.list <- function(x, ...) {
 
 db_store_ts_metadata <- function(con,
                                  metadata,
-                                 locale,
+                                 valid_from = NULL,
+                                 locale = NULL,
                                  schema = "timeseries") {
   UseMethod("db_store_ts_metadata", metadata)
 }
@@ -198,37 +199,82 @@ db_store_ts_metadata <- function(con,
 #' @examples
 db_store_ts_metadata.tsmeta.list <- function(con,
                                              metadata,
-                                             locale,
+                                             valid_from = NULL,
+                                             locale = NULL,
                                              schema = "timeseries") {
   metadata <- lapply(metadata, toJSON, auto_unbox = TRUE, digits = NA)
 
-  md_table <- data.frame(
-    ts_key = names(metadata),
-    lang = locale,
-    data_desc = unlist(metadata),
-    stringsAsFactors = FALSE
-  )
+  if(!is.null(locale)) {
+    md_table <- data.frame(
+      ts_key = names(metadata),
+      lang = locale,
+      data_desc = unlist(metadata),
+      stringsAsFactors = FALSE
+    )
 
-  dbWriteTable(con,
-               "tmp_md_insert",
-               md_table,
-               temporary = TRUE,
-               overwrite = TRUE,
-               field.types = c(
-                 ts_key = "text",
-                 lang = "text",
-                 data_desc = "jsonb")
-  )
+    dbWriteTable(con,
+                 "tmp_md_insert",
+                 md_table,
+                 temporary = TRUE,
+                 overwrite = TRUE,
+                 field.types = c(
+                   ts_key = "text",
+                   lang = "text",
+                   data_desc = "jsonb"))
 
-  fromJSON(db_call_function(con, "md_local_ts_upsert"))
+    if(is.null(valid_from)) {
+      fromJSON(db_call_function(con, "md_local_ts_upsert"))
+    } else {
+      fromJSON(db_call_function(con, "md_local_vintage_upsert", list(as.Date(valid_from))))
+    }
+  } else {
+    if(is.null(valid_from)) {
+      md_table <- data.frame(
+        ts_key = names(metadata),
+        data_desc = unlist(metadata),
+        stringsAsFactors = FALSE
+      )
+
+      dbWriteTable(con,
+                   "tmp_md_insert",
+                   md_table,
+                   temporary = TRUE,
+                   overwrite = TRUE,
+                   field.types = c(
+                     ts_key = "text",
+                     data_desc = "jsonb"))
+
+      fromJSON(db_call_function(con, "md_unlocal_ts_upsert"))
+    } else {
+      ## TODO
+      md_table <- data.frame(
+        ts_key = names(metadata),
+        data_desc = unlist(metadata),
+        stringsAsFactors = FALSE
+      )
+
+      dbWriteTable(con,
+                   "tmp_md_insert",
+                   md_table,
+                   temporary = TRUE,
+                   overwrite = TRUE,
+                   field.types = c(
+                     ts_key = "text",
+                     data_desc = "jsonb"))
+
+      fromJSON(db_call_function(con, "md_unlocal_vintage_upsert"))
+    }
+  }
 }
 
 db_store_ts_metadata.tsmeta.dt <- function(con,
                                            metadata,
-                                           locale,
+                                           valid_from = NULL,
+                                           locale = NULL,
                                            schema = "timeseries") {
   db_store_ts_metadata.tsmeta.list(con,
                                    as.tsmeta.list(metadata),
+                                   valid_from,
                                    locale,
                                    schema)
 }

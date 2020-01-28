@@ -9,6 +9,7 @@ INSERT INTO timeseries.datasets VALUES ('default', 'A set that is used if no oth
 CREATE TABLE timeseries.catalog(
     ts_key TEXT PRIMARY KEY,
     set_id TEXT DEFAULT 'default',
+    data_desc JSONB,
     FOREIGN KEY (set_id) REFERENCES timeseries.datasets(set_id) --ON DELETE CASCADE
 );
 
@@ -38,7 +39,7 @@ CREATE TABLE timeseries.md_local_ts (
 CREATE TABLE timeseries.md_local_vintages (
   vintage_id UUID,
   lang TEXT,
-  meta_data JSON,
+  meta_data JSONB,
   PRIMARY KEY(vintage_id, lang),
   FOREIGN KEY (vintage_id) REFERENCES timeseries.timeseries_main(id)
 );
@@ -46,7 +47,7 @@ CREATE TABLE timeseries.md_local_vintages (
 
 CREATE TABLE timeseries.md_vintages (
   vintage_id UUID,
-  meta_data JSON,
+  meta_data JSONB,
   PRIMARY KEY(vintage_id),
   FOREIGN KEY (vintage_id) REFERENCES timeseries.timeseries_main(id)
 );

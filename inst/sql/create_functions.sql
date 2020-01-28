@@ -276,3 +276,84 @@ BEGIN
   END IF;
 END;
 $$ LANGUAGE PLPGSQL;
+
+CREATE FUNCTION timeseries.md_unlocal_ts_upsert()
+RETURNS JSON
+AS $$
+DECLARE
+  v_missing_keys TEXT[];
+BEGIN
+  INSERT INTO timeseries.catalog(ts_key, data_desc)
+  SELECT ts_key, data_desc
+  FROM tmp_md_insert
+  ON CONFLICT (ts_key) DO UPDATE
+  SET
+    data_desc = COALESCE(timeseries.catalog.data_desc, '{}'::JSONB) || EXCLUDED.data_desc;
+
+  SELECT array_agg(DISTINCT tmp.ts_key)
+  FROM tmp_md_insert AS tmp
+  LEFT JOIN timeseries.catalog AS cat
+  ON tmp.ts_key = cat.ts_key
+  WHERE cat.ts_key IS NULL
+  INTO v_missing_keys;
+
+  IF array_length(v_missing_keys, 1) > 0 THEN
+    RETURN json_build_object('status', 'warning',
+                             'message', 'Some keys not found in catalog',
+                             'offending_keys', to_json(v_invalid_keys));
+  ELSE
+    RETURN json_build_object('status', 'ok');
+  END IF;
+END;
+$$ LANGUAGE PLPGSQL;
+
+
+CREATE FUNCTION timeseries.md_local_vintage_upsert(validity_in DATE)
+RETURNS JSON
+AS $$
+DECLARE
+  v_invalid_keys JSON;
+  v_missing_keys TEXT[];
+BEGIN
+  SELECT json_agg(DISTINCT tmp.ts_key)
+  INTO v_invalid_keys
+  FROM tmp_md_insert AS tmp
+  INNER JOIN timeseries.timeseries_main AS mn
+  ON tmp.ts_key = mn.ts_key
+  AND validity_in < mn.validity;
+
+  IF json_array_length(v_invalid_keys) > 0 THEN
+    RETURN json_build_object('status', 'failure',
+                             'reason', 'keys with invalid vintages',
+                             'offending_keys', v_invalid_keys);
+  END IF;
+
+  -- TODO: cover case where vintage not found
+  INSERT INTO timeseries.md_local_vintages(vintage_id, lang, meta_data)
+  SELECT id, lang, data_desc
+  FROM tmp_md_insert AS tmp
+  LEFT JOIN timeseries.timeseries_main AS mn
+  ON tmp.ts_key = mn.ts_key
+  AND validity_in = mn.validity
+  ON CONFLICT (vintage_id, lang) DO UPDATE
+  SET
+    meta_data = timeseries.md_local_vintages.meta_data || EXCLUDED.meta_data;
+
+
+  /*SELECT array_agg(DISTINCT tmp.ts_key)
+  FROM tmp_md_insert AS tmp
+  LEFT JOIN timeseries.timeseries_main AS mn
+  ON tmp.ts_key = mn.ts_key
+  AND tmp.lang = md.lang
+  WHERE md.ts_key IS NULL
+  INTO v_missing_keys;*/
+
+  --IF array_length(v_missing_keys, 1) > 0 THEN
+  --  RETURN json_build_object('status', 'warning',
+  --                           'message', 'Some keys not found in catalog',
+  --                           'offending_keys', to_json(v_invalid_keys));
+  --ELSE
+    RETURN json_build_object('status', 'ok');
+  --END IF;
+END;
+$$ LANGUAGE PLPGSQL;

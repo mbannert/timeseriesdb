@@ -14,6 +14,7 @@ is_test_db_reachable <- function(){
 }
 
 reset_db <- function(con) {
+  dbExecute(con, "DELETE FROM timeseries.md_local_vintages")
   dbExecute(con, "DELETE FROM timeseries.timeseries_main")
   dbExecute(con, "DELETE FROM timeseries.catalog")
   dbExecute(con, "DELETE FROM timeseries.datasets")
@@ -44,14 +45,75 @@ prepare_db <- function(con,
       "ts2",
       "ts3",
       "ts4",
-      "ts5"
+      "ts5",
+      "vts1",
+      "vts2"
     ),
     set_id = c(
       "set1",
       "set1",
       "set2",
       "set2",
+      "default",
+      "default",
       "default"
+    )
+  )
+
+  vintages <- data.frame(
+    id = c(
+      "f6aa69c8-41ae-11ea-b77f-2e728ce88125",
+      "f6aa6c70-41ae-11ea-b77f-2e728ce88125",
+      "f6aa6dba-41ae-11ea-b77f-2e728ce88125",
+      "f6aa6ee6-41ae-11ea-b77f-2e728ce88125"
+    ),
+    ts_key = c(
+      "vts1",
+      "vts1",
+      "vts2",
+      "vts2"
+    ),
+    validity = c(
+      "2020-01-01",
+      "2020-02-01",
+      "2020-01-01",
+      "2020-02-01"
+    ),
+    coverage = c(
+      "['2020-01-01', '2020-01-01')",
+      "['2020-01-01', '2020-02-01')",
+      "['2020-01-01', '2020-01-01')",
+      "['2020-01-01', '2020-02-01')"
+    ),
+    release_date = c(
+      "2020-01-01 00:00:00",
+      "2020-02-01 00:00:00",
+      "2020-01-01 00:00:00",
+      "2020-02-01 00:00:00"
+    ),
+    created_by = c(
+      "test",
+      "test",
+      "test",
+      "test"
+    ),
+    created_at = c(
+      "2020-01-01 00:00:00",
+      "2020-01-01 00:00:00",
+      "2020-01-01 00:00:00",
+      "2020-01-01 00:00:00"
+    ),
+    ts_data = c(
+      '{"frequency": 12, "time": ["2020-01-01"], "value": [1]}',
+      '{"frequency": 12, "time": ["2020-01-01", "2020-02-01"], "value": [1, 2]}',
+      '{"frequency": 12, "time": ["2020-01-01"], "value": [1]}',
+      '{"frequency": 12, "time": ["2020-01-01", "2020-02-01"], "value": [1, 2]}'
+    ),
+    access = c(
+      "public",
+      "public",
+      "main",
+      "main"
     )
   )
 
@@ -66,6 +128,11 @@ prepare_db <- function(con,
       dbWriteTable(con,
                    DBI::Id(schema = "timeseries", table = "catalog"),
                    catalog,
+                   append = TRUE)
+
+      dbWriteTable(con,
+                   DBI::Id(schema = "timeseries", table = "timeseries_main"),
+                   vintages,
                    append = TRUE)
     }
   }
