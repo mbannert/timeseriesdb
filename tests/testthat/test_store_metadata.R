@@ -54,7 +54,8 @@ test_with_fresh_db(con, "db_store_ts_metadata localized warns on missing keys", 
     db_store_ts_metadata(con,
                          tsmeta.list(tsx = list(field = "value")),
                          valid_from = "2020-01-01",
-                         locale = "de"))
+                         locale = "de"),
+    "catalog")
 })
 
 test_with_fresh_db(con, "db_store_ts_metadata localized missing key warning contents", {
@@ -68,12 +69,49 @@ test_with_fresh_db(con, "db_store_ts_metadata localized missing key warning cont
     result,
     list(
       status = "warning",
-      message = "Some keys not found in catalog",
-      offending_keys = "tsx"
+      warnings = list(
+        list(
+          message = "Some keys were not found in the catalog",
+          offending_keys = "tsx"
+        )
+      )
     )
   )
 })
 
+test_with_fresh_db(con, "storing older vintages is a nono", {
+  db_store_ts_metadata(con,
+                       tsmeta.list(ts1 = list(field = "value")),
+                       "2020-02-01",
+                       "de")
+  expect_warning(db_store_ts_metadata(con,
+                                      tsmeta.list(ts1 = list(field = "value")),
+                                      "2020-01-01",
+                                      "de"),
+                 "vintage")
+})
+
+test_with_fresh_db(con, "storing older vintages warning contents", {
+  db_store_ts_metadata(con,
+                       tsmeta.list(ts1 = list(field = "value")),
+                       "2020-02-01")
+  result <- suppressWarnings(db_store_ts_metadata(con,
+                                                  tsmeta.list(ts1 = list(field = "value")),
+                                                  "2020-01-01"))
+
+  expect_equal(
+    result,
+    list(
+      status = "warning",
+      warnings = list(
+        list(
+          message = "Some keys already have a later vintage",
+          offending_keys = "ts1"
+        )
+      )
+    )
+  )
+})
 
 # db state ----------------------------------------------------------------
 
@@ -211,9 +249,12 @@ test_with_fresh_db(con, "db_store_ts_metadata unlocalized warns on missing keys"
   expect_warning(
     db_store_ts_metadata(con,
                          tsmeta.list(tsx = list(field = "value")),
-                         "2020-01-01"))
+                         "2020-01-01"),
+                         "catalog")
 })
 
+# These may be overkill
+# testing at least for the structure is valid though as it is public interface
 test_with_fresh_db(con, "db_store_ts_metadata unlocalized missing key warning contents", {
   result <- suppressWarnings(
     db_store_ts_metadata(con,
@@ -224,11 +265,50 @@ test_with_fresh_db(con, "db_store_ts_metadata unlocalized missing key warning co
     result,
     list(
       status = "warning",
-      message = "Some keys not found in catalog",
-      offending_keys = "tsx"
+      warnings = list(
+        list(
+          message = "Some keys were not found in the catalog",
+          offending_keys = "tsx"
+        )
+      )
     )
   )
 })
+
+test_with_fresh_db(con, "storing older vintages is a nono", {
+  db_store_ts_metadata(con,
+                       tsmeta.list(ts1 = list(field = "value")),
+                       "2020-02-01")
+  expect_warning(db_store_ts_metadata(con,
+                                      tsmeta.list(ts1 = list(field = "value")),
+                                      "2020-01-01"),
+                 "vintage")
+})
+
+test_with_fresh_db(con, "storing older vintages warning contents", {
+  db_store_ts_metadata(con,
+                       tsmeta.list(ts1 = list(field = "value")),
+                       "2020-02-01")
+  result <- suppressWarnings(db_store_ts_metadata(con,
+                                      tsmeta.list(ts1 = list(field = "value")),
+                                      "2020-01-01"))
+
+  expect_equal(
+    result,
+    list(
+      status = "warning",
+      warnings = list(
+        list(
+          message = "Some keys already have a later vintage",
+          offending_keys = "ts1"
+        )
+      )
+    )
+  )
+})
+
+# db state ----------------------------------------------------------------
+
 
 test_with_fresh_db(con, "db_store_ts_metadata unlocalized stores metadata", {
   db_store_ts_metadata(con,

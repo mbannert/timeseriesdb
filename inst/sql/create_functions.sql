@@ -247,30 +247,28 @@ END;
 $$ LANGUAGE PLPGSQL;
 
 CREATE FUNCTION timeseries.md_unlocal_upsert(validity_in DATE)
-RETURNS JSON
+RETURNS JSONB
 AS $$
 DECLARE
-  v_invalid_keys JSON;
+  v_invalid_keys TEXT[];
   v_missing_keys TEXT[];
+  v_n_invalid INTEGER;
+  v_n_missing INTEGER;
+  v_status JSONB := jsonb_build_object('status', 'ok');
 BEGIN
-  SELECT json_agg(DISTINCT tmp.ts_key)
+  SELECT array_agg(DISTINCT tmp.ts_key)
   INTO v_invalid_keys
   FROM tmp_md_insert AS tmp
   INNER JOIN timeseries.metadata AS md
   ON tmp.ts_key = md.ts_key
   AND validity_in < md.validity;
 
-  IF json_array_length(v_invalid_keys) > 0 THEN
-    RETURN json_build_object('status', 'failure',
-                             'reason', 'keys with invalid vintages',
-                             'offending_keys', v_invalid_keys);
-  END IF;
-
   INSERT INTO timeseries.metadata(ts_key, validity, metadata)
   SELECT tmp.ts_key, validity_in, tmp.metadata
   FROM tmp_md_insert AS tmp
   INNER JOIN timeseries.catalog AS cat
   ON tmp.ts_key = cat.ts_key
+  AND (v_invalid_keys IS NULL OR NOT tmp.ts_key = ANY(v_invalid_keys))
   ON CONFLICT (ts_key, validity) DO UPDATE
   SET
     metadata = timeseries.metadata.metadata || EXCLUDED.metadata,
@@ -287,13 +285,31 @@ BEGIN
   WHERE cat.ts_key IS NULL
   INTO v_missing_keys;
 
-  IF array_length(v_missing_keys, 1) THEN
-    RETURN json_build_object('status', 'warning',
-                             'message', 'Some keys not found in catalog',
-                             'offending_keys', to_json(v_missing_keys));
-  ELSE
-    RETURN json_build_object('status', 'ok');
+  v_n_invalid := array_length(v_invalid_keys, 1);
+  v_n_missing := array_length(v_missing_keys, 1);
+
+  IF v_n_invalid > 0 OR v_n_missing > 0 THEN
+    v_status := jsonb_build_object('status', 'warning', 'warnings', array[]::jsonb[]);
+
+    IF v_n_invalid > 0 THEN
+      v_status := jsonb_set(
+        v_status,
+        array['warnings'],
+        v_status->'warnings' || jsonb_build_array(jsonb_build_object('message', 'Some keys already have a later vintage',
+                                                                     'offending_keys', to_jsonb(v_invalid_keys)))
+      );
+    END IF;
+
+    IF v_n_missing > 0 THEN
+      v_status := jsonb_set(
+        v_status,
+        array['warnings'],
+        v_status->'warnings' || jsonb_build_array(jsonb_build_object('message', 'Some keys were not found in the catalog',
+                                                                     'offending_keys', to_jsonb(v_missing_keys)))
+      );
+    END IF;
   END IF;
+  RETURN v_status;
 END;
 $$ LANGUAGE PLPGSQL;
 
@@ -302,27 +318,25 @@ CREATE FUNCTION timeseries.md_local_upsert(validity_in DATE)
 RETURNS JSON
 AS $$
 DECLARE
-  v_invalid_keys JSON;
+  v_invalid_keys TEXT[];
   v_missing_keys TEXT[];
+  v_n_invalid INTEGER;
+  v_n_missing INTEGER;
+  v_status JSONB := jsonb_build_object('status', 'ok');
 BEGIN
-  SELECT json_agg(DISTINCT tmp.ts_key)
+  SELECT array_agg(DISTINCT tmp.ts_key)
   INTO v_invalid_keys
   FROM tmp_md_insert AS tmp
   INNER JOIN timeseries.metadata_localized AS md
   ON tmp.ts_key = md.ts_key
   AND validity_in < md.validity;
 
-  IF json_array_length(v_invalid_keys) > 0 THEN
-    RETURN json_build_object('status', 'failure',
-                             'reason', 'keys with invalid vintages',
-                             'offending_keys', v_invalid_keys);
-  END IF;
-
   INSERT INTO timeseries.metadata_localized(ts_key, locale, validity, metadata)
   SELECT tmp.ts_key, tmp.locale, validity_in, tmp.metadata
   FROM tmp_md_insert AS tmp
   INNER JOIN timeseries.catalog AS cat
   ON tmp.ts_key = cat.ts_key
+  AND (v_invalid_keys IS NULL OR NOT tmp.ts_key = ANY(v_invalid_keys))
   ON CONFLICT (ts_key, locale, validity) DO UPDATE
   SET
     metadata = timeseries.metadata_localized.metadata || EXCLUDED.metadata,
@@ -338,12 +352,30 @@ BEGIN
   WHERE cat.ts_key IS NULL
   INTO v_missing_keys;
 
-  IF array_length(v_missing_keys, 1) THEN
-    RETURN json_build_object('status', 'warning',
-                             'message', 'Some keys not found in catalog',
-                             'offending_keys', to_json(v_missing_keys));
-  ELSE
-    RETURN json_build_object('status', 'ok');
+  v_n_invalid := array_length(v_invalid_keys, 1);
+  v_n_missing := array_length(v_missing_keys, 1);
+
+  IF v_n_invalid > 0 OR v_n_missing > 0 THEN
+    v_status := jsonb_build_object('status', 'warning', 'warnings', array[]::jsonb[]);
+
+    IF v_n_invalid > 0 THEN
+      v_status := jsonb_set(
+        v_status,
+        array['warnings'],
+        v_status->'warnings' || jsonb_build_array(jsonb_build_object('message', 'Some keys already have a later vintage',
+                                                                     'offending_keys', to_jsonb(v_invalid_keys)))
+      );
+    END IF;
+
+    IF v_n_missing > 0 THEN
+      v_status := jsonb_set(
+        v_status,
+        array['warnings'],
+        v_status->'warnings' || jsonb_build_array(jsonb_build_object('message', 'Some keys were not found in the catalog',
+                                                                     'offending_keys', to_jsonb(v_missing_keys)))
+      );
+    END IF;
   END IF;
+  RETURN v_status;
 END;
 $$ LANGUAGE PLPGSQL;
