@@ -85,15 +85,6 @@ test_with_fresh_db(con, "db_store_ts_metadata localized missing key warning cont
   )
 })
 
-test_with_fresh_db(con, "db_store_ts_metadata localized returns 'ok'", {
-  result <- db_store_ts_metadata(con, tsmeta.list(ts1 = list(field = "value")), locale = "de")
-
-  expect_equal(
-    result,
-    list(status = "ok")
-  )
-})
-
 
 # db state ----------------------------------------------------------------
 
@@ -156,6 +147,37 @@ test_that("db_store_ts_metadata.tsmeta.dt is a simple wrapper", {
 })
 
 # test storing md unlocalized, unversioned --------------------------------
+
+# returns -----------------------------------------------------------------
+
+
+test_with_fresh_db(con, "db_store_ts_metadata unlocalized returns ok", {
+  result <- db_store_ts_metadata(con, tsmeta.list(ts1 = list(field = "value")))
+
+  expect_equal(
+    result,
+    list(
+      status = "ok"))
+})
+
+test_with_fresh_db(con, "db_store_ts_metadata unlocalized warns on missing keys", {
+  expect_warning(
+    db_store_ts_metadata(con, tsmeta.list(tsx = list(field = "value"))))
+})
+
+test_with_fresh_db(con, "db_store_ts_metadata unlocalized missing key warning contents", {
+  result <- suppressWarnings(
+    db_store_ts_metadata(con, tsmeta.list(tsx = list(field = "value"))))
+
+  expect_equal(
+    result,
+    list(
+      status = "warning",
+      message = "Some keys not found in catalog",
+      offending_keys = "tsx"
+    )
+  )
+})
 
 
 test_with_fresh_db(con, "db_store_ts_metadata unlocalized stores metadata", {

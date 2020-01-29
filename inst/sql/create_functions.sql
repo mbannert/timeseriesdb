@@ -314,6 +314,9 @@ AS $$
 DECLARE
   v_invalid_keys JSON;
   v_missing_keys TEXT[];
+  v_missing_vintage_keys TEXT[];
+  n_missing_catalog INTEGER;
+  n_missing_vintage INTEGER;
 BEGIN
   SELECT json_agg(DISTINCT tmp.ts_key)
   INTO v_invalid_keys
@@ -328,11 +331,10 @@ BEGIN
                              'offending_keys', v_invalid_keys);
   END IF;
 
-  -- TODO: cover case where vintage not found
   INSERT INTO timeseries.md_local_vintages(vintage_id, lang, meta_data)
   SELECT id, lang, data_desc
   FROM tmp_md_insert AS tmp
-  LEFT JOIN timeseries.timeseries_main AS mn
+  INNER JOIN timeseries.timeseries_main AS mn
   ON tmp.ts_key = mn.ts_key
   AND validity_in = mn.validity
   ON CONFLICT (vintage_id, lang) DO UPDATE
@@ -340,20 +342,74 @@ BEGIN
     meta_data = timeseries.md_local_vintages.meta_data || EXCLUDED.meta_data;
 
 
-  /*SELECT array_agg(DISTINCT tmp.ts_key)
+  SELECT array_agg(DISTINCT tmp.ts_key)
+  FROM tmp_md_insert AS tmp
+  LEFT JOIN timeseries.catalog AS cat
+  ON tmp.ts_key = cat.ts_key
+  WHERE cat.ts_key IS NULL
+  INTO v_missing_keys;
+
+  SELECT array_agg(DISTINCT tmp.ts_key)
   FROM tmp_md_insert AS tmp
   LEFT JOIN timeseries.timeseries_main AS mn
   ON tmp.ts_key = mn.ts_key
-  AND tmp.lang = md.lang
-  WHERE md.ts_key IS NULL
-  INTO v_missing_keys;*/
+  AND validity_in = mn.validity
+  WHERE mn.ts_key IS NULL
+  AND NOT tmp.ts_key = ANY(v_missing_keys)
+  INTO v_missing_vintage_keys;
 
-  --IF array_length(v_missing_keys, 1) > 0 THEN
-  --  RETURN json_build_object('status', 'warning',
-  --                           'message', 'Some keys not found in catalog',
-  --                           'offending_keys', to_json(v_invalid_keys));
-  --ELSE
+  n_missing_catalog := array_length(v_missing_keys, 1);
+  n_missing_vintage := array_length(v_missing_vintage_keys, 1);
+  IF n_missing_vintage > 0 THEN
+    IF n_missing_catalog > 0 THEN
+      RETURN json_build_object('status', 'warning',
+                                'message', 'Some keys not found in catalog. Also some don''t have that vintage.',
+                                'offending_keys_catalog', to_json(v_missing_keys),
+                                'offending_keys_vintage', to_json(v_missing_vintage_keys));
+    ELSE
+      RETURN json_build_object('status', 'warning',
+                                'message', 'Some keys do not have a that vintage',
+                                'offending_keys_vintage', to_json(v_missing_vintage_keys));
+    END IF;
+  ELSIF n_missing_catalog > 0 THEN
+    RETURN json_build_object('status', 'warning',
+                             'message', 'Some keys not found in catalog',
+                             'offending_keys_catalog', to_json(v_missing_keys));
+  ELSE
     RETURN json_build_object('status', 'ok');
-  --END IF;
+  END IF;
 END;
 $$ LANGUAGE PLPGSQL;
+
+/*CREATE FUNCTION timeseries.md_unlocal_vintage_upsert(validity_in DATE)
+RETURNS JSON
+AS $$
+DECLARE
+  v_missing_keys TEXT[];
+BEGIN
+  UPDATE timeseries.timeseries_main
+  SET meta_data
+
+  INSERT INTO timeseries.timeseries_main(ts_key, meta_data)
+  SELECT ts_key, data_meta_data
+  FROM tmp_md_insert
+  ON CONFLICT (ts_key, validity) DO UPDATE
+  SET
+    data_desc = COALESCE(timeseries.catalog.data_desc, '{}'::JSONB) || EXCLUDED.data_desc;
+
+  SELECT array_agg(DISTINCT tmp.ts_key)
+  FROM tmp_md_insert AS tmp
+  LEFT JOIN timeseries.catalog AS cat
+  ON tmp.ts_key = cat.ts_key
+  WHERE cat.ts_key IS NULL
+  INTO v_missing_keys;
+
+  IF array_length(v_missing_keys, 1) > 0 THEN
+    RETURN json_build_object('status', 'warning',
+                             'message', 'Some keys not found in catalog',
+                             'offending_keys', to_json(v_invalid_keys));
+  ELSE
+    RETURN json_build_object('status', 'ok');
+  END IF;
+END;
+$$ LANGUAGE PLPGSQL;*/
