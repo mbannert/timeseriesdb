@@ -1,60 +1,47 @@
-context("store per-ts-metadata")
-
 con <- NULL
 if(is_test_db_reachable()) {
   con <- connect_to_test_db()
 }
 
-meta_local_fixture_df <- function(ts_key,
-                                  lang,
-                                  data_desc) {
-  out <- data.frame(
-    ts_key = ts_key,
-    lang = lang,
-    data_desc = data_desc,
-    stringsAsFactors = FALSE
-  )
+meta_fixture_df <- function(ts_key,
+                            validity,
+                            metadata,
+                            locale = NULL) {
 
-  class(out$data_desc) <- "pq_jsonb"
+  if(is.null(locale)) {
+    out <- data.frame(
+      ts_key = ts_key,
+      validity = validity,
+      metadata = metadata,
+      stringsAsFactors = FALSE
+    )
+  } else {
+    out <- data.frame(
+      ts_key = ts_key,
+      validity = validity,
+      locale = locale,
+      metadata = metadata,
+      stringsAsFactors = FALSE
+    )
+  }
 
-  out
-}
-
-meta_unlocal_fixture_df <- function(ts_key,
-                                  data_desc) {
-  out <- data.frame(
-    ts_key = ts_key,
-    data_desc = data_desc,
-    stringsAsFactors = FALSE
-  )
-
-  class(out$data_desc) <- "pq_jsonb"
-
-  out
-}
-
-meta_local_versioned_fixture_df <- function(id,
-                                            lang,
-                                            data_desc) {
-  out <- data.frame(
-    vintage_id = id,
-    lang = lang,
-    meta_data = data_desc,
-    stringsAsFactors = FALSE
-  )
-
-  class(out$meta_data) <- "pq_jsonb"
+  out$validity <- as.Date(out$validity)
+  class(out$metadata) <- "pq_jsonb"
 
   out
 }
 
-# test storing md localized, unversioned --------------------------------
+# test storing md localized -----------------------------------------------
+context("localized metadata")
 
 # return values -----------------------------------------------------------
 
 
 test_with_fresh_db(con, "db_store_ts_metadata localized returns 'ok'", {
-  result <- db_store_ts_metadata(con, tsmeta.list(ts1 = list(field = "value")), locale = "de")
+  result <- db_store_ts_metadata(con,
+                                 tsmeta.list(ts1 = list(field = "value")),
+                                 valid_from = "2020-01-01",
+                                 locale = "de")
 
   expect_equal(
     result,
@@ -66,6 +53,7 @@ test_with_fresh_db(con, "db_store_ts_metadata localized warns on missing keys", 
   expect_warning(
     db_store_ts_metadata(con,
                          tsmeta.list(tsx = list(field = "value")),
+                         valid_from = "2020-01-01",
                          locale = "de"))
 })
 
@@ -73,6 +61,7 @@ test_with_fresh_db(con, "db_store_ts_metadata localized missing key warning cont
   result <- suppressWarnings(
     db_store_ts_metadata(con,
                          tsmeta.list(tsx = list(field = "value")),
+                         valid_from = "2020-01-01",
                          locale = "de"))
 
   expect_equal(
@@ -90,36 +79,53 @@ test_with_fresh_db(con, "db_store_ts_metadata localized missing key warning cont
 
 
 test_with_fresh_db(con, "db_store_ts_metadata localized stores metadata", {
-  db_store_ts_metadata(con, tsmeta.list(ts1 = list(field = "value")), locale = "de")
+  db_store_ts_metadata(con,
+                       tsmeta.list(ts1 = list(field = "value")),
+                       valid_from = "2020-01-01",
+                       locale = "de")
 
-  result <- dbGetQuery(con, "SELECT * FROM timeseries.md_local_ts")
+  result <- dbGetQuery(con, "SELECT ts_key, validity, locale, metadata FROM timeseries.metadata_localized")
   expect_equal(
     result,
-    meta_local_fixture_df("ts1", "de", '{"field": "value"}')
+    meta_fixture_df("ts1", "2020-01-01", '{"field": "value"}', "de")
   )
 })
 
 test_with_fresh_db(con, "db_store_ts_metadata localized can add fields", {
-  db_store_ts_metadata(con, tsmeta.list(ts1 = list(field = "value")), locale = "de")
-  db_store_ts_metadata(con, tsmeta.list(ts1 = list(field2 = 3)), locale = "de")
+  db_store_ts_metadata(con,
+                       tsmeta.list(ts1 = list(field = "value")),
+                       valid_from = "2020-01-01",
+                       locale = "de")
+  db_store_ts_metadata(con,
+                       tsmeta.list(ts1 = list(field2 = 3)),
+                       valid_from = "2020-01-01",
+                       locale = "de")
 
-  result <- dbGetQuery(con, "SELECT * FROM timeseries.md_local_ts")
+  result <- dbGetQuery(con, "SELECT ts_key, validity, locale, metadata FROM timeseries.metadata_localized")
   expect_equal(
     result,
-    meta_local_fixture_df("ts1", "de", '{"field": "value", "field2": 3}')
+    meta_fixture_df("ts1", "2020-01-01", '{"field": "value", "field2": 3}', "de")
   )
 })
 
 test_with_fresh_db(con, "db_store_ts_metadata localized can override fields", {
-  db_store_ts_metadata(con, tsmeta.list(ts1 = list(field = "value")), locale = "de")
-  db_store_ts_metadata(con, tsmeta.list(ts1 = list(field = "new_value")), locale = "de")
+  db_store_ts_metadata(con,
+                       tsmeta.list(ts1 = list(field = "value")),
+                       valid_from = "2020-01-01",
+                       locale = "de")
+  db_store_ts_metadata(con,
+                       tsmeta.list(ts1 = list(field = "new_value")),
+                       valid_from = "2020-01-01",
+                       locale = "de")
 
-  result <- dbGetQuery(con, "SELECT * FROM timeseries.md_local_ts")
+  result <- dbGetQuery(con, "SELECT ts_key, validity, locale, metadata FROM timeseries.metadata_localized")
   expect_equal(
     result,
-    meta_local_fixture_df("ts1", "de", '{"field": "new_value"}')
+    meta_fixture_df("ts1", "2020-01-01", '{"field": "new_value"}', "de")
   )
 })
+
+# TODO: Test creating of multiple vintages
 
 test_that("db_store_ts_metadata.tsmeta.dt is a simple wrapper", {
   fake_db_store_ts_metadata.tsmeta.list = mock()
@@ -147,12 +153,15 @@ test_that("db_store_ts_metadata.tsmeta.dt is a simple wrapper", {
 })
 
 # test storing md unlocalized, unversioned --------------------------------
+context("unlocalized metadata")
 
 # returns -----------------------------------------------------------------
 
 
 test_with_fresh_db(con, "db_store_ts_metadata unlocalized returns ok", {
-  result <- db_store_ts_metadata(con, tsmeta.list(ts1 = list(field = "value")))
+  result <- db_store_ts_metadata(con,
+                                 tsmeta.list(ts1 = list(field = "value")),
+                                 "2020-01-01")
 
   expect_equal(
     result,
@@ -162,12 +171,16 @@ test_with_fresh_db(con, "db_store_ts_metadata unlocalized returns ok", {
 
 test_with_fresh_db(con, "db_store_ts_metadata unlocalized warns on missing keys", {
   expect_warning(
-    db_store_ts_metadata(con, tsmeta.list(tsx = list(field = "value"))))
+    db_store_ts_metadata(con,
+                         tsmeta.list(tsx = list(field = "value")),
+                         "2020-01-01"))
 })
 
 test_with_fresh_db(con, "db_store_ts_metadata unlocalized missing key warning contents", {
   result <- suppressWarnings(
-    db_store_ts_metadata(con, tsmeta.list(tsx = list(field = "value"))))
+    db_store_ts_metadata(con,
+                         tsmeta.list(tsx = list(field = "value")),
+                         "2020-01-01"))
 
   expect_equal(
     result,
@@ -179,89 +192,46 @@ test_with_fresh_db(con, "db_store_ts_metadata unlocalized missing key warning co
   )
 })
 
-
 test_with_fresh_db(con, "db_store_ts_metadata unlocalized stores metadata", {
-  db_store_ts_metadata(con, tsmeta.list(ts1 = list(field = "value")))
+  db_store_ts_metadata(con,
+                       tsmeta.list(ts1 = list(field = "value")),
+                       "2020-01-01")
 
-  result <- dbGetQuery(con, "SELECT ts_key, data_desc FROM timeseries.catalog WHERE ts_key = 'ts1'")
+  result <- dbGetQuery(con, "SELECT ts_key, validity, metadata FROM timeseries.metadata")
   expect_equal(
     result,
-    meta_unlocal_fixture_df("ts1", '{"field": "value"}')
+    meta_fixture_df("ts1", "2020-01-01", '{"field": "value"}')
   )
 })
 
 test_with_fresh_db(con, "db_store_ts_metadata unlocalized can add fields", {
-  db_store_ts_metadata(con, tsmeta.list(ts1 = list(field = "value")))
-  db_store_ts_metadata(con, tsmeta.list(ts1 = list(field2 = 3)))
+  db_store_ts_metadata(con,
+                       tsmeta.list(ts1 = list(field = "value")),
+                       "2020-01-01")
+  db_store_ts_metadata(con,
+                       tsmeta.list(ts1 = list(field2 = 3)),
+                       "2020-01-01")
 
-  result <- dbGetQuery(con, "SELECT ts_key, data_desc FROM timeseries.catalog WHERE ts_key = 'ts1'")
+  result <- dbGetQuery(con, "SELECT ts_key, validity, metadata FROM timeseries.metadata")
   expect_equal(
     result,
-    meta_unlocal_fixture_df("ts1", '{"field": "value", "field2": 3}')
+    meta_fixture_df("ts1", "2020-01-01", '{"field": "value", "field2": 3}')
   )
 })
 
 test_with_fresh_db(con, "db_store_ts_metadata unlocalized can override fields", {
-  db_store_ts_metadata(con, tsmeta.list(ts1 = list(field = "value")))
-  db_store_ts_metadata(con, tsmeta.list(ts1 = list(field = "new_value")))
+  db_store_ts_metadata(con,
+                       tsmeta.list(ts1 = list(field = "value")),
+                       "2020-01-01")
+  db_store_ts_metadata(con,
+                       tsmeta.list(ts1 = list(field = "new_value")),
+                       "2020-01-01")
 
-  result <- dbGetQuery(con, "SELECT ts_key, data_desc FROM timeseries.catalog WHERE ts_key = 'ts1'")
+  result <- dbGetQuery(con, "SELECT ts_key, validity, metadata FROM timeseries.metadata")
   expect_equal(
     result,
-    meta_unlocal_fixture_df("ts1", '{"field": "new_value"}')
+    meta_fixture_df("ts1", "2020-01-01", '{"field": "new_value"}')
   )
 })
 
-
-
-# test storing md localized, versioned ----------------------------------------------
-
-test_with_fresh_db(con, "db_store_ts_metadata localized versioned stores metadata", {
-  db_store_ts_metadata(con,
-                       tsmeta.list(vts1 = list(field = "value")),
-                       valid_from = "2020-02-01",
-                       locale = "de")
-
-  result <- dbGetQuery(con, "SELECT * FROM timeseries.md_local_vintages")
-  expect_equal(
-    result,
-    meta_local_versioned_fixture_df("f6aa6c70-41ae-11ea-b77f-2e728ce88125",
-                                    "de", '{"field": "value"}')
-  )
-})
-
-test_with_fresh_db(con, "db_store_ts_metadata localized can add fields", {
-  db_store_ts_metadata(con,
-                       tsmeta.list(vts1 = list(field = "value")),
-                       valid_from = "2020-02-01",
-                       locale = "de")
-  db_store_ts_metadata(con,
-                       tsmeta.list(vts1 = list(field2 = 3)),
-                       valid_from = "2020-02-01",
-                       locale = "de")
-
-  result <- dbGetQuery(con, "SELECT * FROM timeseries.md_local_vintages")
-  expect_equal(
-    result,
-    meta_local_versioned_fixture_df("f6aa6c70-41ae-11ea-b77f-2e728ce88125",
-                                    "de", '{"field": "value", "field2": 3}')
-  )
-})
-
-test_with_fresh_db(con, "db_store_ts_metadata localized can override fields", {
-  db_store_ts_metadata(con,
-                       tsmeta.list(vts1 = list(field = "value")),
-                       valid_from = "2020-02-01",
-                       locale = "de")
-  db_store_ts_metadata(con,
-                       tsmeta.list(vts1 = list(field = "new_value")),
-                       valid_from = "2020-02-01",
-                       locale = "de")
-
-  result <- dbGetQuery(con, "SELECT * FROM timeseries.md_local_vintages")
-  expect_equal(
-    result,
-    meta_local_versioned_fixture_df("f6aa6c70-41ae-11ea-b77f-2e728ce88125",
-                                    "de", '{"field": "new_value"}')
-  )
-})
+## TODO: vintage tests (create multiple, try updating previous etc)

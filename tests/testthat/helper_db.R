@@ -14,7 +14,8 @@ is_test_db_reachable <- function(){
 }
 
 reset_db <- function(con) {
-  dbExecute(con, "DELETE FROM timeseries.md_local_vintages")
+  dbExecute(con, "DELETE FROM timeseries.metadata")
+  dbExecute(con, "DELETE FROM timeseries.metadata_localized")
   dbExecute(con, "DELETE FROM timeseries.timeseries_main")
   dbExecute(con, "DELETE FROM timeseries.catalog")
   dbExecute(con, "DELETE FROM timeseries.datasets")

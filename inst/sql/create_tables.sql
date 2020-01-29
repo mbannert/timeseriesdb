@@ -27,29 +27,27 @@ CREATE TABLE timeseries.timeseries_main(
   FOREIGN KEY (ts_key) REFERENCES timeseries.catalog(ts_key) --ON DELETE CASCADE
 );
 
-CREATE TABLE timeseries.md_local_ts (
-  ts_key TEXT,
-  lang TEXT,
-  data_desc JSONB,
-  PRIMARY KEY(ts_key, lang),
-  FOREIGN KEY (ts_key) REFERENCES timeseries.catalog(ts_key) ON DELETE CASCADE
+CREATE TABLE timeseries.metadata(
+  id UUID NOT NULL DEFAULT uuid_generate_v1() PRIMARY KEY,
+  ts_key TEXT NOT NULL,
+  validity DATE NOT NULL DEFAULT CURRENT_DATE,
+  created_by TEXT NOT NULL DEFAULT CURRENT_USER,
+  created_at TIMESTAMPTZ NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  metadata JSONB,
+  UNIQUE (ts_key, validity),
+  FOREIGN KEY (ts_key) REFERENCES timeseries.catalog(ts_key)
 );
 
-
-CREATE TABLE timeseries.md_local_vintages (
-  vintage_id UUID,
-  lang TEXT,
-  meta_data JSONB,
-  PRIMARY KEY(vintage_id, lang),
-  FOREIGN KEY (vintage_id) REFERENCES timeseries.timeseries_main(id)
-);
-
-
-CREATE TABLE timeseries.md_vintages (
-  vintage_id UUID,
-  meta_data JSONB,
-  PRIMARY KEY(vintage_id),
-  FOREIGN KEY (vintage_id) REFERENCES timeseries.timeseries_main(id)
+CREATE TABLE timeseries.metadata_localized(
+  id UUID NOT NULL DEFAULT uuid_generate_v1() PRIMARY KEY,
+  ts_key TEXT NOT NULL,
+  locale TEXT NOT NULL,
+  validity DATE NOT NULL DEFAULT CURRENT_DATE,
+  created_by TEXT NOT NULL DEFAULT CURRENT_USER,
+  created_at TIMESTAMPTZ NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  metadata JSONB,
+  UNIQUE (ts_key, locale, validity),
+  FOREIGN KEY (ts_key) REFERENCES timeseries.catalog(ts_key)
 );
 
 CREATE TABLE timeseries.collections (

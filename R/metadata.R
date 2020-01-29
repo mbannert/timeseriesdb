@@ -199,7 +199,7 @@ db_store_ts_metadata <- function(con,
 #' @examples
 db_store_ts_metadata.tsmeta.list <- function(con,
                                              metadata,
-                                             valid_from = NULL,
+                                             valid_from,
                                              locale = NULL,
                                              schema = "timeseries") {
   metadata <- lapply(metadata, toJSON, auto_unbox = TRUE, digits = NA)
@@ -207,8 +207,8 @@ db_store_ts_metadata.tsmeta.list <- function(con,
   if(!is.null(locale)) {
     md_table <- data.frame(
       ts_key = names(metadata),
-      lang = locale,
-      data_desc = unlist(metadata),
+      locale = locale,
+      metadata = unlist(metadata),
       stringsAsFactors = FALSE
     )
 
@@ -219,18 +219,14 @@ db_store_ts_metadata.tsmeta.list <- function(con,
                  overwrite = TRUE,
                  field.types = c(
                    ts_key = "text",
-                   lang = "text",
-                   data_desc = "jsonb"))
+                   locale = "text",
+                   metadata = "jsonb"))
 
-    if(is.null(valid_from)) {
-      out <- fromJSON(db_call_function(con, "md_local_ts_upsert"))
-    } else {
-      out <- fromJSON(db_call_function(con, "md_local_vintage_upsert", list(as.Date(valid_from))))
-    }
+    out <- fromJSON(db_call_function(con, "md_local_upsert", list(as.Date(valid_from))))
   } else {
     md_table <- data.frame(
       ts_key = names(metadata),
-      data_desc = unlist(metadata),
+      metadata = unlist(metadata),
       stringsAsFactors = FALSE
     )
 
@@ -241,13 +237,9 @@ db_store_ts_metadata.tsmeta.list <- function(con,
                  overwrite = TRUE,
                  field.types = c(
                    ts_key = "text",
-                   data_desc = "jsonb"))
+                   metadata = "jsonb"))
 
-    if(is.null(valid_from)) {
-      out <- fromJSON(db_call_function(con, "md_unlocal_ts_upsert"))
-    } else {
-      out <- fromJSON(db_call_function(con, "md_unlocal_vintage_upsert", list(as.Date(valid_from))))
-    }
+    out <- fromJSON(db_call_function(con, "md_unlocal_upsert", list(as.Date(valid_from))))
   }
 
   if(out$status == 'warning') {
