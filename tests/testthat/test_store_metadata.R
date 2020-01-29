@@ -125,9 +125,47 @@ test_with_fresh_db(con, "db_store_ts_metadata localized can override fields", {
   )
 })
 
-# TODO: Test creating of multiple vintages
+test_with_fresh_db(con, "db_store_ts_metadata localized creates vintages", {
+  db_store_ts_metadata(con,
+                       tsmeta.list(ts1 = list(field = "value")),
+                       valid_from = "2020-01-01",
+                       locale = "de")
+  db_store_ts_metadata(con,
+                       tsmeta.list(ts1 = list(field = "vallue")),
+                       valid_from = "2020-02-01",
+                       locale = "de")
 
-test_that("db_store_ts_metadata.tsmeta.dt is a simple wrapper", {
+  result <-  dbGetQuery(con, "SELECT ts_key, validity, locale, metadata FROM timeseries.metadata_localized")
+  expect_equal(
+    result,
+    meta_fixture_df(c("ts1", "ts1"),
+                    c("2020-01-01", "2020-02-01"),
+                    c('{"field": "value"}', '{"field": "vallue"}'),
+                    c("de", "de"))
+  )
+})
+
+test_with_fresh_db(con, "db_store_ts_metadata localized can hold different languages for the same key", {
+  db_store_ts_metadata(con,
+                       tsmeta.list(ts1 = list(field = "value")),
+                       valid_from = "2020-01-01",
+                       locale = "de")
+  db_store_ts_metadata(con,
+                       tsmeta.list(ts1 = list(field = "valeur")),
+                       valid_from = "2020-01-01",
+                       locale = "fr")
+
+  result <-  dbGetQuery(con, "SELECT ts_key, validity, locale, metadata FROM timeseries.metadata_localized")
+  expect_equal(
+    result,
+    meta_fixture_df(c("ts1", "ts1"),
+                    c("2020-01-01", "2020-01-01"),
+                    c('{"field": "value"}', '{"field": "valeur"}'),
+                    c("de", "fr"))
+  )
+})
+
+test_with_fresh_db(con, "db_store_ts_metadata.tsmeta.dt is a simple wrapper", {
   fake_db_store_ts_metadata.tsmeta.list = mock()
   fake_as.tsmeta.list = mock("a nice tsmeta list")
 
@@ -234,4 +272,19 @@ test_with_fresh_db(con, "db_store_ts_metadata unlocalized can override fields", 
   )
 })
 
-## TODO: vintage tests (create multiple, try updating previous etc)
+test_with_fresh_db(con, "db_store_ts_metadata creates vintages", {
+  db_store_ts_metadata(con,
+                       tsmeta.list(ts1 = list(field = "value")),
+                       valid_from = "2020-01-01")
+  db_store_ts_metadata(con,
+                       tsmeta.list(ts1 = list(field = "vallue")),
+                       valid_from = "2020-02-01")
+
+  result <-  dbGetQuery(con, "SELECT ts_key, validity, metadata FROM timeseries.metadata")
+  expect_equal(
+    result,
+    meta_fixture_df(c("ts1", "ts1"),
+                    c("2020-01-01", "2020-02-01"),
+                    c('{"field": "value"}', '{"field": "vallue"}'))
+  )
+})
