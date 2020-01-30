@@ -94,10 +94,12 @@ test_with_fresh_db(con, "storing older vintages is a nono", {
 test_with_fresh_db(con, "storing older vintages warning contents", {
   db_store_ts_metadata(con,
                        tsmeta.list(ts1 = list(field = "value")),
-                       "2020-02-01")
+                       "2020-02-01",
+                       locale = "de")
   result <- suppressWarnings(db_store_ts_metadata(con,
                                                   tsmeta.list(ts1 = list(field = "value")),
-                                                  "2020-01-01"))
+                                                  "2020-01-01",
+                                                  locale = "de"))
 
   expect_equal(
     result,
@@ -111,6 +113,22 @@ test_with_fresh_db(con, "storing older vintages warning contents", {
       )
     )
   )
+})
+
+test_with_fresh_db(con, "invalid keys and invalid vintages", {
+  db_store_ts_metadata(con,
+                       tsmeta.list(ts1 = list(field = "value")),
+                       "2020-02-01",
+                       locale = "de")
+  warnings <- capture_warnings(db_store_ts_metadata(con,
+                                                  tsmeta.list(ts1 = list(field = "value"),
+                                                              tsx = list(field = "value")),
+                                                  "2020-01-01",
+                                                  locale = "de"))
+
+  expect_length(warnings, 2)
+  expect_match(warnings, "vintage", all = FALSE)
+  expect_match(warnings, "catalog", all = FALSE)
 })
 
 # db state ----------------------------------------------------------------
@@ -305,6 +323,20 @@ test_with_fresh_db(con, "storing older vintages warning contents", {
       )
     )
   )
+})
+
+test_with_fresh_db(con, "invalid keys and invalid vintages", {
+  db_store_ts_metadata(con,
+                       tsmeta.list(ts1 = list(field = "value")),
+                       "2020-02-01")
+  warnings <- capture_warnings(db_store_ts_metadata(con,
+                                                    tsmeta.list(ts1 = list(field = "value"),
+                                                                tsx = list(field = "value")),
+                                                    "2020-01-01"))
+
+  expect_equal(length(warnings), 2)
+  expect_match(warnings, "vintage", all = FALSE)
+  expect_match(warnings, "catalog", all = FALSE)
 })
 
 # db state ----------------------------------------------------------------
