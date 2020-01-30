@@ -260,9 +260,6 @@ AS $$
 DECLARE
   v_invalid_keys TEXT[];
   v_missing_keys TEXT[];
-  v_n_invalid INTEGER;
-  v_n_missing INTEGER;
-  v_status JSONB := jsonb_build_object('status', 'ok');
 BEGIN
   SELECT array_agg(DISTINCT tmp.ts_key)
   INTO v_invalid_keys
@@ -293,31 +290,7 @@ BEGIN
   WHERE cat.ts_key IS NULL
   INTO v_missing_keys;
 
-  v_n_invalid := array_length(v_invalid_keys, 1);
-  v_n_missing := array_length(v_missing_keys, 1);
-
-  IF v_n_invalid > 0 OR v_n_missing > 0 THEN
-    v_status := jsonb_build_object('status', 'warning', 'warnings', array[]::jsonb[]);
-
-    IF v_n_invalid > 0 THEN
-      v_status := jsonb_set(
-        v_status,
-        array['warnings'],
-        v_status->'warnings' || jsonb_build_array(jsonb_build_object('message', 'Some keys already have a later vintage',
-                                                                     'offending_keys', to_jsonb(v_invalid_keys)))
-      );
-    END IF;
-
-    IF v_n_missing > 0 THEN
-      v_status := jsonb_set(
-        v_status,
-        array['warnings'],
-        v_status->'warnings' || jsonb_build_array(jsonb_build_object('message', 'Some keys were not found in the catalog',
-                                                                     'offending_keys', to_jsonb(v_missing_keys)))
-      );
-    END IF;
-  END IF;
-  RETURN v_status;
+  RETURN build_meta_status(v_missing_keys, v_invalid_keys);
 END;
 $$ LANGUAGE PLPGSQL;
 
@@ -328,9 +301,6 @@ AS $$
 DECLARE
   v_invalid_keys TEXT[];
   v_missing_keys TEXT[];
-  v_n_invalid INTEGER;
-  v_n_missing INTEGER;
-  v_status JSONB := jsonb_build_object('status', 'ok');
 BEGIN
   SELECT array_agg(DISTINCT tmp.ts_key)
   INTO v_invalid_keys
@@ -360,6 +330,18 @@ BEGIN
   WHERE cat.ts_key IS NULL
   INTO v_missing_keys;
 
+  RETURN build_meta_status(v_missing_keys, v_invalid_keys);
+END;
+$$ LANGUAGE PLPGSQL;
+
+CREATE FUNCTION build_meta_status(v_missing_keys TEXT[], v_invalid_keys TEXT[])
+RETURNS JSON
+AS $$
+DECLARE
+  v_n_invalid INTEGER;
+  v_n_missing INTEGER;
+  v_status JSONB := jsonb_build_object('status', 'ok');
+BEGIN
   v_n_invalid := array_length(v_invalid_keys, 1);
   v_n_missing := array_length(v_missing_keys, 1);
 
