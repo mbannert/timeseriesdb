@@ -182,6 +182,14 @@ CREATE FUNCTION timeseries.read_ts_raw(valid_on DATE DEFAULT CURRENT_DATE, respe
 RETURNS TABLE(ts_key TEXT, ts_data JSON)
 AS $$
 BEGIN
+  IF valid_on IS NULL THEN
+    valid_on := CURRENT_DATE;
+  END IF;
+
+  IF respect_release_date IS NULL THEN
+    respect_release_date := false;
+  END IF;
+
   RETURN QUERY SELECT distinct on (rd.ts_key) rd.ts_key, mn.ts_data
     FROM tmp_ts_read_keys as rd
     JOIN timeseries.timeseries_main as mn
