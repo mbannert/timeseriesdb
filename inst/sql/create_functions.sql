@@ -90,6 +90,21 @@ $$ LANGUAGE PLPGSQL;
 
 
 
+CREATE FUNCTION timeseries.collection_delete(collection_name TEXT,
+                                             col_owner TEXT)
+RETURNS JSON
+AS $$
+DECLARE
+  result JSON;
+BEGIN
+  DELETE FROM timeseries.collections CASCADE
+  WHERE user = col_owner
+  AND name = collection_name
+  RETURNING id
+  
+END;
+$$ LANGUAGE PLPGSQL;
+
 
 
 
