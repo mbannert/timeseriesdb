@@ -121,6 +121,9 @@ prepare_db <- function(con,
   mdul <- data.frame(
     id = c(
       "1b6277fe-4378-11ea-b77f-2e728ce88125",
+      # One journey to Iceland lateur...
+      "079eaf0e-4c00-11ea-b77f-2e728ce88125",
+      "079eb3aa-4c00-11ea-b77f-2e728ce88125",
       "1b627a92-4378-11ea-b77f-2e728ce88125",
       "1b627bdc-4378-11ea-b77f-2e728ce88125",
       "1b627d12-4378-11ea-b77f-2e728ce88125"
@@ -128,16 +131,22 @@ prepare_db <- function(con,
     ts_key = c(
       "vts1",
       "vts1",
+      "vts1",
+      "vts2",
       "vts2",
       "vts2"
     ),
     validity = c(
-      "2020-01-01",
-      "2020-02-01",
-      "2020-01-01",
-      "2020-02-01"
+      Sys.Date() - 1,
+      Sys.Date(),
+      Sys.Date() + 1,
+      Sys.Date() - 1,
+      Sys.Date(),
+      Sys.Date() + 1
     ),
     created_by = c(
+      "test",
+      "test",
       "test",
       "test",
       "test",
@@ -147,11 +156,15 @@ prepare_db <- function(con,
       "2020-01-01 00:00:00",
       "2020-01-01 00:00:00",
       "2020-01-01 00:00:00",
+      "2020-01-01 00:00:00",
+      "2020-01-01 00:00:00",
       "2020-01-01 00:00:00"
     ),
     metadata = c(
+      '{"field": "old value"}',
       '{"field": "value"}',
       '{"field": "new value"}',
+      '{"field": "value", "other_field": -3}',
       '{"field": "value", "other_field": 3}',
       '{"field": "value", "other_field": 27}'
     )
@@ -183,12 +196,12 @@ prepare_db <- function(con,
       "de"
     ),
     validity = c(
-      "2020-01-01",
-      "2020-01-01",
-      "2020-01-01",
-      "2020-01-01",
-      "2020-02-01",
-      "2020-02-01"
+      Sys.Date(),
+      Sys.Date(),
+      Sys.Date(),
+      Sys.Date(),
+      Sys.Date() + 1,
+      Sys.Date() + 1
     ),
     created_by = c(
       "test",
