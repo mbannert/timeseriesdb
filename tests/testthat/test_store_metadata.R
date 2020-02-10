@@ -34,6 +34,40 @@ meta_fixture_df <- function(ts_key,
 # test storing md localized -----------------------------------------------
 context("localized metadata")
 
+
+# params for db_call_function ---------------------------------------------
+
+test_that("is passes correct args to db_call_function unlocalized", {
+  fake_db_call_function = mock()
+
+  with_mock(
+    db_tmp_read = mock(),
+    toJSON = mock("json"),
+    fromJSON = mock(list(status = "ok")),
+    dbWriteTable = mock(),
+    db_call_function = fake_db_call_function,
+    {
+      db_store_ts_metadata("con",
+                           as.tsmeta.list(
+                             list(
+                               ts1 = list(
+                                 field = "value"
+                               )
+                             )
+                           ),
+                           valid_from = "2020-01-01",
+                           schema = "schema")
+
+      expect_args(fake_db_call_function,
+                  1,
+                  "con",
+                  "md_unlocal_upsert",
+                  list(as.Date("2020-01-01")),
+                  "schema")
+    }
+  )
+})
+
 # return values -----------------------------------------------------------
 
 
@@ -258,6 +292,40 @@ test_with_fresh_db(con, "db_store_ts_metadata.tsmeta.dt is a simple wrapper", {
 
 # test storing md unlocalized, unversioned --------------------------------
 context("unlocalized metadata")
+
+# params for db_call_function ---------------------------------------------
+
+test_that("is passes correct args to db_call_function localized", {
+  fake_db_call_function = mock()
+
+  with_mock(
+    db_tmp_read = mock(),
+    toJSON = mock("json"),
+    fromJSON = mock(list(status = "ok")),
+    dbWriteTable = mock(),
+    db_call_function = fake_db_call_function,
+    {
+      db_store_ts_metadata("con",
+                           as.tsmeta.list(
+                             list(
+                               ts1 = list(
+                                 field = "value"
+                               )
+                             )
+                           ),
+                           valid_from = "2020-01-01",
+                           schema = "schema",
+                           locale = "de")
+
+      expect_args(fake_db_call_function,
+                  1,
+                  "con",
+                  "md_local_upsert",
+                  list(as.Date("2020-01-01")),
+                  "schema")
+    }
+  )
+})
 
 # returns -----------------------------------------------------------------
 

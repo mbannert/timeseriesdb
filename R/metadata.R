@@ -224,7 +224,10 @@ db_store_ts_metadata.tsmeta.list <- function(con,
                    locale = "text",
                    metadata = "jsonb"))
 
-    db_return <- db_call_function(con, "md_local_upsert", list(as.Date(valid_from)))
+    db_return <- db_call_function(con,
+                                  "md_local_upsert",
+                                  list(as.Date(valid_from)),
+                                  schema = schema)
   } else {
     md_table <- data.frame(
       ts_key = names(metadata),
@@ -241,7 +244,10 @@ db_store_ts_metadata.tsmeta.list <- function(con,
                    ts_key = "text",
                    metadata = "jsonb"))
 
-    db_return <- db_call_function(con, "md_unlocal_upsert", list(as.Date(valid_from)))
+    db_return <- db_call_function(con,
+                                  "md_unlocal_upsert",
+                                  list(as.Date(valid_from)),
+                                  schema = schema)
   }
 
   out <- fromJSON(db_return, simplifyDataFrame = FALSE)
