@@ -175,6 +175,8 @@ print.tsmeta.list <- function(x, ...) {
 
 # functions ---------------------------------------------------------------
 
+# writers -----------------------------------------------------------------
+
 db_store_ts_metadata <- function(con,
                                  metadata,
                                  valid_from = NULL,
@@ -263,4 +265,84 @@ db_store_ts_metadata.tsmeta.dt <- function(con,
                                    valid_from,
                                    locale,
                                    schema)
+}
+
+
+# readers -----------------------------------------------------------------
+
+#' Title
+#'
+#' @param con
+#' @param ts_keys
+#' @param valid_on
+#' @param regex
+#' @param locale
+#' @param as.dt
+#' @param schema
+#'
+#' @return
+#'
+#' @importFrom jsonlite fromJSON
+#'
+#' @export
+#'
+#' @examples
+db_read_ts_metadata <- function(con,
+                                ts_keys,
+                                valid_on = NA,
+                                regex = FALSE,
+                                locale = NULL,
+                                as.dt = FALSE,
+                                schema = "timeseries") {
+  db_tmp_read(
+    con,
+    ts_keys,
+    regex,
+    schema
+  )
+
+  # TODO: should missing ts have NA values or just be missing?
+  # TODO: chunking?
+
+  if(is.null(locale)) {
+    db_return <- db_call_function(con,
+                                  "read_metadata_raw",
+                                  list(as.Date(valid_on)),
+                                  schema = schema)
+  } else {
+    db_return <- db_call_function(con,
+                                  "read_metadata_localized_raw",
+                                  list(as.Date(valid_on), locale),
+                                  schema = schema)
+  }
+
+  if(as.dt) {
+    out <- fromJSON(paste0("[",
+                           paste(db_return$metadata, collapse = ","),
+                           "]"),
+                    simplifyDataFrame = TRUE)
+    out <- cbind(data.table(ts_key = db_return$ts_key),
+                 out)
+    out <- as.tsmeta.dt(out)
+
+    # if is.null(locale) this will not chante the attrs
+    attributes(out) <- c(attributes(out), list(locale = locale))
+  } else {
+    out <- fromJSON(paste0("[",
+                           paste(db_return$metadata, collapse = ","),
+                           "]"),
+                    simplifyDataFrame = FALSE)
+    names(out) <- db_return$ts_key
+    out <- as.tsmeta.list(out)
+
+    if(!is.null(locale)) {
+      attributes(out) <- c(attributes(out), list(locale = locale))
+
+      for(i in seq_along(out)) {
+        attributes(out[[i]]) <- c(attributes(out[[i]]), list(locale = locale))
+      }
+    }
+  }
+
+  out
 }

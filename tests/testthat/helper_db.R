@@ -196,12 +196,12 @@ prepare_db <- function(con,
       "de"
     ),
     validity = c(
+      Sys.Date() - 1,
+      Sys.Date() - 1,
+      Sys.Date() - 1,
+      Sys.Date() - 1,
       Sys.Date(),
-      Sys.Date(),
-      Sys.Date(),
-      Sys.Date(),
-      Sys.Date() + 1,
-      Sys.Date() + 1
+      Sys.Date()
     ),
     created_by = c(
       "test",

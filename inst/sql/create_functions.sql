@@ -369,3 +369,39 @@ BEGIN
   RETURN v_status;
 END;
 $$ LANGUAGE PLPGSQL;
+
+CREATE FUNCTION timeseries.read_metadata_raw(valid_on DATE DEFAULT CURRENT_DATE)
+RETURNS TABLE(ts_key TEXT, metadata JSONB)
+AS $$
+BEGIN
+  IF valid_on IS NULL THEN
+    valid_on := CURRENT_DATE;
+  END IF;
+
+  RETURN QUERY SELECT DISTINCT ON (rd.ts_key) rd.ts_key, md.metadata
+    FROM tmp_ts_read_keys AS rd
+    JOIN timeseries.metadata AS md
+    ON rd.ts_key = md.ts_key
+    AND md.validity <= valid_on
+    ORDER BY rd.ts_key, md.validity DESC;
+END;
+$$ LANGUAGE PLPGSQL;
+
+-- TODO: loc does not necessarily need a default but then it needs to move to the front of the list
+CREATE FUNCTION timeseries.read_metadata_localized_raw(valid_on DATE DEFAULT CURRENT_DATE, loc TEXT DEFAULT 'en')
+RETURNS TABLE(ts_key TEXT, metadata JSONB)
+AS $$
+BEGIN
+  IF valid_on IS NULL THEN
+    valid_on := CURRENT_DATE;
+  END IF;
+
+  RETURN QUERY SELECT DISTINCT ON (rd.ts_key) rd.ts_key, md.metadata
+    FROM tmp_ts_read_keys AS rd
+    JOIN timeseries.metadata_localized AS md
+    ON rd.ts_key = md.ts_key
+    AND md.validity <= valid_on
+    AND md.locale = loc
+    ORDER BY rd.ts_key, md.validity DESC;
+END;
+$$ LANGUAGE PLPGSQL;
