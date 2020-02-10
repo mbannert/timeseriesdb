@@ -185,12 +185,15 @@ db_store_ts_metadata <- function(con,
   UseMethod("db_store_ts_metadata", metadata)
 }
 
-#' Title
+#' Store timeseries metadata
 #'
-#' @param con
-#' @param metadata
-#' @param locale
-#' @param schema
+#' to be written: explanation of what is metadata, localized vs. unlocalized
+#'
+#' @param con RPostgres database connection
+#' @param metadata tsmeta The metadata to be stored
+#' @param locale character What language to store the data as. If locale is NULL (default)
+#' the metadata is stored without associated language information
+#' @param schema character name of the schema. Defaults to 'timeseries'.
 #'
 #' @return
 #'
@@ -261,6 +264,7 @@ db_store_ts_metadata.tsmeta.list <- function(con,
   out
 }
 
+# TODO: Figger out how to properly document these. @rdname?
 db_store_ts_metadata.tsmeta.dt <- function(con,
                                            metadata,
                                            valid_from = NULL,
@@ -276,23 +280,21 @@ db_store_ts_metadata.tsmeta.dt <- function(con,
 
 # readers -----------------------------------------------------------------
 
-#' Title
+#' Read time series metadata
 #'
-#' @param con
-#' @param ts_keys
-#' @param valid_on
-#' @param regex
-#' @param locale
-#' @param as.dt
-#' @param schema
 #'
-#' @return
+#'
+#' @param con RPostgres database connection
+#' @param ts_keys Character vector of ts keys to read metadata for. If regex is TRUE, ts_keys is used as a pattern.
+#' @param valid_on Date for which to read the metadata. If NA the most recent version is read.
+#' @param regex Automatically find time series with keys matching the pattern in ts_keys
+#' @param locale What language to read metadata for. If NULL, unlocalized metadata is read.
+#' @param as.dt Should a tsmeta.dt be returned? By default db_read_ts_metadata return a tsmeta.list
+#' @param schema character name of the schema. Defaults to 'timeseries'.
 #'
 #' @importFrom jsonlite fromJSON
 #'
 #' @export
-#'
-#' @examples
 db_read_ts_metadata <- function(con,
                                 ts_keys,
                                 valid_on = NA,
