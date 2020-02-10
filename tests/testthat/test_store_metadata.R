@@ -140,7 +140,9 @@ test_with_fresh_db(con, "db_store_ts_metadata localized stores metadata", {
                        valid_from = "2020-01-01",
                        locale = "de")
 
-  result <- dbGetQuery(con, "SELECT ts_key, validity, locale, metadata FROM timeseries.metadata_localized")
+  result <- dbGetQuery(con, "SELECT ts_key, validity, locale, metadata
+                       FROM timeseries.metadata_localized
+                       WHERE ts_key = 'ts1'")
   expect_equal(
     result,
     meta_fixture_df("ts1", "2020-01-01", '{"field": "value"}', "de")
@@ -157,7 +159,9 @@ test_with_fresh_db(con, "db_store_ts_metadata localized can add fields", {
                        valid_from = "2020-01-01",
                        locale = "de")
 
-  result <- dbGetQuery(con, "SELECT ts_key, validity, locale, metadata FROM timeseries.metadata_localized")
+  result <- dbGetQuery(con, "SELECT ts_key, validity, locale, metadata
+                       FROM timeseries.metadata_localized
+                       WHERE ts_key = 'ts1'")
   expect_equal(
     result,
     meta_fixture_df("ts1", "2020-01-01", '{"field": "value", "field2": 3}', "de")
@@ -174,7 +178,9 @@ test_with_fresh_db(con, "db_store_ts_metadata localized can override fields", {
                        valid_from = "2020-01-01",
                        locale = "de")
 
-  result <- dbGetQuery(con, "SELECT ts_key, validity, locale, metadata FROM timeseries.metadata_localized")
+  result <- dbGetQuery(con, "SELECT ts_key, validity, locale, metadata
+                       FROM timeseries.metadata_localized
+                       WHERE ts_key = 'ts1'")
   expect_equal(
     result,
     meta_fixture_df("ts1", "2020-01-01", '{"field": "new_value"}', "de")
@@ -191,7 +197,9 @@ test_with_fresh_db(con, "db_store_ts_metadata localized creates vintages", {
                        valid_from = "2020-02-01",
                        locale = "de")
 
-  result <-  dbGetQuery(con, "SELECT ts_key, validity, locale, metadata FROM timeseries.metadata_localized")
+  result <-  dbGetQuery(con, "SELECT ts_key, validity, locale, metadata
+                        FROM timeseries.metadata_localized
+                        WHERE ts_key = 'ts1'")
   expect_equal(
     result,
     meta_fixture_df(c("ts1", "ts1"),
@@ -211,7 +219,9 @@ test_with_fresh_db(con, "db_store_ts_metadata localized can hold different langu
                        valid_from = "2020-01-01",
                        locale = "fr")
 
-  result <-  dbGetQuery(con, "SELECT ts_key, validity, locale, metadata FROM timeseries.metadata_localized")
+  result <-  dbGetQuery(con, "SELECT ts_key, validity, locale, metadata
+                        FROM timeseries.metadata_localized
+                        WHERE ts_key = 'ts1'")
   expect_equal(
     result,
     meta_fixture_df(c("ts1", "ts1"),
@@ -347,7 +357,9 @@ test_with_fresh_db(con, "db_store_ts_metadata unlocalized stores metadata", {
                        tsmeta.list(ts1 = list(field = "value")),
                        "2020-01-01")
 
-  result <- dbGetQuery(con, "SELECT ts_key, validity, metadata FROM timeseries.metadata")
+  result <- dbGetQuery(con, "SELECT ts_key, validity, metadata
+                       FROM timeseries.metadata
+                       WHERE ts_key = 'ts1'")
   expect_equal(
     result,
     meta_fixture_df("ts1", "2020-01-01", '{"field": "value"}')
@@ -362,7 +374,9 @@ test_with_fresh_db(con, "db_store_ts_metadata unlocalized can add fields", {
                        tsmeta.list(ts1 = list(field2 = 3)),
                        "2020-01-01")
 
-  result <- dbGetQuery(con, "SELECT ts_key, validity, metadata FROM timeseries.metadata")
+  result <- dbGetQuery(con, "SELECT ts_key, validity, metadata
+                       FROM timeseries.metadata
+                       WHERE ts_key = 'ts1'")
   expect_equal(
     result,
     meta_fixture_df("ts1", "2020-01-01", '{"field": "value", "field2": 3}')
@@ -377,7 +391,9 @@ test_with_fresh_db(con, "db_store_ts_metadata unlocalized can override fields", 
                        tsmeta.list(ts1 = list(field = "new_value")),
                        "2020-01-01")
 
-  result <- dbGetQuery(con, "SELECT ts_key, validity, metadata FROM timeseries.metadata")
+  result <- dbGetQuery(con, "SELECT ts_key, validity, metadata
+                       FROM timeseries.metadata
+                       WHERE ts_key = 'ts1'")
   expect_equal(
     result,
     meta_fixture_df("ts1", "2020-01-01", '{"field": "new_value"}')
@@ -392,7 +408,9 @@ test_with_fresh_db(con, "db_store_ts_metadata creates vintages", {
                        tsmeta.list(ts1 = list(field = "vallue")),
                        valid_from = "2020-02-01")
 
-  result <-  dbGetQuery(con, "SELECT ts_key, validity, metadata FROM timeseries.metadata")
+  result <-  dbGetQuery(con, "SELECT ts_key, validity, metadata
+                        FROM timeseries.metadata
+                        WHERE ts_key = 'ts1'")
   expect_equal(
     result,
     meta_fixture_df(c("ts1", "ts1"),
