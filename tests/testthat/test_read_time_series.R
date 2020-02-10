@@ -2,6 +2,7 @@
 
 context("read_time_series")
 
+# TODO: move this into helper_db as a fixture
 tsl_state_0 <- list(
   ts1 = ts(rep(1.9, 10), 2019, frequency = 4)
 )
