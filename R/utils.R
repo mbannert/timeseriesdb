@@ -95,5 +95,9 @@ db_call_function <- function(con,
 
   res <- dbGetQuery(con, query, args)
 
-  res[[fname]]
+  if(fname %in% names(res)) {
+    res[[fname]] # query returns value (e.g. JSON) -> unwrap the value
+  } else {
+    res # query returns table -> just return the DF as it comes
+  }
 }
