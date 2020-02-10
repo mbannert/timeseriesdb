@@ -5,6 +5,50 @@ if(is_test_db_reachable()) {
 
 context("read unlocalized metadata")
 
+test_that("is passes correct args to db_call_function unlocalized", {
+  fake_db_call_function = mock(data.frame(
+    ts_key = "vts1",
+    metadata = "{}"
+  ))
+
+  with_mock(
+    db_tmp_read = mock(),
+    db_call_function = fake_db_call_function,
+    {
+      db_read_ts_metadata("con", "vts1", valid_on = "2020-01-01", schema = "schema")
+
+      expect_args(fake_db_call_function,
+                  1,
+                  "con",
+                  "read_metadata_raw",
+                  list(as.Date("2020-01-01")),
+                  "schema")
+    }
+  )
+})
+
+test_that("is passes correct args to db_call_function localized", {
+  fake_db_call_function = mock(data.frame(
+    ts_key = "vts1",
+    metadata = "{}"
+  ))
+
+  with_mock(
+    db_tmp_read = mock(),
+    db_call_function = fake_db_call_function,
+    {
+      db_read_ts_metadata("con", "vts1", valid_on = "2020-01-01", schema = "schema", locale = "de")
+
+      expect_args(fake_db_call_function,
+                  1,
+                  "con",
+                  "read_metadata_localized_raw",
+                  list(as.Date("2020-01-01"), "de"),
+                  "schema")
+    }
+  )
+})
+
 test_with_fresh_db(con, "it can return md as data.table", {
   result <- db_read_ts_metadata(con, "vts1", as.dt = TRUE)
   expect_equal(result,
