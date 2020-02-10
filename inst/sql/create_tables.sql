@@ -35,7 +35,7 @@ CREATE TABLE timeseries.metadata(
   created_at TIMESTAMPTZ NOT NULL DEFAULT CURRENT_TIMESTAMP,
   metadata JSONB,
   UNIQUE (ts_key, validity),
-  FOREIGN KEY (ts_key) REFERENCES timeseries.catalog(ts_key)
+  FOREIGN KEY (ts_key) REFERENCES timeseries.catalog(ts_key) ON DELETE CASCADE
 );
 
 CREATE TABLE timeseries.metadata_localized(
@@ -47,7 +47,7 @@ CREATE TABLE timeseries.metadata_localized(
   created_at TIMESTAMPTZ NOT NULL DEFAULT CURRENT_TIMESTAMP,
   metadata JSONB,
   UNIQUE (ts_key, locale, validity),
-  FOREIGN KEY (ts_key) REFERENCES timeseries.catalog(ts_key)
+  FOREIGN KEY (ts_key) REFERENCES timeseries.catalog(ts_key) ON DELETE CASCADE
 );
 
 CREATE TABLE timeseries.collections (
