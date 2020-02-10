@@ -118,6 +118,104 @@ prepare_db <- function(con,
     )
   )
 
+  mdul <- data.frame(
+    id = c(
+      "1b6277fe-4378-11ea-b77f-2e728ce88125",
+      "1b627a92-4378-11ea-b77f-2e728ce88125",
+      "1b627bdc-4378-11ea-b77f-2e728ce88125",
+      "1b627d12-4378-11ea-b77f-2e728ce88125"
+    ),
+    ts_key = c(
+      "vts1",
+      "vts1",
+      "vts2",
+      "vts2"
+    ),
+    validity = c(
+      "2020-01-01",
+      "2020-02-01",
+      "2020-01-01",
+      "2020-02-01"
+    ),
+    created_by = c(
+      "test",
+      "test",
+      "test",
+      "test"
+    ),
+    created_at = c(
+      "2020-01-01 00:00:00",
+      "2020-01-01 00:00:00",
+      "2020-01-01 00:00:00",
+      "2020-01-01 00:00:00"
+    ),
+    metadata = c(
+      '{"field": "value"}',
+      '{"field": "new value"}',
+      '{"field": "value", "other_field": 3}',
+      '{"field": "value", "other_field": 27}'
+    )
+  )
+
+  mdl <- data.frame(
+    id = c(
+      "1b627e48-4378-11ea-b77f-2e728ce88125",
+      "1b628370-4378-11ea-b77f-2e728ce88125",
+      "1b628578-4378-11ea-b77f-2e728ce88125",
+      "1b6286cc-4378-11ea-b77f-2e728ce88125",
+      "1b628802-4378-11ea-b77f-2e728ce88125",
+      "1b62892e-4378-11ea-b77f-2e728ce88125"
+    ),
+    ts_key = c(
+      "vts1",
+      "vts2",
+      "vts1",
+      "vts2",
+      "vts1",
+      "vts2"
+    ),
+    locale = c(
+      "en",
+      "en",
+      "de",
+      "de",
+      "de",
+      "de"
+    ),
+    validity = c(
+      "2020-01-01",
+      "2020-01-01",
+      "2020-01-01",
+      "2020-01-01",
+      "2020-02-01",
+      "2020-02-01"
+    ),
+    created_by = c(
+      "test",
+      "test",
+      "test",
+      "test",
+      "test",
+      "test"
+    ),
+    created_at = c(
+      "2020-01-01 00:00:00",
+      "2020-01-01 00:00:00",
+      "2020-01-01 00:00:00",
+      "2020-01-01 00:00:00",
+      "2020-01-01 00:00:00",
+      "2020-01-01 00:00:00"
+    ),
+    metadata = c(
+      '{"label": "vintage time series 1"}',
+      '{"label": "vintage time series 2"}',
+      '{"label": "versionierte zeitreihe 1"}',
+      '{"label": "versionierte zeitreihe 2"}',
+      '{"label": "versionierte zeitreihe 1, version 2"}',
+      '{"label": "versionierte zeitreihe 2, version 2"}'
+    )
+  )
+
   reset_db(con)
   if(init_datasets) {
     dbWriteTable(con,
@@ -134,6 +232,16 @@ prepare_db <- function(con,
       dbWriteTable(con,
                    DBI::Id(schema = "timeseries", table = "timeseries_main"),
                    vintages,
+                   append = TRUE)
+
+      dbWriteTable(con,
+                   DBI::Id(schema = "timeseries", table  = "metadata"),
+                   mdul,
+                   append = TRUE)
+
+      dbWriteTable(con,
+                   DBI::Id(schema = "timeseries", table = "metadata_localized"),
+                   mdl,
                    append = TRUE)
     }
   }
