@@ -88,7 +88,7 @@ db_call_function <- function(con,
   query <- sprintf("SELECT * FROM %s.%s(%s)",
                    dbQuoteIdentifier(con, schema),
                    dbQuoteIdentifier(con, fname),
-                   ifelse(length(args > 0),
+                   ifelse(length(args) > 0,
                           paste(sprintf("$%d", 1:length(args)), collapse = ", "),
                           ""))
 
