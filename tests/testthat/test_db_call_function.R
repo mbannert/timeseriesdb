@@ -31,7 +31,7 @@ test_that("db_call_function with args", {
     {
       args <- list(
         a = 1,
-        b = 2
+        b = "banana"
       )
 
       db_call_function("con", "my_function", args)
