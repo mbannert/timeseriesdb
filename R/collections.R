@@ -21,7 +21,10 @@ db_collection_add <- function(con, collection_name,
   # https://www.postgresql.org/docs/9.5/sql-insert.html#SQL-ON-CONFLICT
   #! Why not just dbGetQuery?
   q <- sprintf("SELECT * FROM %scollection_add($1, $2, $3)", schema)
-  c_id <- dbGetQuery(con, q, list(collection_name, user, description))$collection_add
+  c_id <- dbGetQuery(con, q,
+                     list(collection_name,
+                          user,
+                          description))$collection_add
 
   # by now collection should exist,
   # let's add keys: fill a temp table, anti-join the keys
@@ -108,7 +111,13 @@ db_collection_remove <- function(con,
 }
 
 
-db_collection_delete <- function(){
+db_collection_delete <- function(con,
+                                 collection_name,
+                                 user = Sys.info()['user'],
+                                 schema = "timeseries"
+                                 ){
+  
+  schema <- dbQuoteIdentifier(con, Id(schema = schema))
 
 }
 
