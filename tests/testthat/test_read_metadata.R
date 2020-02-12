@@ -91,22 +91,6 @@ test_with_fresh_db(con, "reading via regex works", {
 
 context("read localized metadata")
 
-test_with_fresh_db(con, "it attaches locale attribute in list mode", {
-  result <- db_read_ts_metadata(con, "vts1", locale = "de")
-  atts <- attributes(result)
-
-  expect_match(names(atts), "locale", all = FALSE)
-  expect_equal(atts$locale, "de")
-})
-
-test_with_fresh_db(con, "it attaches locale attribute to elements in list mode", {
-  result <- db_read_ts_metadata(con, "vts1", locale = "de")
-
-  atts <- attributes(result$vts1)
-  expect_match(names(atts), "locale", all = FALSE)
-  expect_equal(atts$locale, "de")
-})
-
 test_with_fresh_db(con, "by default it reads the most recent valid vintage", {
   result <- db_read_ts_metadata(con, "vts1", locale = "de")
   expect_equal(result,

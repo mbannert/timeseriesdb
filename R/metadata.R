@@ -88,7 +88,7 @@ as.tsmeta.tsmeta <- identity
 print.meta <- function(x, ...) {
   if(length(x) > 0) {
     atts <- attributes(x)
-    cat(sprintf("Metadata%s\n", ifelse(!is.null(atts$locale), sprintf(" (%s)", atts$locale), "")))
+    cat("Metadata\n")
     n <- names(x)
     name_lengths <- sapply(n, nchar)
     max_name_length <- max(name_lengths)
@@ -102,9 +102,8 @@ print.meta <- function(x, ...) {
 
 #' @export
 print.tsmeta <- function(x, ...) {
-  atts <- attributes(x)
   if(length(x) > 0) {
-    cat(sprintf("A tsmeta object%s\n", ifelse(!is.null(atts$locale), sprintf(" (%s)", atts$locale), "")))
+    cat("A tsmeta object\n")
     print(unclass(x))
   } else {
     cat(sprintf("An empty tsmeta object\n"))
@@ -247,14 +246,6 @@ db_read_ts_metadata <- function(con,
                   simplifyDataFrame = FALSE)
   names(out) <- db_return$ts_key
   out <- as.tsmeta.list(out)
-
-  if(!is.null(locale)) {
-    attributes(out) <- c(attributes(out), list(locale = locale))
-
-    for(i in seq_along(out)) {
-      attributes(out[[i]]) <- c(attributes(out[[i]]), list(locale = locale))
-    }
-  }
 
   out
 }
