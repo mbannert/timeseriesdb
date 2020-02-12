@@ -255,3 +255,40 @@ db_read_ts_metadata <- function(con,
 
   out
 }
+
+#' Title
+#'
+#' @param con
+#' @param ts_keys
+#' @param regex
+#' @param locale
+#' @param schema
+#'
+#' @return
+#' @export
+#'
+#' @examples
+db_get_metadata_edge <- function(con,
+                                 ts_keys,
+                                 regex = FALSE,
+                                 locale = NULL,
+                                 schema = "timeseries") {
+  db_tmp_read(
+    con,
+    ts_keys,
+    regex,
+    schema)
+
+  if(is.null(locale)) {
+    out <- db_call_function(con,
+                     "get_latest_vintages_metadata",
+                     schema = schema)
+  } else {
+    out <- db_call_function(con,
+                     "get_latest_vintages_metadata_localized",
+                     list(locale),
+                     schema = schema)
+  }
+
+  as.data.table(out)
+}

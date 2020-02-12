@@ -404,3 +404,28 @@ BEGIN
     ORDER BY rd.ts_key, md.validity DESC;
 END;
 $$ LANGUAGE PLPGSQL;
+
+CREATE FUNCTION timeseries.get_latest_vintages_metadata()
+RETURNS TABLE(ts_key TEXT, validity DATE)
+AS $$
+BEGIN
+  RETURN QUERY SELECT DISTINCT ON (rd.ts_key) rd.ts_key, md.validity
+    FROM tmp_ts_read_keys AS rd
+    JOIN timeseries.metadata AS md
+    ON rd.ts_key = md.ts_key
+    ORDER BY rd.ts_key, md.validity DESC;
+END;
+$$ LANGUAGE PLPGSQL;
+
+CREATE FUNCTION timeseries.get_latest_vintages_metadata_localized(locale_in TEXT)
+RETURNS TABLE(ts_key TEXT, validity DATE)
+AS $$
+BEGIN
+  RETURN QUERY SELECT DISTINCT ON (rd.ts_key) rd.ts_key, md.validity
+    FROM tmp_ts_read_keys AS rd
+    JOIN timeseries.metadata_localized AS md
+    ON rd.ts_key = md.ts_key
+    AND md.locale = locale_in
+    ORDER BY rd.ts_key, md.validity DESC;
+END;
+$$ LANGUAGE PLPGSQL;

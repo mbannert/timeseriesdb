@@ -132,3 +132,42 @@ test_with_fresh_db(con, "reading via regex works", {
                ),
                check.attributes = FALSE)
 })
+
+
+# reading current edge ----------------------------------------------------
+
+test_with_fresh_db(con, "reading unlocalized edge", {
+  result <- db_get_metadata_edge(con, c("vts1"))
+  expect_equal(result,
+               data.table(
+                 ts_key = "vts1",
+                 validity = Sys.Date() + 1
+               ))
+})
+
+test_with_fresh_db(con, "reading unlocalized edge via regex", {
+  result <- db_get_metadata_edge(con, c("vts"), regex = TRUE)
+  expect_equal(result,
+               data.table(
+                 ts_key = c("vts1", "vts2"),
+                 validity = Sys.Date() + 1
+               ))
+})
+
+test_with_fresh_db(con, "reading localized edge", {
+  result <- db_get_metadata_edge(con, c("vts1"), locale = "de")
+  expect_equal(result,
+               data.table(
+                 ts_key = "vts1",
+                 validity = Sys.Date()
+               ))
+})
+
+test_with_fresh_db(con, "reading localized edge via regex", {
+  result <- db_get_metadata_edge(con, c("vts"), regex = TRUE, locale = "de")
+  expect_equal(result,
+               data.table(
+                 ts_key = c("vts1", "vts2"),
+                 validity = Sys.Date()
+               ))
+})
