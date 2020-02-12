@@ -12,19 +12,16 @@ db_collection_add <- function(con, collection_name,
                               user = Sys.info()['user'],
                               schema = "timeseries"){
   keys <- unique(keys)
-  # Schemas can't be added through parameterized queries
-  # therefore we need to sanitize the schema string here.
-  schema <- dbQuoteIdentifier(con, Id(schema = schema))
 
   # if collection does not exist, create collection
-  # classic UPSERT case, we use it in the DO NOTHING flavor
-  # https://www.postgresql.org/docs/9.5/sql-insert.html#SQL-ON-CONFLICT
-  #! Why not just dbGetQuery?
-  q <- sprintf("SELECT * FROM %scollection_add($1, $2, $3)", schema)
-  c_id <- dbGetQuery(con, q,
-                     list(collection_name,
-                          user,
-                          description))$collection_add
+  c_id <- db_call_function(con,
+                           "collection_add",
+                           list(
+                             collection_name,
+                             user,
+                             description
+                           ),
+                           schema = schema)
 
   # by now collection should exist,
   # let's add keys: fill a temp table, anti-join the keys
@@ -42,10 +39,9 @@ db_collection_add <- function(con, collection_name,
                  ts_key = "text")
   )
 
-  db_return <- dbGetQuery(
-    con,
-    "SELECT * FROM timeseries.insert_collect_from_tmp()"
-  )$insert_collect_from_tmp
+  db_return <- db_call_function(con,
+                                "insert_collect_from_tmp",
+                                schema = schema)
 
   fromJSON(db_return)
 }
@@ -116,7 +112,7 @@ db_collection_delete <- function(con,
                                  user = Sys.info()['user'],
                                  schema = "timeseries"
                                  ){
-  
+
   schema <- dbQuoteIdentifier(con, Id(schema = schema))
 
 }
