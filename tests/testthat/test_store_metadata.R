@@ -265,31 +265,6 @@ test_with_fresh_db(con, "db_store_ts_metadata localized can hold different langu
   )
 })
 
-test_with_fresh_db(con, "db_store_ts_metadata.tsmeta.dt is a simple wrapper", {
-  fake_db_store_ts_metadata.tsmeta.list = mock()
-  fake_as.tsmeta.list = mock("a nice tsmeta list")
-
-  with_mock(
-    db_store_ts_metadata.tsmeta.list = fake_db_store_ts_metadata.tsmeta.list,
-    as.tsmeta.list = fake_as.tsmeta.list,
-    {
-      db_store_ts_metadata("con",
-                           tsmeta.dt(data.frame(ts_key = "ts1",
-                                                field = "value")),
-                           locale = "de",
-                           valid_from = "valid_from")
-
-      expect_args(fake_db_store_ts_metadata.tsmeta.list,
-                  1,
-                  "con",
-                  "a nice tsmeta list",
-                  "valid_from",
-                  "de",
-                  "timeseries")
-    }
-  )
-})
-
 # test storing md unlocalized, unversioned --------------------------------
 context("unlocalized metadata")
 

@@ -49,22 +49,6 @@ test_that("is passes correct args to db_call_function localized", {
   )
 })
 
-test_with_fresh_db(con, "it can return md as data.table", {
-  result <- db_read_ts_metadata(con, "vts1", as.dt = TRUE)
-  expect_equal(result,
-               as.tsmeta.dt(
-                 data.table(
-                   ts_key = "vts1",
-                   field = "value"
-                 )
-               ))
-})
-
-test_with_fresh_db(con, "it fills missing fields in dt mode", {
-  result <- db_read_ts_metadata(con, c("vts1", "vts2"), as.dt = TRUE)
-  expect_true(result[ts_key == "vts1", is.na(other_field)])
-})
-
 test_with_fresh_db(con, "by default it reads the most recent valid vintage", {
   result <- db_read_ts_metadata(con, "vts1")
   expect_equal(result,
@@ -106,25 +90,6 @@ test_with_fresh_db(con, "reading via regex works", {
 })
 
 context("read localized metadata")
-
-test_with_fresh_db(con, "it can return md as data.table", {
-  result <- db_read_ts_metadata(con, "vts1", as.dt = TRUE, locale = "en")
-  expect_equal(result,
-               as.tsmeta.dt(
-                 data.table(
-                   ts_key = "vts1",
-                   label = "vintage time series 1"
-                 )
-               ), check.attributes = FALSE)
-})
-
-test_with_fresh_db(con, "it attaches a locale attribute in dt mode", {
-  result <- db_read_ts_metadata(con, "vts1", as.dt = TRUE, locale = "en")
-  atts <- attributes(result)
-
-  expect_match(names(atts), "locale", all = FALSE)
-  expect_equal(atts$locale, "en")
-})
 
 test_with_fresh_db(con, "it attaches locale attribute in list mode", {
   result <- db_read_ts_metadata(con, "vts1", locale = "de")
