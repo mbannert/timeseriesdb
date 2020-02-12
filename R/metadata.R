@@ -31,34 +31,36 @@ as.meta <- function(x) {
   }
 }
 
-# tsmeta.list -------------------------------------------------------------
+# tsmeta -------------------------------------------------------------
 
 
 #' @export
-tsmeta.list <- function(...) {
-  as.tsmeta.list(list(...))
+# TODO: check ... (must be named, maybe cover list case)
+create_tsmeta <- function(...) {
+  as.tsmeta(list(...))
 }
 
 #' @export
-as.tsmeta.list <- function(meta) {
-  UseMethod("as.tsmeta.list")
+as.tsmeta <- function(meta) {
+  UseMethod("as.tsmeta")
 }
 
 #' @export
-as.tsmeta.list.tsmeta.dt <- function(meta) {
+# TODO: DO these need to be exported or not? still confused...
+as.tsmeta.data.table <- function(meta) {
   if(nrow(meta) > 0) {
     out <- meta[, .(md = list(as.list(.SD))), by = ts_key][, md]
     names(out) <- meta$ts_key
     # Remove NA elements from list
     out <- lapply(out, function(x){x[!is.na(x)]})
-    as.tsmeta.list.list(out)
+    as.tsmeta.list(out)
   } else {
-    tsmeta.list()
+    create_tsmeta()
   }
 }
 
 #' @export
-as.tsmeta.list.list <- function(meta) {
+as.tsmeta.list <- function(meta) {
   if(get_list_depth(meta) != 2 && length(meta) > 0) {
     stop("A meta list must have exactly depth 2!")
   }
@@ -66,18 +68,18 @@ as.tsmeta.list.list <- function(meta) {
     class(x) <- c("meta", class(x))
     x
   })
-  class(meta) <- c("tsmeta.list", class(meta))
+  class(meta) <- c("tsmeta", class(meta))
   meta
 }
 
 #' @export
-as.tsmeta.list.data.frame <- function(meta) {
-  as.tsmeta.list(as.tsmeta.dt(meta))
+as.tsmeta.data.frame <- function(meta) {
+  as.tsmeta.list(as.data.table(meta))
 }
 
 
 #' @export
-as.tsmeta.list.tsmeta.list <- identity
+as.tsmeta.tsmeta <- identity
 
 
 # printers ----------------------------------------------------------------
@@ -99,13 +101,13 @@ print.meta <- function(x, ...) {
 }
 
 #' @export
-print.tsmeta.list <- function(x, ...) {
+print.tsmeta <- function(x, ...) {
   atts <- attributes(x)
   if(length(x) > 0) {
-    cat(sprintf("A tsmeta.list object%s\n", ifelse(!is.null(atts$locale), sprintf(" (%s)", atts$locale), "")))
+    cat(sprintf("A tsmeta object%s\n", ifelse(!is.null(atts$locale), sprintf(" (%s)", atts$locale), "")))
     print(unclass(x))
   } else {
-    cat(sprintf("An empty tsmeta.list object\n"))
+    cat(sprintf("An empty tsmeta object\n"))
   }
 }
 

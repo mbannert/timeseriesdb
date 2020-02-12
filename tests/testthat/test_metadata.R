@@ -22,7 +22,7 @@ meta_list <- function() {
       key2 = "value4"
     ))
   )
-  class(out) <- c("tsmeta.list", class(out))
+  class(out) <- c("tsmeta", class(out))
   out
 }
 
@@ -88,41 +88,41 @@ test_that("as.meta does not to non-lists", {
 })
 
 
-# test constructing tsmeta.list -------------------------------------------
+# test constructing tsmeta -------------------------------------------
 
-test_that("tsmeta.list constructs a tsmeta.list", {
+test_that("create_tsmeta constructs a tsmeta", {
   inv <- unclass(meta_list())
   inv <- lapply(inv, `class<-`, "list")
-  outv <- do.call(tsmeta.list, inv)
+  outv <- do.call(create_tsmeta, inv)
   expect_equal(outv, meta_list())
 })
 
 
-test_that("tsmeta.list -> tsmeta.list", {
-  outv <- as.tsmeta.list(meta_list())
+test_that("tsmeta -> tsmeta", {
+  outv <- as.tsmeta(meta_list())
   expect_equal(outv, meta_list())
   expect_is(outv[[1]], "meta")
 })
 
 # test converting to tsmeta.list ------------------------------------------
 
-test_that("list -> tsmeta.list", {
+test_that("list -> tsmeta", {
   inv <- meta_list()
   inv <- lapply(inv, `class<-`, "list")
-  outv <- as.tsmeta.list(inv)
+  outv <- as.tsmeta(inv)
   expect_equal(outv, meta_list())
   expect_is(outv[[1]], c("meta"))
 })
 
-test_that("empty list -> tsmeta.list", {
+test_that("empty list -> tsmeta", {
   outv <- as.tsmeta.list(list())
-  expect_is(outv, "tsmeta.list")
+  expect_is(outv, "tsmeta")
   expect_equal(length(outv), 0)
 })
 
-test_that("invalid list -> tsmeta.list", {
+test_that("invalid list -> tsmeta", {
   inv <- list(a = list(b = list(too_deep = TRUE)))
-  expect_error(as.tsmeta.list(inv))
+  expect_error(as.tsmeta(inv))
 })
 
 # test print methods ------------------------------------------------------
