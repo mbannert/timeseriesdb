@@ -20,22 +20,22 @@ BEGIN
   WHERE name = collection_name
   AND owner = col_owner
   INTO v_id;
-            
+
   IF v_id IS NOT NULL THEN
-  
+
     RETURN v_id;
-  
+
   ELSE
-  
+
     INSERT INTO timeseries.collections(name, owner, description)
     VALUES(collection_name, col_owner, description)
     ON CONFLICT DO NOTHING
     RETURNING id
     INTO v_id;
-    
+
     RETURN v_id;
   END IF;
-  
+
 END;
 $$ LANGUAGE PLPGSQL;
 
@@ -101,7 +101,7 @@ BEGIN
   WHERE user = col_owner
   AND name = collection_name
   RETURNING id
-  
+
 END;
 $$ LANGUAGE PLPGSQL;
 
@@ -126,35 +126,24 @@ CREATE FUNCTION timeseries.insert_collect_from_tmp()
 RETURNS JSON
 AS $$
 DECLARE
-  v_invalid_keys JSON;
+  v_invalid_keys TEXT[];
 BEGIN
-  --! I suppose a v_invalid_keys TEXT[] would do
-  --! Not sure if creating a tmp table is such a big thing though
-  CREATE TEMPORARY TABLE tmp_invalid_keys (ts_key TEXT PRIMARY KEY) ON COMMIT DROP;
-  INSERT INTO tmp_invalid_keys (
-    SELECT DISTINCT tmp_collect_updates.ts_key
-    FROM tmp_collect_updates
-    LEFT OUTER JOIN timeseries.catalog
-    ON timeseries.catalog.ts_key = tmp_collect_updates.ts_key
-    WHERE timeseries.catalog.ts_key IS NULL
-  );
+  SELECT array_agg(DISTINCT tmp_collect_updates.ts_key)
+  FROM tmp_collect_updates AS tmp
+  LEFT OUTER JOIN timeseries.catalog AS cat
+  ON cat.ts_key = tmp.ts_key
+  WHERE cat.ts_key IS NULL
+  INTO v_invalid_keys;
 
   INSERT INTO timeseries.collect_catalog (id, ts_key)
   SELECT c_id, ts_key FROM tmp_collect_updates
-  WHERE ts_key NOT IN (SELECT * FROM tmp_invalid_keys)
+  WHERE NOT ts_key = ANY(v_invalid_keys)
   ON CONFLICT DO NOTHING;
 
-  SELECT json_agg(DISTINCT tmp_invalid_keys.ts_key)
-  INTO v_invalid_keys
-  FROM tmp_invalid_keys;
-
-  IF json_array_length(v_invalid_keys) > 0 THEN
-    --! insert_from_tmp (which maybe should be renamed to insert_ts_from_tmp)
-    --! returns status "warning" in this case
-    --! I like "message" though, better than "reason"
-    RETURN json_build_object('status', 'ok',
+  IF array_length(v_invalid_keys, 1) > 0 THEN
+    RETURN json_build_object('status', 'warning',
                              'message', 'Some series could not be added to the user specific collection because these series were not found in the database.',
-                             'invalid_keys', v_invalid_keys);
+                             'invalid_keys', to_jsonb(v_invalid_keys));
   END IF;
 
   -- All went well
