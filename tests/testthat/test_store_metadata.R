@@ -31,6 +31,13 @@ meta_fixture_df <- function(ts_key,
   out
 }
 
+test_that("db_store_metadata does not accept invalid on_conflict", {
+  expect_error(db_store_ts_metadata("con",
+                                    "stuff",
+                                    on_conflict = "call the police"),
+               "one of")
+})
+
 # test storing md localized -----------------------------------------------
 context("localized metadata")
 
@@ -57,13 +64,13 @@ test_that("is passes correct args to db_call_function unlocalized", {
                            ),
                            valid_from = "2020-01-01",
                            schema = "schema",
-                           on_conflict = "doggy")
+                           on_conflict = "overwrite")
 
       expect_args(fake_db_call_function,
                   1,
                   "con",
                   "md_unlocal_upsert",
-                  list(as.Date("2020-01-01"), "doggy"),
+                  list(as.Date("2020-01-01"), "overwrite"),
                   "schema")
     }
   )
@@ -192,7 +199,8 @@ test_with_fresh_db(con, "db_store_ts_metadata localized can add fields", {
   db_store_ts_metadata(con,
                        create_tsmeta(ts1 = list(field2 = 3)),
                        valid_from = "2020-01-01",
-                       locale = "de")
+                       locale = "de",
+                       on_conflict = "update")
 
   result <- dbGetQuery(con, "SELECT ts_key, validity, locale, metadata
                        FROM timeseries.metadata_localized
@@ -211,7 +219,8 @@ test_with_fresh_db(con, "db_store_ts_metadata localized can override fields", {
   db_store_ts_metadata(con,
                        create_tsmeta(ts1 = list(field = "new_value")),
                        valid_from = "2020-01-01",
-                       locale = "de")
+                       locale = "de",
+                       on_conflict = "update")
 
   result <- dbGetQuery(con, "SELECT ts_key, validity, locale, metadata
                        FROM timeseries.metadata_localized
@@ -219,6 +228,26 @@ test_with_fresh_db(con, "db_store_ts_metadata localized can override fields", {
   expect_equal(
     result,
     meta_fixture_df("ts1", "2020-01-01", '{"field": "new_value"}', "de")
+  )
+})
+
+test_with_fresh_db(con, "db_store_ts_metadata localized can overwrite records", {
+  db_store_ts_metadata(con,
+                       create_tsmeta(ts1 = list(field = "value")),
+                       valid_from = "2020-01-01",
+                       locale = "de")
+  db_store_ts_metadata(con,
+                       create_tsmeta(ts1 = list(other_field = 23)),
+                       valid_from = "2020-01-01",
+                       locale = "de",
+                       on_conflict = "overwrite")
+
+  result <- dbGetQuery(con, "SELECT ts_key, validity, locale, metadata
+                       FROM timeseries.metadata_localized
+                       WHERE ts_key = 'ts1'")
+  expect_equal(
+    result,
+    meta_fixture_df("ts1", "2020-01-01", '{"other_field": 23}', "de")
   )
 })
 
@@ -292,13 +321,13 @@ test_that("is passes correct args to db_call_function localized", {
                            valid_from = "2020-01-01",
                            schema = "schema",
                            locale = "de",
-                           on_conflict = "kittycat")
+                           on_conflict = "overwrite")
 
       expect_args(fake_db_call_function,
                   1,
                   "con",
                   "md_local_upsert",
-                  list(as.Date("2020-01-01"), "kittycat"),
+                  list(as.Date("2020-01-01"), "overwrite"),
                   "schema")
     }
   )
@@ -417,7 +446,8 @@ test_with_fresh_db(con, "db_store_ts_metadata unlocalized can add fields", {
                        "2020-01-01")
   db_store_ts_metadata(con,
                        create_tsmeta(ts1 = list(field2 = 3)),
-                       "2020-01-01")
+                       "2020-01-01",
+                       on_conflict = "update")
 
   result <- dbGetQuery(con, "SELECT ts_key, validity, metadata
                        FROM timeseries.metadata
@@ -434,7 +464,8 @@ test_with_fresh_db(con, "db_store_ts_metadata unlocalized can override fields", 
                        "2020-01-01")
   db_store_ts_metadata(con,
                        create_tsmeta(ts1 = list(field = "new_value")),
-                       "2020-01-01")
+                       "2020-01-01",
+                       on_conflict = "update")
 
   result <- dbGetQuery(con, "SELECT ts_key, validity, metadata
                        FROM timeseries.metadata
@@ -442,6 +473,24 @@ test_with_fresh_db(con, "db_store_ts_metadata unlocalized can override fields", 
   expect_equal(
     result,
     meta_fixture_df("ts1", "2020-01-01", '{"field": "new_value"}')
+  )
+})
+
+test_with_fresh_db(con, "db_store_ts_metadata unlocalized can override fields", {
+  db_store_ts_metadata(con,
+                       create_tsmeta(ts1 = list(field = "value")),
+                       "2020-01-01")
+  db_store_ts_metadata(con,
+                       create_tsmeta(ts1 = list(itger_vield = 23)), # It's an inside joke
+                       "2020-01-01",
+                       on_conflict = "overwrite")
+
+  result <- dbGetQuery(con, "SELECT ts_key, validity, metadata
+                       FROM timeseries.metadata
+                       WHERE ts_key = 'ts1'")
+  expect_equal(
+    result,
+    meta_fixture_df("ts1", "2020-01-01", '{"itger_vield": 23}')
   )
 })
 

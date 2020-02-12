@@ -139,6 +139,10 @@ db_store_ts_metadata <- function(con,
                                  locale = NULL,
                                  on_conflict = "update",
                                  schema = "timeseries") {
+  if(!on_conflict %in% c("update", "overwrite")) {
+    stop("on_conflict must be one of c(\"update\", \"overwrite\")")
+  }
+
   metadata <- lapply(metadata, toJSON, auto_unbox = TRUE, digits = NA)
 
   if(!is.null(locale)) {
