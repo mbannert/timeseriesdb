@@ -278,10 +278,7 @@ BEGIN
   SET
     metadata = timeseries.metadata.metadata || EXCLUDED.metadata,
     created_by = EXCLUDED.created_by,
-    created_at  = EXCLUDED.created_at; -- TODO: check if EXCLUDED already has the defaults!
-                                       --       otherwise use CURRENT_*
-                                       -- yeap, I just more or less c&ped the whole function... is this goot?
-
+    created_at  = EXCLUDED.created_at;
 
   SELECT array_agg(DISTINCT tmp.ts_key)
   FROM tmp_md_insert AS tmp
@@ -319,9 +316,7 @@ BEGIN
   SET
     metadata = timeseries.metadata_localized.metadata || EXCLUDED.metadata,
     created_by = EXCLUDED.created_by,
-    created_at  = EXCLUDED.created_at; -- TODO: check if EXCLUDED already has the defaults!
-                                       --       otherwise use CURRENT_*
-
+    created_at  = EXCLUDED.created_at;
 
   SELECT array_agg(DISTINCT tmp.ts_key)
   FROM tmp_md_insert AS tmp
