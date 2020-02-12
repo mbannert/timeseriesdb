@@ -42,6 +42,18 @@ storeTimeSeries <- function(con,
     series <- char_series
   }
   
+  unames <- unique(names(li))
+  if(length(unames) < length(li)) {
+    warning("Duplicate names in list, using only the first of each!");
+    li <- li[unames]
+  }
+  
+  useries <- unique(series)
+  if(length(useries) < length(series)) {
+    warning("Duplicate elements in series, using each only once!");
+    series <- useries
+  }
+  
   # subset 
   li <- li[series]
   # avoid overwrite totally, 
