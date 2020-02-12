@@ -88,7 +88,7 @@ as.tsmeta.tsmeta <- identity
 print.meta <- function(x, ...) {
   if(length(x) > 0) {
     atts <- attributes(x)
-    cat("Metadata\n")
+    cat("Object of class meta\n")
     n <- names(x)
     name_lengths <- sapply(n, nchar)
     max_name_length <- max(name_lengths)
@@ -96,17 +96,17 @@ print.meta <- function(x, ...) {
       cat(sprintf("%s%s: %s\n", i, paste(rep(" ", max_name_length - name_lengths[i]), collapse = ""), x[[i]]))
     }
   } else {
-    cat("No metadata\n")
+    cat("Empty object of class meta\n")
   }
 }
 
 #' @export
 print.tsmeta <- function(x, ...) {
   if(length(x) > 0) {
-    cat("A tsmeta object\n")
+    cat("Object of class tsmeta\n")
     print(unclass(x))
   } else {
-    cat(sprintf("An empty tsmeta object\n"))
+    cat(sprintf("Empty object of class tsmeta\n"))
   }
 }
 
