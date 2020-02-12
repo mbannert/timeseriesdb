@@ -254,7 +254,7 @@ BEGIN
 END;
 $$ LANGUAGE PLPGSQL;
 
-CREATE FUNCTION timeseries.md_unlocal_upsert(validity_in DATE)
+CREATE FUNCTION timeseries.md_unlocal_upsert(validity_in DATE, on_conflict TEXT)
 RETURNS JSONB
 AS $$
 DECLARE
@@ -276,7 +276,9 @@ BEGIN
   AND (v_invalid_keys IS NULL OR NOT tmp.ts_key = ANY(v_invalid_keys))
   ON CONFLICT (ts_key, validity) DO UPDATE
   SET
-    metadata = timeseries.metadata.metadata || EXCLUDED.metadata,
+    metadata = CASE WHEN on_conflict = 'update' THEN timeseries.metadata.metadata || EXCLUDED.metadata
+                    WHEN on_conflict = 'overwrite' THEN EXCLUDED.metadata
+                    ELSE timeseries.metadata.metadata END,
     created_by = EXCLUDED.created_by,
     created_at  = EXCLUDED.created_at;
 
@@ -292,7 +294,7 @@ END;
 $$ LANGUAGE PLPGSQL;
 
 
-CREATE FUNCTION timeseries.md_local_upsert(validity_in DATE)
+CREATE FUNCTION timeseries.md_local_upsert(validity_in DATE, on_conflict TEXT)
 RETURNS JSON
 AS $$
 DECLARE
@@ -314,7 +316,9 @@ BEGIN
   AND (v_invalid_keys IS NULL OR NOT tmp.ts_key = ANY(v_invalid_keys))
   ON CONFLICT (ts_key, locale, validity) DO UPDATE
   SET
-    metadata = timeseries.metadata_localized.metadata || EXCLUDED.metadata,
+    metadata = CASE WHEN on_conflict = 'update' THEN timeseries.metadata_localized.metadata || EXCLUDED.metadata
+                    WHEN on_conflict = 'overwrite' THEN EXCLUDED.metadata
+                    ELSE timeseries.metadata_localized.metadata END,
     created_by = EXCLUDED.created_by,
     created_at  = EXCLUDED.created_at;
 

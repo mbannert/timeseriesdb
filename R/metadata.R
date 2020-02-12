@@ -123,6 +123,7 @@ print.tsmeta <- function(x, ...) {
 #' @param metadata tsmeta The metadata to be stored
 #' @param locale character What language to store the data as. If locale is NULL (default)
 #' the metadata is stored without associated language information
+#' @param on_conflict "update": add new fields and update existing ones, "overwrite": complerely replace existing record
 #' @param schema character name of the schema. Defaults to 'timeseries'.
 #'
 #' @return
@@ -136,6 +137,7 @@ db_store_ts_metadata <- function(con,
                                  metadata,
                                  valid_from,
                                  locale = NULL,
+                                 on_conflict = "update",
                                  schema = "timeseries") {
   metadata <- lapply(metadata, toJSON, auto_unbox = TRUE, digits = NA)
 
@@ -159,7 +161,7 @@ db_store_ts_metadata <- function(con,
 
     db_return <- db_call_function(con,
                                   "md_local_upsert",
-                                  list(as.Date(valid_from)),
+                                  list(as.Date(valid_from), on_conflict),
                                   schema = schema)
   } else {
     md_table <- data.frame(
@@ -179,7 +181,7 @@ db_store_ts_metadata <- function(con,
 
     db_return <- db_call_function(con,
                                   "md_unlocal_upsert",
-                                  list(as.Date(valid_from)),
+                                  list(as.Date(valid_from), on_conflict),
                                   schema = schema)
   }
 

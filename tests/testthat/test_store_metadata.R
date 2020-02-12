@@ -56,13 +56,14 @@ test_that("is passes correct args to db_call_function unlocalized", {
                              )
                            ),
                            valid_from = "2020-01-01",
-                           schema = "schema")
+                           schema = "schema",
+                           on_conflict = "doggy")
 
       expect_args(fake_db_call_function,
                   1,
                   "con",
                   "md_unlocal_upsert",
-                  list(as.Date("2020-01-01")),
+                  list(as.Date("2020-01-01"), "doggy"),
                   "schema")
     }
   )
@@ -290,13 +291,14 @@ test_that("is passes correct args to db_call_function localized", {
                            ),
                            valid_from = "2020-01-01",
                            schema = "schema",
-                           locale = "de")
+                           locale = "de",
+                           on_conflict = "kittycat")
 
       expect_args(fake_db_call_function,
                   1,
                   "con",
                   "md_local_upsert",
-                  list(as.Date("2020-01-01")),
+                  list(as.Date("2020-01-01"), "kittycat"),
                   "schema")
     }
   )
