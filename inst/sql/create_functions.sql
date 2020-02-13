@@ -123,26 +123,26 @@ END;
 $$ LANGUAGE PLPGSQL;
 
 
-
-
-
 CREATE FUNCTION timeseries.insert_from_tmp()
 RETURNS JSON
 AS $$
 DECLARE
-  v_invalid_keys JSON;
+  v_invalid_keys TEXT[];
 BEGIN
-  SELECT json_agg(DISTINCT tmp_ts_updates.ts_key)
+  SELECT array_agg(DISTINCT tmp.ts_key)
   INTO v_invalid_keys
-  FROM tmp_ts_updates
-  INNER JOIN timeseries.timeseries_main
-  ON tmp_ts_updates.ts_key = timeseries.timeseries_main.ts_key
-  AND tmp_ts_updates.validity <= timeseries.timeseries_main.validity;
-
-  IF json_array_length(v_invalid_keys) > 0 THEN
+  FROM tmp_ts_updates AS tmp
+  INNER JOIN timeseries.timeseries_main AS main
+  ON tmp.ts_key = main.ts_key
+  AND tmp.validity < main.validity;
+  
+  -- IMPORTANT!!!
+  -- When converting this to a warning, make sure to delete
+  -- invalid keys from update table, elsewise updating the past is possible!
+  IF array_length(v_invalid_keys, 1) > 0 THEN
     RETURN json_build_object('status', 'failure',
                              'reason', 'keys with invalid vintages',
-                             'offending_keys', v_invalid_keys);
+                             'offending_keys', to_json(v_invalid_keys));
   END IF;
 
   -- after this insert the set_id is 'default' because we don't want a set parameter in our
@@ -161,13 +161,25 @@ BEGIN
 
   -- Main insert
   INSERT INTO timeseries.timeseries_main(ts_key, validity, coverage, release_date, ts_data, access)
-  SELECT ts_key, COALESCE(validity, CURRENT_DATE), coverage, COALESCE(release_date, CURRENT_TIMESTAMP), ts_data, access
-  FROM tmp_ts_updates;
-
+  SELECT tmp.ts_key, COALESCE(tmp.validity, CURRENT_DATE), tmp.coverage, COALESCE(tmp.release_date, CURRENT_TIMESTAMP), tmp.ts_data, tmp.access
+  FROM tmp_ts_updates AS tmp
+  LEFT JOIN timeseries.timeseries_main AS main
+  ON tmp.ts_key = main.ts_key
+  AND tmp.validity = main.validity
+  ON CONFLICT (ts_key, validity) DO UPDATE
+  SET
+    coverage = EXCLUDED.coverage,
+    release_date = EXCLUDED.release_date,
+    created_by = EXCLUDED.created_by,
+    created_at = EXCLUDED.created_at,
+    ts_data = EXCLUDED.ts_data;
+  
   -- All went well
   RETURN '{"status": "ok", "reason": "the world is full of rainbows"}'::JSON;
 END;
-$$ LANGUAGE PLPGSQL;
+$$ LANGUAGE PLPGSQL
+-- Read this tho: https://www.cybertec-postgresql.com/en/abusing-security-definer-functions/
+SECURITY DEFINER;
 
 CREATE FUNCTION timeseries.create_read_tmp_regex(pattern TEXT)
 RETURNS VOID
