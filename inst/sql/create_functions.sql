@@ -41,50 +41,56 @@ $$ LANGUAGE PLPGSQL;
 
 
 
-CREATE FUNCTION timeseries.collection_remove()
+CREATE FUNCTION timeseries.collection_remove(col_name TEXT, col_owner TEXT)
 RETURNS JSON
 AS $$
 DECLARE
-  result JSON;
+  v_id UUID;
+  v_removed_keys TEXT[];
+  v_collection_deleted BOOLEAN;
 BEGIN
-  CREATE TEMP TABLE removed_keys (ts_key TEXT PRIMARY KEY) ON COMMIT DROP;
-  CREATE TEMP TABLE removed_collect (id TEXT PRIMARY KEY) ON COMMIT DROP;
+  SELECT id FROM timeseries.collections
+  WHERE name = col_name
+  AND owner = col_owner
+  INTO v_id;
 
-  WITH del_q AS (
+  IF v_id IS NULL THEN
+    RETURN json_build_object('status', 'error',
+                             'message', 'The set/user combination does not exist!');
+  END IF;
+
+  -- Leaving this as is for possible regex option in the future
+  -- Otherwise the removed keys are already known
+  WITH del_k AS (
     DELETE FROM timeseries.collect_catalog cc
     USING tmp_collection_remove rm
     WHERE cc.ts_key = rm.ts_key
+    AND cc.id = v_id
     RETURNING rm.ts_key
   )
-  INSERT INTO removed_keys
-  SELECT ts_key FROM del_q;
+  SELECT array_agg(DISTINCT ts_key)
+  FROM del_k
+  INTO v_removed_keys;
 
-  WITH del_collect AS (
   -- 'der letzte macht das licht aus'
   -- keeping an entirely empty set makes no sense,
   -- hence we delete a set that does not contain
   -- any series after removing keys.
-    DELETE FROM timeseries.collections c
-    USING tmp_collection_remove r
-    WHERE c.id = r.c_id
-    AND NOT EXISTS(SELECT 1 FROM timeseries.collect_catalog
-    WHERE id IN (SELECT DISTINCT(r.c_id) FROM tmp_collection_remove r))
-    RETURNING c.id
-  )
-  INSERT INTO removed_collect
-  SELECT DISTINCT(id) FROM del_collect;
+  IF NOT EXISTS (SELECT 1 FROM timeseries.collect_catalog WHERE id = v_id) THEN
+    DELETE FROM timeseries.collections
+    WHERE id = v_id;
 
+    v_collection_deleted := true;
+  END IF;
 
-  SELECT json_build_object('number_of_removed_keys', count(k.ts_key),
-                           'removed_keys', json_agg(k.ts_key),
-                           'removed_collections', json_agg(DISTINCT(c.id)))
-  INTO result
-  FROM removed_keys k
-  -- this is needed cause a comma separated FROM is basically
-  -- an inner join which does not work with no key to join on.
-  LEFT JOIN removed_collect c ON(TRUE);
-
-  RETURN result;
+  IF v_collection_deleted = true THEN
+    RETURN json_build_object('status', 'notice',
+                             'message', 'The collection was also removed because became empty.',
+                             'removed_collection', to_json(v_id));
+  ELSE
+    RETURN json_build_object('status', 'ok',
+                             'message', 'Keys successfully removed from the collection.');
+  END IF;
 END;
 $$ LANGUAGE PLPGSQL;
 

@@ -79,3 +79,72 @@ test_with_fresh_db(con, "db_collection_add add new collection & keys", {
     stringsAsFactors = FALSE
   ))
 })
+
+
+# db_collect_remove -------------------------------------------------------
+
+test_with_fresh_db(con, "db_collection_remove removing some keys returns ok", {
+  result <- db_collection_remove(con,
+                                 collection_name = "tests first",
+                                 keys = "ts1",
+                                 user = "test")
+  expect_is(result, "list")
+  expect_named(result, c("status", "message"))
+  expect_equal(result$status, "ok")
+})
+
+test_with_fresh_db(con, "db_collection_remove warns if combo not found", {
+  expect_error(db_collection_remove(con,
+                                      collection_name = "not a collection",
+                                      keys = c("does", "it", "matter?"),
+                                      user = "alexandra_maine"), "not exist")
+})
+
+test_with_fresh_db(con, "db_collection_remove also removing collection", {
+  result <- db_collection_remove(con,
+                                 collection_name = "tests second",
+                                 keys = c("ts4", "ts5"),
+                                 user = "test")
+
+  expect_is(result, "list")
+  expect_named(result, c("status", "message", "removed_collection"))
+  expect_equal(result$status, "notice")
+})
+
+test_with_fresh_db(con, "db_collection_remove state", {
+  db_collection_remove(con,
+                       collection_name = "tests first",
+                       keys = c("ts1"),
+                       user = "test")
+
+  result <- dbGetQuery(con, "SELECT ts_key FROM timeseries.collect_catalog
+                             JOIN timeseries.collections
+                             ON timeseries.collect_catalog.id = timeseries.collections.id
+                             AND name = 'tests first'")
+
+  expect_setequal(result$ts_key, c("ts2", "ts3"))
+
+  result_collections <- dbGetQuery(con, "SELECT 1 FROM timeseries.collections
+                                         WHERE name = 'tests first'")
+
+  expect_equal(nrow(result_collections), 1)
+})
+
+test_with_fresh_db(con, "db_collection_remove with remove collection state", {
+  db_collection_remove(con,
+                       collection_name = "tests first",
+                       keys = c("ts1", "ts2", "ts3"),
+                       user = "test")
+
+  result <- dbGetQuery(con, "SELECT ts_key FROM timeseries.collect_catalog
+                       JOIN timeseries.collections
+                       ON timeseries.collect_catalog.id = timeseries.collections.id
+                       AND name = 'tests first'")
+
+  expect_equal(nrow(result), 0)
+
+  result_collections <- dbGetQuery(con, "SELECT 1 FROM timeseries.collections
+                                   WHERE name = 'tests first'")
+
+  expect_equal(nrow(result_collections), 0)
+})
