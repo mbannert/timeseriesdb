@@ -31,85 +31,36 @@ as.meta <- function(x) {
   }
 }
 
-# tsmeta.dt ---------------------------------------------------------------
+# tsmeta -------------------------------------------------------------
+
 
 #' @export
-tsmeta.dt <- function(...) {
-  as.tsmeta.dt(data.table(...))
+# TODO: check ... (must be named, maybe cover list case)
+create_tsmeta <- function(...) {
+  as.tsmeta(list(...))
 }
 
 #' @export
-as.tsmeta.dt <- function(meta) {
-  UseMethod("as.tsmeta.dt")
+as.tsmeta <- function(meta) {
+  UseMethod("as.tsmeta")
 }
 
 #' @export
-as.tsmeta.dt.tsmeta.list <- function(meta_list) {
-  if(length(meta_list) > 0) {
-    meta_lengths <- sapply(meta_list, length)
-    empty_metas <- meta_lengths == 0
-
-    out <- rbindlist(meta_list, fill = TRUE, idcol = TRUE)[.(names(meta_list)), on = .(.id)]
-    minlength <- min(meta_lengths[!empty_metas])
-    if(ncol(out) != (minlength + 1)) {
-      warning("Fill-in occurred, not all fields were present in all meta data items!")
-    }
-    setnames(out, ".id", "ts_key")
-    class(out) <- c("tsmeta.dt", class(out))
-    out
-  } else {
-    tsmeta.dt()
-  }
-}
-
-#' @export
-as.tsmeta.dt.list <- function(meta) {
-  as.tsmeta.dt(as.tsmeta.list(meta))
-}
-
-#' @export
-as.tsmeta.dt.data.frame <- function(meta) {
-  meta <- as.data.table(meta)
-  if(nrow(meta)) {
-    setcolorder(meta,"ts_key")
-  }
-  class(meta) <- c("tsmeta.dt", class(meta))
-  meta
-}
-
-#' @export
-as.tsmeta.dt.tsmeta.dt <- identity
-
-
-
-# tsmeta.list -------------------------------------------------------------
-
-
-#' @export
-tsmeta.list <- function(...) {
-  as.tsmeta.list(list(...))
-}
-
-#' @export
-as.tsmeta.list <- function(meta) {
-  UseMethod("as.tsmeta.list")
-}
-
-#' @export
-as.tsmeta.list.tsmeta.dt <- function(meta) {
+# TODO: DO these need to be exported or not? still confused...
+as.tsmeta.data.table <- function(meta) {
   if(nrow(meta) > 0) {
     out <- meta[, .(md = list(as.list(.SD))), by = ts_key][, md]
     names(out) <- meta$ts_key
     # Remove NA elements from list
     out <- lapply(out, function(x){x[!is.na(x)]})
-    as.tsmeta.list.list(out)
+    as.tsmeta.list(out)
   } else {
-    tsmeta.list()
+    create_tsmeta()
   }
 }
 
 #' @export
-as.tsmeta.list.list <- function(meta) {
+as.tsmeta.list <- function(meta) {
   if(get_list_depth(meta) != 2 && length(meta) > 0) {
     stop("A meta list must have exactly depth 2!")
   }
@@ -117,18 +68,18 @@ as.tsmeta.list.list <- function(meta) {
     class(x) <- c("meta", class(x))
     x
   })
-  class(meta) <- c("tsmeta.list", class(meta))
+  class(meta) <- c("tsmeta", class(meta))
   meta
 }
 
 #' @export
-as.tsmeta.list.data.frame <- function(meta) {
-  as.tsmeta.list(as.tsmeta.dt(meta))
+as.tsmeta.data.frame <- function(meta) {
+  as.tsmeta.list(as.data.table(meta))
 }
 
 
 #' @export
-as.tsmeta.list.tsmeta.list <- identity
+as.tsmeta.tsmeta <- identity
 
 
 # printers ----------------------------------------------------------------
@@ -137,7 +88,7 @@ as.tsmeta.list.tsmeta.list <- identity
 print.meta <- function(x, ...) {
   if(length(x) > 0) {
     atts <- attributes(x)
-    cat(sprintf("Metadata%s\n", ifelse(!is.null(atts$locale), sprintf(" (%s)", atts$locale), "")))
+    cat("Object of class meta\n")
     n <- names(x)
     name_lengths <- sapply(n, nchar)
     max_name_length <- max(name_lengths)
@@ -145,30 +96,17 @@ print.meta <- function(x, ...) {
       cat(sprintf("%s%s: %s\n", i, paste(rep(" ", max_name_length - name_lengths[i]), collapse = ""), x[[i]]))
     }
   } else {
-    cat("No metadata\n")
-  }
-}
-
-
-#' @export
-print.tsmeta.dt <- function(x, ...) {
-  atts <- attributes(x)
-  if(nrow(x) > 0) {
-    cat(sprintf("A tsmeta.dt object%s\n", ifelse(!is.null(atts$locale), sprintf(" (%s)", atts$locale), "")))
-    print(as.data.table(x))
-  } else {
-    cat(sprintf("An empty tsmeta.dt object\n"))
+    cat("Empty object of class meta\n")
   }
 }
 
 #' @export
-print.tsmeta.list <- function(x, ...) {
-  atts <- attributes(x)
+print.tsmeta <- function(x, ...) {
   if(length(x) > 0) {
-    cat(sprintf("A tsmeta.list object%s\n", ifelse(!is.null(atts$locale), sprintf(" (%s)", atts$locale), "")))
+    cat("Object of class tsmeta\n")
     print(unclass(x))
   } else {
-    cat(sprintf("An empty tsmeta.list object\n"))
+    cat(sprintf("Empty object of class tsmeta\n"))
   }
 }
 
@@ -177,15 +115,7 @@ print.tsmeta.list <- function(x, ...) {
 
 # writers -----------------------------------------------------------------
 
-db_store_ts_metadata <- function(con,
-                                 metadata,
-                                 valid_from = NULL,
-                                 locale = NULL,
-                                 schema = "timeseries") {
-  UseMethod("db_store_ts_metadata", metadata)
-}
-
-#' Store timeseries metadata
+#' Store Time Series Metadata to PostgreSQL
 #'
 #' to be written: explanation of what is metadata, localized vs. unlocalized
 #'
@@ -193,6 +123,7 @@ db_store_ts_metadata <- function(con,
 #' @param metadata tsmeta The metadata to be stored
 #' @param locale character What language to store the data as. If locale is NULL (default)
 #' the metadata is stored without associated language information
+#' @param on_conflict "update": add new fields and update existing ones, "overwrite": complerely replace existing record
 #' @param schema character name of the schema. Defaults to 'timeseries'.
 #'
 #' @return
@@ -202,11 +133,16 @@ db_store_ts_metadata <- function(con,
 #' @export
 #'
 #' @examples
-db_store_ts_metadata.tsmeta.list <- function(con,
-                                             metadata,
-                                             valid_from,
-                                             locale = NULL,
-                                             schema = "timeseries") {
+db_store_ts_metadata <- function(con,
+                                 metadata,
+                                 valid_from,
+                                 locale = NULL,
+                                 on_conflict = "update",
+                                 schema = "timeseries") {
+  if(!on_conflict %in% c("update", "overwrite")) {
+    stop("on_conflict must be one of c(\"update\", \"overwrite\")")
+  }
+
   metadata <- lapply(metadata, toJSON, auto_unbox = TRUE, digits = NA)
 
   if(!is.null(locale)) {
@@ -229,7 +165,7 @@ db_store_ts_metadata.tsmeta.list <- function(con,
 
     db_return <- db_call_function(con,
                                   "md_local_upsert",
-                                  list(as.Date(valid_from)),
+                                  list(as.Date(valid_from), on_conflict),
                                   schema = schema)
   } else {
     md_table <- data.frame(
@@ -249,7 +185,7 @@ db_store_ts_metadata.tsmeta.list <- function(con,
 
     db_return <- db_call_function(con,
                                   "md_unlocal_upsert",
-                                  list(as.Date(valid_from)),
+                                  list(as.Date(valid_from), on_conflict),
                                   schema = schema)
   }
 
@@ -264,32 +200,19 @@ db_store_ts_metadata.tsmeta.list <- function(con,
   out
 }
 
-# TODO: Figger out how to properly document these. @rdname?
-db_store_ts_metadata.tsmeta.dt <- function(con,
-                                           metadata,
-                                           valid_from = NULL,
-                                           locale = NULL,
-                                           schema = "timeseries") {
-  db_store_ts_metadata.tsmeta.list(con,
-                                   as.tsmeta.list(metadata),
-                                   valid_from,
-                                   locale,
-                                   schema)
-}
-
 
 # readers -----------------------------------------------------------------
 
-#' Read time series metadata
+#' Read Time Series Metadata
 #'
-#'
+#' Read meta information given a vector of time series identifiers.
 #'
 #' @param con RPostgres database connection
 #' @param ts_keys Character vector of ts keys to read metadata for. If regex is TRUE, ts_keys is used as a pattern.
 #' @param valid_on Date for which to read the metadata. If NA the most recent version is read.
-#' @param regex Automatically find time series with keys matching the pattern in ts_keys
+#' @param regex boolean should ts_keys allow for regular expressions.
+#' Defaults to FALSE.
 #' @param locale What language to read metadata for. If NULL, unlocalized metadata is read.
-#' @param as.dt Should a tsmeta.dt be returned? By default db_read_ts_metadata return a tsmeta.list
 #' @param schema character name of the schema. Defaults to 'timeseries'.
 #'
 #' @importFrom jsonlite fromJSON
@@ -300,7 +223,6 @@ db_read_ts_metadata <- function(con,
                                 valid_on = NA,
                                 regex = FALSE,
                                 locale = NULL,
-                                as.dt = FALSE,
                                 schema = "timeseries") {
   db_tmp_read(
     con,
@@ -324,33 +246,56 @@ db_read_ts_metadata <- function(con,
                                   schema = schema)
   }
 
-  if(as.dt) {
-    out <- fromJSON(paste0("[",
-                           paste(db_return$metadata, collapse = ","),
-                           "]"),
-                    simplifyDataFrame = TRUE)
-    out <- cbind(data.table(ts_key = db_return$ts_key),
-                 out)
-    out <- as.tsmeta.dt(out)
-
-    # if is.null(locale) this will not chante the attrs
-    attributes(out) <- c(attributes(out), list(locale = locale))
-  } else {
-    out <- fromJSON(paste0("[",
-                           paste(db_return$metadata, collapse = ","),
-                           "]"),
-                    simplifyDataFrame = FALSE)
-    names(out) <- db_return$ts_key
-    out <- as.tsmeta.list(out)
-
-    if(!is.null(locale)) {
-      attributes(out) <- c(attributes(out), list(locale = locale))
-
-      for(i in seq_along(out)) {
-        attributes(out[[i]]) <- c(attributes(out[[i]]), list(locale = locale))
-      }
-    }
-  }
+  out <- fromJSON(paste0("[",
+                         paste(db_return$metadata, collapse = ","),
+                         "]"),
+                  simplifyDataFrame = FALSE)
+  names(out) <- db_return$ts_key
+  out <- as.tsmeta.list(out)
 
   out
+}
+
+#' Get Latest Validity for Metadata of a Given Time Series
+#' 
+#' Because metadata are only loosely coupled with their respective time series
+#' in order to keep metadata records constant over multiple version of
+#' time series if the data description does not change, it comes in 
+#' handy to find out the last time meta information was updated. This function 
+#' automagickally finds exactly this date. 
+#'
+#' @param con
+#' @param ts_keys character vector of time series identifiers.
+#' @param regex boolean should ts_keys allow for regular expressions.
+#' Defaults to FALSE.
+#' @param locale What language to read metadata for. If NULL, unlocalized metadata is read.
+#' @param schema character name of the schema. Defaults to 'timeseries'.
+#'
+#' @return
+#' @export
+#'
+#' @examples
+db_get_metadata_validity <- function(con,
+                                 ts_keys,
+                                 regex = FALSE,
+                                 locale = NULL,
+                                 schema = "timeseries") {
+  db_tmp_read(
+    con,
+    ts_keys,
+    regex,
+    schema)
+
+  if(is.null(locale)) {
+    out <- db_call_function(con,
+                     "get_latest_vintages_metadata",
+                     schema = schema)
+  } else {
+    out <- db_call_function(con,
+                     "get_latest_vintages_metadata_localized",
+                     list(locale),
+                     schema = schema)
+  }
+
+  as.data.table(out)
 }

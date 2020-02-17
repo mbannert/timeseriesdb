@@ -162,26 +162,26 @@ END;
 $$ LANGUAGE PLPGSQL;
 
 
-
-
-
 CREATE FUNCTION timeseries.insert_from_tmp()
 RETURNS JSON
 AS $$
 DECLARE
-  v_invalid_keys JSON;
+  v_invalid_keys TEXT[];
 BEGIN
-  SELECT json_agg(DISTINCT tmp_ts_updates.ts_key)
+  SELECT array_agg(DISTINCT tmp.ts_key)
   INTO v_invalid_keys
-  FROM tmp_ts_updates
-  INNER JOIN timeseries.timeseries_main
-  ON tmp_ts_updates.ts_key = timeseries.timeseries_main.ts_key
-  AND tmp_ts_updates.validity <= timeseries.timeseries_main.validity;
-
-  IF json_array_length(v_invalid_keys) > 0 THEN
+  FROM tmp_ts_updates AS tmp
+  INNER JOIN timeseries.timeseries_main AS main
+  ON tmp.ts_key = main.ts_key
+  AND tmp.validity < main.validity;
+  
+  -- IMPORTANT!!!
+  -- When converting this to a warning, make sure to delete
+  -- invalid keys from update table, elsewise updating the past is possible!
+  IF array_length(v_invalid_keys, 1) > 0 THEN
     RETURN json_build_object('status', 'failure',
                              'reason', 'keys with invalid vintages',
-                             'offending_keys', v_invalid_keys);
+                             'offending_keys', to_json(v_invalid_keys));
   END IF;
 
   -- after this insert the set_id is 'default' because we don't want a set parameter in our
@@ -200,13 +200,25 @@ BEGIN
 
   -- Main insert
   INSERT INTO timeseries.timeseries_main(ts_key, validity, coverage, release_date, ts_data, access)
-  SELECT ts_key, COALESCE(validity, CURRENT_DATE), coverage, COALESCE(release_date, CURRENT_TIMESTAMP), ts_data, access
-  FROM tmp_ts_updates;
-
+  SELECT tmp.ts_key, COALESCE(tmp.validity, CURRENT_DATE), tmp.coverage, COALESCE(tmp.release_date, CURRENT_TIMESTAMP), tmp.ts_data, tmp.access
+  FROM tmp_ts_updates AS tmp
+  LEFT JOIN timeseries.timeseries_main AS main
+  ON tmp.ts_key = main.ts_key
+  AND tmp.validity = main.validity
+  ON CONFLICT (ts_key, validity) DO UPDATE
+  SET
+    coverage = EXCLUDED.coverage,
+    release_date = EXCLUDED.release_date,
+    created_by = EXCLUDED.created_by,
+    created_at = EXCLUDED.created_at,
+    ts_data = EXCLUDED.ts_data;
+  
   -- All went well
   RETURN '{"status": "ok", "reason": "the world is full of rainbows"}'::JSON;
 END;
-$$ LANGUAGE PLPGSQL;
+$$ LANGUAGE PLPGSQL
+-- Read this tho: https://www.cybertec-postgresql.com/en/abusing-security-definer-functions/
+SECURITY DEFINER;
 
 CREATE FUNCTION timeseries.create_read_tmp_regex(pattern TEXT)
 RETURNS VOID
@@ -293,7 +305,7 @@ BEGIN
 END;
 $$ LANGUAGE PLPGSQL;
 
-CREATE FUNCTION timeseries.md_unlocal_upsert(validity_in DATE)
+CREATE FUNCTION timeseries.md_unlocal_upsert(validity_in DATE, on_conflict TEXT)
 RETURNS JSONB
 AS $$
 DECLARE
@@ -315,12 +327,11 @@ BEGIN
   AND (v_invalid_keys IS NULL OR NOT tmp.ts_key = ANY(v_invalid_keys))
   ON CONFLICT (ts_key, validity) DO UPDATE
   SET
-    metadata = timeseries.metadata.metadata || EXCLUDED.metadata,
+    metadata = CASE WHEN on_conflict = 'update' THEN timeseries.metadata.metadata || EXCLUDED.metadata
+                    WHEN on_conflict = 'overwrite' THEN EXCLUDED.metadata
+                    ELSE timeseries.metadata.metadata END,
     created_by = EXCLUDED.created_by,
-    created_at  = EXCLUDED.created_at; -- TODO: check if EXCLUDED already has the defaults!
-                                       --       otherwise use CURRENT_*
-                                       -- yeap, I just more or less c&ped the whole function... is this goot?
-
+    created_at  = EXCLUDED.created_at;
 
   SELECT array_agg(DISTINCT tmp.ts_key)
   FROM tmp_md_insert AS tmp
@@ -334,7 +345,7 @@ END;
 $$ LANGUAGE PLPGSQL;
 
 
-CREATE FUNCTION timeseries.md_local_upsert(validity_in DATE)
+CREATE FUNCTION timeseries.md_local_upsert(validity_in DATE, on_conflict TEXT)
 RETURNS JSON
 AS $$
 DECLARE
@@ -356,11 +367,11 @@ BEGIN
   AND (v_invalid_keys IS NULL OR NOT tmp.ts_key = ANY(v_invalid_keys))
   ON CONFLICT (ts_key, locale, validity) DO UPDATE
   SET
-    metadata = timeseries.metadata_localized.metadata || EXCLUDED.metadata,
+    metadata = CASE WHEN on_conflict = 'update' THEN timeseries.metadata_localized.metadata || EXCLUDED.metadata
+                    WHEN on_conflict = 'overwrite' THEN EXCLUDED.metadata
+                    ELSE timeseries.metadata_localized.metadata END,
     created_by = EXCLUDED.created_by,
-    created_at  = EXCLUDED.created_at; -- TODO: check if EXCLUDED already has the defaults!
-                                       --       otherwise use CURRENT_*
-
+    created_at  = EXCLUDED.created_at;
 
   SELECT array_agg(DISTINCT tmp.ts_key)
   FROM tmp_md_insert AS tmp
@@ -441,6 +452,31 @@ BEGIN
     ON rd.ts_key = md.ts_key
     AND md.validity <= valid_on
     AND md.locale = loc
+    ORDER BY rd.ts_key, md.validity DESC;
+END;
+$$ LANGUAGE PLPGSQL;
+
+CREATE FUNCTION timeseries.get_latest_vintages_metadata()
+RETURNS TABLE(ts_key TEXT, validity DATE)
+AS $$
+BEGIN
+  RETURN QUERY SELECT DISTINCT ON (rd.ts_key) rd.ts_key, md.validity
+    FROM tmp_ts_read_keys AS rd
+    JOIN timeseries.metadata AS md
+    ON rd.ts_key = md.ts_key
+    ORDER BY rd.ts_key, md.validity DESC;
+END;
+$$ LANGUAGE PLPGSQL;
+
+CREATE FUNCTION timeseries.get_latest_vintages_metadata_localized(locale_in TEXT)
+RETURNS TABLE(ts_key TEXT, validity DATE)
+AS $$
+BEGIN
+  RETURN QUERY SELECT DISTINCT ON (rd.ts_key) rd.ts_key, md.validity
+    FROM tmp_ts_read_keys AS rd
+    JOIN timeseries.metadata_localized AS md
+    ON rd.ts_key = md.ts_key
+    AND md.locale = locale_in
     ORDER BY rd.ts_key, md.validity DESC;
 END;
 $$ LANGUAGE PLPGSQL;
