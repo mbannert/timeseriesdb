@@ -41,11 +41,15 @@ db_collection_add <- function(con,
                  ts_key = "text")
   )
 
-  db_return <- db_call_function(con,
+  db_return <- fromJSON(db_call_function(con,
                                 "insert_collect_from_tmp",
-                                schema = schema)
+                                schema = schema))
 
-  fromJSON(db_return)
+  if(db_return$status == "warning") {
+    warning(db_return$message)
+  }
+
+  db_return
 }
 
 
