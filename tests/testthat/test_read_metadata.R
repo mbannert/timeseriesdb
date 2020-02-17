@@ -137,7 +137,7 @@ test_with_fresh_db(con, "reading via regex works", {
 # reading current edge ----------------------------------------------------
 
 test_with_fresh_db(con, "reading unlocalized edge", {
-  result <- db_get_metadata_edge(con, c("vts1"))
+  result <- db_get_metadata_validity(con, c("vts1"))
   expect_equal(result,
                data.table(
                  ts_key = "vts1",
@@ -146,7 +146,7 @@ test_with_fresh_db(con, "reading unlocalized edge", {
 })
 
 test_with_fresh_db(con, "reading unlocalized edge via regex", {
-  result <- db_get_metadata_edge(con, c("vts"), regex = TRUE)
+  result <- db_get_metadata_validity(con, c("vts"), regex = TRUE)
   expect_equal(result,
                data.table(
                  ts_key = c("vts1", "vts2"),
@@ -155,7 +155,7 @@ test_with_fresh_db(con, "reading unlocalized edge via regex", {
 })
 
 test_with_fresh_db(con, "reading localized edge", {
-  result <- db_get_metadata_edge(con, c("vts1"), locale = "de")
+  result <- db_get_metadata_validity(con, c("vts1"), locale = "de")
   expect_equal(result,
                data.table(
                  ts_key = "vts1",
@@ -164,7 +164,7 @@ test_with_fresh_db(con, "reading localized edge", {
 })
 
 test_with_fresh_db(con, "reading localized edge via regex", {
-  result <- db_get_metadata_edge(con, c("vts"), regex = TRUE, locale = "de")
+  result <- db_get_metadata_validity(con, c("vts"), regex = TRUE, locale = "de")
   expect_equal(result,
                data.table(
                  ts_key = c("vts1", "vts2"),

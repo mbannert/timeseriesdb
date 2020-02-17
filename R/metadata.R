@@ -115,7 +115,7 @@ print.tsmeta <- function(x, ...) {
 
 # writers -----------------------------------------------------------------
 
-#' Store timeseries metadata
+#' Store Time Series Metadata to PostgreSQL
 #'
 #' to be written: explanation of what is metadata, localized vs. unlocalized
 #'
@@ -203,16 +203,16 @@ db_store_ts_metadata <- function(con,
 
 # readers -----------------------------------------------------------------
 
-#' Read time series metadata
+#' Read Time Series Metadata
 #'
-#'
+#' Read meta information given a vector of time series identifiers.
 #'
 #' @param con RPostgres database connection
 #' @param ts_keys Character vector of ts keys to read metadata for. If regex is TRUE, ts_keys is used as a pattern.
 #' @param valid_on Date for which to read the metadata. If NA the most recent version is read.
-#' @param regex Automatically find time series with keys matching the pattern in ts_keys
+#' @param regex boolean should ts_keys allow for regular expressions.
+#' Defaults to FALSE.
 #' @param locale What language to read metadata for. If NULL, unlocalized metadata is read.
-#' @param as.dt Should a tsmeta.dt be returned? By default db_read_ts_metadata return a tsmeta.list
 #' @param schema character name of the schema. Defaults to 'timeseries'.
 #'
 #' @importFrom jsonlite fromJSON
@@ -256,19 +256,26 @@ db_read_ts_metadata <- function(con,
   out
 }
 
-#' Title
+#' Get Latest Validity for Metadata of a Given Time Series
+#' 
+#' Because metadata are only loosely coupled with their respective time series
+#' in order to keep metadata records constant over multiple version of
+#' time series if the data description does not change, it comes in 
+#' handy to find out the last time meta information was updated. This function 
+#' automagickally finds exactly this date. 
 #'
 #' @param con
-#' @param ts_keys
-#' @param regex
-#' @param locale
-#' @param schema
+#' @param ts_keys character vector of time series identifiers.
+#' @param regex boolean should ts_keys allow for regular expressions.
+#' Defaults to FALSE.
+#' @param locale What language to read metadata for. If NULL, unlocalized metadata is read.
+#' @param schema character name of the schema. Defaults to 'timeseries'.
 #'
 #' @return
 #' @export
 #'
 #' @examples
-db_get_metadata_edge <- function(con,
+db_get_metadata_validity <- function(con,
                                  ts_keys,
                                  regex = FALSE,
                                  locale = NULL,
