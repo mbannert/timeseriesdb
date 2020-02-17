@@ -97,10 +97,21 @@ AS $$
 DECLARE
   result JSON;
 BEGIN
+  IF NOT EXISTS SELECT 1 FROM timeseries.collections
+  WHERE name = collection_name
+  AND user = col_owner THEN
+  RETURN json_build_object('status', 'warning',
+                             'message', 'Collection cound not be found for this user.',
+                             'invalid_keys', to_jsonb(v_invalid_keys)); 
+  ELSE 
   DELETE FROM timeseries.collections CASCADE
   WHERE user = col_owner
   AND name = collection_name
-  RETURNING id
+  RETURNING id; 
+  RETURN
+  END IF;
+  
+  
 END;
 $$ LANGUAGE PLPGSQL;
 
