@@ -95,23 +95,24 @@ CREATE FUNCTION timeseries.collection_delete(collection_name TEXT,
 RETURNS JSON
 AS $$
 DECLARE
+  deleted_id UUID;
   result JSON;
 BEGIN
-  IF NOT EXISTS SELECT 1 FROM timeseries.collections
+  IF NOT EXISTS (SELECT 1 FROM timeseries.collections
   WHERE name = collection_name
-  AND user = col_owner THEN
+  AND owner = col_owner) THEN
   RETURN json_build_object('status', 'warning',
-                             'message', 'Collection cound not be found for this user.',
-                             'invalid_keys', to_jsonb(v_invalid_keys)); 
-  ELSE 
-  DELETE FROM timeseries.collections CASCADE
-  WHERE user = col_owner
-  AND name = collection_name
-  RETURNING id; 
-  RETURN
+                           'message', 'Collection cound not be found for this user.');
+  ELSE
+    DELETE FROM timeseries.collections CASCADE
+    WHERE user = col_owner
+    AND name = collection_name
+    RETURNING id
+    INTO deleted_id;
+
+    RETURN json_build_object('status', 'ok',
+                             'id', deleted_id);
   END IF;
-  
-  
 END;
 $$ LANGUAGE PLPGSQL;
 
@@ -138,7 +139,7 @@ AS $$
 DECLARE
   v_invalid_keys TEXT[];
 BEGIN
-  SELECT array_agg(DISTINCT tmp_collect_updates.ts_key)
+  SELECT array_agg(DISTINCT tmp.ts_key)
   FROM tmp_collect_updates AS tmp
   LEFT OUTER JOIN timeseries.catalog AS cat
   ON cat.ts_key = tmp.ts_key
@@ -174,7 +175,7 @@ BEGIN
   INNER JOIN timeseries.timeseries_main AS main
   ON tmp.ts_key = main.ts_key
   AND tmp.validity < main.validity;
-  
+
   -- IMPORTANT!!!
   -- When converting this to a warning, make sure to delete
   -- invalid keys from update table, elsewise updating the past is possible!
@@ -212,7 +213,7 @@ BEGIN
     created_by = EXCLUDED.created_by,
     created_at = EXCLUDED.created_at,
     ts_data = EXCLUDED.ts_data;
-  
+
   -- All went well
   RETURN '{"status": "ok", "reason": "the world is full of rainbows"}'::JSON;
 END;
