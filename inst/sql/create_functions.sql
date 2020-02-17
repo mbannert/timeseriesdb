@@ -101,7 +101,6 @@ BEGIN
   WHERE user = col_owner
   AND name = collection_name
   RETURNING id
-
 END;
 $$ LANGUAGE PLPGSQL;
 

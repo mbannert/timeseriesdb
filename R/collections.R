@@ -112,7 +112,6 @@ db_collection_delete <- function(con,
                                  user = Sys.info()['user'],
                                  schema = "timeseries"
                                  ){
-
   schema <- dbQuoteIdentifier(con, Id(schema = schema))
 
 }
