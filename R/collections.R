@@ -94,14 +94,34 @@ db_collection_remove <- function(con,
 }
 
 
+#' Remove an Entire Time Series Key Collection
+#'
+#' @param con PostgreSQL connection object created with RPostgres.
+#' @param collection_name character name of the collection
+#' @param user character name of the User. Defaults to current system user.
+#' @param schema character name of the schema. Defaults to 'timeseries'.
+#'
+#' @return
+#'
+#' @importFrom jsonlite fromJSON
+#' @export
 db_collection_delete <- function(con,
                                  collection_name,
                                  user = Sys.info()['user'],
                                  schema = "timeseries"
                                  ){
-  db_return <- db_call_function(con,
-                                "insert_collect_from_tmp",
-                                schema = schema)
+  db_return <- fromJSON(db_call_function(con,
+                                "collection_delete",
+                                list(collection_name, user),
+                                schema = schema))
+
+  # TODO: Discuss warning vs error esp wrt remove. remove treats this as error
+  # since the expected change CAN NOT be achieved while here it PROBABLY ALREADY IS achieved.
+  if(db_return$status == "warning") {
+    warning(db_return$message)
+  }
+
+  db_return
 }
 
 
