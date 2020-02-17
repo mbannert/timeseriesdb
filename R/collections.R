@@ -7,8 +7,10 @@
 #' @param schema character name of the schema. Defaults to 'timeseries'.
 #' @importFrom jsonlite fromJSON
 #' @export
-db_collection_add <- function(con, collection_name,
-                              keys, description = NA,
+db_collection_add <- function(con,
+                              collection_name,
+                              keys,
+                              description = NA,
                               user = Sys.info()['user'],
                               schema = "timeseries"){
   keys <- unique(keys)
