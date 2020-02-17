@@ -148,3 +148,59 @@ test_with_fresh_db(con, "db_collection_remove with remove collection state", {
 
   expect_equal(nrow(result_collections), 0)
 })
+
+
+# db_collection_delete ----------------------------------------------------
+
+test_with_fresh_db(con, "db_collection_delete returns ok", {
+  # In case anyone in the future should care: I wrote this with my eyes closed. o.Ô
+  result <- db_collection_delete(con,
+                                 collection_name = "tests first",
+                                 user = "test")
+
+  expect_is(result, "list")
+  expect_named(result, c("status", "message", "id"))
+  expect_equal(result$status, "ok")
+})
+
+test_with_fresh_db(con, "db_collection_delete warns if collection+user not found", {
+  expect_warning(db_collection_delete(con,
+                                      collection_name = "rubber duckie",
+                                      user = "The other Severin"), "not be found")
+})
+
+test_with_fresh_db(con, "db_collection_delete warning contents", {
+  result <- suppressWarnings(db_collection_delete(con,
+                                                  collection_name = "rubber duckie",
+                                                  user = "The other Severin"))
+
+  expect_is(result, "list")
+  expect_named(result, c("status", "message"))
+  expect_equal(result$status, "warning")
+})
+
+test_with_fresh_db(con, "db_collection_delete db state", {
+  out <- db_collection_delete(con,
+                       collection_name = "tests first",
+                       user = "test")
+
+  result_collections <- dbGetQuery(con, "SELECT * FROM timeseries.collections
+                                         WHERE name = 'tests first'")
+  expect_equal(nrow(result_collections), 0)
+
+  result_collect_catalog <- dbGetQuery(con, sprintf("SELECT * FROM timeseries.collect_catalog WHERE id = '%s'", out$id))
+
+  expect_equal(nrow(result_collect_catalog), 0)
+})
+
+test_with_fresh_db(con, "db_collection_delete with missing user+collection does nothing", {
+  db_collection_delete(con,
+                       collection_name = "xxx",
+                       user = "whoever")
+
+  result_collections <- dbGetQuery(con, "SELECT * FROM timeseries.collections")
+  expect_equal(nrow(result_collections), 3)
+
+  result_collect_catalog <- dbGetQuery(con, "SELECT * FROM timeseries.collect_catalog")
+  expect_equal(nrow(result_collect_catalog), 8)
+})
