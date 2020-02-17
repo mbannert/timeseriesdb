@@ -139,7 +139,7 @@ AS $$
 DECLARE
   v_invalid_keys TEXT[];
 BEGIN
-  SELECT array_agg(DISTINCT tmp.ts_key)
+  SELECT COALESCE(array_agg(DISTINCT tmp.ts_key), '{}'::TEXT[])
   FROM tmp_collect_updates AS tmp
   LEFT OUTER JOIN timeseries.catalog AS cat
   ON cat.ts_key = tmp.ts_key
