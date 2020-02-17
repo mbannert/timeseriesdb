@@ -314,6 +314,11 @@ prepare_db <- function(con,
                    DBI::Id(schema = "timeseries", table = "collections"),
                    collections,
                    append = TRUE)
+
+      dbWriteTable(con,
+                   DBI::Id(schema = "timeseries", table = "collect_catalog"),
+                   collect_catalog,
+                   append = TRUE)
     }
   }
 }
