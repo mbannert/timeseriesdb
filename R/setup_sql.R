@@ -2,7 +2,7 @@
 #' 
 #' Installs schema, uuid-ossp, btree_gist.
 #' 
-#' @param con PostgreSQL connection object
+#' @param con RPostgres connection object.
 #' @export
 setup_sql_extentions <- function(con, schema = "timeseries"){
   sql <- readLines(system.file("sql/create_extensions.sql",

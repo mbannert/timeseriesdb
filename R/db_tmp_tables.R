@@ -1,7 +1,7 @@
-#' Populate temporary ts_updates table with records
+#' Populate Temporary ts_updates table with records
 #' first properly formatting validity ranges
 #'
-#' @param con 
+#' @param con RPostgres connection object. 
 #' @param records 
 #' @param valid_from 
 #' @param release_date 

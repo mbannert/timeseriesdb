@@ -1,0 +1,17 @@
+---
+title: "Manage Official Statistics' Time Series Data with R and PostgreSQL"
+author: "Matthias Bannert"
+date: "`r Sys.Date()`"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{Manage Official Statistics' Time Series Data with R and PostgreSQL}
+  %\VignetteEngine{knitr::rmarkdown}
+  \usepackage[utf8]{inputenc}
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+
+

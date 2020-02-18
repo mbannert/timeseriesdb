@@ -119,14 +119,13 @@ print.tsmeta <- function(x, ...) {
 #'
 #' to be written: explanation of what is metadata, localized vs. unlocalized
 #'
-#' @param con RPostgres database connection
-#' @param metadata tsmeta The metadata to be stored
-#' @param locale character What language to store the data as. If locale is NULL (default)
-#' the metadata is stored without associated language information
-#' @param on_conflict "update": add new fields and update existing ones, "overwrite": complerely replace existing record
+#' @param con RPostgres database connection object.
+#' @param metadata object of class tsmeta that contains the metadata to be stored.
+#' @param locale character indicating the language of the meta information to be store. We recommend to use ISO country codes to represent languages. Defaults to NULL. When local is set to NULL, metadata are stored without localization. Note that, when localizing meta information by assigning a language, multiple meta information objects can be stored for a single time series.
+#' @param on_conflict character allows for either 'update': add new fields and update existing ones or "overwrite": completely replace existing record.
 #' @param schema character name of the schema. Defaults to 'timeseries'.
 #'
-#' @return
+#' @return status list created from DB status return JSON.
 #'
 #' @importFrom jsonlite fromJSON toJSON
 #' @importFrom RPostgres dbWriteTable
@@ -207,16 +206,15 @@ db_store_ts_metadata <- function(con,
 #'
 #' Read meta information given a vector of time series identifiers.
 #'
-#' @param con RPostgres database connection
-#' @param ts_keys Character vector of ts keys to read metadata for. If regex is TRUE, ts_keys is used as a pattern.
-#' @param valid_on Date for which to read the metadata. If NA the most recent version is read.
-#' @param regex boolean should ts_keys allow for regular expressions.
-#' Defaults to FALSE.
-#' @param locale What language to read metadata for. If NULL, unlocalized metadata is read.
+#' @param con RPostgres database connection object.
+#' @param ts_keys character vector of time series identifiers  to read metadata for. If regex is TRUE, ts_keys is understood as regular expression pattern as opposed to a vector of keys.
+#' @param valid_on Date for which to read the metadata. Defaults to NA reading the most recent version. 
+#' @param regex boolean should ts_keys allow be interpreted as a regular expression pattern? Defaults to FALSE.
+#' @param locale character language identifier of the meta data lookup. If NULL, unlocalized metadata are read.
 #' @param schema character name of the schema. Defaults to 'timeseries'.
 #'
+#' @return list of tsmeta objects.
 #' @importFrom jsonlite fromJSON
-#'
 #' @export
 db_read_ts_metadata <- function(con,
                                 ts_keys,
@@ -264,11 +262,10 @@ db_read_ts_metadata <- function(con,
 #' handy to find out the last time meta information was updated. This function 
 #' automagickally finds exactly this date. 
 #'
-#' @param con
+#' @param con RPostgres connection object.
 #' @param ts_keys character vector of time series identifiers.
-#' @param regex boolean should ts_keys allow for regular expressions.
-#' Defaults to FALSE.
-#' @param locale What language to read metadata for. If NULL, unlocalized metadata is read.
+#' @param regex boolean should ts_keys be interpreted as regular expression patterns? Defaults to FALSE.
+#' @param locale character language identifier of the meta data lookup. If NULL, unlocalized metadata are read.
 #' @param schema character name of the schema. Defaults to 'timeseries'.
 #'
 #' @return

@@ -1,7 +1,0 @@
-- document create_tables
-- document processes
-	- write
-	- read
-- document functions (also non-exported, references to process documentation)
-- create SQL functions 
-- create R functions

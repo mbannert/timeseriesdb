@@ -75,7 +75,7 @@ get_list_depth <- function(this) {
 #' Calls function `schema`.`fname` with the given `args`, returning
 #' the result.
 #'
-#' @param con PostgreSQL connection
+#' @param con RPostgres connection object
 #' @param fname character Name of the function to be called
 #' @param schema character Name of the timeseries schema
 #' @param args unnamed list Function arguments

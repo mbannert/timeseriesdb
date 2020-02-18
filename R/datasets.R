@@ -1,15 +1,12 @@
-#' Create a new dataset
+#' Create a New Dataset
 #' 
-#' A dataset is a family of time series that belong to the same topic.
-#' By default all series stored with `db_store_ts` belong to a default set. In order to 
-#' assign them a different set, it must first be created with `db_create_dataset` after which
-#' the series may be moved with `tbd`
+#' A dataset is a family of time series that belong to the same topic. By default all series stored with `db_store_ts` belong to a default set. In order to assign them a different set, it must first be created with `db_create_dataset` after which the series may be moved with `tbd`
 #' 
 #' For arbitrary collections of time series see [how do you reference a doc topic?]
 #'
-#' @param con PostgreSQL connection
+#' @param con RPostgres connection object
 #' @param set_name character The name of the set to be created
-#' @param set_md meta Metadata about the set
+#' @param set_md meta information data about the set.
 #' @param schema character Name of timeseries schema
 #'
 #' @importFrom RPostgres dbGetQuery dbQuoteIdentifier
@@ -41,9 +38,9 @@ db_create_dataset <- function(con,
 }
 
 
-#' Get all ts keys contained in a given set
+#' Get All Time Series Keys in a Given Set
 #'
-#' @param con PostgreSQL connection
+#' @param con RPostgres connection object
 #' @param set_name character Name of the set to get keys for
 #' @param schema character Name of timeseries schema
 #'
@@ -60,15 +57,15 @@ db_get_dataset_keys <- function(con,
              ))$ts_key
 }
 
-#' Get datasets ts keys are in
+#' Find Datasets Given a Set
 #'
-#' If a ts key does not exist in the catalog, set_id will be NA.
+#' Return set identifiers associated with a vector of keys. If a ts key does not exist in the catalog, set_id will be NA.
 #'
 #' @param con PostgreSQL connection
 #' @param ts_keys character
 #' @param schema character Name of timeseries schema
 #'
-#' @return data.frame A data.frame with columns `ts_key` and `set_id`
+#' @return data.frame with columns `ts_key` and `set_id`
 #' @export
 db_get_dataset_id <- function(con,
                                ts_keys,
@@ -87,7 +84,7 @@ db_get_dataset_id <- function(con,
                 dbQuoteIdentifier(con, Id(schema = schema))))
 }
 
-#' Assign ts keys to a dataset
+#' Assign Time Series Identifiers to a Dataset
 #'
 #' `db_assign_dataset` returns a list with status information.
 #' status `"ok"` means all went well.
@@ -96,7 +93,7 @@ db_get_dataset_id <- function(con,
 #' 
 #' Trying to assign keys to a nonexistent dataset is an error.
 #'
-#' @param con PostgreSQL connection
+#' @param con RPostgres connection object
 #' @param ts_keys character Vector of ts keys to assign to dataset
 #' @param set_name character Id of the set to assign `ts_keys` to
 #' @param schema character Name of timeseries schema

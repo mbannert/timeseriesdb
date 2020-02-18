@@ -1,14 +1,17 @@
-#' Title
+#' Read Time Series From PostgreSQL into R
 #'
-#' @param con
-#' @param ts_keys
-#' @param valid_on
-#' @param regex
-#' @param respect_release_date
-#' @param schema
+#' Read specific version of a time series given time series key (unique identifier) and validity. By default, this function returns the most recent version of a time series. 
+#'
+#'
+#' @param con RPostgres connection object. 
+#' @param ts_keys character vector containing time series keys which identify a time series uniquely. 
+#' @param valid_on character representing a date of the form YYYY-MM-DD.
+#' @param regex boolean should ts_keys be interpreted as regular expression? Defaults to FALSE.
+#' @param respect_release_date boolean Should the release embargo of a time series be respected? Defaults to FALSE. This option makes sense when the function is used in an API in that sense that users do not have direct access to this function and therefore cannot simply switch barameters. 
+#' @param schema character name of the schema 
 #' @param chunksize
 #'
-#' @return
+#' @return list of time series. List elements vary depending on nature of time series, i.e., regular vs. irregular time series. 
 #' @import data.table
 #' @importFrom RPostgres dbSendQuery dbFetch dbClearResult dbHasCompleted, dbQuoteIdentifier, Id, dbQuoteLiteral
 #' @export
