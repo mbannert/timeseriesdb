@@ -61,6 +61,7 @@ BEGIN
 
   -- Leaving this as is for possible regex option in the future
   -- Otherwise the removed keys are already known
+  -- TODO: Unless we want to also raise a warning, if some keys are not in the catalog at all
   WITH del_k AS (
     DELETE FROM timeseries.collect_catalog cc
     USING tmp_collection_remove rm
