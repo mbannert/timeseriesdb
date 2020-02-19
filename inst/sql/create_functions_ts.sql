@@ -62,7 +62,7 @@ AS $$
   DROP TABLE IF EXISTS tmp_ts_read_keys;
   CREATE TEMPORARY TABLE tmp_ts_read_keys AS(
   SELECT ts_key FROM timeseries.catalog
-  WHERE ts_key ~ 'ts');
+  WHERE ts_key ~ pattern);
 $$ LANGUAGE SQL;
 
 CREATE FUNCTION timeseries.read_ts_raw(valid_on DATE DEFAULT CURRENT_DATE, respect_release_date BOOLEAN DEFAULT false)
