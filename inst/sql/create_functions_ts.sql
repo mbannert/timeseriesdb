@@ -1,3 +1,19 @@
+-- Add time series to the database
+--
+-- Transfer time series data from a temporary table to the main table.
+-- Updating the latest vintage is allowed while attempts to update an outdated
+-- one is an error.
+-- TODO: make it a warning
+--
+-- tmp_ts_updates has columns (ts_key TEXT,
+--                             ts_data JSON,
+--                             validity DATE,
+--                             release_date TIMESTAMPTZ,
+--                             access TEXT)
+--
+-- returns: json {"status": "", "message": "", ["offending_keys": ""]}
+-- TODO: validity, release_date, access could be params for this function
+--       -> saves storing 10s of 1000s of copies into tmp table
 CREATE FUNCTION timeseries.insert_from_tmp()
 RETURNS JSON
 AS $$
@@ -56,6 +72,21 @@ $$ LANGUAGE PLPGSQL
 -- Read this tho: https://www.cybertec-postgresql.com/en/abusing-security-definer-functions/
 SECURITY DEFINER;
 
+
+
+
+
+
+-- Populate a temporary table with ts_keys via regex
+--
+-- This is a helper function to simplify populating tmp_ts_read_keys
+-- via regex.
+-- Without it, calling code would need to first read matching keys in one query
+-- and then create and populate the table in another.
+--
+-- param: pattern regular expression to find keys
+--
+-- returns: json {"status": "", "message": "", ["removed_collection"]: ""}
 CREATE FUNCTION timeseries.create_read_tmp_regex(pattern TEXT)
 RETURNS VOID
 AS $$
@@ -65,10 +96,28 @@ AS $$
   WHERE ts_key ~ pattern);
 $$ LANGUAGE SQL;
 
-CREATE FUNCTION timeseries.read_ts_raw(valid_on DATE DEFAULT CURRENT_DATE, respect_release_date BOOLEAN DEFAULT false)
+
+
+
+
+
+-- Read time series data in raw (i.e. JSON) form
+--
+--
+-- tmp_ts_read_keys has columns (ts_key TEXT)
+--
+-- param: valid_on Date of the desired vintage
+-- param: respect_release_date Should time series not yet released at the current
+--        time be held back?
+--
+-- returns: TABLE(ts_key TEXT, ts_data JSON)
+CREATE FUNCTION timeseries.read_ts_raw(valid_on DATE DEFAULT CURRENT_DATE,
+                                       respect_release_date BOOLEAN DEFAULT false)
 RETURNS TABLE(ts_key TEXT, ts_data JSON)
 AS $$
 BEGIN
+  -- The default only works if no value is passed.
+  -- Some calling code uses explicit nulls so we need to cover that.
   IF valid_on IS NULL THEN
     valid_on := CURRENT_DATE;
   END IF;
@@ -85,4 +134,4 @@ BEGIN
     AND mn.validity <= valid_on
     ORDER BY rd.ts_key, mn.validity DESC;
 END;
-$$ LANGUAGE PLPGSQL; -- plpgsql because plain sql would (somewhat rightly) complain that the tmp table does not exist
+$$ LANGUAGE PLPGSQL;
