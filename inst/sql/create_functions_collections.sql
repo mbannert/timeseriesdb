@@ -1,3 +1,13 @@
+-- Get the id of the given collection, creating it if necessary
+--
+-- TODO: Fuse this with insert_collect_from_tmp especially as it
+--       MUST be used in conjunction to avoid empty sets being created.
+--       weeell, maybe keep it as a helper but any calling code should not
+--       use it directly
+--
+-- tmp_ts_read_keys has columns (ts_key TEXT)
+--
+-- returns: table(ts_key TEXT, metadata JSONB)
 CREATE FUNCTION timeseries.collection_add(collection_name TEXT,
                                           col_owner TEXT,
                                           description TEXT)
@@ -59,6 +69,21 @@ END;
 $$ LANGUAGE PLPGSQL;
 
 
+
+
+
+-- Remove keys from a user collection
+--
+-- Collections are identified by (name, owner) hence both need to be specified.
+--
+-- If the last keys are removed from a collection it is also deleted
+--
+-- tmp_collection_remove has columns (ts_key TEXT)
+--
+-- param: col_name the name of the collection from which to remove the keys
+-- param: col_owner the owner of the collection
+--
+-- returns: json {"status": "", "message": "", ["removed_collection"]: ""}
 CREATE FUNCTION timeseries.collection_remove(col_name TEXT, col_owner TEXT)
 RETURNS JSON
 AS $$
@@ -114,7 +139,19 @@ END;
 $$ LANGUAGE PLPGSQL;
 
 
-CREATE FUNCTION timeseries.collection_delete(collection_name TEXT,
+
+
+
+
+-- Remove keys from a user collection
+--
+-- Collections are identified by (name, owner) hence both need to be specified.
+--
+-- param: col_name the name of the collection from which to remove the keys
+-- param: col_owner the owner of the collection
+--
+-- returns: json {"status": "", "message": "", ["id"]: ""}
+CREATE FUNCTION timeseries.collection_delete(col_name TEXT,
                                              col_owner TEXT)
 RETURNS JSON
 AS $$
