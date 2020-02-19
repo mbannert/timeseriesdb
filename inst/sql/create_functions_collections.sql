@@ -1,50 +1,33 @@
--- Get the id of the given collection, creating it if necessary
+-- Insert keys into a collection
 --
--- TODO: Fuse this with insert_collect_from_tmp especially as it
---       MUST be used in conjunction to avoid empty sets being created.
---       weeell, maybe keep it as a helper but any calling code should not
---       use it directly
+-- If the collection does not already exist, it is automatically created.
 --
--- tmp_ts_read_keys has columns (ts_key TEXT)
+-- tmp_collect_updates has columns (ts_key TEXT)
 --
--- returns: table(ts_key TEXT, metadata JSONB)
-CREATE FUNCTION timeseries.collection_add(collection_name TEXT,
-                                          col_owner TEXT,
-                                          description TEXT)
-RETURNS uuid
+-- returns: JSON {"status": "", "message": "", ["invalid_keys": [""]]}
+CREATE FUNCTION timeseries.insert_collect_from_tmp(collection_name TEXT,
+                                                   col_owner TEXT,
+                                                   description TEXT)
+RETURNS JSON
 AS $$
 DECLARE
-  v_id uuid;
+  v_id UUID;
+  v_invalid_keys TEXT[];
 BEGIN
+  -- Ensure collection exists
   SELECT id FROM timeseries.collections
   WHERE name = collection_name
   AND owner = col_owner
   INTO v_id;
 
-  IF v_id IS NOT NULL THEN
-
-    RETURN v_id;
-
-  ELSE
-
+  IF v_id IS NULL THEN
     INSERT INTO timeseries.collections(name, owner, description)
     VALUES(collection_name, col_owner, description)
     ON CONFLICT DO NOTHING
     RETURNING id
     INTO v_id;
-
-    RETURN v_id;
   END IF;
 
-END;
-$$ LANGUAGE PLPGSQL;
-
-CREATE FUNCTION timeseries.insert_collect_from_tmp()
-RETURNS JSON
-AS $$
-DECLARE
-  v_invalid_keys TEXT[];
-BEGIN
   SELECT COALESCE(array_agg(DISTINCT tmp.ts_key), '{}'::TEXT[])
   FROM tmp_collect_updates AS tmp
   LEFT OUTER JOIN timeseries.catalog AS cat
@@ -53,7 +36,7 @@ BEGIN
   INTO v_invalid_keys;
 
   INSERT INTO timeseries.collect_catalog (id, ts_key)
-  SELECT c_id, ts_key FROM tmp_collect_updates
+  SELECT v_id, ts_key FROM tmp_collect_updates
   WHERE NOT ts_key = ANY(v_invalid_keys)
   ON CONFLICT DO NOTHING;
 

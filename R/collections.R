@@ -15,21 +15,10 @@ db_collection_add <- function(con,
                               schema = "timeseries"){
   keys <- unique(keys)
 
-  # if collection does not exist, create collection
-  c_id <- db_call_function(con,
-                           "collection_add",
-                           list(
-                             collection_name,
-                             user,
-                             description
-                           ),
-                           schema = schema)
-
-  # by now collection should exist,
   # let's add keys: fill a temp table, anti-join the keys
   # INSERT non existing ones.
-  dt <- data.table(c_id = c_id,
-                   ts_key = keys)
+  dt <- data.table(
+    ts_key = keys)
 
   dbWriteTable(con,
                "tmp_collect_updates",
@@ -37,12 +26,12 @@ db_collection_add <- function(con,
                temporary = TRUE,
                overwrite = TRUE,
                field.types = c(
-                 c_id = "uuid",
                  ts_key = "text")
   )
 
   db_return <- fromJSON(db_call_function(con,
                                 "insert_collect_from_tmp",
+                                list(collection_name, user, description),
                                 schema = schema))
 
   if(db_return$status == "warning") {
