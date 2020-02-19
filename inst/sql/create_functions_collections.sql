@@ -160,14 +160,14 @@ DECLARE
   result JSON;
 BEGIN
   IF NOT EXISTS (SELECT 1 FROM timeseries.collections
-  WHERE name = collection_name
+  WHERE name = col_name
   AND owner = col_owner) THEN
     RETURN json_build_object('status', 'warning',
                              'message', 'Collection cound not be found for this user.');
   ELSE
     DELETE FROM timeseries.collections
     WHERE owner = col_owner
-    AND name = collection_name
+    AND name = col_name
     RETURNING id
     INTO deleted_id;
 
