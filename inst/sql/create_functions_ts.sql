@@ -20,21 +20,19 @@ AS $$
 DECLARE
   v_invalid_keys TEXT[];
 BEGIN
-  SELECT array_agg(DISTINCT tmp.ts_key)
-  INTO v_invalid_keys
-  FROM tmp_ts_updates AS tmp
-  INNER JOIN timeseries.timeseries_main AS main
-  ON tmp.ts_key = main.ts_key
-  AND tmp.validity < main.validity;
-
-  -- IMPORTANT!!!
-  -- When converting this to a warning, make sure to delete
-  -- invalid keys from update table, elsewise updating the past is possible!
-  IF array_length(v_invalid_keys, 1) > 0 THEN
-    RETURN json_build_object('status', 'failure',
-                             'reason', 'keys with invalid vintages',
-                             'offending_keys', to_json(v_invalid_keys));
-  END IF;
+  WITH inv_keys AS (
+    SELECT DISTINCT tmp.ts_key
+    FROM tmp_ts_updates AS tmp
+    INNER JOIN timeseries.timeseries_main AS main
+    ON tmp.ts_key = main.ts_key
+    AND tmp.validity < main.validity
+  ), del_keys AS(
+    DELETE FROM tmp_ts_updates
+    USING inv_keys
+    WHERE tmp_ts_updates.ts_key = inv_keys.ts_key
+  )
+  SELECT array_agg(ts_key) FROM inv_keys
+  INTO v_invalid_keys;
 
   -- after this insert the set_id is 'default' because we don't want a set parameter in our
   -- store functions
@@ -65,8 +63,14 @@ BEGIN
     created_at = EXCLUDED.created_at,
     ts_data = EXCLUDED.ts_data;
 
-  -- All went well
-  RETURN '{"status": "ok", "reason": "the world is full of rainbows"}'::JSON;
+  IF array_length(v_invalid_keys, 1) > 0 THEN
+    RETURN json_build_object('status', 'warning',
+                             'message', 'Some keys already have a newer vintage.',
+                             'offending_keys', to_json(v_invalid_keys));
+  ELSE
+    -- All went well
+    RETURN '{"status": "ok", "reason": "the world is full of rainbows"}'::JSON;
+  END IF;
 END;
 $$ LANGUAGE PLPGSQL
 -- Read this tho: https://www.cybertec-postgresql.com/en/abusing-security-definer-functions/
