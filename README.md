@@ -6,18 +6,64 @@
 
 {timeseriesdb} is ... 
 
-- is lite weight but powerful. 
-- built entirely based on license cost free open source components
-- is tailored to the needs of Official and Economic Statistics
-- 
+- lite weight but powerful. 
+- built entirely based on license cost free open source components, mainly the R Language for Statistical Computing and PostgreSQL
+- tailored to the needs of Official and Economic Statistics, it manages 
+  - different versions (vintages) of a time series. 
+  - comprehensive, multi-lingual data description (meta data)
+  - access rights as granular as on time series level (Row Level Security (RLS))
+  - multiple administration roles and access levels in such a way that roles and access can easily be extended 
+- API ready. That is {timeseriesdb} can easily be extendend to expose a REST API to allow for language agnostic access to the data
+- easy to set up, well documented and developer friendly to extend. As an CRAN R package, installig the package is a one liner. Once the package is installed helps to set up the database part. It also ships with a toolbox to set up a sandbox DB using a standard docker PostgreSQL image.
+-
+A
 
-
+  
 ## What Does {timeseriesdb} NOT DO ?  
 
-## Examples Use 
+{timeseriesdb} is not built to incrementally append new observation as fast as possible. {timeseriesdb} does not try to compete with the amazing speed of InfluxDB or timescale. 
+
+
+## Example Use 
+
+The following examples illustrate basic use in a nutshell. 
+The learn more about the use of {timeseriesdb}, visit its {pkgdown} documentation page and read the vignette articles.
+
+### Read Data into a list of R time Series object
+
+```
+tsl <- db_read_ts(connection, c("some_ts_id","another_ts_id"))
+```
+
+### Store a List of R Time Series Objects to the Database
+
+```
+db_store_ts(connection, tsl)
+```
+
+### 
 
 
 ## Installation 
+
+The installation of the {timeseriesdb} R package is as straight forward as for any other R package
+
+from CRAN:
+
+```
+install.packages("timeseriesdb")
+```
+
+from github (latest developer version):
+
+```
+library(devtools)
+install_github("mbannert/timeseriesdb")
+
+```
+
+
+
 
 
 ## Further Resources
