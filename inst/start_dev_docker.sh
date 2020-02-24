@@ -9,3 +9,5 @@ psql -p 1111 -h 'localhost' -d postgres -U postgres -f sql/create_functions_data
 psql -p 1111 -h 'localhost' -d postgres -U postgres -f sql/create_functions_metadata.sql
 psql -p 1111 -h 'localhost' -d postgres -U postgres -f sql/create_functions_ts.sql
 psql -p 1111 -h 'localhost' -d postgres -U postgres -f sql/create_triggers.sql
+
+psql -p 1111 -h 'localhost' -d postgres -U postgres -f sql/setup_test_env.sql
