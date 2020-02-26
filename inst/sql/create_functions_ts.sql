@@ -14,7 +14,9 @@
 -- returns: json {"status": "", "message": "", ["offending_keys": ""]}
 -- TODO: validity, release_date, access could be params for this function
 --       -> saves storing 10s of 1000s of copies into tmp table
-CREATE FUNCTION timeseries.insert_from_tmp()
+CREATE FUNCTION timeseries.insert_from_tmp(p_validity DATE,
+                                           p_release_date TIMESTAMPTZ,
+                                           p_access TEXT)
 RETURNS JSON
 AS $$
 DECLARE
@@ -25,7 +27,7 @@ BEGIN
     FROM tmp_ts_updates AS tmp
     INNER JOIN timeseries.timeseries_main AS main
     ON tmp.ts_key = main.ts_key
-    AND tmp.validity < main.validity
+    AND p_validity < main.validity
   ), del_keys AS(
     DELETE FROM tmp_ts_updates
     USING inv_keys
@@ -50,11 +52,12 @@ BEGIN
 
   -- Main insert
   INSERT INTO timeseries.timeseries_main(ts_key, validity, coverage, release_date, ts_data, access)
-  SELECT tmp.ts_key, COALESCE(tmp.validity, CURRENT_DATE), tmp.coverage, COALESCE(tmp.release_date, CURRENT_TIMESTAMP), tmp.ts_data, tmp.access
+  SELECT tmp.ts_key, COALESCE(p_validity, CURRENT_DATE), tmp.coverage,
+            COALESCE(p_release_date, CURRENT_TIMESTAMP), tmp.ts_data, p_access
   FROM tmp_ts_updates AS tmp
   LEFT JOIN timeseries.timeseries_main AS main
   ON tmp.ts_key = main.ts_key
-  AND tmp.validity = main.validity
+  AND p_validity = main.validity
   ON CONFLICT (ts_key, validity) DO UPDATE
   SET
     coverage = EXCLUDED.coverage,
