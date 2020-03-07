@@ -13,7 +13,8 @@
 #'
 #' @return list of time series. List elements vary depending on nature of time series, i.e., regular vs. irregular time series. 
 #' @import data.table
-#' @importFrom RPostgres dbSendQuery dbFetch dbClearResult dbHasCompleted, dbQuoteIdentifier, Id, dbQuoteLiteral
+#' @importFrom DBI dbQuoteIdentifier Id dbQuoteLiteral dbHasCompleted
+#' @importFrom RPostgres dbSendQuery dbFetch dbClearResult 
 #' @export
 #'
 #' @examples

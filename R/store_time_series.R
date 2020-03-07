@@ -23,6 +23,26 @@ store_time_series <- function(con,
   UseMethod("store_time_series", object = x)
 }
 
+store_time_series.list <- function(con,
+                                     tsl,
+                                     access,
+                                     valid_from = NA,
+                                     release_date = NA,
+                                     schema = "timeseries"){
+  e <- any(!sapply(tsl, class) %in% c("ts","xts","zoo"))
+  if(e){
+    stop("At least one element of the list is not a supported time series. Double check your list and/or consider the tsbox package to convert time series formats.")
+  } 
+  class(tsl) <- "tslist"
+  store_time_series(con = con, tsl,
+                    access = access,
+                    valid_from = valid_from,
+                    release_date = release_date,
+                    schema = schema)  
+  
+}
+
+
 store_time_series.tslist <- function(con,
                                      tsl,
                                      access,

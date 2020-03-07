@@ -1,4 +1,4 @@
-# {timeseriesdb}: Manage Time Series Data with R and PostgreSQL
+# Manage Time Series Data with R and PostgreSQL
 
 {timeseriesdb} maps R time series objects to PostgreSQL database relations for permanent storage. Instead of writing time series to spreadsheet files or .RData files on disk, {timeseriesdb} uses a set of PostgreSQL relations which allows to store data alongside extensive, context aware, multi-lingual meta information. {timeseriesdb} was originally designed with official statistics in mind which are typically published on a monthly, quarterly or yearly basis. But the package can also handle time series of irregular frequency. As opposed to many IoT based approaches, {timeseriesdb} is not optimized to append as fast as possible but to handle data revisions such as GDP revisions. 
 

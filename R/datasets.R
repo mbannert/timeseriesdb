@@ -47,7 +47,7 @@ db_create_dataset <- function(con,
 #' @return character A vector of ts keys contained in the set
 #' @export
 db_get_dataset_keys <- function(con,
-                               set_name,
+                               set_name = 'default',
                                schema = "timeseries") {
   dbGetQuery(con,
              sprintf("SELECT * FROM %skeys_in_dataset($1)",

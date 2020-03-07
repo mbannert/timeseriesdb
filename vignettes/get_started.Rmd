@@ -1,6 +1,6 @@
 ---
-title: "Introduction to timeseriesdb"
-subtitle: "Getting Started"
+title: "Getting Started"
+subtitle: "Introduction to {timeseriesdb}"
 author: "Matthias Bannert and Severin Thöni"
 date: "`r Sys.Date()`"
 output: rmarkdown::html_vignette
@@ -12,7 +12,56 @@ vignette: >
 
 ## Starting Point
 
-This guide assumes you have installed the {timeseriesdb} R package  and a local PostgreSQL client library successfully. We also assume that you have a PostgreSQL database running somewhere that you can connect to. 
+This guide assumes you have installed the {timeseriesdb} R package and a local PostgreSQL client library successfully. We also assume that you have a PostgreSQL database running somewhere that you can connect to. 
 
-For the remainder of this guide we assume PostgreSQL runs a local 
-docker desktop based container accessible on port 1111.
+For the remainder of this guide we assume PostgreSQL runs on a local docker container accessible on port 1111.
+
+
+## Store Time Series 
+
+Let's take two time series from the {datasets} R package that ships with R (monthly AirPassengers, JohnsonJohnson quarterly earnings per share) and put them in to a named list. The {timeseriesdb} R package uses lists of time series or long format time series data.tables to stage time series for storing in PostgreSQL. 
+
+```{r}
+devtools::load_all()
+#library(timeseriesdb)
+
+con <- dbConnect(RPostgres::Postgres(),
+                 dbname = "postgres",
+                 user = "postgres",
+                 host = "localhost",
+                 password = "",
+                 port = 1111)
+tsl <- list(AirPassengers = AirPassengers,
+            JohnsonJohnson = JohnsonJohnson)
+store_time_series(con, tsl, "main")
+
+```
+ 
+## Basic Read Time Series
+ 
+```{r}
+library(tstools)
+out <- read_time_series(con, c("JohnsonJohnson",
+                               "AirPassengers"))
+tsplot(out[1],
+       tsr = out[2])
+```
+
+## Versioning of Time Series (Vintages)
+
+{timeseriesdb} keeps track of different versions of a time series. This feature was designed with regular releases of data in mind. In official and economic statistics, releases do not simply mean to append another observation at end of time series. Seasonal adjustment and other filters as well data corrections cause revisions of a time series. In order to keep research, e.g., forecasts reproducible, it is important to archive all versions of a time series. Doing so, allows to assess forecast performance and makes sure the state of information at the time the forecast was made can be reproduced.
+
+{timeseriesdb} allows to store one version of a time series per day, i.e., series 
+
+
+## Datasets
+
+In {timeseriesdb} *every* time series belongs to a dataset. If no dataset is specified when a time series is stored, that series automagically gets assigned to the *default* dataset.
+
+The idea behind dataset 
+
+
+
+
+
+
