@@ -56,9 +56,40 @@ tsplot(out[1],
 
 ## Datasets
 
-In {timeseriesdb} *every* time series belongs to a dataset. If no dataset is specified when a time series is stored, that series automagically gets assigned to the *default* dataset.
+In {timeseriesdb} *every* time series belongs to a dataset. If no dataset is specified when a time series is stored, the series automagically gets assigned to the *default* dataset.
 
-The idea behind dataset 
+The idea behind datasets is to group time series according to their source and allow for group level data description. The
+following helpers help you to explore which keys are in a given set and which keys are in which set.
+
+```{r}
+db_get_dataset_keys(con, set_name = "default")
+db_get_dataset_id(con, c("AirPassengers", "JohnsonJohnson"))
+```
+
+You can easily add new datasets. Note though, that dataset are not user specific, but global groups. The user specific analog to sets is called collection in will be described later on. 
+
+```{r}
+db_create_dataset(con, "stocks",
+                  set_description = "Stock market returns.")
+```
+Once a set is created you can move existing series to that set. 
+
+```{r}
+db_assign_dataset(con,"JohnsonJohnson","stocks")
+db_get_dataset_id(con, c("AirPassengers", "JohnsonJohnson"))
+```
+
+
+
+## Metadata 
+
+```{r}
+db_read_ts_metadata(con, "AirPassengers")
+```
+
+
+
+
 
 
 

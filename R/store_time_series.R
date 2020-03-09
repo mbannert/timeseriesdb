@@ -4,7 +4,7 @@
 #'
 #' @param x Object containing time series to store
 #' @param release Title for the release
-#' @param access Access level for all ts to be stored
+#' @param access Access level for all ts to be stored. Defaults to 'main'.
 #' @param subset Ts keys of the subset of x to store
 #' @param release_desc Description for the release
 #' @param valid_from Start of vintage validity for all ts in x
@@ -16,7 +16,7 @@
 #' @export
 store_time_series <- function(con,
                               x,
-                              access,
+                              access = "main",
                               valid_from,
                               release_date,
                               schema){
