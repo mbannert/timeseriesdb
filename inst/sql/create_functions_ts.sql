@@ -77,7 +77,8 @@ BEGIN
 END;
 $$ LANGUAGE PLPGSQL
 -- Read this tho: https://www.cybertec-postgresql.com/en/abusing-security-definer-functions/
-SECURITY DEFINER;
+SECURITY DEFINER
+SET search_path = timeseries, pg_temp;
 
 
 
@@ -101,7 +102,9 @@ AS $$
   CREATE TEMPORARY TABLE tmp_ts_read_keys AS(
   SELECT ts_key FROM timeseries.catalog
   WHERE ts_key ~ pattern);
-$$ LANGUAGE SQL;
+$$ LANGUAGE SQL
+SECURITY DEFINER
+SET search_path = timeseries, pg_temp;
 
 
 
@@ -141,4 +144,6 @@ BEGIN
     AND mn.validity <= valid_on
     ORDER BY rd.ts_key, mn.validity DESC;
 END;
-$$ LANGUAGE PLPGSQL;
+$$ LANGUAGE PLPGSQL
+SECURITY DEFINER
+SET search_path = timeseries, pg_temp;

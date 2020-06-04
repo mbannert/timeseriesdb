@@ -14,5 +14,6 @@ CREATE ROLE dev_writer_private;
 GRANT tsdb_access_private TO dev_writer_private;
 GRANT tsdb_writer TO dev_writer_private;
 
-CREATE ROLE dev_admin; -- public/private distinction does not really make sense for admins
+CREATE ROLE dev_admin WITH LOGIN; -- public/private distinction does not really make sense for admins
 GRANT tsdb_admin TO dev_admin;
+GRANT CREATE, USAGE ON SCHEMA timeseries TO dev_admin;

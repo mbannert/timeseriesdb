@@ -1,0 +1,81 @@
+---
+title: "metadata per field approach performance"
+output: html_notebook
+---
+
+```{r}
+master <- "f1b881762f6fb796ef9da9bfaa4647a55dc9d5b7" # "Call me by my name!" xD
+per_field <- "781a71fec4bf00fde682d86553e51fe74f38dd1b" # Is ja perfield! (cause this needs a pun too)
+```
+
+
+# master
+```{r, "setup_master"}
+system(paste0("git checkout ", master))
+system("docker stop perfieldperf_master")
+system("docker run --rm -d -p 1112:5432 --name perfieldperf_master  postgres:11")
+
+devtools::load_all()
+con <- createConObj("postgres", "postgres", "localhost", "", 1112)
+
+dbExecute(con, "CREATE SCHEMA timeseries")
+dbExecute(con, "CREATE EXTENSION hstore")
+
+runCreateTables(con, "timeseries")
+```
+
+# setup
+```{r}
+tsl <- lapply(1:100, function(x){ts(x, start = 2020, end = 2023, frequency = 4)})
+names(tsl) <- sprintf("ts%s", seq_along(tsl))
+
+md <- data.frame(
+  ts_key = names(tsl),
+  field1 = 1,
+  field2 = 2,
+  field3 = "some text value",
+  field4 = "have some more"
+)
+
+md.list <- as.tsmeta.list(md)
+```
+
+```{r, bench_master}
+storeTimeSeries(con, tsl)
+
+microbenchmark::microbenchmark({
+  storeMetaInformation(con, md.list, tbl = "meta_data_localized", locale = "en")
+}, setup = {
+  # Clean up
+  dbExecute(con, "delete from timeseries.meta_data_localized")
+  # store half the metadata up front
+  storeMetaInformation(con, md.list[1:50], tbl = "meta_data_localized", locale = "en")
+},
+times = 10)
+```
+
+```{r, setup_branch}
+system(paste0("git checkout ", per_field))
+# not 100% if this works
+# it does not, run manually (as most parts of this notebook)
+system("./inst/start_dev_docker.sh")
+
+devtools::load_all()
+con <- connect_to_test_db()
+
+class(tsl) <- c("tslist", "list")
+
+store_time_series(con, tsl, "public", Sys.Date(), Sys.Date(), "timeseries")
+```
+
+```{r, bench_branch}
+microbenchmark::microbenchmark({
+  db_store_ts_metadata(con, md.list, "en")
+}, setup = {
+  # Clean up
+  dbExecute(con, "delete from timeseries.md_local_ts")
+  # store half the metadata up front
+  db_store_ts_metadata(con, as.tsmeta.list(md.list[1:50]), "en")
+},
+times = 10)
+```

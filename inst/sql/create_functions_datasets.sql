@@ -7,7 +7,9 @@ AS $$
 BEGIN
   RETURN EXISTS(SELECT 1 FROM timeseries.datasets WHERE set_id = dataset_name);
 END;
-$$ LANGUAGE PLPGSQL;
+$$ LANGUAGE PLPGSQL
+SECURITY DEFINER
+SET search_path = timeseries, pg_temp;
 
 
 
@@ -29,7 +31,9 @@ AS $$
   INSERT INTO timeseries.datasets(set_id, set_description, set_md)
   VALUES(dataset_name, dataset_description, dataset_md)
   RETURNING set_id
-$$ LANGUAGE SQL;
+$$ LANGUAGE SQL
+SECURITY DEFINER
+SET search_path = timeseries, pg_temp;
 
 
 
@@ -49,7 +53,9 @@ BEGIN
   FROM timeseries.catalog
   WHERE id = set_id;
 END;
-$$ LANGUAGE PLPGSQL;
+$$ LANGUAGE PLPGSQL
+SECURITY DEFINER
+SET search_path = timeseries, pg_temp;
 
 
 
@@ -69,7 +75,9 @@ BEGIN
   LEFT JOIN timeseries.catalog AS cat
   ON cat.ts_key = tmp.ts_key;
 END;
-$$ LANGUAGE PLPGSQL;
+$$ LANGUAGE PLPGSQL
+SECURITY DEFINER
+SET search_path = timeseries, pg_temp;
 
 
 
@@ -119,4 +127,6 @@ BEGIN
     RETURN '{"status": "ok"}'::JSON;
   END IF;
 END;
-$$ LANGUAGE PLPGSQL;
+$$ LANGUAGE PLPGSQL
+SECURITY DEFINER
+SET search_path = timeseries, pg_temp;

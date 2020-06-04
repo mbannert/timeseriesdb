@@ -5,10 +5,12 @@ BEGIN
   IF OLD.set_id = 'default' THEN
     RETURN NULL;
   END IF;
-  
+
   RETURN OLD;
 END;
-$$ LANGUAGE PLPGSQL;
+$$ LANGUAGE PLPGSQL
+SECURITY DEFINER
+SET search_path = timeseries, pg_temp;
 
 CREATE TRIGGER no_delete_default_dataset
 BEFORE DELETE

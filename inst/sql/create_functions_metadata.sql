@@ -60,8 +60,9 @@ BEGIN
 
   RETURN timeseries.build_meta_status(v_missing_keys, v_invalid_keys);
 END;
-$$ LANGUAGE PLPGSQL;
-
+$$ LANGUAGE PLPGSQL
+SECURITY DEFINER
+SET search_path = timeseries, pg_temp;
 
 
 
@@ -130,7 +131,9 @@ BEGIN
 
   RETURN timeseries.build_meta_status(v_missing_keys, v_invalid_keys);
 END;
-$$ LANGUAGE PLPGSQL;
+$$ LANGUAGE PLPGSQL
+SECURITY DEFINER
+SET search_path = timeseries, pg_temp;
 
 
 
@@ -185,7 +188,9 @@ BEGIN
 
   RETURN v_status;
 END;
-$$ LANGUAGE PLPGSQL;
+$$ LANGUAGE PLPGSQL
+SECURITY DEFINER
+SET search_path = timeseries, pg_temp;
 
 
 
@@ -217,7 +222,11 @@ BEGIN
     AND md.validity <= valid_on
     ORDER BY rd.ts_key, md.validity DESC;
 END;
-$$ LANGUAGE PLPGSQL;
+$$ LANGUAGE PLPGSQL
+SECURITY DEFINER
+SET search_path = timeseries, pg_temp;
+
+
 
 -- Read localized metadata in raw (i.e. json) form
 --
@@ -246,7 +255,9 @@ BEGIN
     AND md.locale = loc
     ORDER BY rd.ts_key, md.validity DESC;
 END;
-$$ LANGUAGE PLPGSQL;
+$$ LANGUAGE PLPGSQL
+SECURITY DEFINER
+SET search_path = timeseries, pg_temp;
 
 
 
@@ -271,7 +282,9 @@ BEGIN
     ON rd.ts_key = md.ts_key
     ORDER BY rd.ts_key, md.validity DESC;
 END;
-$$ LANGUAGE PLPGSQL;
+$$ LANGUAGE PLPGSQL
+SECURITY DEFINER
+SET search_path = timeseries, pg_temp;
 
 
 
@@ -298,4 +311,6 @@ BEGIN
     AND md.locale = locale_in
     ORDER BY rd.ts_key, md.validity DESC;
 END;
-$$ LANGUAGE PLPGSQL;
+$$ LANGUAGE PLPGSQL
+SECURITY DEFINER
+SET search_path = timeseries, pg_temp;

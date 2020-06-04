@@ -49,7 +49,9 @@ BEGIN
   -- All went well
   RETURN '{"status": "ok", "message": "All keys have been successfully added to the collection."}'::JSON;
 END;
-$$ LANGUAGE PLPGSQL;
+$$ LANGUAGE PLPGSQL
+SECURITY DEFINER
+SET search_path = timeseries, pg_temp;
 
 
 
@@ -119,7 +121,9 @@ BEGIN
                              'message', 'Keys successfully removed from the collection.');
   END IF;
 END;
-$$ LANGUAGE PLPGSQL;
+$$ LANGUAGE PLPGSQL
+SECURITY DEFINER
+SET search_path = timeseries, pg_temp;
 
 
 
@@ -159,4 +163,6 @@ BEGIN
                              'id', deleted_id);
   END IF;
 END;
-$$ LANGUAGE PLPGSQL;
+$$ LANGUAGE PLPGSQL
+SECURITY DEFINER
+SET search_path = timeseries, pg_temp;
