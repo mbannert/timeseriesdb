@@ -10,4 +10,5 @@ psql -p 1111 -h 'localhost' -d postgres -U dev_admin -f sql/create_functions_dat
 psql -p 1111 -h 'localhost' -d postgres -U dev_admin -f sql/create_functions_metadata.sql
 psql -p 1111 -h 'localhost' -d postgres -U dev_admin -f sql/create_functions_ts.sql
 psql -p 1111 -h 'localhost' -d postgres -U dev_admin -f sql/create_triggers.sql
+psql -p 1111 -h 'localhost' -d postgres -U dev_admin -f sql/grant_rights.sql
 
