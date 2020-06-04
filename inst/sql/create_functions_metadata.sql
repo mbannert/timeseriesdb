@@ -58,7 +58,7 @@ BEGIN
   WHERE cat.ts_key IS NULL
   INTO v_missing_keys;
 
-  RETURN build_meta_status(v_missing_keys, v_invalid_keys);
+  RETURN timeseries.build_meta_status(v_missing_keys, v_invalid_keys);
 END;
 $$ LANGUAGE PLPGSQL;
 
@@ -128,7 +128,7 @@ BEGIN
   WHERE cat.ts_key IS NULL
   INTO v_missing_keys;
 
-  RETURN build_meta_status(v_missing_keys, v_invalid_keys);
+  RETURN timeseries.build_meta_status(v_missing_keys, v_invalid_keys);
 END;
 $$ LANGUAGE PLPGSQL;
 
@@ -143,7 +143,7 @@ $$ LANGUAGE PLPGSQL;
 -- param: v_invalid_keys keys for which an update of metadata was not permitted
 --
 -- returns: A json with either {"status": "ok"} or {"status": "warning", "warnings": [...warning messages...]}
-CREATE FUNCTION build_meta_status(v_missing_keys TEXT[], v_invalid_keys TEXT[])
+CREATE FUNCTION timeseries.build_meta_status(v_missing_keys TEXT[], v_invalid_keys TEXT[])
 RETURNS JSON
 AS $$
 DECLARE
