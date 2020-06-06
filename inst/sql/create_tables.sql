@@ -62,7 +62,7 @@ CREATE TABLE timeseries.collect_catalog (
   id UUID,
   ts_key TEXT,
   PRIMARY KEY (id,ts_key),
-  FOREIGN KEY (id) REFERENCES timeseries.collections(id),
-  FOREIGN KEY (ts_key) REFERENCES timeseries.catalog(ts_key)
+  FOREIGN KEY (id) REFERENCES timeseries.collections(id) ON DELETE CASCADE,
+  FOREIGN KEY (ts_key) REFERENCES timeseries.catalog(ts_key) ON DELETE CASCADE -- should we??
 );
 

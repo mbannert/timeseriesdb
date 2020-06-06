@@ -1,5 +1,5 @@
 connect_to_test_db <- function() {
-  dbConnect(Postgres(), "postgres", "localhost", 1111, "", "postgres", bigint = "integer")
+  dbConnect(Postgres(), "postgres", "localhost", 1111, "", "dev_admin", bigint = "integer")
 }
 
 # TODO: see ?dbCanConnect
@@ -14,6 +14,8 @@ is_test_db_reachable <- function(){
 }
 
 reset_db <- function(con) {
+  dbExecute(con, "DELETE FROM timeseries.collect_catalog")
+  dbExecute(con, "DELETE FROM timeseries.collections")
   dbExecute(con, "DELETE FROM timeseries.metadata")
   dbExecute(con, "DELETE FROM timeseries.metadata_localized")
   dbExecute(con, "DELETE FROM timeseries.timeseries_main")
@@ -229,6 +231,56 @@ prepare_db <- function(con,
     )
   )
 
+  collections <- data.table(
+    id = c(
+      "bc4ad148-516a-11ea-8d77-2e728ce88125",
+      "bc4ad40e-516a-11ea-8d77-2e728ce88125",
+      "bc4ad558-516a-11ea-8d77-2e728ce88125"
+    ),
+    name = c(
+      "tests first",
+      "tests second",
+      "some random one"
+    ),
+    owner = c(
+      "test",
+      "test",
+      "johnny_public"
+    ),
+    description = c(
+      "the first collection ever",
+      NA,
+      "yo check out these awesome public time series!"
+    )
+  )
+
+  collect_catalog <- data.table(
+    id = c(
+      "bc4ad148-516a-11ea-8d77-2e728ce88125",
+      "bc4ad148-516a-11ea-8d77-2e728ce88125",
+      "bc4ad148-516a-11ea-8d77-2e728ce88125",
+
+      "bc4ad40e-516a-11ea-8d77-2e728ce88125",
+      "bc4ad40e-516a-11ea-8d77-2e728ce88125",
+
+      "bc4ad558-516a-11ea-8d77-2e728ce88125",
+      "bc4ad558-516a-11ea-8d77-2e728ce88125",
+      "bc4ad558-516a-11ea-8d77-2e728ce88125"
+    ),
+    ts_key = c(
+      "ts1",
+      "ts2",
+      "ts3",
+
+      "ts4",
+      "ts5",
+
+      "ts1",
+      "ts4",
+      "vts1"
+    )
+  )
+
   reset_db(con)
   if(init_datasets) {
     dbWriteTable(con,
@@ -236,6 +288,7 @@ prepare_db <- function(con,
                  datasets,
                  append = TRUE)
 
+    # TODO: probably rename init_catalog
     if(init_catalog) {
       dbWriteTable(con,
                    DBI::Id(schema = "timeseries", table = "catalog"),
@@ -255,6 +308,16 @@ prepare_db <- function(con,
       dbWriteTable(con,
                    DBI::Id(schema = "timeseries", table = "metadata_localized"),
                    mdl,
+                   append = TRUE)
+
+      dbWriteTable(con,
+                   DBI::Id(schema = "timeseries", table = "collections"),
+                   collections,
+                   append = TRUE)
+
+      dbWriteTable(con,
+                   DBI::Id(schema = "timeseries", table = "collect_catalog"),
+                   collect_catalog,
                    append = TRUE)
     }
   }

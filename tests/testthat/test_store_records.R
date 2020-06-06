@@ -120,8 +120,8 @@ test_that("storing series with invalid vintages is an error", {
   store_time_series(con, tsl, "public", valid_from = "2019-02-01", release_date = "2019-02-02")
   store_time_series(con, tsl, "public", valid_from = "2019-03-01", release_date = "2019-03-02")
   failed <- store_time_series(con, tsl[1], "public", valid_from = "2019-02-01", release_date = "2019-03-02")
-  expect_equal(names(failed), c("status", "reason", "offending_keys"))
-  expect_equal(failed$status, "failure")
+  expect_equal(names(failed), c("status", "message", "offending_keys"))
+  expect_equal(failed$status, "warning")
   expect_equal(failed$offending_keys, "ts1")
 })
 

@@ -9,24 +9,14 @@
 #' @param schema
 #' @importFrom RPostgres dbWriteTable
 db_tmp_store <- function(con,
-                         records,
-                         valid_from,
-                         release_date,
-                         access,
-                         schema = "timeseries") {
-  
-  ts_validity <- format(valid_from, "%Y-%m-%d")
-  release_date <- format(release_date, "%Y-%m-%d %T %z")
-  
+                         records) {
+
   # TODO: add mechanism for setting column names (for e.g. metadata)
   dt <- data.table(
     ts_key = names(records),
-    ts_data = unlist(records),
-    validity = ts_validity,
-    release_date = release_date,
-    access = access
+    ts_data = unlist(records)
   )
-  
+
   dbWriteTable(con,
                "tmp_ts_updates",
                dt,
@@ -34,10 +24,7 @@ db_tmp_store <- function(con,
                overwrite = TRUE,
                field.types = c(
                  ts_key = "text",
-                 ts_data = "json",
-                 validity = "date",
-                 release_date = "timestamptz",
-                 access = "text"
+                 ts_data = "json"
                )
   )
 }
@@ -48,13 +35,13 @@ db_tmp_store <- function(con,
 #'
 #' if regex == TRUE the first entry of ts_keys will be used as the pattern
 #'
-#' @param con 
-#' @param ts_keys 
-#' @param regex 
-#' @param schema 
-#' @param table 
-#' @param valid_on 
-#' @param respect_release_date 
+#' @param con
+#' @param ts_keys
+#' @param regex
+#' @param schema
+#' @param table
+#' @param valid_on
+#' @param respect_release_date
 #' @importFrom RPostgres dbExecute dbWriteTable
 db_tmp_read <- function(con,
                         ts_keys,
@@ -65,7 +52,7 @@ db_tmp_read <- function(con,
       warning("regex = TRUE but length of ts_keys > 1, using only first element as pattern!")
     }
   }
-  
+
   if(regex) {
     dbExecute(con,
               sprintf("SELECT 1 FROM %screate_read_tmp_regex(%s)",
@@ -75,7 +62,7 @@ db_tmp_read <- function(con,
     dt <- data.table(
       ts_key = ts_keys
     )
-    
+
     dbWriteTable(con,
                  "tmp_ts_read_keys",
                  dt,
