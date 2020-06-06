@@ -37,7 +37,7 @@ The learn more about the use of {timeseriesdb}, visit its {pkgdown} documentatio
 # In this case to a local db running on port 111
 # w/o pw -- strongly discouraged for production. 
 con <- dbConnect(Postgres(),
-                "postgres", "localhost",
+                "dev_admin", "localhost",
                  1111, "",
                 "postgres")
 tsl <- list(ts1 = ts(rnorm(100), frequency = 12,
@@ -52,7 +52,7 @@ dbDisconnect(con)
 
 ```
 con <- dbConnect(Postgres(),
-                "postgres", "localhost",
+                "dev_admin", "localhost",
                  1111, "",
                 "postgres")
 
