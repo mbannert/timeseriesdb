@@ -10,7 +10,8 @@
 #'
 #' @return
 #' @import data.table
-#' @importFrom RPostgres dbSendQuery dbFetch dbClearResult dbHasCompleted, dbQuoteIdentifier, Id, dbQuoteLiteral
+#' @importFrom DBI dbHasCompleted dbQuoteIdentifier Id
+#' @importFrom RPostgres dbSendQuery dbFetch dbClearResult dbQuoteLiteral
 #' @export
 #'
 #' @examples
