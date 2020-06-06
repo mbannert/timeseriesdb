@@ -6,6 +6,7 @@ GRANT EXECUTE ON FUNCTION timeseries.keys_in_dataset TO timeseries_reader;
 GRANT EXECUTE ON FUNCTION timeseries.get_set_of_keys TO timeseries_reader;
 GRANT EXECUTE ON FUNCTION timeseries.read_metadata_raw TO timeseries_reader;
 GRANT EXECUTE ON FUNCTION timeseries.read_metadata_localized_raw TO timeseries_reader;
+GRANT EXECUTE ON FUNCTION timeseries.read_ts_raw TO timeseries_reader;
 GRANT EXECUTE ON FUNCTION timeseries.get_latest_vintages_metadata TO timeseries_reader;
 GRANT EXECUTE ON FUNCTION timeseries.get_latest_vintages_metadata_localized TO timeseries_reader;
 GRANT EXECUTE ON FUNCTION timeseries.create_read_tmp_regex TO timeseries_reader;
