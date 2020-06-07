@@ -1,28 +1,51 @@
-# Manage Time Series Data with R and PostgreSQL
+# {timeseriesdb}: A Time Series Database for Official Statistics
 
-{timeseriesdb} maps R time series objects to PostgreSQL database relations for permanent storage. Instead of writing time series to spreadsheet files or .RData files on disk, {timeseriesdb} uses a set of PostgreSQL relations which allows to store data alongside extensive, context aware, multi-lingual meta information. {timeseriesdb} was originally designed with official statistics in mind which are typically published on a monthly, quarterly or yearly basis. But the package can also handle time series of irregular frequency. As opposed to many IoT based approaches, {timeseriesdb} is not optimized to append as fast as possible but to handle data revisions such as GDP revisions. 
+{timeseriesdb} maps R time series objects to PostgreSQL database relations for permanent storage. Instead of writing time series to spreadsheet files or .RData files on disk, {timeseriesdb} uses a set of PostgreSQL relations which allows to store data alongside extensive, multi-lingual meta information in context aware fashion. {timeseriesdb} was designed with official statistics in mind: It can keep track of various versions of the same time series to handle data revisions, e.g., in the case of GDP data. 
+
+Find da 
 
 ## Why {timeseriesdb} ?
 
 {timeseriesdb}  ... 
 
 - is lite weight but powerful. 
-- built entirely based on license cost free open source components, mainly the R Language for Statistical Computing and PostgreSQL
-- tailored to the needs of Official and Economic Statistics, it manages 
-  - different versions (vintages) of a time series. 
-  - comprehensive, multi-lingual data description (meta data)
-  - access rights as granular as on time series level (Row Level Security (RLS))
-  - multiple administration roles and access levels in such a way that roles and access can easily be extended 
-- API ready. That is {timeseriesdb} can easily be extendend to expose a REST API to allow for language agnostic access to the data
-- easy to set up, well documented and developer friendly to extend. Being a CRAN R package, installation is a one liner. Once the R package is installed it helps to set up the database part. 
-- ships with a toolbox to set up a sandbox DB using a standard docker PostgreSQL image.
-- users can compose user-specific collections of time series, 
-similar to playlist in a music player. 
-
+- built entirely based on license cost free open source components.
+- tailored to the needs of Official and Economic Statistics
+- administration friendly, extendable access rights management
+- API ready: {timeseriesdb} can easily be extended to expose data through a REST API to allow for language agnostic access to the data
+- well documented, developer friendly. 
 
 ## What Does {timeseriesdb} NOT DO ?  
 
-{timeseriesdb} is not built to incrementally append new observations as fast as possible. {timeseriesdb} does not try to compete with the amazing speed of InfluxDB or timescale. 
+{timeseriesdb} is not built to incrementally append new observations as fast as possible. {timeseriesdb} does not try to compete with the amazing speed of InfluxDB. It's not a server log or IoT minded time series storage.
+
+## Quick Start Guide
+
+Skip the __blabla__. You know what SQL is? You are a seasoned useR and work with time series on a regular basis? Here's how to get going as quickly as possible. 
+
+### Using Docker
+
+If you're familiar with the docker basics and have a remote docker host and/or local docker installation, the docker based approach is the easiest way to check out {timeseriesdb} in action. A shell script that ships with {timeseriesdb} helps to set up a test instance of {timeseriesdb} in a docker container: 
+
+1. Any container running as _timeseriesdb_dev_ will be stoped if it
+
+2. 
+
+First, let's pull a __PostgreSQL_ docker image from docker hub. Depending on your OS and configuration, e.g., on Ubuntu systems  you'll need use _sudo_ to run docker.
+
+
+```r
+system(
+   sprintf(
+     "%s ./%s",
+     "sudo",
+     system.file("start_dev_docker.sh",package = "timeseriesdb")
+    )
+)
+```
+
+
+
 
 
 ## Example Use (Basic Usage)
