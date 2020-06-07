@@ -1,0 +1,10 @@
+pandoc: 2.7.3
+pkgdown: 1.5.1
+pkgdown_sha: ~
+articles:
+  developer_doc: developer_doc.html
+  get_started: get_started.html
+  manage_timeseries_with_r_and_postgres: manage_timeseries_with_r_and_postgres.html
+  metadata: metadata.html
+last_built: 2020-06-07T06:37Z
+

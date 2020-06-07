@@ -29,7 +29,7 @@ con <- dbConnect(RPostgres::Postgres(),
                  dbname = "postgres",
                  user = "dev_admin",
                  host = "localhost",
-                 password = "",
+                 password = "dev_admin",
                  port = 1111)
 tsl <- list(AirPassengers = AirPassengers,
             JohnsonJohnson = JohnsonJohnson)

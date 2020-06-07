@@ -21,7 +21,6 @@ Suggests:
 VignetteBuilder: knitr
 Date: 2020-03-07
 License: GPL-2
-Maintainer: Matthias Bannert <bannert@kof.ethz.ch>
 URL: https://github.com/mbannert/timeseriesdb
 BugReports: https://github.com/mbannert/timeseriesdb/issues
 LazyData: true

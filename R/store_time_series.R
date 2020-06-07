@@ -23,7 +23,7 @@ store_time_series <- function(con,
   UseMethod("store_time_series", object = x)
 }
 
-
+#'@export
 store_time_series.list <- function(con,
                                    tsl,
                                    access,
