@@ -23,25 +23,23 @@ store_time_series <- function(con,
   UseMethod("store_time_series", object = x)
 }
 
+
 store_time_series.list <- function(con,
-                                     tsl,
-                                     access,
-                                     valid_from = NA,
-                                     release_date = NA,
-                                     schema = "timeseries"){
-  e <- any(!sapply(tsl, class) %in% c("ts","xts","zoo"))
-  if(e){
-    stop("At least one element of the list is not a supported time series. Double check your list and/or consider the tsbox package to convert time series formats.")
-  } 
-  class(tsl) <- "tslist"
-  store_time_series(con = con, tsl,
+                                   tsl,
+                                   access,
+                                   valid_from = NA,
+                                   release_date = NA,
+                                   schema = "timeseries"){
+  
+  is_tsl <- sapply(tsl, function(x) inherits(x,c("ts","zoo","xts")))
+  tsl <- tsl[is_tsl]
+  class(tsl) <- c("tslist","tsl")
+  store_time_series(con, tsl,
                     access = access,
                     valid_from = valid_from,
                     release_date = release_date,
-                    schema = schema)  
-  
+                    schema = schema)
 }
-
 
 store_time_series.tslist <- function(con,
                                      tsl,
@@ -64,7 +62,7 @@ store_time_series.tslist <- function(con,
   }
   
   tsl <- tsl[keep]
-
+  
   store_records(con,
                 to_ts_json(tsl),
                 access,
@@ -75,11 +73,11 @@ store_time_series.tslist <- function(con,
 }
 
 store_time_series.data.table <- function(con,
-                                    dt,
-                                    access,
-                                    valid_from = NA,
-                                    release_date = NA,
-                                    schema = "timeseries") {
+                                         dt,
+                                         access,
+                                         valid_from = NA,
+                                         release_date = NA,
+                                         schema = "timeseries") {
   if(!all(c("id", "time", "value") %in% names(dt))) {
     stop("This does not look like a ts data.table. Expected column names id, time and value.")
   }

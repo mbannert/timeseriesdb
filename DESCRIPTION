@@ -25,5 +25,6 @@ Maintainer: Matthias Bannert <bannert@kof.ethz.ch>
 URL: https://github.com/mbannert/timeseriesdb
 BugReports: https://github.com/mbannert/timeseriesdb/issues
 LazyData: true
-RoxygenNote: 7.0.2
+Maintainer: 'Matthias Bannert' <bannert@kof.ethz.ch>
+RoxygenNote: 7.1.0
 Encoding: UTF-8

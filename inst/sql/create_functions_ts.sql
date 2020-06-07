@@ -45,8 +45,6 @@ BEGIN
   WHERE timeseries.catalog.ts_key IS NULL;
 
   -- Generate computed property "coverage"
-  ALTER TABLE tmp_ts_updates
-  ADD COLUMN coverage DATERANGE;
   UPDATE tmp_ts_updates
   SET coverage = concat('[', ts_data->'time'->0, ',', ts_data->'time'->-1, ')')::daterange;
 

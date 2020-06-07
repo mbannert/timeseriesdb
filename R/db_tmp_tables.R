@@ -12,9 +12,16 @@ db_tmp_store <- function(con,
                          records) {
 
   # TODO: add mechanism for setting column names (for e.g. metadata)
+  # Note, it's important to create the coverage column here because of an
+  # rights issue: The tmp_ts_updates table will belong to the user logged in.
+  # Because in PostgreSQL tables can only be altered by the OWNER and therefore
+  # the insert function which runs as SECURITY DEFINER (the rights of the user
+  # who created them) can't AlTER the temp table it needs to 
+  # contain the coverage column from the start.
   dt <- data.table(
     ts_key = names(records),
-    ts_data = unlist(records)
+    ts_data = unlist(records),
+    coverage = NA
   )
 
   dbWriteTable(con,
@@ -24,9 +31,15 @@ db_tmp_store <- function(con,
                overwrite = TRUE,
                field.types = c(
                  ts_key = "text",
-                 ts_data = "json"
+                 ts_data = "json",
+                 coverage = "daterange"
                )
   )
+  # This is needed because non-admins only use SECURITY DEFINERs and those
+  # functions belong to the admin and need to access these user specific temp
+  # tables, too.
+  grant <- dbExecute(con, "GRANT SELECT, INSERT, DELETE, UPDATE ON tmp_ts_updates TO timeseries_admin")
+
 }
 
 
@@ -73,4 +86,8 @@ db_tmp_read <- function(con,
                  )
     )
   }
+  # This is needed because non-admins only use SECURITY DEFINERs and those
+  # functions belong to the admin and need to access these user specific temp
+  # tables, too.
+  grant <- dbExecute(con, "GRANT SELECT ON tmp_ts_read_keys TO timeseries_admin")
 }
