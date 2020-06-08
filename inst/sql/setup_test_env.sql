@@ -1,16 +1,16 @@
-CREATE ROLE dev_reader_public;
+CREATE ROLE dev_reader_public LOGIN PASSWORD 'dev_reader_public';
 GRANT timeseries_access_public TO dev_reader_public;
 GRANT timeseries_reader TO dev_reader_public;
 
-CREATE ROLE dev_writer_public;
+CREATE ROLE dev_writer_public LOGIN PASSWORD 'dev_writer_public';
 GRANT timeseries_access_public TO dev_writer_public;
 GRANT timeseries_writer TO dev_writer_public;
 
-CREATE ROLE dev_reader_main;
+CREATE ROLE dev_reader_main LOGIN PASSWORD 'dev_reader_main';
 GRANT timeseries_access_main TO dev_reader_main;
 GRANT timeseries_reader TO dev_reader_main;
 
-CREATE ROLE dev_writer_main;
+CREATE ROLE dev_writer_main LOGIN PASSWORD 'dev_writer_main';
 GRANT timeseries_access_main TO dev_writer_main;
 GRANT timeseries_writer TO dev_writer_main;
 
