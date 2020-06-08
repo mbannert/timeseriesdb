@@ -33,22 +33,22 @@ if(is_test_db_reachable()) {
   # TODO: This would be more robust if we took charge of what time it is entirely (on db and here)
   store_time_series(con,
                     tsl_state_0,
-                    "public",
+                    "timeseries_access_public",
                     valid_from = current_date - 4,
                     release_date = current_date - 4)
   store_time_series(con,
                     tsl_state_1,
-                    "public",
+                    "timeseries_access_public",
                     valid_from = current_date - 3,
                     release_date = current_date - 1)
   store_time_series(con,
                     tsl_state_2,
-                    "public",
+                    "timeseries_access_public",
                     valid_from = current_date - 1,
                     release_date = current_date + 2)
   store_time_series(con,
                     tsl_state_2_v2,
-                    "public",
+                    "timeseries_access_public",
                     valid_from = current_date + 1,
                     release_date = current_date + 2)
 }

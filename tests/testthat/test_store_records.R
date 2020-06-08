@@ -22,22 +22,22 @@ names_to_test <- setdiff(main_names, c("id", "created_by", "created_at"))
 # dbExecute(con, "DELETE FROM timeseries.timeseries_main")
 # dbExecute(con, "DELETE FROM timeseries.catalog")
 #
-# store_time_series(con, tsl, "public", valid_from = "2019-01-01", release_date = "2019-01-02")
+# store_time_series(con, tsl, "timeseries_access_public", valid_from = "2019-01-01", release_date = "2019-01-02")
 #
 # catalog_after_insert_1 <- dbGetQuery(con, "SELECT * FROM timeseries.catalog")
 # main_after_insert_1 <- dbGetQuery(con, "SELECT * FROM timeseries.timeseries_main")
 #
-# store_time_series(con, tsl, "public", valid_from = "2019-02-01", release_date = "2019-02-02")
+# store_time_series(con, tsl, "timeseries_access_public", valid_from = "2019-02-01", release_date = "2019-02-02")
 #
 # catalog_after_insert_2 <- dbGetQuery(con, "SELECT * FROM timeseries.catalog")
 # main_after_insert_2 <- dbGetQuery(con, "SELECT * FROM timeseries.timeseries_main")
 #
-# store_time_series(con, tsl, "public", valid_from = "2019-03-01", release_date = "2019-03-02")
+# store_time_series(con, tsl, "timeseries_access_public", valid_from = "2019-03-01", release_date = "2019-03-02")
 #
 # catalog_after_insert_3 <- dbGetQuery(con, "SELECT * FROM timeseries.catalog")
 # main_after_insert_3 <- dbGetQuery(con, "SELECT * FROM timeseries.timeseries_main")
 #
-# store_time_series(con, tsl_update, "public", valid_from = "2019-03-01", release_date = "2019-03-02")
+# store_time_series(con, tsl_update, "timeseries_access_public", valid_from = "2019-03-01", release_date = "2019-03-02")
 #
 # main_after_update <- dbGetQuery(con, "SELECT * FROM timeseries.timeseries_main")
 #
@@ -65,7 +65,7 @@ test_that("It returns a status json", {
 
   reset_db(con)
 
-  out <- store_time_series(con, tsl, "public", valid_from = "2019-01-01", release_date = "2019-01-02")
+  out <- store_time_series(con, tsl, "timeseries_access_public", valid_from = "2019-01-01", release_date = "2019-01-02")
   expect_is(out, "list")
   expect_equal(out$status, "ok")
 })
@@ -76,7 +76,7 @@ test_that("Inserts produce valid state", {
 
   reset_db(con)
 
-  store_time_series(con, tsl, "public", valid_from = "2019-01-01", release_date = "2019-01-02")
+  store_time_series(con, tsl, "timeseries_access_public", valid_from = "2019-01-01", release_date = "2019-01-02")
   expect_equal(
     dbGetQuery(con, "SELECT * FROM timeseries.catalog"),
     catalog_after_insert_1
@@ -89,7 +89,7 @@ test_that("Inserts produce valid state", {
     main_after_insert_1[, names_to_test]
   )
 
-  store_time_series(con, tsl, "public", valid_from = "2019-02-01", release_date = "2019-02-02")
+  store_time_series(con, tsl, "timeseries_access_public", valid_from = "2019-02-01", release_date = "2019-02-02")
   expect_equal(
     dbGetQuery(con, "SELECT * FROM timeseries.catalog"),
     catalog_after_insert_2
@@ -99,7 +99,7 @@ test_that("Inserts produce valid state", {
     main_after_insert_2[, names_to_test]
   )
 
-  store_time_series(con, tsl, "public", valid_from = "2019-03-01", release_date = "2019-03-02")
+  store_time_series(con, tsl, "timeseries_access_public", valid_from = "2019-03-01", release_date = "2019-03-02")
   expect_equal(
     dbGetQuery(con, "SELECT * FROM timeseries.catalog"),
     catalog_after_insert_3
@@ -116,9 +116,9 @@ test_that("storing series with invalid vintages is an error", {
 
   reset_db(con)
 
-  store_time_series(con, tsl, "public", valid_from = "2019-01-01", release_date = "2019-01-02")
-  store_time_series(con, tsl, "public", valid_from = "2019-02-01", release_date = "2019-02-02")
-  store_time_series(con, tsl, "public", valid_from = "2019-03-01", release_date = "2019-03-02")
+  store_time_series(con, tsl, "timeseries_access_public", valid_from = "2019-01-01", release_date = "2019-01-02")
+  store_time_series(con, tsl, "timeseries_access_public", valid_from = "2019-02-01", release_date = "2019-02-02")
+  store_time_series(con, tsl, "timeseries_access_public", valid_from = "2019-03-01", release_date = "2019-03-02")
   failed <- store_time_series(con, tsl[1], "public", valid_from = "2019-02-01", release_date = "2019-03-02")
   expect_equal(names(failed), c("status", "message", "offending_keys"))
   expect_equal(failed$status, "warning")
@@ -131,13 +131,13 @@ test_that("storing with edge vintage causes update", {
 
   reset_db(con)
 
-  store_time_series(con, tsl, "public", valid_from = "2019-01-01", release_date = "2019-01-02")
+  store_time_series(con, tsl, "timeseries_access_public", valid_from = "2019-01-01", release_date = "2019-01-02")
 
-  store_time_series(con, tsl, "public", valid_from = "2019-02-01", release_date = "2019-02-02")
+  store_time_series(con, tsl, "timeseries_access_public", valid_from = "2019-02-01", release_date = "2019-02-02")
 
-  store_time_series(con, tsl, "public", valid_from = "2019-03-01", release_date = "2019-03-02")
+  store_time_series(con, tsl, "timeseries_access_public", valid_from = "2019-03-01", release_date = "2019-03-02")
 
-  store_time_series(con, tsl_update, "public", valid_from = "2019-03-01", release_date = "2019-03-02")
+  store_time_series(con, tsl_update, "timeseries_access_public", valid_from = "2019-03-01", release_date = "2019-03-02")
 
   expect_equal(
     dbGetQuery(con, "SELECT * FROM timeseries.timeseries_main")[, names_to_test],
@@ -151,13 +151,13 @@ test_that("overwriting older vintage is not possible", {
 
   reset_db(con)
 
-  store_time_series(con, tsl, "public", valid_from = "2019-01-01", release_date = "2019-01-02")
+  store_time_series(con, tsl, "timeseries_access_public", valid_from = "2019-01-01", release_date = "2019-01-02")
 
-  store_time_series(con, tsl, "public", valid_from = "2019-02-01", release_date = "2019-02-02")
+  store_time_series(con, tsl, "timeseries_access_public", valid_from = "2019-02-01", release_date = "2019-02-02")
 
-  store_time_series(con, tsl, "public", valid_from = "2019-03-01", release_date = "2019-03-02")
+  store_time_series(con, tsl, "timeseries_access_public", valid_from = "2019-03-01", release_date = "2019-03-02")
 
-  store_time_series(con, tsl_update, "public", valid_from = "2019-02-01", release_date = "2019-03-02")
+  store_time_series(con, tsl_update, "timeseries_access_public", valid_from = "2019-02-01", release_date = "2019-03-02")
 
   expect_equal(
     dbGetQuery(con, "SELECT * FROM timeseries.timeseries_main")[, names_to_test],
