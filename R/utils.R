@@ -78,7 +78,7 @@ get_list_depth <- function(this) {
 #' @param con RPostgres connection object
 #' @param fname character Name of the function to be called
 #' @param schema character Name of the timeseries schema
-#' @param args list of function arguments. A single, unnested list. 
+#' @param args list of function arguments. A single, unnested list.
 #'
 #' @return value of `dbGetQuery(con, "SELECT * FROM schema.fname($args)")$fname`
 db_call_function <- function(con,
@@ -91,7 +91,6 @@ db_call_function <- function(con,
                    ifelse(length(args) > 0,
                           paste(sprintf("$%d", 1:length(args)), collapse = ", "),
                           ""))
-
 
   res <- dbGetQuery(con, query, args)
 
