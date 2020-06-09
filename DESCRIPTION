@@ -1,7 +1,7 @@
 Package: timeseriesdb
 Type: Package
 Version: 1.0
-Title: Manage Time Series for Official Statistics with R and PostgreSQL
+Title: A Time Series Database for Official Statistics with R and PostgreSQL
 Description: Archive and manage times series data from official statistics. The 'timeseriesdb' package was designed to manage a large catalog of time series from official statistics which are typically published on a monthly, quarterly or yearly basis. Thus timeseriesdb is optimized to handle updates caused by data revision as well as elaborate, multi-lingual meta information. 
 Author: "Matthias Bannert <bannert@kof.ethz.ch> [aut, cre], Severin Thöni <sthoeni@kof.ethz.ch> [aut]"
 Depends:
@@ -20,7 +20,7 @@ Suggests:
     mockery
 VignetteBuilder: knitr
 Date: 2020-03-07
-License: GPL-2
+License: GPL-3
 URL: https://github.com/mbannert/timeseriesdb
 BugReports: https://github.com/mbannert/timeseriesdb/issues
 LazyData: true

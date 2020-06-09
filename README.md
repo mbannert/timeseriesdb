@@ -1,19 +1,27 @@
 # {timeseriesdb}: A Time Series Database for Official Statistics
 
+[![CRAN_Status_Badge](https://www.r-pkg.org/badges/version/timeseriesdb)](https://cran.r-project.org/package=timeseriesdb)
+[![CRAN_time_from_release](https://www.r-pkg.org/badges/ago/timeseriesdb)](https://cran.r-project.org/package=timeseriesdb)
+[![metacran downloads](https://cranlogs.r-pkg.org/badges/timeseriesdb)](https://cran.r-project.org/package=timeseriesdb)
+[![license](https://img.shields.io/badge/license-gplv3-lightgrey.svg)](https://choosealicense.com/)
+
+
 {timeseriesdb} maps R time series objects to PostgreSQL database relations for permanent storage. Instead of writing time series to spreadsheet files or .RData files on disk, {timeseriesdb} uses a set of PostgreSQL relations which allows to store data alongside extensive, multi-lingual meta information in context aware fashion. {timeseriesdb} was designed with official statistics in mind: It can keep track of various versions of the same time series to handle data revisions, e.g., in the case of GDP data. 
 
-Find da 
+More information about {timeseriesdb} including a Quick Start Guide, Detailed User Guide and
+our Developer Documentation is available on [our pkgdown official documentation](). 
 
 ## Why {timeseriesdb} ?
 
 {timeseriesdb}  ... 
 
-- is lite weight but powerful. 
+- is lite weight but powerful: version
 - built entirely based on license cost free open source components.
 - tailored to the needs of Official and Economic Statistics
 - administration friendly, extendable access rights management
-- API ready: {timeseriesdb} can easily be extended to expose data through a REST API to allow for language agnostic access to the data
 - well documented, developer friendly. 
+- API ready: {timeseriesdb} can easily be extended to expose data through a REST API to allow for language agnostic access to your time series.
+
 
 ## What Does {timeseriesdb} NOT DO ?  
 
@@ -25,25 +33,58 @@ Skip the __blabla__. You know what SQL is? You are a seasoned useR and work with
 
 ### Using Docker
 
-If you're familiar with the docker basics and have a remote docker host and/or local docker installation, the docker based approach is the easiest way to check out {timeseriesdb} in action. A shell script that ships with {timeseriesdb} helps to set up a test instance of {timeseriesdb} in a docker container: 
+If you're familiar with the docker basics and have a remote docker host and/or local docker installation, the docker based approach is the easiest way to check out {timeseriesdb} in action. {timeseriesdb} ships a shell script to set up a test instance of {timeseriesdb} in a docker container. Basically, this script
+does the following:
 
-1. Any container running as _timeseriesdb_dev_ will be stoped if it
+1. Stop container running as _timeseriesdb_dev_ if it exists.
 
-2. 
+2. Pull a __PostgreSQL_ docker image from docker hub if you don't have that already.
 
-First, let's pull a __PostgreSQL_ docker image from docker hub. Depending on your OS and configuration, e.g., on Ubuntu systems  you'll need use _sudo_ to run docker.
+3. Create all tables and functions, grant access rights according to a few basic blue 
+print roles (admin, reader, writer) and access levels (public, main, restricted).
 
+Note: depending on your OS and configuration, e.g., on Ubuntu systems you'll need use _sudo_ to run docker. The easiest way to start the script is to change into your install directory and run 
 
-```r
-system(
-   sprintf(
-     "%s ./%s",
-     "sudo",
-     system.file("start_dev_docker.sh",package = "timeseriesdb")
-    )
-)
+```
+./start_docker_dev.sh
 ```
 
+If you don't know where R package installation directory is, simply find out by
+running 
+
+```
+system.file(package = "timeseriesdb")
+```
+
+or download the {timeseriesdb} package source from [CRAN](https://cran.r-project.org/package=timeseriesdb) or [GitHub](). 
+
+
+### Locally 
+
+This quick start guide assumes you've PostgreSQL installed or have access to a remote PostgreSQL database including the necessary access rights to create new schemas and tables. Also, let's assume you installed R. If that's not case please refer to: 
+
+- [PostgreSQL Download](https://www.postgresql.org/download/)
+- [R Language for Statistical Computing](https://www.r-project.org/)
+
+1. Before Install the R Package Install the R package (stable version)
+
+
+2. Install the {timeseriesdb} R Package 
+
+{timeseriesdb} is on CRAN. To install the stable version (recommended to most users),
+
+run
+
+```
+install.packages("timeseriesdb")
+```
+
+or use the {remotes} or {devtools} packages to directly 
+download the developer version {timeseriesdb} from GitHub: 
+
+```
+remotes::install_github("mbannert/timeseriesdb")
+```
 
 
 
@@ -57,11 +98,11 @@ The learn more about the use of {timeseriesdb}, visit its {pkgdown} documentatio
 
 ```
 # Create DB connection. 
-# In this case to a local db running on port 111
-# w/o pw -- strongly discouraged for production. 
+# In this case connect to a local db running on port 1111
+# /w lame passwords -- strongly discouraged for production. 
 con <- dbConnect(Postgres(),
-                "dev_admin", "localhost",
-                 1111, "",
+                "dev_writer", "localhost",
+                 1111, "dev_writer",
                 "postgres")
 tsl <- list(ts1 = ts(rnorm(100), frequency = 12,
                      start = 2002),
@@ -75,91 +116,28 @@ dbDisconnect(con)
 
 ```
 con <- dbConnect(Postgres(),
-                "dev_admin", "localhost",
-                 1111, "",
+                "dev_writer", "localhost",
+                 1111, "dev_writer",
                 "postgres")
 
 tsl <- db_read_ts(connection, c("some_ts_id","another_ts_id"))
 dbDisconnect(con)
 ```
 
+### Advanced Features
 
-## Installation 
+{timeseriesdb} offers a plethora of features beyond just mere storage of time 
+series themselves:  
 
-### The R Package
-
-First install the {timeseriesdb} R package which is as straight forward as for any other R package
-
-from CRAN:
-
-```
-install.packages("timeseriesdb")
-```
-
-from github (latest developer version):
-
-```
-library(devtools)
-install_github("mbannert/timeseriesdb")
-
-```
-
-### The Database Backend
-
-PostgreSQL is a license costs free, open source Relational Database Management System (DBMS). [Download PostgreSQL](https://www.postgresql.org/download/) from the official website and follow installation instructions for your Operating System. 
-
-Choose one of the following options to run your database backend.
-
-1. Install an instance of PostgreSQL locally on your machine.
-
-2. Just install a PostgreSQL client and connect to a remote PostgreSQL instance, running on, e.g., your IT department's infrastructure, AWS, GPC or any other cloud. 
-
-3. Just install a PostgreSQL client and connect to a local docker container based on a basic PostgreSQL (>= PG 11) image.
-
-Options 1 & 2 are valid production options while option 3 is for testing and development purposes. If you need help getting one of the first two options to go, please check the installation guides refererred to above. 
-
-We will describe option 3 briefly in the following paragraphs. 
-Note that you will have a slight advantages running this option when you just clone the git repository from mbannert/timeseriesdb as opposed to just installing the R package. Start the cloned repo as an R Studio project to benefit from the setup scripts inst/sql without looking for them in the installation path. 
-
-Download Docker Desktop and make sure it is running. Switch 
-to your command line (terminal, powershell etc.) and pull
-a standard PostgreSQL image from Docker Hub.
-
-```
-docker pull postgresql-latest
-```
-
-Now run 
-
-```
-docker stop timeseriesdb_dev
-docker run --rm -d -p 1111:5432 --name timeseriesdb_dev  postgres:11
-sleep 2
-```
-
-This will stop a container with the name *timeseriesdb_dev* if one was running. Then a container running PostgreSQL 11 will be started. This container will be automatically removed once stopped. We map your local port 1111 to the containers 
-port 5432 which is the standard port for running a PostgreSQL service. 
-
-Now let's run some SQL scripts on that docker container.
-Make sure to you are in the inst/ folder when running these. 
-
-```
-psql -p 1111 -h 'localhost' -d postgres -U postgres -f sql/create_extensions.sql
-psql -p 1111 -h 'localhost' -d postgres -U postgres -f sql/create_tables.sql
-psql -p 1111 -h 'localhost' -d postgres -U postgres -f sql/create_functions.sql
-psql -p 1111 -h 'localhost' -d postgres -U postgres -f sql/create_triggers.sql
-```
-
-This will install the PostgreSQL extensions *uuid-ossp* and 
-*btree_gist* that are necessary to run timeseriesdb. The next scripts create several tables and functions which are the heart of {timeseriesdb}. Finally some triggers are created. Check the developer documentation if you want to learn more about the inner workings of {timeseriesdb}.
-
-## Details
-
-For a detailed documentation, check this pkgdown documentation.
-The documentation contains a get-started-guide, a function reference and developer documentation. 
-
-
-
+- store vintages (versions) of time series
+- datasets to group time series
+- store extensive, multi-lingual, versioned meta information at
+  dataset and time series level
+- individual, user specific collections of time series similar to bookmark or
+playlist functionality
+- administration friendly access management with reasonable defaults
+  (public, internal, restricted)
+- release calendar functionality to facilitate on time publishing
 
 
 

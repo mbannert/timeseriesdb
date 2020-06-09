@@ -5,20 +5,20 @@
 <meta charset="utf-8">
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Manage Time Series for Official Statistics with R and PostgreSQL • timeseriesdb</title>
-<!-- jquery --><script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.4.1/jquery.min.js" integrity="sha256-CSXorXvZcTkaix6Yvo6HppcZGetbYMGWSFlBw8HfCJo=" crossorigin="anonymous"></script><!-- Bootstrap --><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.4.1/css/bootstrap.min.css" integrity="sha256-bZLfwXAP04zRMK2BjiO8iu9pf4FbLqX6zitd+tIvLhE=" crossorigin="anonymous">
-<script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.4.1/js/bootstrap.min.js" integrity="sha256-nuL8/2cJ5NDSSwnKD8VqreErSWHtnEP9E7AySL+1ev4=" crossorigin="anonymous"></script><!-- bootstrap-toc --><link rel="stylesheet" href="bootstrap-toc.css">
-<script src="bootstrap-toc.js"></script><!-- Font Awesome icons --><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.12.1/css/all.min.css" integrity="sha256-mmgLkCYLUQbXn0B1SRqzHar6dCnv9oZFPEC1g1cwlkk=" crossorigin="anonymous">
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.12.1/css/v4-shims.min.css" integrity="sha256-wZjR52fzng1pJHwx4aV2AO3yyTOXrcDW7jBpJtTwVxw=" crossorigin="anonymous">
-<!-- clipboard.js --><script src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/2.0.6/clipboard.min.js" integrity="sha256-inc5kl9MA1hkeYUt+EC3BhlIgyp/2jDIyBLS6k3UxPI=" crossorigin="anonymous"></script><!-- headroom.js --><script src="https://cdnjs.cloudflare.com/ajax/libs/headroom/0.11.0/headroom.min.js" integrity="sha256-AsUX4SJE1+yuDu5+mAVzJbuYNPHj/WroHuZ8Ir/CkE0=" crossorigin="anonymous"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/headroom/0.11.0/jQuery.headroom.min.js" integrity="sha256-ZX/yNShbjqsohH1k95liqY9Gd8uOiE1S4vZc+9KQ1K4=" crossorigin="anonymous"></script><!-- pkgdown --><link href="pkgdown.css" rel="stylesheet">
-<script src="pkgdown.js"></script><meta property="og:title" content="Manage Time Series for Official Statistics with R and PostgreSQL">
+<title>A Time Series Database for Official Statistics with R and PostgreSQL • timeseriesdb</title>
+<!-- jquery --><script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js" integrity="sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8=" crossorigin="anonymous"></script><!-- Bootstrap --><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha256-916EbMg70RQy9LHiGkXzG8hSg9EdNy97GazNG/aiY1w=" crossorigin="anonymous">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha256-U5ZEeKfGNOja007MMD3YBI0A3OSZOQbeG6z2f2Y0hu8=" crossorigin="anonymous"></script><!-- Font Awesome icons --><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.7.1/css/all.min.css" integrity="sha256-nAmazAk6vS34Xqo0BSrTb+abbtFlgsFK7NKSi6o7Y78=" crossorigin="anonymous">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.7.1/css/v4-shims.min.css" integrity="sha256-6qHlizsOWFskGlwVOKuns+D1nB6ssZrHQrNj1wGplHc=" crossorigin="anonymous">
+<!-- clipboard.js --><script src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/2.0.4/clipboard.min.js" integrity="sha256-FiZwavyI2V6+EXO1U+xzLG3IKldpiTFf3153ea9zikQ=" crossorigin="anonymous"></script><!-- headroom.js --><script src="https://cdnjs.cloudflare.com/ajax/libs/headroom/0.9.4/headroom.min.js" integrity="sha256-DJFC1kqIhelURkuza0AvYal5RxMtpzLjFhsnVIeuk+U=" crossorigin="anonymous"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/headroom/0.9.4/jQuery.headroom.min.js" integrity="sha256-ZX/yNShbjqsohH1k95liqY9Gd8uOiE1S4vZc+9KQ1K4=" crossorigin="anonymous"></script><!-- pkgdown --><link href="pkgdown.css" rel="stylesheet">
+<script src="pkgdown.js"></script><meta property="og:title" content="A Time Series Database for Official Statistics with R and PostgreSQL">
 <meta property="og:description" content="Archive and manage times series data from official statistics. The timeseriesdb package was designed to manage a large catalog of time series from official statistics which are typically published on a monthly, quarterly or yearly basis. Thus timeseriesdb is optimized to handle updates caused by data revision as well as elaborate, multi-lingual meta information. ">
+<meta name="twitter:card" content="summary">
 <!-- mathjax --><script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/MathJax.js" integrity="sha256-nvJJv9wWKEm88qvoQl9ekL2J+k/RWIsaSScxxlsrv8k=" crossorigin="anonymous"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/config/TeX-AMS-MML_HTMLorMML.js" integrity="sha256-84DKXVJXs0/F8OTMzX4UR909+jtl4G7SPypPavF+GfA=" crossorigin="anonymous"></script><!--[if lt IE 9]>
 <script src="https://oss.maxcdn.com/html5shiv/3.7.3/html5shiv.min.js"></script>
 <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
 <![endif]-->
 </head>
-<body data-spy="scroll" data-target="#toc">
+<body>
     <div class="container template-home">
       <header><div class="navbar navbar-default navbar-fixed-top" role="navigation">
   <div class="container">
@@ -67,10 +67,13 @@
     </li>
   </ul>
 </li>
+<li>
+  <a href="news/index.html">Changelog</a>
+</li>
       </ul>
 <ul class="nav navbar-nav navbar-right">
 <li>
-  <a href="https://github.com/mbannert/timeseriesdb/">
+  <a href="https://github.com/mbannert/timeseriesdb">
     <span class="fab fa fab fa-github fa-lg"></span>
      
   </a>
@@ -87,35 +90,67 @@
 
       </header><div class="row">
   <div class="contents col-md-9">
-<div id="manage-time-series-data-with-r-and-postgresql" class="section level1">
+<div id="timeseriesdb-a-time-series-database-for-official-statistics" class="section level1">
 <div class="page-header"><h1 class="hasAnchor">
-<a href="#manage-time-series-data-with-r-and-postgresql" class="anchor"></a>Manage Time Series Data with R and PostgreSQL</h1></div>
-<p>{timeseriesdb} maps R time series objects to PostgreSQL database relations for permanent storage. Instead of writing time series to spreadsheet files or .RData files on disk, {timeseriesdb} uses a set of PostgreSQL relations which allows to store data alongside extensive, context aware, multi-lingual meta information. {timeseriesdb} was originally designed with official statistics in mind which are typically published on a monthly, quarterly or yearly basis. But the package can also handle time series of irregular frequency. As opposed to many IoT based approaches, {timeseriesdb} is not optimized to append as fast as possible but to handle data revisions such as GDP revisions.</p>
-<div id="why-timeseriesdb-" class="section level2">
+<a href="#timeseriesdb-a-time-series-database-for-official-statistics" class="anchor"></a>{timeseriesdb}: A Time Series Database for Official Statistics</h1></div>
+
+<p>{timeseriesdb} maps R time series objects to PostgreSQL database relations for permanent storage. Instead of writing time series to spreadsheet files or .RData files on disk, {timeseriesdb} uses a set of PostgreSQL relations which allows to store data alongside extensive, multi-lingual meta information in context aware fashion. {timeseriesdb} was designed with official statistics in mind: It can keep track of various versions of the same time series to handle data revisions, e.g., in the case of GDP data.</p>
+<p>More information about {timeseriesdb} including a Quick Start Guide, Detailed User Guide and our Developer Documentation is available on <a href="">our pkgdown official documentation</a>.</p>
+<div id="why-timeseriesdb" class="section level2">
 <h2 class="hasAnchor">
-<a href="#why-timeseriesdb-" class="anchor"></a>Why {timeseriesdb} ?</h2>
+<a href="#why-timeseriesdb" class="anchor"></a>Why {timeseriesdb} ?</h2>
 <p>{timeseriesdb} …</p>
 <ul>
-<li>is lite weight but powerful.</li>
-<li>built entirely based on license cost free open source components, mainly the R Language for Statistical Computing and PostgreSQL</li>
-<li>tailored to the needs of Official and Economic Statistics, it manages
-<ul>
-<li>different versions (vintages) of a time series.</li>
-<li>comprehensive, multi-lingual data description (meta data)</li>
-<li>access rights as granular as on time series level (Row Level Security (RLS))</li>
-<li>multiple administration roles and access levels in such a way that roles and access can easily be extended</li>
-</ul>
-</li>
-<li>API ready. That is {timeseriesdb} can easily be extendend to expose a REST API to allow for language agnostic access to the data</li>
-<li>easy to set up, well documented and developer friendly to extend. Being a CRAN R package, installation is a one liner. Once the R package is installed it helps to set up the database part.</li>
-<li>ships with a toolbox to set up a sandbox DB using a standard docker PostgreSQL image.</li>
-<li>users can compose user-specific collections of time series, similar to playlist in a music player.</li>
+<li>is lite weight but powerful: version</li>
+<li>built entirely based on license cost free open source components.</li>
+<li>tailored to the needs of Official and Economic Statistics</li>
+<li>administration friendly, extendable access rights management</li>
+<li>well documented, developer friendly.</li>
+<li>API ready: {timeseriesdb} can easily be extended to expose data through a REST API to allow for language agnostic access to your time series.</li>
 </ul>
 </div>
-<div id="what-does-timeseriesdb-not-do-" class="section level2">
+<div id="what-does-timeseriesdb-not-do" class="section level2">
 <h2 class="hasAnchor">
-<a href="#what-does-timeseriesdb-not-do-" class="anchor"></a>What Does {timeseriesdb} NOT DO ?</h2>
-<p>{timeseriesdb} is not built to incrementally append new observations as fast as possible. {timeseriesdb} does not try to compete with the amazing speed of InfluxDB or timescale.</p>
+<a href="#what-does-timeseriesdb-not-do" class="anchor"></a>What Does {timeseriesdb} NOT DO ?</h2>
+<p>{timeseriesdb} is not built to incrementally append new observations as fast as possible. {timeseriesdb} does not try to compete with the amazing speed of InfluxDB. It’s not a server log or IoT minded time series storage.</p>
+</div>
+<div id="quick-start-guide" class="section level2">
+<h2 class="hasAnchor">
+<a href="#quick-start-guide" class="anchor"></a>Quick Start Guide</h2>
+<p>Skip the <strong>blabla</strong>. You know what SQL is? You are a seasoned useR and work with time series on a regular basis? Here’s how to get going as quickly as possible.</p>
+<div id="using-docker" class="section level3">
+<h3 class="hasAnchor">
+<a href="#using-docker" class="anchor"></a>Using Docker</h3>
+<p>If you’re familiar with the docker basics and have a remote docker host and/or local docker installation, the docker based approach is the easiest way to check out {timeseriesdb} in action. {timeseriesdb} ships a shell script to set up a test instance of {timeseriesdb} in a docker container. Basically, this script does the following:</p>
+<ol>
+<li><p>Stop container running as <em>timeseriesdb_dev</em> if it exists.</p></li>
+<li><p>Pull a __PostgreSQL_ docker image from docker hub if you don’t have that already.</p></li>
+<li><p>Create all tables and functions, grant access rights according to a few basic blue print roles (admin, reader, writer) and access levels (public, main, restricted).</p></li>
+</ol>
+<p>Note: depending on your OS and configuration, e.g., on Ubuntu systems you’ll need use <em>sudo</em> to run docker. The easiest way to start the script is to change into your install directory and run</p>
+<pre><code>./start_docker_dev.sh</code></pre>
+<p>If you don’t know where R package installation directory is, simply find out by running</p>
+<pre><code><a href="https://rdrr.io/r/base/system.file.html">system.file(package = "timeseriesdb")</a></code></pre>
+<p>or download the {timeseriesdb} package source from <a href="https://cran.r-project.org/package=timeseriesdb">CRAN</a> or <a href="">GitHub</a>.</p>
+</div>
+<div id="locally" class="section level3">
+<h3 class="hasAnchor">
+<a href="#locally" class="anchor"></a>Locally</h3>
+<p>This quick start guide assumes you’ve PostgreSQL installed or have access to a remote PostgreSQL database including the necessary access rights to create new schemas and tables. Also, let’s assume you installed R. If that’s not case please refer to:</p>
+<ul>
+<li><a href="https://www.postgresql.org/download/">PostgreSQL Download</a></li>
+<li><a href="https://www.r-project.org/">R Language for Statistical Computing</a></li>
+</ul>
+<ol>
+<li><p>Before Install the R Package Install the R package (stable version)</p></li>
+<li><p>Install the {timeseriesdb} R Package</p></li>
+</ol>
+<p>{timeseriesdb} is on CRAN. To install the stable version (recommended to most users),</p>
+<p>run</p>
+<pre><code><a href="https://rdrr.io/r/utils/install.packages.html">install.packages("timeseriesdb")</a></code></pre>
+<p>or use the {remotes} or {devtools} packages to directly download the developer version {timeseriesdb} from GitHub:</p>
+<pre><code><a href="https://remotes.r-lib.org/reference/install_github.html">remotes::install_github("mbannert/timeseriesdb")</a></code></pre>
+</div>
 </div>
 <div id="example-use-basic-usage" class="section level2">
 <h2 class="hasAnchor">
@@ -125,11 +160,11 @@
 <h3 class="hasAnchor">
 <a href="#store-a-list-of-r-time-series-objects-to-the-database" class="anchor"></a>Store a List of R Time Series Objects to the Database</h3>
 <pre><code># Create DB connection. 
-# In this case to a local db running on port 111
-# w/o pw -- strongly discouraged for production. 
+# In this case connect to a local db running on port 1111
+# /w lame passwords -- strongly discouraged for production. 
 con &lt;- dbConnect(Postgres(),
-                "dev_admin", "localhost",
-                 1111, "",
+                "dev_writer", "localhost",
+                 1111, "dev_writer",
                 "postgres")
 tsl &lt;- list(ts1 = ts(rnorm(100), frequency = 12,
                      start = 2002),
@@ -142,70 +177,37 @@ dbDisconnect(con)</code></pre>
 <h3 class="hasAnchor">
 <a href="#read-data-into-a-list-of-r-time-series-object" class="anchor"></a>Read Data into a list of R time Series object</h3>
 <pre><code>con &lt;- dbConnect(Postgres(),
-                "dev_admin", "localhost",
-                 1111, "",
+                "dev_writer", "localhost",
+                 1111, "dev_writer",
                 "postgres")
 
 tsl &lt;- db_read_ts(connection, c("some_ts_id","another_ts_id"))
 dbDisconnect(con)</code></pre>
 </div>
-</div>
-<div id="installation" class="section level2">
-<h2 class="hasAnchor">
-<a href="#installation" class="anchor"></a>Installation</h2>
-<div id="the-r-package" class="section level3">
+<div id="advanced-features" class="section level3">
 <h3 class="hasAnchor">
-<a href="#the-r-package" class="anchor"></a>The R Package</h3>
-<p>First install the {timeseriesdb} R package which is as straight forward as for any other R package</p>
-<p>from CRAN:</p>
-<pre><code><a href="https://rdrr.io/r/utils/install.packages.html">install.packages("timeseriesdb")</a></code></pre>
-<p>from github (latest developer version):</p>
-<pre><code><a href="https://devtools.r-lib.org//reference">library(devtools)
-install_github("mbannert/timeseriesdb")
-</a></code></pre>
+<a href="#advanced-features" class="anchor"></a>Advanced Features</h3>
+<p>{timeseriesdb} offers a plethora of features beyond just mere storage of time series themselves:</p>
+<ul>
+<li>store vintages (versions) of time series</li>
+<li>datasets to group time series</li>
+<li>store extensive, multi-lingual, versioned meta information at dataset and time series level</li>
+<li>individual, user specific collections of time series similar to bookmark or playlist functionality</li>
+<li>administration friendly access management with reasonable defaults (public, internal, restricted)</li>
+<li>release calendar functionality to facilitate on time publishing</li>
+</ul>
 </div>
-<div id="the-database-backend" class="section level3">
-<h3 class="hasAnchor">
-<a href="#the-database-backend" class="anchor"></a>The Database Backend</h3>
-<p>PostgreSQL is a license costs free, open source Relational Database Management System (DBMS). <a href="https://www.postgresql.org/download/">Download PostgreSQL</a> from the official website and follow installation instructions for your Operating System.</p>
-<p>Choose one of the following options to run your database backend.</p>
-<ol>
-<li><p>Install an instance of PostgreSQL locally on your machine.</p></li>
-<li><p>Just install a PostgreSQL client and connect to a remote PostgreSQL instance, running on, e.g., your IT department’s infrastructure, AWS, GPC or any other cloud.</p></li>
-<li><p>Just install a PostgreSQL client and connect to a local docker container based on a basic PostgreSQL (&gt;= PG 11) image.</p></li>
-</ol>
-<p>Options 1 &amp; 2 are valid production options while option 3 is for testing and development purposes. If you need help getting one of the first two options to go, please check the installation guides refererred to above.</p>
-<p>We will describe option 3 briefly in the following paragraphs. Note that you will have a slight advantages running this option when you just clone the git repository from mbannert/timeseriesdb as opposed to just installing the R package. Start the cloned repo as an R Studio project to benefit from the setup scripts inst/sql without looking for them in the installation path.</p>
-<p>Download Docker Desktop and make sure it is running. Switch to your command line (terminal, powershell etc.) and pull a standard PostgreSQL image from Docker Hub.</p>
-<pre><code>docker pull postgresql-latest</code></pre>
-<p>Now run</p>
-<pre><code>docker stop timeseriesdb_dev
-docker run --rm -d -p 1111:5432 --name timeseriesdb_dev  postgres:11
-sleep 2</code></pre>
-<p>This will stop a container with the name <em>timeseriesdb_dev</em> if one was running. Then a container running PostgreSQL 11 will be started. This container will be automatically removed once stopped. We map your local port 1111 to the containers port 5432 which is the standard port for running a PostgreSQL service.</p>
-<p>Now let’s run some SQL scripts on that docker container. Make sure to you are in the inst/ folder when running these.</p>
-<pre><code>psql -p 1111 -h 'localhost' -d postgres -U postgres -f sql/create_extensions.sql
-psql -p 1111 -h 'localhost' -d postgres -U postgres -f sql/create_tables.sql
-psql -p 1111 -h 'localhost' -d postgres -U postgres -f sql/create_functions.sql
-psql -p 1111 -h 'localhost' -d postgres -U postgres -f sql/create_triggers.sql</code></pre>
-<p>This will install the PostgreSQL extensions <em>uuid-ossp</em> and <em>btree_gist</em> that are necessary to run timeseriesdb. The next scripts create several tables and functions which are the heart of {timeseriesdb}. Finally some triggers are created. Check the developer documentation if you want to learn more about the inner workings of {timeseriesdb}.</p>
-</div>
-</div>
-<div id="details" class="section level2">
-<h2 class="hasAnchor">
-<a href="#details" class="anchor"></a>Details</h2>
-<p>For a detailed documentation, check this pkgdown documentation. The documentation contains a get-started-guide, a function reference and developer documentation.</p>
 </div>
 </div>
   </div>
 
-  <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">
+  <div class="col-md-3 hidden-xs hidden-sm" id="sidebar">
     <div class="links">
 <h2>Links</h2>
 <ul class="list-unstyled">
 <li>Download from CRAN at <br><a href="https://cloud.r-project.org/package=timeseriesdb">https://​cloud.r-project.org/​package=timeseriesdb</a>
 </li>
-<li>Browse source code at <br><a href="https://github.com/mbannert/timeseriesdb/">https://​github.com/​mbannert/​timeseriesdb/​</a>
+<li>Browse source code at <br><a href="https://github.com/mbannert/timeseriesdb">https://​github.com/​mbannert/​timeseriesdb</a>
 </li>
 <li>Report a bug at <br><a href="https://github.com/mbannert/timeseriesdb/issues">https://​github.com/​mbannert/​timeseriesdb/​issues</a>
 </li>
@@ -214,7 +216,8 @@ psql -p 1111 -h 'localhost' -d postgres -U postgres -f sql/create_triggers.sql</
 <div class="license">
 <h2>License</h2>
 <ul class="list-unstyled">
-<li><a href="https://www.r-project.org/Licenses/GPL-2">GPL-2</a></li>
+<li><a href="LICENSE.html">Full license</a></li>
+<li><small><a href="https://www.r-project.org/Licenses/GPL-3">GPL-3</a></small></li>
 </ul>
 </div>
 <div class="developers">
@@ -224,7 +227,16 @@ psql -p 1111 -h 'localhost' -d postgres -U postgres -f sql/create_triggers.sql</
 </ul>
 </div>
 
-  </div>
+  <div class="dev-status">
+<h2>Dev status</h2>
+<ul class="list-unstyled">
+<li><a href="https://cran.r-project.org/package=timeseriesdb"><img src="https://www.r-pkg.org/badges/version/timeseriesdb" alt="CRAN_Status_Badge"></a></li>
+<li><a href="https://cran.r-project.org/package=timeseriesdb"><img src="https://www.r-pkg.org/badges/ago/timeseriesdb" alt="CRAN_time_from_release"></a></li>
+<li><a href="https://cran.r-project.org/package=timeseriesdb"><img src="https://cranlogs.r-pkg.org/badges/timeseriesdb" alt="metacran downloads"></a></li>
+<li><a href="https://choosealicense.com/"><img src="https://img.shields.io/badge/license-gplv3-lightgrey.svg" alt="license"></a></li>
+</ul>
+</div>
+</div>
 </div>
 
 
@@ -233,7 +245,7 @@ psql -p 1111 -h 'localhost' -d postgres -U postgres -f sql/create_triggers.sql</
 </div>
 
 <div class="pkgdown">
-  <p>Site built with <a href="https://pkgdown.r-lib.org/">pkgdown</a> 1.5.1.</p>
+  <p>Site built with <a href="https://pkgdown.r-lib.org/">pkgdown</a> 1.4.1.</p>
 </div>
 
       </footer>

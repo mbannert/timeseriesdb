@@ -6,7 +6,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>Store a set of time series to database — store_time_series • timeseriesdb</title>
+<title>Changelog • timeseriesdb</title>
 
 
 <!-- jquery -->
@@ -35,9 +35,7 @@
 
 
 
-<meta property="og:title" content="Store a set of time series to database — store_time_series" />
-<meta property="og:description" content="Store a set of time series to database" />
-<meta name="twitter:card" content="summary" />
+<meta property="og:title" content="Changelog" />
 
 
 
@@ -56,7 +54,7 @@
   </head>
 
   <body>
-    <div class="container template-reference-topic">
+    <div class="container template-news">
       <header>
       <div class="navbar navbar-default navbar-fixed-top" role="navigation">
   <div class="container">
@@ -129,75 +127,89 @@
 <div class="row">
   <div class="col-md-9 contents">
     <div class="page-header">
-    <h1>Store a set of time series to database</h1>
-    <small class="dont-index">Source: <a href='https://github.com/mbannert/timeseriesdb/blob/master/R/store_time_series.R'><code>R/store_time_series.R</code></a></small>
-    <div class="hidden name"><code>store_time_series.Rd</code></div>
+      <h1>Changelog <small></small></h1>
+      <small>Source: <a href='https://github.com/mbannert/timeseriesdb/blob/master/NEWS.md'><code>NEWS.md</code></a></small>
     </div>
 
-    <div class="ref-description">
-    <p>Store a set of time series to database</p>
-    </div>
-
-    <pre class="usage"><span class='fu'>store_time_series</span>(<span class='no'>con</span>, <span class='no'>x</span>, <span class='no'>access</span>, <span class='no'>valid_from</span>, <span class='no'>release_date</span>, <span class='no'>schema</span>)</pre>
-
-    <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
-    <table class="ref-arguments">
-    <colgroup><col class="name" /><col class="desc" /></colgroup>
-    <tr>
-      <th>con</th>
-      <td><p>RPostgres database connection</p></td>
-    </tr>
-    <tr>
-      <th>x</th>
-      <td><p>Object containing time series to store</p></td>
-    </tr>
-    <tr>
-      <th>access</th>
-      <td><p>Access level for all ts to be stored</p></td>
-    </tr>
-    <tr>
-      <th>valid_from</th>
-      <td><p>Start of vintage validity for all ts in x</p></td>
-    </tr>
-    <tr>
-      <th>release_date</th>
-      <td><p>Release date of all ts in x</p></td>
-    </tr>
-    <tr>
-      <th>schema</th>
-      <td></td>
-    </tr>
-    <tr>
-      <th>release</th>
-      <td><p>Title for the release</p></td>
-    </tr>
-    <tr>
-      <th>subset</th>
-      <td><p>Ts keys of the subset of x to store</p></td>
-    </tr>
-    <tr>
-      <th>release_desc</th>
-      <td><p>Description for the release</p></td>
-    </tr>
-    <tr>
-      <th>overwrite</th>
-      <td><p>Not currently used</p></td>
-    </tr>
-    <tr>
-      <th>chunk_size</th>
-      <td></td>
-    </tr>
-    </table>
-
-
+    <div id="timeseriesdb-v1-0-0" class="section level2">
+<h2 class="hasAnchor">
+<a href="#timeseriesdb-v1-0-0" class="anchor"></a>timeseriesdb v1.0.0</h2>
+<p>Substantial improvements and new functionality.</p>
+<ul>
+<li>R Postgres interface switched from RPostgreSQL to the DBI compliant RPostgres</li>
+<li>time series represented as JSON instead of hstore for better performance and consistency (ensuring order).</li>
+<li>store version of every time series to track revisions</li>
+<li>true release date feature</li>
+<li>meta data on vintage (time series version) level</li>
+</ul>
+</div>
+    <div id="timeseriesdb-v0-3-5-3-release-date-2017-10-20" class="section level2">
+<h2 class="hasAnchor">
+<a href="#timeseriesdb-v0-3-5-3-release-date-2017-10-20" class="anchor"></a>timeseriesdb v0.3.5.3 (Release date: 2017-10-20)</h2>
+<ul>
+<li>getting ready for next CRAN release</li>
+<li>bulk wise operations using copy</li>
+</ul>
+</div>
+    <div id="timeseriesdb-v0-21-release-date-2015-04-01" class="section level2">
+<h2 class="hasAnchor">
+<a href="#timeseriesdb-v0-21-release-date-2015-04-01" class="anchor"></a>timeseriesdb v0.21 (Release date: 2015-04-01)</h2>
+<ul>
+<li>updated readme</li>
+<li>fixed bug in the shiny based GUI that prevented starting it up properly</li>
+<li>moved sql code to a single setup file</li>
+</ul>
+</div>
+    <div id="timeseriesdb-v0-2-release-date-2015-03-25" class="section level2">
+<h2 class="hasAnchor">
+<a href="#timeseriesdb-v0-2-release-date-2015-03-25" class="anchor"></a>timeseriesdb v0.2 (Release date: 2015-03-25)</h2>
+<ul>
+<li>~ quarterly release cycle planned</li>
+<li>added convenience function to plot a list of time series (plot.tslist)</li>
+<li>major speed up of write process by avoiding multiple selects (~2 times)</li>
+<li>major speed up of read process by avoiding multiple selects (~ 3.5 times)</li>
+<li>added a table to store sets of time series similar to shopping carts in web stores (basic)</li>
+<li>basic export to .csv format to support wide and long format .csv</li>
+<li>dependency to RJSONIO added as it used for speed up</li>
+<li>added a shiny based data explorer GUI (use function exploredb(con))</li>
+<li>changed upsert behavior to not affect unlocalized meta information on insert of new series</li>
+<li>improved NULL handling</li>
+<li>added SQL transaction utils</li>
+<li>quiet execution of Meta Information Storage</li>
+<li>fixed issues with quotes</li>
+<li>added hstore lookup function</li>
+<li>changed from deprecated hstore operator to new hstore function (see PostgreSQL release notes)</li>
+<li>function to concatenate overlapping series</li>
+<li>function to set attributes to each element of a list</li>
+<li>improved read process for bulk reading to use single query instead of looping</li>
+<li>improve store process</li>
+<li>exported print method</li>
+<li>added function to check whether db connection is valid</li>
+<li>added quickHandle operator and a closure to create further quick Handle operators</li>
+</ul>
+</div>
+    <div id="timeseriesdb-v0-1-release-date-2014-11-26" class="section level2">
+<h2 class="hasAnchor">
+<a href="#timeseriesdb-v0-1-release-date-2014-11-26" class="anchor"></a>timeseriesdb v0.1 (Release date: 2014-11-26)</h2>
+<ul>
+<li>initial realease</li>
+</ul>
+</div>
   </div>
+
   <div class="col-md-3 hidden-xs hidden-sm" id="sidebar">
-    <h2>Contents</h2>
-    <ul class="nav nav-pills nav-stacked">
-      <li><a href="#arguments">Arguments</a></li>
-    </ul>
-
+    <div id="tocnav">
+      <h2>Contents</h2>
+      <ul class="nav nav-pills nav-stacked">
+        <li><a href="#timeseriesdb-v1-0-0">1.0.0</a></li>
+        <li><a href="#timeseriesdb-v0-3-5-3-release-date-2017-10-20">0.3.5.3</a></li>
+        <li><a href="#timeseriesdb-v0-21-release-date-2015-04-01">0.21</a></li>
+        <li><a href="#timeseriesdb-v0-2-release-date-2015-03-25">0.2</a></li>
+        <li><a href="#timeseriesdb-v0-1-release-date-2014-11-26">0.1</a></li>
+      </ul>
+    </div>
   </div>
+
 </div>
 
 
