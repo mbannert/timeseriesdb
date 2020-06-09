@@ -1,5 +1,5 @@
-connect_to_test_db <- function() {
-  dbConnect(Postgres(), "postgres", "localhost", 1111, "dev_admin", "dev_admin", bigint = "integer")
+connect_to_test_db <- function(username = "dev_admin", password = username) {
+  dbConnect(Postgres(), "postgres", "localhost", 1111, username, password, bigint = "integer")
 }
 
 # TODO: see ?dbCanConnect
