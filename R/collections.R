@@ -29,6 +29,8 @@ db_collection_add <- function(con,
                  ts_key = "text")
   )
 
+  dbExecute(con, "GRANT SELECT ON tmp_collect_updates TO timeseries_admin")
+
   db_return <- fromJSON(db_call_function(con,
                                 "insert_collect_from_tmp",
                                 list(collection_name, user, description),
@@ -70,6 +72,8 @@ db_collection_remove <- function(con,
                overwrite = TRUE,
                field.types = c(ts_key = "text")
   )
+
+  dbExecute(con, "GRANT SELECT ON tmp_collection_remove TO timeseries_admin")
 
   db_return <- fromJSON(db_call_function(con,
                                 "collection_remove",
