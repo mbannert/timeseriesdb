@@ -26,8 +26,8 @@ BEGIN
     SELECT DISTINCT tmp.ts_key
     FROM tmp_ts_updates AS tmp
     INNER JOIN timeseries.timeseries_main AS main
-    ON tmp.ts_key = main.ts_key
-    AND p_validity < main.validity
+    USING (ts_key)
+    WHERE p_validity < main.validity
   ), del_keys AS(
     DELETE FROM tmp_ts_updates
     USING inv_keys
@@ -41,7 +41,8 @@ BEGIN
   INSERT INTO timeseries.catalog
   SELECT tmp_ts_updates.ts_key
   FROM tmp_ts_updates
-  LEFT OUTER JOIN timeseries.catalog ON (timeseries.catalog.ts_key = tmp_ts_updates.ts_key)
+  LEFT OUTER JOIN timeseries.catalog
+  USING (ts_key)
   WHERE timeseries.catalog.ts_key IS NULL;
 
   -- Generate computed property "coverage"
@@ -137,9 +138,9 @@ BEGIN
   RETURN QUERY SELECT distinct on (rd.ts_key) rd.ts_key, mn.ts_data
     FROM tmp_ts_read_keys as rd
     JOIN timeseries.timeseries_main as mn
-    ON rd.ts_key = mn.ts_key
-    AND ((NOT respect_release_date) OR mn.release_date <= CURRENT_TIMESTAMP)
-    AND mn.validity <= valid_on
+    USING (ts_key)
+    WHERE ((NOT respect_release_date) OR release_date <= CURRENT_TIMESTAMP)
+    AND validity <= valid_on
     -- Use SESSION_USER because function is executed under timeseries_admin
     AND pg_has_role(SESSION_USER, 'timeseries_admin', 'usage') OR pg_has_role(SESSION_USER, access, 'usage')
     ORDER BY rd.ts_key, mn.validity DESC;

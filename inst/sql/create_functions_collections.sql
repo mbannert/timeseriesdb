@@ -31,7 +31,7 @@ BEGIN
   SELECT COALESCE(array_agg(DISTINCT tmp.ts_key), '{}'::TEXT[])
   FROM tmp_collect_updates AS tmp
   LEFT OUTER JOIN timeseries.catalog AS cat
-  ON cat.ts_key = tmp.ts_key
+  USING (ts_key)
   WHERE cat.ts_key IS NULL
   INTO v_invalid_keys;
 

@@ -73,7 +73,7 @@ BEGIN
   RETURN QUERY SELECT tmp.ts_key, cat.set_id
   FROM tmp_get_set AS tmp
   LEFT JOIN timeseries.catalog AS cat
-  ON cat.ts_key = tmp.ts_key;
+  USING (ts_key);
 END;
 $$ LANGUAGE PLPGSQL
 SECURITY DEFINER
@@ -114,7 +114,7 @@ BEGIN
   FROM tmp_set_assign AS tmp
   LEFT JOIN
     timeseries.catalog AS cat
-  ON tmp.ts_key = cat.ts_key
+  USING (ts_key)
   WHERE cat.ts_key IS NULL
   INTO v_keys_not_in_catalog;
 
