@@ -9,7 +9,7 @@ REVOKE EXECUTE ON FUNCTION timeseries.read_metadata_localized_raw FROM public;
 REVOKE EXECUTE ON FUNCTION timeseries.read_ts_raw FROM public;
 REVOKE EXECUTE ON FUNCTION timeseries.get_latest_vintages_metadata FROM public;
 REVOKE EXECUTE ON FUNCTION timeseries.get_latest_vintages_metadata_localized FROM public;
-REVOKE EXECUTE ON FUNCTION timeseries.create_read_tmp_regex FROM public;
+REVOKE EXECUTE ON FUNCTION timeseries.fill_read_tmp_regex FROM public;
 REVOKE EXECUTE ON FUNCTION timeseries.create_dataset FROM public;
 REVOKE EXECUTE ON FUNCTION timeseries.assign_dataset FROM public;
 REVOKE EXECUTE ON FUNCTION timeseries.md_unlocal_upsert FROM public;
@@ -29,7 +29,7 @@ GRANT EXECUTE ON FUNCTION timeseries.read_metadata_localized_raw TO timeseries_r
 GRANT EXECUTE ON FUNCTION timeseries.read_ts_raw TO timeseries_reader;
 GRANT EXECUTE ON FUNCTION timeseries.get_latest_vintages_metadata TO timeseries_reader;
 GRANT EXECUTE ON FUNCTION timeseries.get_latest_vintages_metadata_localized TO timeseries_reader;
-GRANT EXECUTE ON FUNCTION timeseries.create_read_tmp_regex TO timeseries_reader;
+GRANT EXECUTE ON FUNCTION timeseries.fill_read_tmp_regex TO timeseries_reader;
 
 GRANT EXECUTE ON FUNCTION timeseries.assign_dataset TO timeseries_writer;
 GRANT EXECUTE ON FUNCTION timeseries.md_unlocal_upsert TO timeseries_writer;

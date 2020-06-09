@@ -94,14 +94,16 @@ SET search_path = timeseries, pg_temp;
 -- param: pattern regular expression to find keys
 --
 -- returns: json {"status": "", "message": "", ["removed_collection"]: ""}
-CREATE FUNCTION timeseries.create_read_tmp_regex(pattern TEXT)
+CREATE FUNCTION timeseries.fill_read_tmp_regex(pattern TEXT)
 RETURNS VOID
 AS $$
-  DROP TABLE IF EXISTS tmp_ts_read_keys;
-  CREATE TEMPORARY TABLE tmp_ts_read_keys AS(
+BEGIN
+  INSERT INTO tmp_ts_read_keys
   SELECT ts_key FROM timeseries.catalog
-  WHERE ts_key ~ pattern);
-$$ LANGUAGE SQL
+  WHERE ts_key ~ pattern;
+END;
+$$
+LANGUAGE PLPGSQL
 SECURITY DEFINER
 SET search_path = timeseries, pg_temp;
 

@@ -1,11 +1,11 @@
 #' Populate Temporary ts_updates table with records
 #' first properly formatting validity ranges
 #'
-#' @param con RPostgres connection object. 
-#' @param records 
-#' @param valid_from 
-#' @param release_date 
-#' @param access 
+#' @param con RPostgres connection object.
+#' @param records
+#' @param valid_from
+#' @param release_date
+#' @param access
 #' @param schema
 #' @importFrom RPostgres dbWriteTable
 db_tmp_store <- function(con,
@@ -16,7 +16,7 @@ db_tmp_store <- function(con,
   # rights issue: The tmp_ts_updates table will belong to the user logged in.
   # Because in PostgreSQL tables can only be altered by the OWNER and therefore
   # the insert function which runs as SECURITY DEFINER (the rights of the user
-  # who created them) can't AlTER the temp table it needs to 
+  # who created them) can't AlTER the temp table it needs to
   # contain the coverage column from the start.
   dt <- data.table(
     ts_key = names(records),
@@ -67,8 +67,19 @@ db_tmp_read <- function(con,
   }
 
   if(regex) {
+    # Pre-create table to make it belong to SESSION_USER
+    # and grant admin user INSERT rights
+    dbWriteTable(con,
+                 "tmp_ts_read_keys",
+                 data.table(ts_key = NA),
+                 temporary = TRUE,
+                 overwrite = TRUE,
+                 field.types = c(
+                   ts_key = "text"
+                 ))
+    dbExecute(con, "GRANT INSERT ON tmp_ts_read_keys TO timeseries_admin")
     dbExecute(con,
-              sprintf("SELECT 1 FROM %screate_read_tmp_regex(%s)",
+              sprintf("SELECT 1 FROM %sfill_read_tmp_regex(%s)",
                       dbQuoteIdentifier(con, Id(schema = schema)),
                       dbQuoteLiteral(con, ts_keys[1])))
   } else {
@@ -85,9 +96,10 @@ db_tmp_read <- function(con,
                    ts_key = "text"
                  )
     )
+
   }
   # This is needed because non-admins only use SECURITY DEFINERs and those
   # functions belong to the admin and need to access these user specific temp
   # tables, too.
-  grant <- dbExecute(con, "GRANT SELECT ON tmp_ts_read_keys TO timeseries_admin")
+  dbExecute(con, "GRANT SELECT ON tmp_ts_read_keys TO timeseries_admin")
 }
