@@ -8,11 +8,11 @@
 #' @param port database port (default 5432)
 #' @param schema timeseries schema name (default 'timeseries')
 #'
-#' @return
+#' @importFrom RPostgres dbConnect Postgres dbGetQuery dbIsValid
+#'
 #' @export
 #'
-#' @importFrom RPostgres dbConnect Postgres dbGetQuery dbIsValid
-install_timeseriesdb <- function(user,
+install_timeseriesdb <- function(username,
                                  password,
                                  database,
                                  host = "localhost",
@@ -177,9 +177,9 @@ setup_sql_triggers <- function(con, schema = "timeseries"){
 #'
 #' @examples
 grant_sql_rights <- function(con, schema = "timeseries") {
-  sql <- readLines(system.file("sql/grand_rights.sql",
+  sql <- readLines(system.file("sql/grant_rights.sql",
                                package = "timeseriesdb"))
-  sql <- gsub("timeseries.", sprintf("%s.", schema), sql)
+  sql <- gsub("timeseries", schema, sql)
 
   lapply(split(sql, cumsum(grepl("GRANT|REVOKE", sql))),
          function(x) {
