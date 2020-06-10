@@ -1,3 +1,42 @@
+# w/o root admin (for now)
+#' Title
+#'
+#' @param user database user name
+#' @param password database user password
+#' @param database database name
+#' @param host database host (default 'localhost')
+#' @param port database port (default 5432)
+#' @param schema timeseries schema name (default 'timeseries')
+#'
+#' @return
+#' @export
+#'
+#' @importFrom RPostgres dbConnect Postgres dbGetQuery dbIsValid
+install_timeseriesdb <- function(user,
+                                 password,
+                                 database,
+                                 host = "localhost",
+                                 port = 5432,
+                                 schema = "timeseries") {
+  con <- dbConnect(Postgres(), database, host, port, username, password)
+
+  schema_exists <- dbGetQuery(con,
+                              "SELECT true
+                              FROM information_schema.schemata
+                              WHERE schema_name = $1;",
+                              list(schema))$bool
+
+  if(!schema_exists) {
+    # TODO: ya know...
+    stop(sprintf("Schema %s does not exist. blabla admin bla documentation"))
+  }
+
+  setup_sql_tables(con, schema)
+  setup_sql_functions(con, schema)
+  setup_sql_triggers(con, schema)
+  grant_sql_rights(con, schema)
+}
+
 
 # stuff to be run as root ------------------------------------------------
 
@@ -126,4 +165,24 @@ setup_sql_triggers <- function(con, schema = "timeseries"){
            dbExecute(con, paste(x, collapse = "\n"))
          })
 
+}
+
+#' Grant execute on {timeseriesdb} functions
+#'
+#' @param con RPostgres connection object
+#' @param schema character schema name, defaults to 'timeseries'
+#'
+#' @return
+#' @export
+#'
+#' @examples
+grant_sql_rights <- function(con, schema = "timeseries") {
+  sql <- readLines(system.file("sql/grand_rights.sql",
+                               package = "timeseriesdb"))
+  sql <- gsub("timeseries.", sprintf("%s.", schema), sql)
+
+  lapply(split(sql, cumsum(grepl("GRANT|REVOKE", sql))),
+         function(x) {
+           dbExecute(con, paste(x, collapse = "\n"))
+         })
 }
