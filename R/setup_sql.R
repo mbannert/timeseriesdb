@@ -1,13 +1,18 @@
+
+# stuff to be run as root ------------------------------------------------
+
+
 #' Install PostgreSQL Schemas and Extensions
 #'
 #' Installs schema, uuid-ossp, btree_gist.
-#' 
+#' This function must be run with a connection of a database level admin.
+#'
 #' @param con RPostgres connection object.
 #' @export
 setup_sql_extentions <- function(con, schema = "timeseries"){
   sql <- readLines(system.file("sql/create_extensions.sql",
                                package = "timeseriesdb"))
-  sql <- gsub("timeseries\\.", sprintf("%s.", schema), sql)
+  sql <- gsub("timeseries", schema, sql)
   # split up SQL by a new set of lines everytime CREATE FUNCTION
   # occurs in order to send single statements using multiple execute calls
   # which is DBI / RPostgres compliant
@@ -59,15 +64,15 @@ setup_sql_functions <- function(con, schema = "timeseries"){
   fls <- list.files(
     system.file(
       "sql",
-      package = "timeseriesdb*"
+      package = "timeseriesdb"
     ),
     "create_functions",
-    full_names = TRUE
+    full.names = TRUE
   )
 
   for(f in fls) {
     sql <- readLines(f)
-    sql <- gsub("timeseries\\.", sprintf("%s.", schema), sql)
+    sql <- gsub("timeseries", schema, sql)
     # split up SQL by a new set of lines everytime CREATE FUNCTION
     # occurs in order to send single statements using multiple execute calls
     # which is DBI / RPostgres compliant
@@ -90,10 +95,10 @@ setup_sql_functions <- function(con, schema = "timeseries"){
 #' @param con PostgreSQL connection object created by the RPostgres package.
 #' @param schema character schema name, defaults to 'timeseries'.
 #' @export
-setup_sql_functions <- function(con, schema = "timeseries"){
+setup_sql_triggers <- function(con, schema = "timeseries"){
   sql <- readLines(system.file("sql/create_triggers.sql",
                                package = "timeseriesdb"))
-  sql <- gsub("timeseries\\.", sprintf("%s.", schema), sql)
+  sql <- gsub("timeseries", schema, sql)
   # split up SQL by a new set of lines everytime CREATE FUNCTION
   # occurs in order to send single statements using multiple execute calls
   # which is DBI / RPostgres compliant
