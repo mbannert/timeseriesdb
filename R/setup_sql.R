@@ -22,6 +22,25 @@ setup_sql_extentions <- function(con, schema = "timeseries"){
          })
 }
 
+#' Create Roles needed for operation of timeseriesdb
+#'
+#' This function must be run with a connection of a database level admin.
+#'
+#' @param con RPostgres connection object
+#' @param schema schema character schema name, defaults to 'timeseries'.
+#' @export
+setup_sql_roles <- function(con, schema = "timeseries") {
+  sql <- readLines(system.file("sql/create_roles.sql",
+                               package = "timeseriesdb"))
+  sql <- gsub("timeseries_", sprintf("%s_", schema), sql)
+
+  lapply(split(sql, cumsum(grepl("CREATE|GRANT", sql))),
+         function(x) {
+           dbExecute(con, paste(x, collapse = "\n"))
+         })
+}
+
+# stuff to be run as timeseries admin -------------------------------------
 
 #' Install {timeseriesdb} System Tables
 #'
