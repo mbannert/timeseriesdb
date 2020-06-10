@@ -1,15 +1,73 @@
 ---
-title: "Manage Official Statistics' Time Series Data with R and PostgreSQL"
+title: "Manage Time Series with {timeseriesdb}"
 author: "Matthias Bannert"
 date: "`r Sys.Date()`"
 output: rmarkdown::html_vignette
 vignette: >
-  %\VignetteIndexEntry{Manage Official Statistics' Time Series Data with R and PostgreSQL}
+  %\VignetteIndexEntry{Manage Time Series with timeseriesdb}
   %\VignetteEngine{knitr::rmarkdown}
   \usepackage[utf8]{inputenc}
 ---
 
-# timeseriesdb - Manage Official Statistics' Time Series Data with R and PostgreSQL
+# Using {timeseriesdb} 
+
+This guide explains in applied fashion how to use {timeseriesdb} effectively in practice.
+In order to walk through {timeseriesdb}'s functionality this document follows the 
+user story of the fictional _Crystall Ball Economics_ company.
+
+## Crystal Ball Economics Inc. - A User Story
+
+_Crystal Ball Economics Inc._ is a fictional medium sized company which works 
+on economic forecasts based on time series data. They have a couple of regional 
+offices in various locations. 
+
+- multi language
+- cherish a single point of information
+- not every office has their own data engineer
+- sourcing data, mostly publicly available
+- data engineers should do the job twice
+- homogeneous format
+
+## Basic Usage
+
+- connect
+- read
+- store
+
+## Vintages (Versions of Time Series)
+
+- store
+- update
+
+## Datasets
+
+- defaults vs other datasets
+- where do we take example data from
+
+## Meta Data (Data Descriptions)
+
+- multi-lingual
+- there can be version
+- localized and unlocalized
+
+## Access Rights
+
+- reader / writer
+- public, main, restricted
+
+## Collections (Individual Bookmarks)
+
+tbd.
+
+
+
+
+
+
+
+
+
+
 
 *timeseriesdb* maps R time series objects to PostgreSQL relations for permanent storage.  Instead of writing time series to spreadsheet files or .RData on disk, **timeseriesdb** uses a PostgreSQL schema which allows to store data alongside extensive, context aware, multi-lingual meta information. **timeseriesdb** aims at time series from official statistics which are typically published on a monthly, quarterly or yearly basis. Unlike many time series database which excel at appending single observations at record speed and on-the-fly aggregations on database level, **timeseriesdb** is focused on large upsert operations. That is, check whether a series is available and perform and update if that is the case and an insert if not. This is the case for example when an entire time series is revised such as in the case of GDP revisions or seasonal adjustment.  
 
