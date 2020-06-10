@@ -99,7 +99,7 @@ db_create_connection <- function(dbname,
                           port = 5432){
   if(!is.null(env_pass_name)){
     passwd <- Sys.getenv(env_pass_name)
-    if(pwd == "") {
+    if(passwd == "") {
       stop(sprintf("Could not find password in %s!", env_pass_name))
     }
   } else {
