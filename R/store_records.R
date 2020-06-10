@@ -33,6 +33,8 @@ store_records <- function(con,
     error = function(e) {
       if(grepl("permission denied for function insert_from_tmp", e)) {
         stop("Only writer and above may store time series.")
+      } else if(grepl("timeseries_main_access_fkey", e)) {
+        stop(sprintf("\"%s\" is not a valid access level. Use db_get_access_levels to find registered levels.", schema))
       } else {
         stop(e)
       }
