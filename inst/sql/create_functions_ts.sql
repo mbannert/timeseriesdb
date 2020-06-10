@@ -144,7 +144,7 @@ BEGIN
     WHERE ((NOT respect_release_date) OR release_date <= CURRENT_TIMESTAMP)
     AND validity <= valid_on
     -- Use SESSION_USER because function is executed under timeseries_admin
-    AND pg_has_role(SESSION_USER, 'timeseries_admin', 'usage') OR pg_has_role(SESSION_USER, access, 'usage')
+    AND (pg_has_role(SESSION_USER, 'timeseries_admin', 'usage') OR pg_has_role(SESSION_USER, access, 'usage'))
     ORDER BY rd.ts_key, mn.validity DESC;
 END;
 $$ LANGUAGE PLPGSQL
