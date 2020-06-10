@@ -85,6 +85,7 @@ get_list_depth <- function(this) {
 #' @param passwd_from_file boolean if set to TRUE the passwd param is interpreted as a file location for a password file such as .pgpass. Make sure to be very restrictive with file permissions if you store a password to a file. 
 #' @param line_no integer specify line number of password file that holds the actual password.
 #' @param env_pass_name character name of the environment that holds a password. Defaults to NULL. If set, this way of obtaining the password is preferred over all other ways. Other specification will be ignored if this parameter is set. Storing passwords in environment variables can be very handy when working in a docker environment. 
+#' @param connection_description character connection description describing the application that connects to the database. This is mainly helpful for DB admins and shows up in the pg_stat_activity table. Defaults to 'timeseriesdb'. Avoid spaces as this is a psql option. 
 #' @param port integer defaults to 5432, the PostgreSQL standard port. 
 #' @importFrom RPostgres Postgres
 #' @importFrom DBI dbConnect
@@ -96,6 +97,7 @@ db_create_connection <- function(dbname,
                           passwd_from_file = FALSE,
                           line_no = 1,
                           env_pass_name = NULL,
+                          connection_description = "timeseriesdb",
                           port = 5432){
   if(!is.null(env_pass_name)){
     passwd <- Sys.getenv(env_pass_name)
@@ -114,12 +116,15 @@ db_create_connection <- function(dbname,
     
   }
 
-  dbConnect(Postgres(),
+  options <- sprintf("--application_name=%s", connection_description)
+  
+  dbConnect(drv = Postgres(),
             dbname = dbname,
             user = user,
             host = host,
             password = passwd,
-            port = port)
+            port = port,
+            options = options)
 }
 
 
