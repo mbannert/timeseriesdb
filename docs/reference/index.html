@@ -96,7 +96,7 @@
       <a href="../articles/get_started.html">Getting Started</a>
     </li>
     <li>
-      <a href="../articles/manage_timeseries_with_r_and_postgres.html">Manage Official Statistics' Time Series Data with R and PostgreSQL</a>
+      <a href="../articles/manage_timeseries_with_timeseriesdb.html">Manage Time Series with {timeseriesdb}</a>
     </li>
     <li>
       <a href="../articles/metadata.html">Manage Official Statistics' Time Series Data with R and PostgreSQL</a>
@@ -156,7 +156,7 @@
         <td>
           <p><code><a href="db_assign_dataset.html">db_assign_dataset()</a></code> </p>
         </td>
-        <td><p>Assign ts keys to a dataset</p></td>
+        <td><p>Assign Time Series Identifiers to a Dataset</p></td>
       </tr><tr>
         
         <td>
@@ -184,21 +184,27 @@
       </tr><tr>
         
         <td>
+          <p><code><a href="db_create_connection.html">db_create_connection()</a></code> </p>
+        </td>
+        <td><p>Create Database Connection</p></td>
+      </tr><tr>
+        
+        <td>
           <p><code><a href="db_create_dataset.html">db_create_dataset()</a></code> </p>
         </td>
-        <td><p>Create a new dataset</p></td>
+        <td><p>Create a New Dataset</p></td>
       </tr><tr>
         
         <td>
           <p><code><a href="db_get_dataset_id.html">db_get_dataset_id()</a></code> </p>
         </td>
-        <td><p>Get datasets ts keys are in</p></td>
+        <td><p>Find Datasets Given a Set</p></td>
       </tr><tr>
         
         <td>
           <p><code><a href="db_get_dataset_keys.html">db_get_dataset_keys()</a></code> </p>
         </td>
-        <td><p>Get all ts keys contained in a given set</p></td>
+        <td><p>Get All Time Series Keys in a Given Set</p></td>
       </tr><tr>
         
         <td>
@@ -229,7 +235,7 @@ joining against timeseries_main and reading.</p></td>
         <td>
           <p><code><a href="db_tmp_store.html">db_tmp_store()</a></code> </p>
         </td>
-        <td><p>Populate temporary ts_updates table with records
+        <td><p>Populate Temporary ts_updates table with records
 first properly formatting validity ranges</p></td>
       </tr><tr>
         
@@ -237,6 +243,12 @@ first properly formatting validity ranges</p></td>
           <p><code><a href="get_list_depth.html">get_list_depth()</a></code> </p>
         </td>
         <td><p>Determine depth of a list</p></td>
+      </tr><tr>
+        
+        <td>
+          <p><code><a href="grant_sql_rights.html">grant_sql_rights()</a></code> </p>
+        </td>
+        <td><p>Grant execute on timeseriesdb functions</p></td>
       </tr><tr>
         
         <td>
@@ -248,15 +260,21 @@ Does not currently support sub-monthly frequencies.</p></td>
       </tr><tr>
         
         <td>
+          <p><code><a href="install_timeseriesdb.html">install_timeseriesdb()</a></code> </p>
+        </td>
+        <td><p>Title</p></td>
+      </tr><tr>
+        
+        <td>
           <p><code><a href="json_to_ts.html">json_to_ts()</a></code> </p>
         </td>
-        <td><p>Convert json representation into time series</p></td>
+        <td><p>Convert JSON Representation of a Time Series into R Time Series Objects</p></td>
       </tr><tr>
         
         <td>
           <p><code><a href="read_time_series.html">read_time_series()</a></code> </p>
         </td>
-        <td><p>Title</p></td>
+        <td><p>Read Time Series From PostgreSQL into R</p></td>
       </tr><tr>
         
         <td>
@@ -266,15 +284,27 @@ Does not currently support sub-monthly frequencies.</p></td>
       </tr><tr>
         
         <td>
-          <p><code><a href="setup_sql_functions.html">setup_sql_functions()</a></code> <code><a href="setup_sql_functions.html">setup_sql_functions()</a></code> </p>
+          <p><code><a href="setup_sql_functions.html">setup_sql_functions()</a></code> </p>
         </td>
         <td><p>Install timeseriesdb System Functions</p></td>
+      </tr><tr>
+        
+        <td>
+          <p><code><a href="setup_sql_roles.html">setup_sql_roles()</a></code> </p>
+        </td>
+        <td><p>Create Roles needed for operation of timeseriesdb</p></td>
       </tr><tr>
         
         <td>
           <p><code><a href="setup_sql_tables.html">setup_sql_tables()</a></code> </p>
         </td>
         <td><p>Install timeseriesdb System Tables</p></td>
+      </tr><tr>
+        
+        <td>
+          <p><code><a href="setup_sql_triggers.html">setup_sql_triggers()</a></code> </p>
+        </td>
+        <td><p>Install timeseriesdb Triggers</p></td>
       </tr><tr>
         
         <td>

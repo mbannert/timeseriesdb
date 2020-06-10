@@ -6,7 +6,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>Get datasets ts keys are in — db_get_dataset_id • timeseriesdb</title>
+<title>Find Datasets Given a Set — db_get_dataset_id • timeseriesdb</title>
 
 
 <!-- jquery -->
@@ -35,8 +35,8 @@
 
 
 
-<meta property="og:title" content="Get datasets ts keys are in — db_get_dataset_id" />
-<meta property="og:description" content="If a ts key does not exist in the catalog, set_id will be NA." />
+<meta property="og:title" content="Find Datasets Given a Set — db_get_dataset_id" />
+<meta property="og:description" content="Return set identifiers associated with a vector of keys. If a ts key does not exist in the catalog, set_id will be NA." />
 <meta name="twitter:card" content="summary" />
 
 
@@ -98,7 +98,7 @@
       <a href="../articles/get_started.html">Getting Started</a>
     </li>
     <li>
-      <a href="../articles/manage_timeseries_with_r_and_postgres.html">Manage Official Statistics' Time Series Data with R and PostgreSQL</a>
+      <a href="../articles/manage_timeseries_with_timeseriesdb.html">Manage Time Series with {timeseriesdb}</a>
     </li>
     <li>
       <a href="../articles/metadata.html">Manage Official Statistics' Time Series Data with R and PostgreSQL</a>
@@ -129,13 +129,13 @@
 <div class="row">
   <div class="col-md-9 contents">
     <div class="page-header">
-    <h1>Get datasets ts keys are in</h1>
+    <h1>Find Datasets Given a Set</h1>
     <small class="dont-index">Source: <a href='https://github.com/mbannert/timeseriesdb/blob/master/R/datasets.R'><code>R/datasets.R</code></a></small>
     <div class="hidden name"><code>db_get_dataset_id.Rd</code></div>
     </div>
 
     <div class="ref-description">
-    <p>If a ts key does not exist in the catalog, set_id will be NA.</p>
+    <p>Return set identifiers associated with a vector of keys. If a ts key does not exist in the catalog, set_id will be NA.</p>
     </div>
 
     <pre class="usage"><span class='fu'>db_get_dataset_id</span>(<span class='no'>con</span>, <span class='no'>ts_keys</span>, <span class='kw'>schema</span> <span class='kw'>=</span> <span class='st'>"timeseries"</span>)</pre>
@@ -159,7 +159,7 @@
 
     <h2 class="hasAnchor" id="value"><a class="anchor" href="#value"></a>Value</h2>
 
-    <p>data.frame A data.frame with columns `ts_key` and `set_id`</p>
+    <p>data.frame with columns `ts_key` and `set_id`</p>
 
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="sidebar">

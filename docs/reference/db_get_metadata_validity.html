@@ -38,8 +38,8 @@
 <meta property="og:title" content="Get Latest Validity for Metadata of a Given Time Series — db_get_metadata_validity" />
 <meta property="og:description" content="Because metadata are only loosely coupled with their respective time series
 in order to keep metadata records constant over multiple version of
-time series if the data description does not change, it comes in 
-handy to find out the last time meta information was updated. This function 
+time series if the data description does not change, it comes in
+handy to find out the last time meta information was updated. This function
 automagickally finds exactly this date." />
 <meta name="twitter:card" content="summary" />
 
@@ -102,7 +102,7 @@ automagickally finds exactly this date." />
       <a href="../articles/get_started.html">Getting Started</a>
     </li>
     <li>
-      <a href="../articles/manage_timeseries_with_r_and_postgres.html">Manage Official Statistics' Time Series Data with R and PostgreSQL</a>
+      <a href="../articles/manage_timeseries_with_timeseriesdb.html">Manage Time Series with {timeseriesdb}</a>
     </li>
     <li>
       <a href="../articles/metadata.html">Manage Official Statistics' Time Series Data with R and PostgreSQL</a>
@@ -141,8 +141,8 @@ automagickally finds exactly this date." />
     <div class="ref-description">
     <p>Because metadata are only loosely coupled with their respective time series
 in order to keep metadata records constant over multiple version of
-time series if the data description does not change, it comes in 
-handy to find out the last time meta information was updated. This function 
+time series if the data description does not change, it comes in
+handy to find out the last time meta information was updated. This function
 automagickally finds exactly this date.</p>
     </div>
 
@@ -158,17 +158,20 @@ automagickally finds exactly this date.</p>
     <table class="ref-arguments">
     <colgroup><col class="name" /><col class="desc" /></colgroup>
     <tr>
+      <th>con</th>
+      <td><p>RPostgres connection object.</p></td>
+    </tr>
+    <tr>
       <th>ts_keys</th>
       <td><p>character vector of time series identifiers.</p></td>
     </tr>
     <tr>
       <th>regex</th>
-      <td><p>boolean should ts_keys allow for regular expressions.
-Defaults to FALSE.</p></td>
+      <td><p>boolean should ts_keys be interpreted as regular expression patterns? Defaults to FALSE.</p></td>
     </tr>
     <tr>
       <th>locale</th>
-      <td><p>What language to read metadata for. If NULL, unlocalized metadata is read.</p></td>
+      <td><p>character language identifier of the meta data lookup. If NULL, unlocalized metadata are read.</p></td>
     </tr>
     <tr>
       <th>schema</th>

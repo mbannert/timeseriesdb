@@ -6,7 +6,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>Get all ts keys contained in a given set — db_get_dataset_keys • timeseriesdb</title>
+<title>Get All Time Series Keys in a Given Set — db_get_dataset_keys • timeseriesdb</title>
 
 
 <!-- jquery -->
@@ -35,8 +35,8 @@
 
 
 
-<meta property="og:title" content="Get all ts keys contained in a given set — db_get_dataset_keys" />
-<meta property="og:description" content="Get all ts keys contained in a given set" />
+<meta property="og:title" content="Get All Time Series Keys in a Given Set — db_get_dataset_keys" />
+<meta property="og:description" content="Get All Time Series Keys in a Given Set" />
 <meta name="twitter:card" content="summary" />
 
 
@@ -98,7 +98,7 @@
       <a href="../articles/get_started.html">Getting Started</a>
     </li>
     <li>
-      <a href="../articles/manage_timeseries_with_r_and_postgres.html">Manage Official Statistics' Time Series Data with R and PostgreSQL</a>
+      <a href="../articles/manage_timeseries_with_timeseriesdb.html">Manage Time Series with {timeseriesdb}</a>
     </li>
     <li>
       <a href="../articles/metadata.html">Manage Official Statistics' Time Series Data with R and PostgreSQL</a>
@@ -129,23 +129,23 @@
 <div class="row">
   <div class="col-md-9 contents">
     <div class="page-header">
-    <h1>Get all ts keys contained in a given set</h1>
+    <h1>Get All Time Series Keys in a Given Set</h1>
     <small class="dont-index">Source: <a href='https://github.com/mbannert/timeseriesdb/blob/master/R/datasets.R'><code>R/datasets.R</code></a></small>
     <div class="hidden name"><code>db_get_dataset_keys.Rd</code></div>
     </div>
 
     <div class="ref-description">
-    <p>Get all ts keys contained in a given set</p>
+    <p>Get All Time Series Keys in a Given Set</p>
     </div>
 
-    <pre class="usage"><span class='fu'>db_get_dataset_keys</span>(<span class='no'>con</span>, <span class='no'>set_name</span>, <span class='kw'>schema</span> <span class='kw'>=</span> <span class='st'>"timeseries"</span>)</pre>
+    <pre class="usage"><span class='fu'>db_get_dataset_keys</span>(<span class='no'>con</span>, <span class='kw'>set_name</span> <span class='kw'>=</span> <span class='st'>"default"</span>, <span class='kw'>schema</span> <span class='kw'>=</span> <span class='st'>"timeseries"</span>)</pre>
 
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
     <table class="ref-arguments">
     <colgroup><col class="name" /><col class="desc" /></colgroup>
     <tr>
       <th>con</th>
-      <td><p>PostgreSQL connection</p></td>
+      <td><p>RPostgres connection object</p></td>
     </tr>
     <tr>
       <th>set_name</th>

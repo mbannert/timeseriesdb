@@ -36,7 +36,8 @@
 
 
 <meta property="og:title" content="Install PostgreSQL Schemas and Extensions — setup_sql_extentions" />
-<meta property="og:description" content="Installs schema, uuid-ossp, btree_gist." />
+<meta property="og:description" content="Installs schema, uuid-ossp, btree_gist.
+This function must be run with a connection of a database level admin." />
 <meta name="twitter:card" content="summary" />
 
 
@@ -98,7 +99,7 @@
       <a href="../articles/get_started.html">Getting Started</a>
     </li>
     <li>
-      <a href="../articles/manage_timeseries_with_r_and_postgres.html">Manage Official Statistics' Time Series Data with R and PostgreSQL</a>
+      <a href="../articles/manage_timeseries_with_timeseriesdb.html">Manage Time Series with {timeseriesdb}</a>
     </li>
     <li>
       <a href="../articles/metadata.html">Manage Official Statistics' Time Series Data with R and PostgreSQL</a>
@@ -135,7 +136,8 @@
     </div>
 
     <div class="ref-description">
-    <p>Installs schema, uuid-ossp, btree_gist.</p>
+    <p>Installs schema, uuid-ossp, btree_gist.
+This function must be run with a connection of a database level admin.</p>
     </div>
 
     <pre class="usage"><span class='fu'>setup_sql_extentions</span>(<span class='no'>con</span>, <span class='kw'>schema</span> <span class='kw'>=</span> <span class='st'>"timeseries"</span>)</pre>
@@ -145,7 +147,7 @@
     <colgroup><col class="name" /><col class="desc" /></colgroup>
     <tr>
       <th>con</th>
-      <td><p>PostgreSQL connection object</p></td>
+      <td><p>RPostgres connection object.</p></td>
     </tr>
     </table>
 

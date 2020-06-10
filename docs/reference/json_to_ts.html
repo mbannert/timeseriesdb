@@ -6,7 +6,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>Convert json representation into time series — json_to_ts • timeseriesdb</title>
+<title>Convert JSON Representation of a Time Series into R Time Series Objects — json_to_ts • timeseriesdb</title>
 
 
 <!-- jquery -->
@@ -35,8 +35,8 @@
 
 
 
-<meta property="og:title" content="Convert json representation into time series — json_to_ts" />
-<meta property="og:description" content="Convert json representation into time series" />
+<meta property="og:title" content="Convert JSON Representation of a Time Series into R Time Series Objects — json_to_ts" />
+<meta property="og:description" content="Convert JSON Representation of a Time Series into R Time Series Objects" />
 <meta name="twitter:card" content="summary" />
 
 
@@ -98,7 +98,7 @@
       <a href="../articles/get_started.html">Getting Started</a>
     </li>
     <li>
-      <a href="../articles/manage_timeseries_with_r_and_postgres.html">Manage Official Statistics' Time Series Data with R and PostgreSQL</a>
+      <a href="../articles/manage_timeseries_with_timeseriesdb.html">Manage Time Series with {timeseriesdb}</a>
     </li>
     <li>
       <a href="../articles/metadata.html">Manage Official Statistics' Time Series Data with R and PostgreSQL</a>
@@ -129,13 +129,13 @@
 <div class="row">
   <div class="col-md-9 contents">
     <div class="page-header">
-    <h1>Convert json representation into time series</h1>
+    <h1>Convert JSON Representation of a Time Series into R Time Series Objects</h1>
     <small class="dont-index">Source: <a href='https://github.com/mbannert/timeseriesdb/blob/master/R/json_to_ts.R'><code>R/json_to_ts.R</code></a></small>
     <div class="hidden name"><code>json_to_ts.Rd</code></div>
     </div>
 
     <div class="ref-description">
-    <p>Convert json representation into time series</p>
+    <p>Convert JSON Representation of a Time Series into R Time Series Objects</p>
     </div>
 
     <pre class="usage"><span class='fu'>json_to_ts</span>(<span class='no'>jsn</span>, <span class='kw'>as.dt</span> <span class='kw'>=</span> <span class='fl'>FALSE</span>)</pre>
@@ -149,16 +149,20 @@
     </tr>
     <tr>
       <th>as.dt</th>
-      <td><p>Should the result be returned as a data.table?</p></td>
+      <td><p>boolean Should the result be returned as a data.table?</p></td>
     </tr>
     </table>
 
+    <h2 class="hasAnchor" id="value"><a class="anchor" href="#value"></a>Value</h2>
+
+    <p>R time series representation of class ts, xts or data.table depending on parameter setting and nature of time series. Regular time series can be returned as 'ts' objects whereas irregular time series use 'xts' objects.</p>
 
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="sidebar">
     <h2>Contents</h2>
     <ul class="nav nav-pills nav-stacked">
       <li><a href="#arguments">Arguments</a></li>
+      <li><a href="#value">Value</a></li>
     </ul>
 
   </div>

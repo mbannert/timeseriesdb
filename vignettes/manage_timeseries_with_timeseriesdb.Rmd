@@ -13,7 +13,10 @@ vignette: >
 
 This guide explains in applied fashion how to use {timeseriesdb} effectively in practice.
 In order to walk through {timeseriesdb}'s functionality this document follows the 
-user story of the fictional _Crystall Ball Economics_ company.
+user story of the fictional _Crystall Ball Economics_ company. This walkthrough assumes
+that you have installed R, PostgreSQL and the {timeseriesdb} package successfully and it 
+also assumes that set up the timeseriesdb database backend using the setup routines that ship with the package. If you have troubling setting this up, please take a look at our 
+[Installtion](Guide).
 
 ## Crystal Ball Economics Inc. - A User Story
 
@@ -30,9 +33,48 @@ offices in various locations.
 
 ## Basic Usage
 
-- connect
-- read
-- store
+The obvious first step en route to interaction with any database is to connect
+to the database. {timeseriesdb} ships with a convenience function that allows 
+to swiftly connect to the PostgreSQL backend. 
+
+```{r}
+library(timeseriesdb)
+con <- db_create_connection(dbname = "postgres",
+                            user = "dev_admin",
+                            host =  "localhost",
+                            passwd = "dev_admin",
+                            port = 1111)
+```
+
+Once a connection is etablished, this connection can be used to read and store 
+time series. _Crystall Ball's_ Swiss researchers have composed a nice set of time
+series that they want to store for good and share with their colleagues across
+the company. Instead of storing the data to a spreadsheet format or as R objects
+in an _.RData_ file, the researchers store time series into the PostgreSQL based
+backend. 
+
+{timeseriesdb} ships with the dataset _demoseries_. 
+
+```{r}
+demoseries <- list(
+  JohnsonJohnson = JohnsonJohnson,
+  AirPassengers = AirPassengers
+)
+
+store_time_series(con, demoseries)
+
+```
+
+Once news spread around the company that new data are available, company 
+researchers around the globe want to take a look at the new data. Reading 
+from {timeseriesdb}'s backend is as easy as writing to it.
+
+```{r}
+tsl <- read_time_series(con, c("AirPassengers","JohnsonJohnson"))
+```
+
+The Read process
+
 
 ## Vintages (Versions of Time Series)
 

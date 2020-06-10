@@ -6,7 +6,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>Assign ts keys to a dataset — db_assign_dataset • timeseriesdb</title>
+<title>Assign Time Series Identifiers to a Dataset — db_assign_dataset • timeseriesdb</title>
 
 
 <!-- jquery -->
@@ -35,10 +35,10 @@
 
 
 
-<meta property="og:title" content="Assign ts keys to a dataset — db_assign_dataset" />
+<meta property="og:title" content="Assign Time Series Identifiers to a Dataset — db_assign_dataset" />
 <meta property="og:description" content="`db_assign_dataset` returns a list with status information.
 status `&quot;ok&quot;` means all went well.
-status `&quot;warning&quot;` means some keys are not in the catalog. The vector of 
+status `&quot;warning&quot;` means some keys are not in the catalog. The vector of
 those keys is in the `offending_keys` field." />
 <meta name="twitter:card" content="summary" />
 
@@ -101,7 +101,7 @@ those keys is in the `offending_keys` field." />
       <a href="../articles/get_started.html">Getting Started</a>
     </li>
     <li>
-      <a href="../articles/manage_timeseries_with_r_and_postgres.html">Manage Official Statistics' Time Series Data with R and PostgreSQL</a>
+      <a href="../articles/manage_timeseries_with_timeseriesdb.html">Manage Time Series with {timeseriesdb}</a>
     </li>
     <li>
       <a href="../articles/metadata.html">Manage Official Statistics' Time Series Data with R and PostgreSQL</a>
@@ -132,7 +132,7 @@ those keys is in the `offending_keys` field." />
 <div class="row">
   <div class="col-md-9 contents">
     <div class="page-header">
-    <h1>Assign ts keys to a dataset</h1>
+    <h1>Assign Time Series Identifiers to a Dataset</h1>
     <small class="dont-index">Source: <a href='https://github.com/mbannert/timeseriesdb/blob/master/R/datasets.R'><code>R/datasets.R</code></a></small>
     <div class="hidden name"><code>db_assign_dataset.Rd</code></div>
     </div>
@@ -140,7 +140,7 @@ those keys is in the `offending_keys` field." />
     <div class="ref-description">
     <p>`db_assign_dataset` returns a list with status information.
 status `"ok"` means all went well.
-status `"warning"` means some keys are not in the catalog. The vector of 
+status `"warning"` means some keys are not in the catalog. The vector of
 those keys is in the `offending_keys` field.</p>
     </div>
 
@@ -151,7 +151,7 @@ those keys is in the `offending_keys` field.</p>
     <colgroup><col class="name" /><col class="desc" /></colgroup>
     <tr>
       <th>con</th>
-      <td><p>PostgreSQL connection</p></td>
+      <td><p>RPostgres connection object</p></td>
     </tr>
     <tr>
       <th>ts_keys</th>

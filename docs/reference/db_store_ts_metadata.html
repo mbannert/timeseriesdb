@@ -98,7 +98,7 @@
       <a href="../articles/get_started.html">Getting Started</a>
     </li>
     <li>
-      <a href="../articles/manage_timeseries_with_r_and_postgres.html">Manage Official Statistics' Time Series Data with R and PostgreSQL</a>
+      <a href="../articles/manage_timeseries_with_timeseriesdb.html">Manage Time Series with {timeseriesdb}</a>
     </li>
     <li>
       <a href="../articles/metadata.html">Manage Official Statistics' Time Series Data with R and PostgreSQL</a>
@@ -152,20 +152,19 @@
     <colgroup><col class="name" /><col class="desc" /></colgroup>
     <tr>
       <th>con</th>
-      <td><p>RPostgres database connection</p></td>
+      <td><p>RPostgres database connection object.</p></td>
     </tr>
     <tr>
       <th>metadata</th>
-      <td><p>tsmeta The metadata to be stored</p></td>
+      <td><p>object of class tsmeta that contains the metadata to be stored.</p></td>
     </tr>
     <tr>
       <th>locale</th>
-      <td><p>character What language to store the data as. If locale is NULL (default)
-the metadata is stored without associated language information</p></td>
+      <td><p>character indicating the language of the meta information to be store. We recommend to use ISO country codes to represent languages. Defaults to NULL. When local is set to NULL, metadata are stored without localization. Note that, when localizing meta information by assigning a language, multiple meta information objects can be stored for a single time series.</p></td>
     </tr>
     <tr>
       <th>on_conflict</th>
-      <td><p>"update": add new fields and update existing ones, "overwrite": complerely replace existing record</p></td>
+      <td><p>character allows for either 'update': add new fields and update existing ones or "overwrite": completely replace existing record.</p></td>
     </tr>
     <tr>
       <th>schema</th>
@@ -175,9 +174,7 @@ the metadata is stored without associated language information</p></td>
 
     <h2 class="hasAnchor" id="value"><a class="anchor" href="#value"></a>Value</h2>
 
-    
-
-
+    <p>status list created from DB status return JSON.</p>
 
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="sidebar">

@@ -4,6 +4,6 @@ pkgdown_sha: ~
 articles:
   developer_doc: developer_doc.html
   get_started: get_started.html
-  manage_timeseries_with_r_and_postgres: manage_timeseries_with_r_and_postgres.html
+  manage_timeseries_with_timeseriesdb: manage_timeseries_with_timeseriesdb.html
   metadata: metadata.html
 

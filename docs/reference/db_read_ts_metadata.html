@@ -98,7 +98,7 @@
       <a href="../articles/get_started.html">Getting Started</a>
     </li>
     <li>
-      <a href="../articles/manage_timeseries_with_r_and_postgres.html">Manage Official Statistics' Time Series Data with R and PostgreSQL</a>
+      <a href="../articles/manage_timeseries_with_timeseriesdb.html">Manage Time Series with {timeseriesdb}</a>
     </li>
     <li>
       <a href="../articles/metadata.html">Manage Official Statistics' Time Series Data with R and PostgreSQL</a>
@@ -152,24 +152,23 @@
     <colgroup><col class="name" /><col class="desc" /></colgroup>
     <tr>
       <th>con</th>
-      <td><p>RPostgres database connection</p></td>
+      <td><p>RPostgres database connection object.</p></td>
     </tr>
     <tr>
       <th>ts_keys</th>
-      <td><p>Character vector of ts keys to read metadata for. If regex is TRUE, ts_keys is used as a pattern.</p></td>
+      <td><p>character vector of time series identifiers  to read metadata for. If regex is TRUE, ts_keys is understood as regular expression pattern as opposed to a vector of keys.</p></td>
     </tr>
     <tr>
       <th>valid_on</th>
-      <td><p>Date for which to read the metadata. If NA the most recent version is read.</p></td>
+      <td><p>Date for which to read the metadata. Defaults to NA reading the most recent version.</p></td>
     </tr>
     <tr>
       <th>regex</th>
-      <td><p>boolean should ts_keys allow for regular expressions.
-Defaults to FALSE.</p></td>
+      <td><p>boolean should ts_keys allow be interpreted as a regular expression pattern? Defaults to FALSE.</p></td>
     </tr>
     <tr>
       <th>locale</th>
-      <td><p>What language to read metadata for. If NULL, unlocalized metadata is read.</p></td>
+      <td><p>character language identifier of the meta data lookup. If NULL, unlocalized metadata are read.</p></td>
     </tr>
     <tr>
       <th>schema</th>
@@ -177,12 +176,16 @@ Defaults to FALSE.</p></td>
     </tr>
     </table>
 
+    <h2 class="hasAnchor" id="value"><a class="anchor" href="#value"></a>Value</h2>
+
+    <p>list of tsmeta objects.</p>
 
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="sidebar">
     <h2>Contents</h2>
     <ul class="nav nav-pills nav-stacked">
       <li><a href="#arguments">Arguments</a></li>
+      <li><a href="#value">Value</a></li>
     </ul>
 
   </div>

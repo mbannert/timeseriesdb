@@ -98,7 +98,7 @@
       <a href="../articles/get_started.html">Getting Started</a>
     </li>
     <li>
-      <a href="../articles/manage_timeseries_with_r_and_postgres.html">Manage Official Statistics' Time Series Data with R and PostgreSQL</a>
+      <a href="../articles/manage_timeseries_with_timeseriesdb.html">Manage Time Series with {timeseriesdb}</a>
     </li>
     <li>
       <a href="../articles/metadata.html">Manage Official Statistics' Time Series Data with R and PostgreSQL</a>
@@ -138,7 +138,7 @@
     <p>Store a set of time series to database</p>
     </div>
 
-    <pre class="usage"><span class='fu'>store_time_series</span>(<span class='no'>con</span>, <span class='no'>x</span>, <span class='no'>access</span>, <span class='no'>valid_from</span>, <span class='no'>release_date</span>, <span class='no'>schema</span>)</pre>
+    <pre class="usage"><span class='fu'>store_time_series</span>(<span class='no'>con</span>, <span class='no'>x</span>, <span class='kw'>access</span> <span class='kw'>=</span> <span class='fl'>NA</span>, <span class='no'>valid_from</span>, <span class='no'>release_date</span>, <span class='no'>schema</span>)</pre>
 
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
     <table class="ref-arguments">
@@ -153,7 +153,7 @@
     </tr>
     <tr>
       <th>access</th>
-      <td><p>Access level for all ts to be stored</p></td>
+      <td><p>Access level for all ts to be stored. If set to NA (default) the database set it to 'main' access.</p></td>
     </tr>
     <tr>
       <th>valid_from</th>
@@ -162,10 +162,6 @@
     <tr>
       <th>release_date</th>
       <td><p>Release date of all ts in x</p></td>
-    </tr>
-    <tr>
-      <th>schema</th>
-      <td></td>
     </tr>
     <tr>
       <th>release</th>

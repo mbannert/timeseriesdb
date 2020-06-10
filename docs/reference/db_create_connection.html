@@ -6,7 +6,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>Install timeseriesdb System Tables — setup_sql_tables • timeseriesdb</title>
+<title>Create Database Connection — db_create_connection • timeseriesdb</title>
 
 
 <!-- jquery -->
@@ -35,11 +35,11 @@
 
 
 
-<meta property="og:title" content="Install timeseriesdb System Tables — setup_sql_tables" />
-<meta property="og:description" content="Installs tables needed to operated timeseriesdb in
-a given PostgreSQL schema. The tables use a default SQL file installed
-with the package to generate SQL tables. The default schema 'timeseries'
-can be replaced using the 'schema' parameter." />
+<meta property="og:title" content="Create Database Connection — db_create_connection" />
+<meta property="og:description" content="Connects to the PostgreSQL database backend of timeseriesdb. This function
+is convenience wrapper around DBI's dbConnect. It's less general than the DBI
+function and only works for PostgreSQL, but it is a little more convenient 
+because of its defaults / assumptions." />
 <meta name="twitter:card" content="summary" />
 
 
@@ -132,30 +132,69 @@ can be replaced using the 'schema' parameter." />
 <div class="row">
   <div class="col-md-9 contents">
     <div class="page-header">
-    <h1>Install timeseriesdb System Tables</h1>
-    <small class="dont-index">Source: <a href='https://github.com/mbannert/timeseriesdb/blob/master/R/setup_sql.R'><code>R/setup_sql.R</code></a></small>
-    <div class="hidden name"><code>setup_sql_tables.Rd</code></div>
+    <h1>Create Database Connection</h1>
+    <small class="dont-index">Source: <a href='https://github.com/mbannert/timeseriesdb/blob/master/R/utils.R'><code>R/utils.R</code></a></small>
+    <div class="hidden name"><code>db_create_connection.Rd</code></div>
     </div>
 
     <div class="ref-description">
-    <p>Installs tables needed to operated timeseriesdb in
-a given PostgreSQL schema. The tables use a default SQL file installed
-with the package to generate SQL tables. The default schema 'timeseries'
-can be replaced using the 'schema' parameter.</p>
+    <p>Connects to the PostgreSQL database backend of timeseriesdb. This function
+is convenience wrapper around DBI's dbConnect. It's less general than the DBI
+function and only works for PostgreSQL, but it is a little more convenient 
+because of its defaults / assumptions.</p>
     </div>
 
-    <pre class="usage"><span class='fu'>setup_sql_tables</span>(<span class='no'>con</span>, <span class='kw'>schema</span> <span class='kw'>=</span> <span class='st'>"timeseries"</span>)</pre>
+    <pre class="usage"><span class='fu'>db_create_connection</span>(
+  <span class='no'>dbname</span>,
+  <span class='kw'>user</span> <span class='kw'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/Sys.info.html'>Sys.info</a></span>()[<span class='st'>"user"</span>],
+  <span class='kw'>host</span> <span class='kw'>=</span> <span class='st'>"localhost"</span>,
+  <span class='kw'>passwd</span> <span class='kw'>=</span> <span class='kw'>NULL</span>,
+  <span class='kw'>passwd_from_file</span> <span class='kw'>=</span> <span class='fl'>FALSE</span>,
+  <span class='kw'>line_no</span> <span class='kw'>=</span> <span class='fl'>1</span>,
+  <span class='kw'>env_pass_name</span> <span class='kw'>=</span> <span class='kw'>NULL</span>,
+  <span class='kw'>connection_description</span> <span class='kw'>=</span> <span class='st'>"timeseriesdb"</span>,
+  <span class='kw'>port</span> <span class='kw'>=</span> <span class='fl'>5432</span>
+)</pre>
 
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
     <table class="ref-arguments">
     <colgroup><col class="name" /><col class="desc" /></colgroup>
     <tr>
-      <th>con</th>
-      <td><p>PostgreSQL connection object created by the RPostgres package.</p></td>
+      <th>dbname</th>
+      <td><p>character name of the database.</p></td>
     </tr>
     <tr>
-      <th>schema</th>
-      <td><p>character schema name, defaults to 'timeseries'.</p></td>
+      <th>user</th>
+      <td><p>character name of the database user. Defaults to the user of the R session. this is often the user for the database, too so you do not have to specify your username explicitly if that is the case.</p></td>
+    </tr>
+    <tr>
+      <th>host</th>
+      <td><p>character denoting the hostname. Defaults to localhost.</p></td>
+    </tr>
+    <tr>
+      <th>passwd</th>
+      <td><p>character password. Defaults to NULL triggering an R Studio function that
+asks for your passwords interactively if you are on R Studio.</p></td>
+    </tr>
+    <tr>
+      <th>passwd_from_file</th>
+      <td><p>boolean if set to TRUE the passwd param is interpreted as a file location for a password file such as .pgpass. Make sure to be very restrictive with file permissions if you store a password to a file.</p></td>
+    </tr>
+    <tr>
+      <th>line_no</th>
+      <td><p>integer specify line number of password file that holds the actual password.</p></td>
+    </tr>
+    <tr>
+      <th>env_pass_name</th>
+      <td><p>character name of the environment that holds a password. Defaults to NULL. If set, this way of obtaining the password is preferred over all other ways. Other specification will be ignored if this parameter is set. Storing passwords in environment variables can be very handy when working in a docker environment.</p></td>
+    </tr>
+    <tr>
+      <th>connection_description</th>
+      <td><p>character connection description describing the application that connects to the database. This is mainly helpful for DB admins and shows up in the pg_stat_activity table. Defaults to 'timeseriesdb'. Avoid spaces as this is a psql option.</p></td>
+    </tr>
+    <tr>
+      <th>port</th>
+      <td><p>integer defaults to 5432, the PostgreSQL standard port.</p></td>
     </tr>
     </table>
 

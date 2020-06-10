@@ -6,7 +6,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>Create a new dataset — db_create_dataset • timeseriesdb</title>
+<title>Create a New Dataset — db_create_dataset • timeseriesdb</title>
 
 
 <!-- jquery -->
@@ -35,11 +35,8 @@
 
 
 
-<meta property="og:title" content="Create a new dataset — db_create_dataset" />
-<meta property="og:description" content="A dataset is a family of time series that belong to the same topic.
-By default all series stored with `db_store_ts` belong to a default set. In order to 
-assign them a different set, it must first be created with `db_create_dataset` after which
-the series may be moved with `tbd`" />
+<meta property="og:title" content="Create a New Dataset — db_create_dataset" />
+<meta property="og:description" content="A dataset is a family of time series that belong to the same topic. By default all series stored with `db_store_ts` belong to a default set. In order to assign them a different set, it must first be created with `db_create_dataset` after which the series may be moved with `tbd`" />
 <meta name="twitter:card" content="summary" />
 
 
@@ -101,7 +98,7 @@ the series may be moved with `tbd`" />
       <a href="../articles/get_started.html">Getting Started</a>
     </li>
     <li>
-      <a href="../articles/manage_timeseries_with_r_and_postgres.html">Manage Official Statistics' Time Series Data with R and PostgreSQL</a>
+      <a href="../articles/manage_timeseries_with_timeseriesdb.html">Manage Time Series with {timeseriesdb}</a>
     </li>
     <li>
       <a href="../articles/metadata.html">Manage Official Statistics' Time Series Data with R and PostgreSQL</a>
@@ -132,16 +129,13 @@ the series may be moved with `tbd`" />
 <div class="row">
   <div class="col-md-9 contents">
     <div class="page-header">
-    <h1>Create a new dataset</h1>
+    <h1>Create a New Dataset</h1>
     <small class="dont-index">Source: <a href='https://github.com/mbannert/timeseriesdb/blob/master/R/datasets.R'><code>R/datasets.R</code></a></small>
     <div class="hidden name"><code>db_create_dataset.Rd</code></div>
     </div>
 
     <div class="ref-description">
-    <p>A dataset is a family of time series that belong to the same topic.
-By default all series stored with `db_store_ts` belong to a default set. In order to 
-assign them a different set, it must first be created with `db_create_dataset` after which
-the series may be moved with `tbd`</p>
+    <p>A dataset is a family of time series that belong to the same topic. By default all series stored with `db_store_ts` belong to a default set. In order to assign them a different set, it must first be created with `db_create_dataset` after which the series may be moved with `tbd`</p>
     </div>
 
     <pre class="usage"><span class='fu'>db_create_dataset</span>(
@@ -157,7 +151,7 @@ the series may be moved with `tbd`</p>
     <colgroup><col class="name" /><col class="desc" /></colgroup>
     <tr>
       <th>con</th>
-      <td><p>PostgreSQL connection</p></td>
+      <td><p>RPostgres connection object</p></td>
     </tr>
     <tr>
       <th>set_name</th>
@@ -165,7 +159,7 @@ the series may be moved with `tbd`</p>
     </tr>
     <tr>
       <th>set_md</th>
-      <td><p>meta Metadata about the set</p></td>
+      <td><p>meta information data about the set.</p></td>
     </tr>
     <tr>
       <th>schema</th>
