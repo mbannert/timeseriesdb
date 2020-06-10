@@ -149,3 +149,15 @@ test_with_fresh_db(con_admin, hard_reset = TRUE, "overwriting older vintage is n
     main_after_insert_3[, names_to_test]
   )
 })
+
+test_with_fresh_db(con_admin, hard_reset = TRUE, "store_time_series uses the default access level", {
+  store_time_series(con_writer, tsl[1])
+
+  acl <- dbGetQuery(con_admin, "SELECT access FROM timeseries.timeseries_main")$access
+  dflt <- dbGetQuery(con_admin, "SELECT role FROM timeseries.access_levels WHERE is_default")$role
+  expect_equal(acl, dflt)
+})
+
+test_with_fresh_db(con_admin, hard_reset = TRUE, "store_time_series complains about invalid access level", {
+  expect_error(store_time_series(con_writer, tsl, "my_preceous"), "a valid access level")
+})

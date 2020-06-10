@@ -8,12 +8,11 @@ INSERT INTO timeseries.datasets VALUES ('default', 'A set that is used if no oth
 
 CREATE TABLE timeseries.access_levels (
   role TEXT PRIMARY KEY,
-  description TEXT
+  description TEXT,
+  is_default BOOLEAN DEFAULT NULL
 );
 
-INSERT INTO timeseries.access_levels VALUES ('timeseries_access_public', 'Publicly available time series');
-INSERT INTO timeseries.access_levels VALUES ('timeseries_access_main', 'Non-public time series without license restrictions');
-INSERT INTO timeseries.access_levels VALUES ('timeseries_access_restricted', 'License restricted time series');
+CREATE UNIQUE INDEX ON timeseries.access_levels(is_default) WHERE is_default = true;
 
 CREATE TABLE timeseries.catalog(
     ts_key TEXT PRIMARY KEY,
