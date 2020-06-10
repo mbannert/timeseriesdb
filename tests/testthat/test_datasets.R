@@ -4,7 +4,7 @@ context("datasets")
 
 if(is_test_db_reachable()) {
   con_admin <- connect_to_test_db()
-  con_writer <- connect_to_test_db("dev_writer_public")
+  con_writer <- connect_to_test_db("dev_writer")
   con_reader <- connect_to_test_db("dev_reader_public")
 }
 
