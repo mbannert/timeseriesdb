@@ -52,7 +52,8 @@ BEGIN
   -- Main insert
   INSERT INTO timeseries.timeseries_main(ts_key, validity, coverage, release_date, ts_data, access)
   SELECT tmp.ts_key, COALESCE(p_validity, CURRENT_DATE), tmp.coverage,
-            COALESCE(p_release_date, CURRENT_TIMESTAMP), tmp.ts_data, p_access
+            COALESCE(p_release_date, CURRENT_TIMESTAMP), tmp.ts_data,
+            COALESCE(p_access, 'timeseries_access_main')
   FROM tmp_ts_updates AS tmp
   LEFT JOIN timeseries.timeseries_main AS main
   ON tmp.ts_key = main.ts_key
