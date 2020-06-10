@@ -71,41 +71,31 @@ if(is_test_db_reachable()) {
 
 test_that("public reader may not read main series", {
   skip_on_cran()
-  skip_if_not(is_test_db_reachable())
-
-  tsl_read <- read_time_series(con_reader_public, "ts1")
+    tsl_read <- read_time_series(con_reader_public, "ts1")
   expect_length(tsl_read, 0)
 })
 
 test_that("series with no access get skipped", {
   skip_on_cran()
-  skip_if_not(is_test_db_reachable())
-
-  tsl_read <- read_time_series(con_reader_public, c("ts1", "tsp"))
+    tsl_read <- read_time_series(con_reader_public, c("ts1", "tsp"))
   expect_equal(tsl_read, tsl_pblc)
 })
 
 test_that("by default it reads the most recent valid vintage", {
   skip_on_cran()
-  skip_if_not(is_test_db_reachable())
-
-  tsl_read <- read_time_series(con_reader_main, "ts1")
+    tsl_read <- read_time_series(con_reader_main, "ts1")
   expect_equal(tsl_read, tsl_state_2)
 })
 
 test_that("by default it reads the most recent valid vintage but with respecting rls date", {
   skip_on_cran()
-  skip_if_not(is_test_db_reachable())
-
-  tsl_read <- read_time_series(con_reader_main, "ts1", respect_release_date = TRUE)
+    tsl_read <- read_time_series(con_reader_main, "ts1", respect_release_date = TRUE)
   expect_equal(tsl_read, tsl_state_1)
 })
 
 test_that("reading desired vintages works", {
   skip_on_cran()
-  skip_if_not(is_test_db_reachable())
-
-  tsl_read_1 <- read_time_series(con_reader_main, "ts1", valid_on = current_date - 4)
+    tsl_read_1 <- read_time_series(con_reader_main, "ts1", valid_on = current_date - 4)
   expect_equal(tsl_read_1, tsl_state_0)
 
   tsl_read_2 <- read_time_series(con_reader_main, "ts1", valid_on = current_date - 2)
@@ -114,16 +104,12 @@ test_that("reading desired vintages works", {
 
 test_that("reading vintages, respecting release date", {
   skip_on_cran()
-  skip_if_not(is_test_db_reachable())
-
-  tsl_read <- read_time_series(con_reader_main, "ts1", valid_on = current_date - 2, respect_release_date = TRUE)
+    tsl_read <- read_time_series(con_reader_main, "ts1", valid_on = current_date - 2, respect_release_date = TRUE)
   expect_equal(tsl_read, tsl_state_1)
 })
 
 test_that("reading via regex works", {
   skip_on_cran()
-  skip_if_not(is_test_db_reachable())
-
-  tsl_read <- read_time_series(con_reader_main, "^ts", regex = TRUE)
+    tsl_read <- read_time_series(con_reader_main, "^ts", regex = TRUE)
   expect_setequal(names(tsl_read), c("ts1", "tsp"))
 })

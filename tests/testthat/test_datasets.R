@@ -12,33 +12,25 @@ if(is_test_db_reachable()) {
 # test db_create_dataset --------------------------------------------------
 
 test_with_fresh_db(con_admin, "creating dataset returns id of set", hard_reset = TRUE, {
-  skip_if_not(is_test_db_reachable())
-
-  out <- db_create_dataset(con_admin, "testset", "a set for testing", meta(field = "value"))
+    out <- db_create_dataset(con_admin, "testset", "a set for testing", meta(field = "value"))
 
   expect_equal(out, "testset")
 })
 
 test_with_fresh_db(con_admin, "writer may not create sets", hard_reset = TRUE, {
-  skip_if_not(is_test_db_reachable())
-
-  expect_error(
+    expect_error(
     db_create_dataset(con_writer, "testset", "a set for testing", meta(field = "value")),
     "Only admins")
 })
 
 test_with_fresh_db(con_admin, "writer may not create sets", hard_reset = TRUE, {
-  skip_if_not(is_test_db_reachable())
-
-  expect_error(
+    expect_error(
     db_create_dataset(con_reader, "testset", "a set for testing", meta(field = "value")),
     "Only admins")
 })
 
 test_with_fresh_db(con_admin, "creating dataset", hard_reset = TRUE, {
-  skip_if_not(is_test_db_reachable())
-
-  db_create_dataset(con_admin, "testset", "a set for testing", meta(field = "value"))
+    db_create_dataset(con_admin, "testset", "a set for testing", meta(field = "value"))
   result <- dbGetQuery(con_admin, "SELECT * FROM timeseries.datasets")
 
   expect_is(result$set_md, "pq_json")
@@ -58,18 +50,14 @@ test_with_fresh_db(con_admin, "creating dataset", hard_reset = TRUE, {
 })
 
 test_with_fresh_db(con_admin, "no duplicated set ids", hard_reset = TRUE, {
-  skip_if_not(is_test_db_reachable())
-
-  db_create_dataset(con_admin, "testset", "a set for testing", meta(field = "value"))
+    db_create_dataset(con_admin, "testset", "a set for testing", meta(field = "value"))
   expect_error(
     db_create_dataset(con_admin, "testset", "a set for testing", meta(field = "value")),
     "name already exists")
 })
 
 test_with_fresh_db(con_admin, "defaults for description and md", hard_reset = TRUE, {
-  skip_if_not(is_test_db_reachable())
-
-  db_create_dataset(con_admin, "defaulttestset")
+    db_create_dataset(con_admin, "defaulttestset")
 
   result <- dbGetQuery(con_admin, "SELECT * FROM timeseries.datasets")
 
@@ -93,9 +81,7 @@ test_with_fresh_db(con_admin, "defaults for description and md", hard_reset = TR
 # test db_get_dataset_keys ------------------------------------------------
 
 test_with_fresh_db(con_admin, "db_get_dataset_keys", {
-  skip_if_not(is_test_db_reachable())
-
-  expect_equal(
+    expect_equal(
     db_get_dataset_keys(con_reader, "set1"),
     c("ts1", "ts2")
   )
@@ -104,9 +90,7 @@ test_with_fresh_db(con_admin, "db_get_dataset_keys", {
 # test db_get_dataset_id --------------------------------------------------
 
 test_with_fresh_db(con_admin, "db_get_dataset_id gets the correct set", {
-  skip_if_not(is_test_db_reachable())
-
-  out <- db_get_dataset_id(con_reader, "ts1")
+    out <- db_get_dataset_id(con_reader, "ts1")
   expected <- data.frame(
     ts_key = "ts1",
     set_id = "set1",
@@ -117,9 +101,7 @@ test_with_fresh_db(con_admin, "db_get_dataset_id gets the correct set", {
 })
 
 test_with_fresh_db(con_admin, "db_get_dataset_id spanning multiple sets", {
-  skip_if_not(is_test_db_reachable())
-
-  out <- db_get_dataset_id(con_reader, c("ts1", "ts3"))
+    out <- db_get_dataset_id(con_reader, c("ts1", "ts3"))
   expected <- data.frame(
     ts_key = c("ts1", "ts3"),
     set_id = c("set1", "set2"),
@@ -130,9 +112,7 @@ test_with_fresh_db(con_admin, "db_get_dataset_id spanning multiple sets", {
 })
 
 test_with_fresh_db(con_admin, "db_get_dataset_id with missing key", {
-  skip_if_not(is_test_db_reachable())
-
-  out <- db_get_dataset_id(con_reader, "notatskey")
+    out <- db_get_dataset_id(con_reader, "notatskey")
   expected <- data.frame(
     ts_key = "notatskey",
     set_id = NA_character_,
@@ -144,26 +124,20 @@ test_with_fresh_db(con_admin, "db_get_dataset_id with missing key", {
 
 # test db_assign_dataset --------------------------------------------------
 test_with_fresh_db(con_admin, "reader may not assign dataset", {
-  skip_if_not(is_test_db_reachable())
-
-  expect_error(
+    expect_error(
     db_assign_dataset(con_reader, c("ts3", "ts4"), "set1"),
     "write permissions to assign")
 })
 
 test_with_fresh_db(con_admin, "db_assign_dataset returns status object", {
-  skip_if_not(is_test_db_reachable())
-
-  out <- db_assign_dataset(con_writer, c("ts3", "ts4"), "set1")
+    out <- db_assign_dataset(con_writer, c("ts3", "ts4"), "set1")
 
   expect_is(out, "list")
   expect_true("status" %in% names(out))
 })
 
 test_with_fresh_db(con_admin, "db_assign_dataset works", {
-  skip_if_not(is_test_db_reachable())
-
-  db_assign_dataset(con_writer, c("ts3", "ts4"), "set1")
+    db_assign_dataset(con_writer, c("ts3", "ts4"), "set1")
 
   result <- dbGetQuery(con_admin, "SELECT set_id FROM timeseries.catalog WHERE ts_key ~ '[34]'")$set_id
 
@@ -171,25 +145,19 @@ test_with_fresh_db(con_admin, "db_assign_dataset works", {
 })
 
 test_with_fresh_db(con_admin, "db_assign_dataset warns if some keys don't exist", {
-  skip_if_not(is_test_db_reachable())
-
-  expect_warning(
+    expect_warning(
     db_assign_dataset(con_writer, c("ts1", "tsx"), "set2"),
     "tsx")
 })
 
 test_with_fresh_db(con_admin, "db_assign_dataset returns list of offending keys", {
-  skip_if_not(is_test_db_reachable())
-
-  suppressWarnings(out <- db_assign_dataset(con_writer, c("ts1", "tsx"), "set2"))
+    suppressWarnings(out <- db_assign_dataset(con_writer, c("ts1", "tsx"), "set2"))
 
   expect_equal(out$offending_keys, "tsx")
 })
 
 test_with_fresh_db(con_admin, "db_assign_dataset errors if set does not exist", {
-  skip_if_not(is_test_db_reachable())
-
-  expect_error(
+    expect_error(
     db_assign_dataset(con_writer, "ts1", "notaset"),
     "notaset does not exist"
   )

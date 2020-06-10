@@ -13,8 +13,6 @@ if(is_test_db_reachable()) {
 # TODO: Tests for db_call_function args
 
 test_with_fresh_db(con_admin, "db_collection_add returns OK", {
-  skip_if_not(is_test_db_reachable())
-
   result <- db_collection_add(con_writer,
                               "tests first",
                               "ts4")
@@ -25,16 +23,12 @@ test_with_fresh_db(con_admin, "db_collection_add returns OK", {
 })
 
 test_with_fresh_db(con_admin, "db_collection_add warns if keys not in catalog", {
-  skip_if_not(is_test_db_reachable())
-
   expect_warning(db_collection_add(con_writer,
                                    "tests first",
                                    "tsx"), "specific collection")
 })
 
 test_with_fresh_db(con_admin, "db_collection_add returns warning keys not in catalog", {
-  skip_if_not(is_test_db_reachable())
-
   result <- suppressWarnings(db_collection_add(con_writer,
                               "tests first",
                               "tsx"))
@@ -46,8 +40,6 @@ test_with_fresh_db(con_admin, "db_collection_add returns warning keys not in cat
 })
 
 test_with_fresh_db(con_admin, "db_collection_add add keys to existing", {
-  skip_if_not(is_test_db_reachable())
-
   db_collection_add(con_writer, "tests first", "vts1", user = "test")
 
   result <- dbGetQuery(con_admin, "SELECT * FROM timeseries.collect_catalog
@@ -60,8 +52,6 @@ test_with_fresh_db(con_admin, "db_collection_add add keys to existing", {
 })
 
 test_with_fresh_db(con_admin, "db_collection_add add new collection & keys", {
-  skip_if_not(is_test_db_reachable())
-
   db_collection_add(con_writer,
                     "tests new",
                     c("vts1", "vts2"),
@@ -92,8 +82,6 @@ test_with_fresh_db(con_admin, "db_collection_add add new collection & keys", {
 })
 
 test_with_fresh_db(con_admin, "reader may create sets and add keys", {
-  skip_if_not(is_test_db_reachable())
-
   db_collection_add(con_reader,
                     "tests new",
                     c("vts1", "vts2"),
@@ -128,8 +116,6 @@ test_with_fresh_db(con_admin, "reader may create sets and add keys", {
 context("collections - remove")
 
 test_with_fresh_db(con_admin, "db_collection_remove removing some keys returns ok", {
-  skip_if_not(is_test_db_reachable())
-
   result <- db_collection_remove(con_writer,
                                  collection_name = "tests first",
                                  keys = "ts1",
@@ -140,7 +126,7 @@ test_with_fresh_db(con_admin, "db_collection_remove removing some keys returns o
 })
 
 test_with_fresh_db(con_admin, "db_collection_remove warns if combo not found", {
-  skip_if_not(is_test_db_reachable())
+
 
   expect_error(db_collection_remove(con_writer,
                                       collection_name = "not a collection",
@@ -149,8 +135,6 @@ test_with_fresh_db(con_admin, "db_collection_remove warns if combo not found", {
 })
 
 test_with_fresh_db(con_admin, "db_collection_remove also removing collection", {
-  skip_if_not(is_test_db_reachable())
-
   result <- db_collection_remove(con_writer,
                                  collection_name = "tests second",
                                  keys = c("ts4", "ts5"),
@@ -162,8 +146,6 @@ test_with_fresh_db(con_admin, "db_collection_remove also removing collection", {
 })
 
 test_with_fresh_db(con_admin, "db_collection_remove state", {
-  skip_if_not(is_test_db_reachable())
-
   db_collection_remove(con_writer,
                        collection_name = "tests first",
                        keys = c("ts1"),
@@ -183,8 +165,6 @@ test_with_fresh_db(con_admin, "db_collection_remove state", {
 })
 
 test_with_fresh_db(con_admin, "db_collection_remove with remove collection state", {
-  skip_if_not(is_test_db_reachable())
-
   db_collection_remove(con_writer,
                        collection_name = "tests first",
                        keys = c("ts1", "ts2", "ts3"),
@@ -204,8 +184,6 @@ test_with_fresh_db(con_admin, "db_collection_remove with remove collection state
 })
 
 test_with_fresh_db(con_admin, "reader may remove from collections", {
-  skip_if_not(is_test_db_reachable())
-
   db_collection_remove(con_reader,
                        collection_name = "tests first",
                        keys = c("ts1"),
