@@ -162,10 +162,20 @@ db_store_ts_metadata <- function(con,
                    locale = "text",
                    metadata = "jsonb"))
 
-    db_return <- db_call_function(con,
-                                  "md_local_upsert",
-                                  list(as.Date(valid_from), on_conflict),
-                                  schema = schema)
+    dbExecute(con, "GRANT SELECT ON tmp_md_insert TO timeseries_admin")
+
+    db_return <- tryCatch(
+      db_call_function(con,
+                      "md_local_upsert",
+                      list(as.Date(valid_from), on_conflict),
+                            schema = schema),
+      error = function(e) {
+        if(grepl("permission denied for function md_local_upsert", e)) {
+          stop("Only writer and aymin may store metadata.")
+        } else {
+          stop(e)
+        }
+      })
   } else {
     md_table <- data.frame(
       ts_key = names(metadata),
@@ -182,10 +192,20 @@ db_store_ts_metadata <- function(con,
                    ts_key = "text",
                    metadata = "jsonb"))
 
-    db_return <- db_call_function(con,
-                                  "md_unlocal_upsert",
-                                  list(as.Date(valid_from), on_conflict),
-                                  schema = schema)
+    dbExecute(con, "GRANT SELECT ON tmp_md_insert TO timeseries_admin")
+
+    db_return <- tryCatch(
+      db_call_function(con,
+                       "md_unlocal_upsert",
+                       list(as.Date(valid_from), on_conflict),
+                       schema = schema),
+      error = function(e) {
+        if(grepl("permission denied for function md_unlocal_upsert", e)) {
+          stop("Only writer and aymin may store metadata.")
+        } else {
+          stop(e)
+        }
+      })
   }
 
   out <- fromJSON(db_return, simplifyDataFrame = FALSE)
@@ -208,7 +228,7 @@ db_store_ts_metadata <- function(con,
 #'
 #' @param con RPostgres database connection object.
 #' @param ts_keys character vector of time series identifiers  to read metadata for. If regex is TRUE, ts_keys is understood as regular expression pattern as opposed to a vector of keys.
-#' @param valid_on Date for which to read the metadata. Defaults to NA reading the most recent version. 
+#' @param valid_on Date for which to read the metadata. Defaults to NA reading the most recent version.
 #' @param regex boolean should ts_keys allow be interpreted as a regular expression pattern? Defaults to FALSE.
 #' @param locale character language identifier of the meta data lookup. If NULL, unlocalized metadata are read.
 #' @param schema character name of the schema. Defaults to 'timeseries'.
@@ -255,12 +275,12 @@ db_read_ts_metadata <- function(con,
 }
 
 #' Get Latest Validity for Metadata of a Given Time Series
-#' 
+#'
 #' Because metadata are only loosely coupled with their respective time series
 #' in order to keep metadata records constant over multiple version of
-#' time series if the data description does not change, it comes in 
-#' handy to find out the last time meta information was updated. This function 
-#' automagickally finds exactly this date. 
+#' time series if the data description does not change, it comes in
+#' handy to find out the last time meta information was updated. This function
+#' automagickally finds exactly this date.
 #'
 #' @param con RPostgres connection object.
 #' @param ts_keys character vector of time series identifiers.

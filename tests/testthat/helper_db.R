@@ -1,5 +1,5 @@
-connect_to_test_db <- function() {
-  dbConnect(Postgres(), "postgres", "localhost", 1111, "", "dev_admin", bigint = "integer")
+connect_to_test_db <- function(username = "dev_admin", password = username) {
+  dbConnect(Postgres(), "postgres", "localhost", 1111, username, password, bigint = "integer")
 }
 
 # TODO: see ?dbCanConnect
@@ -113,10 +113,10 @@ prepare_db <- function(con,
       '{"frequency": 12, "time": ["2020-01-01", "2020-02-01"], "value": [1, 2]}'
     ),
     access = c(
-      "public",
-      "public",
-      "main",
-      "main"
+      "timeseries_access_public",
+      "timeseries_access_public",
+      "timeseries_access_main",
+      "timeseries_access_main"
     )
   )
 

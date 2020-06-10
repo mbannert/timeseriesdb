@@ -31,17 +31,17 @@ BEGIN
   INTO v_invalid_keys
   FROM tmp_md_insert AS tmp
   INNER JOIN timeseries.metadata AS md
-  ON tmp.ts_key = md.ts_key
-  AND validity_in < md.validity;
+  USING (ts_key)
+  WHERE validity_in < md.validity;
 
   -- Main write
   INSERT INTO timeseries.metadata(ts_key, validity, metadata)
   SELECT tmp.ts_key, validity_in, tmp.metadata
   FROM tmp_md_insert AS tmp
   INNER JOIN timeseries.catalog AS cat
-  ON tmp.ts_key = cat.ts_key
+  USING (ts_key)
   -- If no keys are invalid, v_invalid_keys is NULL
-  AND (v_invalid_keys IS NULL OR NOT tmp.ts_key = ANY(v_invalid_keys))
+  WHERE (v_invalid_keys IS NULL OR NOT tmp.ts_key = ANY(v_invalid_keys))
   ON CONFLICT (ts_key, validity) DO UPDATE
   SET
     metadata = CASE WHEN on_conflict = 'update' THEN timeseries.metadata.metadata || EXCLUDED.metadata
@@ -54,7 +54,7 @@ BEGIN
   SELECT array_agg(DISTINCT tmp.ts_key)
   FROM tmp_md_insert AS tmp
   LEFT JOIN timeseries.catalog AS cat
-  ON tmp.ts_key = cat.ts_key
+  USING (ts_key)
   WHERE cat.ts_key IS NULL
   INTO v_missing_keys;
 
@@ -102,17 +102,17 @@ BEGIN
   INTO v_invalid_keys
   FROM tmp_md_insert AS tmp
   INNER JOIN timeseries.metadata_localized AS md
-  ON tmp.ts_key = md.ts_key
-  AND validity_in < md.validity;
+  USING (ts_key)
+  WHERE validity_in < md.validity;
 
   -- Main write
   INSERT INTO timeseries.metadata_localized(ts_key, locale, validity, metadata)
   SELECT tmp.ts_key, tmp.locale, validity_in, tmp.metadata
   FROM tmp_md_insert AS tmp
   INNER JOIN timeseries.catalog AS cat
-  ON tmp.ts_key = cat.ts_key
+  USING (ts_key)
   -- If no keys are invalid, v_invalid_keys is NULL
-  AND (v_invalid_keys IS NULL OR NOT tmp.ts_key = ANY(v_invalid_keys))
+  WHERE (v_invalid_keys IS NULL OR NOT ts_key = ANY(v_invalid_keys))
   ON CONFLICT (ts_key, locale, validity) DO UPDATE
   SET
     metadata = CASE WHEN on_conflict = 'update' THEN timeseries.metadata_localized.metadata || EXCLUDED.metadata
@@ -125,7 +125,7 @@ BEGIN
   SELECT array_agg(DISTINCT tmp.ts_key)
   FROM tmp_md_insert AS tmp
   LEFT JOIN timeseries.catalog AS cat
-  ON tmp.ts_key = cat.ts_key
+  USING (ts_key)
   WHERE cat.ts_key IS NULL
   INTO v_missing_keys;
 
@@ -218,8 +218,8 @@ BEGIN
   RETURN QUERY SELECT DISTINCT ON (rd.ts_key) rd.ts_key, md.metadata
     FROM tmp_ts_read_keys AS rd
     JOIN timeseries.metadata AS md
-    ON rd.ts_key = md.ts_key
-    AND md.validity <= valid_on
+    USING (ts_key)
+    WHERE validity <= valid_on
     ORDER BY rd.ts_key, md.validity DESC;
 END;
 $$ LANGUAGE PLPGSQL
@@ -250,9 +250,9 @@ BEGIN
   RETURN QUERY SELECT DISTINCT ON (rd.ts_key) rd.ts_key, md.metadata
     FROM tmp_ts_read_keys AS rd
     JOIN timeseries.metadata_localized AS md
-    ON rd.ts_key = md.ts_key
-    AND md.validity <= valid_on
-    AND md.locale = loc
+    USING (ts_key)
+    WHERE validity <= valid_on
+    AND locale = loc
     ORDER BY rd.ts_key, md.validity DESC;
 END;
 $$ LANGUAGE PLPGSQL
@@ -279,8 +279,8 @@ BEGIN
   RETURN QUERY SELECT DISTINCT ON (rd.ts_key) rd.ts_key, md.validity
     FROM tmp_ts_read_keys AS rd
     JOIN timeseries.metadata AS md
-    ON rd.ts_key = md.ts_key
-    ORDER BY rd.ts_key, md.validity DESC;
+    USING (ts_key)
+    ORDER BY ts_key, validity DESC;
 END;
 $$ LANGUAGE PLPGSQL
 SECURITY DEFINER
@@ -307,8 +307,8 @@ BEGIN
   RETURN QUERY SELECT DISTINCT ON (rd.ts_key) rd.ts_key, md.validity
     FROM tmp_ts_read_keys AS rd
     JOIN timeseries.metadata_localized AS md
-    ON rd.ts_key = md.ts_key
-    AND md.locale = locale_in
+    USING (ts_key)
+    WHERE locale = locale_in
     ORDER BY rd.ts_key, md.validity DESC;
 END;
 $$ LANGUAGE PLPGSQL
