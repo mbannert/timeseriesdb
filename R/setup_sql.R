@@ -98,7 +98,7 @@ setup_sql_tables <- function(con, schema = "timeseries"){
   # split up SQL by a new set of lines everytime CREATE TABLES or INSERT INTO
   # occurs in order to send single statements using multiple execute calls
   # which is DBI / RPostgres compliant
-  lapply(split(sql, cumsum(grepl("CREATE TABLE|INSERT INTO",sql))),
+  lapply(split(sql, cumsum(grepl("CREATE|INSERT INTO",sql))),
          function(x){
            dbExecute(con, paste(x, collapse = "\n"))
          })

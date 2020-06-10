@@ -26,7 +26,7 @@ store_time_series <- function(con,
 #'@export
 store_time_series.list <- function(con,
                                    tsl,
-                                   access,
+                                   access = NA,
                                    valid_from = NA,
                                    release_date = NA,
                                    schema = "timeseries"){
@@ -43,7 +43,7 @@ store_time_series.list <- function(con,
 
 store_time_series.tslist <- function(con,
                                      tsl,
-                                     access,
+                                     access = NA,
                                      valid_from = NA,
                                      release_date = NA,
                                      schema = "timeseries"){
@@ -74,7 +74,7 @@ store_time_series.tslist <- function(con,
 
 store_time_series.data.table <- function(con,
                                          dt,
-                                         access,
+                                         access = NA,
                                          valid_from = NA,
                                          release_date = NA,
                                          schema = "timeseries") {

@@ -18,5 +18,6 @@ echo '1'
 sleep 1
 PGPASSWORD=pgking psql -p 1111 -h 'localhost' -d postgres -U postgres -f sql/create_roles.sql
 PGPASSWORD=pgking psql -p 1111 -h 'localhost' -d postgres -U postgres -f sql/create_extensions.sql
-PGPASSWORD=pgking psql -p 1111 -h 'localhost' -d postgres -U postgres -f sql/setup_test_env.sql
+PGPASSWORD=pgking psql -p 1111 -h 'localhost' -d postgres -U postgres -f sql/create_dev_admin.sql
 R -e "devtools::load_all('../'); install_timeseriesdb('dev_admin', 'dev_admin', 'postgres', 'localhost', 1111, 'timeseries')"
+PGPASSWORD=pgking psql -p 1111 -h 'localhost' -d postgres -U postgres -f sql/finalize_dev_env.sql
