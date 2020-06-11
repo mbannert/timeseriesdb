@@ -31,9 +31,9 @@ test_that("it calls through to store_records", {
         "release_date",
         "schema"
       )
-      
+
       expect_called(store_recs, 1)
-      
+
       expect_args(
         store_recs,
         1,

@@ -30,9 +30,9 @@ test_that("it only uses the first element of ts_keys when regex == TRUE", {
         c("a", "b"),
         TRUE,
         "schema"))
-      
+
       args <- mock_args(db_quote_literal_mock)
-      
+
       expect_match(args[[1]][[2]], "a")
     }
   )

@@ -12,17 +12,17 @@ if(is_test_db_reachable()) {
 # test db_create_dataset --------------------------------------------------
 
 test_with_fresh_db(con_admin, "creating dataset returns id of set", hard_reset = TRUE, {
-    out <- db_create_dataset(con_admin,
-                             "testset",
-                             "a set for testing",
-                             meta(field = "value"),
-                             schema = "tsdb_test")
+  out <- db_create_dataset(con_admin,
+                           "testset",
+                           "a set for testing",
+                           meta(field = "value"),
+                           schema = "tsdb_test")
 
   expect_equal(out, "testset")
 })
 
 test_with_fresh_db(con_admin, "writer may not create sets", hard_reset = TRUE, {
-    expect_error(
+  expect_error(
     db_create_dataset(con_writer,
                       "testset",
                       "a set for testing",
@@ -32,7 +32,7 @@ test_with_fresh_db(con_admin, "writer may not create sets", hard_reset = TRUE, {
 })
 
 test_with_fresh_db(con_admin, "writer may not create sets", hard_reset = TRUE, {
-    expect_error(
+  expect_error(
     db_create_dataset(con_reader,
                       "testset",
                       "a set for testing",
@@ -107,7 +107,7 @@ test_with_fresh_db(con_admin, "defaults for description and md", hard_reset = TR
 # test db_get_dataset_keys ------------------------------------------------
 
 test_with_fresh_db(con_admin, "db_get_dataset_keys", {
-    expect_equal(
+  expect_equal(
     db_get_dataset_keys(con_reader, "set1", schema = "tsdb_test"),
     c("ts1", "ts2")
   )
@@ -150,7 +150,7 @@ test_with_fresh_db(con_admin, "db_get_dataset_id with missing key", {
 
 # test db_assign_dataset --------------------------------------------------
 test_with_fresh_db(con_admin, "reader may not assign dataset", {
-    expect_error(
+  expect_error(
     db_assign_dataset(con_reader, c("ts3", "ts4"), "set1", schema = "tsdb_test"),
     "write permissions to assign")
 })
@@ -171,7 +171,7 @@ test_with_fresh_db(con_admin, "db_assign_dataset works", {
 })
 
 test_with_fresh_db(con_admin, "db_assign_dataset warns if some keys don't exist", {
-    expect_warning(
+  expect_warning(
     db_assign_dataset(con_writer, c("ts1", "tsx"), "set2", schema = "tsdb_test"),
     "tsx")
 })
@@ -183,7 +183,7 @@ test_with_fresh_db(con_admin, "db_assign_dataset returns list of offending keys"
 })
 
 test_with_fresh_db(con_admin, "db_assign_dataset errors if set does not exist", {
-    expect_error(
+  expect_error(
     db_assign_dataset(con_writer, "ts1", "notaset", schema = "tsdb_test"),
     "notaset does not exist"
   )

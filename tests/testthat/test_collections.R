@@ -32,9 +32,9 @@ test_with_fresh_db(con_admin, "db_collection_add warns if keys not in catalog", 
 
 test_with_fresh_db(con_admin, "db_collection_add returns warning keys not in catalog", {
   result <- suppressWarnings(db_collection_add(con_writer,
-                              "tests first",
-                              "tsx",
-                              schema = "tsdb_test"))
+                                               "tests first",
+                                               "tsx",
+                                               schema = "tsdb_test"))
 
   expect_is(result, "list")
   expect_named(result, c("status", "message", "invalid_keys"))
@@ -249,9 +249,9 @@ test_with_fresh_db(con_admin, "db_collection_delete warning contents", {
 
 test_with_fresh_db(con_admin, "db_collection_delete db state", {
   out <- db_collection_delete(con_writer,
-                       collection_name = "tests first",
-                       user = "test",
-                       schema = "tsdb_test")
+                              collection_name = "tests first",
+                              user = "test",
+                              schema = "tsdb_test")
 
   result_collections <- dbGetQuery(con_admin, "SELECT * FROM tsdb_test.collections
                                          WHERE name = 'tests first'")
@@ -264,9 +264,9 @@ test_with_fresh_db(con_admin, "db_collection_delete db state", {
 
 test_with_fresh_db(con_admin, "db_collection_delete with missing user+collection does nothing", {
   suppressWarnings(db_collection_delete(con_writer,
-                       collection_name = "xxx",
-                       user = "whoever",
-                       schema = "tsdb_test"))
+                                        collection_name = "xxx",
+                                        user = "whoever",
+                                        schema = "tsdb_test"))
 
   result_collections <- dbGetQuery(con_admin, "SELECT * FROM tsdb_test.collections")
   expect_equal(nrow(result_collections), 3)

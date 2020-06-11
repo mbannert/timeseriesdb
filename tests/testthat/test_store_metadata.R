@@ -82,10 +82,10 @@ test_that("is passes correct args to db_call_function unlocalized", {
 # return values -----------------------------------------------------------
 test_with_fresh_db(con_admin, "reader may not store metadata", {
   expect_error(db_store_ts_metadata(con_reader,
-                       create_tsmeta(ts1 = list(field = "value")),
-                       valid_from = "2020-06-10",
-                       locale = "de",
-                       schema = "tsdb_test"),
+                                    create_tsmeta(ts1 = list(field = "value")),
+                                    valid_from = "2020-06-10",
+                                    locale = "de",
+                                    schema = "tsdb_test"),
                "may store metadata")
 })
 
@@ -181,11 +181,11 @@ test_with_fresh_db(con_admin, "invalid keys and invalid vintages", {
                        locale = "de",
                        schema = "tsdb_test")
   warnings <- capture_warnings(db_store_ts_metadata(con_writer,
-                                                  create_tsmeta(ts1 = list(field = "value"),
-                                                              tsx = list(field = "value")),
-                                                  "2020-01-01",
-                                                  locale = "de",
-                                                  schema = "tsdb_test"))
+                                                    create_tsmeta(ts1 = list(field = "value"),
+                                                                  tsx = list(field = "value")),
+                                                    "2020-01-01",
+                                                    locale = "de",
+                                                    schema = "tsdb_test"))
 
   expect_length(warnings, 2)
   expect_match(warnings, "vintage", all = FALSE)
@@ -393,7 +393,7 @@ test_with_fresh_db(con_admin, "db_store_ts_metadata unlocalized warns on missing
                          create_tsmeta(tsx = list(field = "value")),
                          "2020-01-01",
                          schema = "tsdb_test"),
-                         "catalog")
+    "catalog")
 })
 
 # These may be overkill
@@ -438,9 +438,9 @@ test_with_fresh_db(con_admin, "storing older vintages warning contents", {
                        "2020-02-01",
                        schema = "tsdb_test")
   result <- suppressWarnings(db_store_ts_metadata(con_writer,
-                                      create_tsmeta(ts1 = list(field = "value")),
-                                      "2020-01-01",
-                                      schema = "tsdb_test"))
+                                                  create_tsmeta(ts1 = list(field = "value")),
+                                                  "2020-01-01",
+                                                  schema = "tsdb_test"))
 
   expect_equal(
     result,
@@ -463,7 +463,7 @@ test_with_fresh_db(con_admin, "invalid keys and invalid vintages", {
                        schema = "tsdb_test")
   warnings <- capture_warnings(db_store_ts_metadata(con_writer,
                                                     create_tsmeta(ts1 = list(field = "value"),
-                                                                tsx = list(field = "value")),
+                                                                  tsx = list(field = "value")),
                                                     "2020-01-01",
                                                     schema = "tsdb_test"))
 

@@ -83,11 +83,11 @@ load("../testdata/store_records_data.RData")
 
 test_with_fresh_db(con_admin, "reader may not store", {
   expect_error(store_time_series(con_reader,
-                   tsl,
-                   "tsdb_test_access_public",
-                   valid_from = "2019-01-01",
-                   release_date = "2019-01-02",
-                   schema = "tsdb_test"),
+                                 tsl,
+                                 "tsdb_test_access_public",
+                                 valid_from = "2019-01-01",
+                                 release_date = "2019-01-02",
+                                 schema = "tsdb_test"),
                "may store")
 })
 
