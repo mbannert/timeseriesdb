@@ -64,7 +64,8 @@ BEGIN
     release_date = EXCLUDED.release_date,
     created_by = EXCLUDED.created_by,
     created_at = EXCLUDED.created_at,
-    ts_data = EXCLUDED.ts_data;
+    ts_data = EXCLUDED.ts_data,
+    access = COALESCE(p_access, timeseries.timeseries_main.access);
 
   IF array_length(v_invalid_keys, 1) > 0 THEN
     RETURN json_build_object('status', 'warning',

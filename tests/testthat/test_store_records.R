@@ -217,6 +217,26 @@ test_with_fresh_db(con_admin, hard_reset = TRUE, "storing with edge vintage caus
   )
 })
 
+test_with_fresh_db(con_admin, hard_reset = TRUE, "storing with edge vintage causes update of access", {
+  store_time_series(con_writer,
+                    tsl,
+                    "tsdb_test_access_public",
+                    valid_from = "2019-03-01",
+                    schema = "tsdb_test")
+
+  store_time_series(con_writer,
+                    tsl_update,
+                    "tsdb_test_access_main",
+                    valid_from = "2019-03-01",
+                    schema = "tsdb_test")
+
+
+  expect_equal(
+    dbGetQuery(con_admin, "SELECT access FROM tsdb_test.timeseries_main WHERE ts_key = 'ts1'")$access,
+    "tsdb_test_access_main"
+  )
+})
+
 test_with_fresh_db(con_admin, hard_reset = TRUE, "overwriting older vintage is not possible", {
   store_time_series(con_writer,
                     tsl,
@@ -267,3 +287,4 @@ test_with_fresh_db(con_admin, hard_reset = TRUE, "store_time_series complains ab
                                  schema = "tsdb_test"),
                "a valid access level")
 })
+
