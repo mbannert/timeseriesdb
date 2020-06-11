@@ -74,3 +74,22 @@ CREATE TABLE timeseries.collect_catalog (
   FOREIGN KEY (id) REFERENCES timeseries.collections(id) ON DELETE CASCADE,
   FOREIGN KEY (ts_key) REFERENCES timeseries.catalog(ts_key) ON DELETE CASCADE -- should we??
 );
+
+CREATE TABLE timeseries.release_calendar (
+  id UUID PRIMARY KEY,
+  release_title TEXT,
+  release_note TEXT,
+  release_date TIMESTAMPTZ,
+  reference_year INTEGER,
+  reference_period INTEGER,
+  reference_frequency INTEGER,
+  reference_label TEXT        -- or timeseries.frequencies(frequency integer, label text)?
+);
+
+CREATE TABLE timeseries.release_dataset (
+  release_id UUID,
+  set_id TEXT,
+  PRIMARY KEY (release_id, set_id),
+  FOREIGN KEY (release_id) REFERENCES timeseries.release_calendar(id),
+  FOREIGN KEY (set_id) REFERENCES timeseries.datasets(set_id)
+);
