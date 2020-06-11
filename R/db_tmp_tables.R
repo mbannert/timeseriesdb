@@ -2,14 +2,13 @@
 #' first properly formatting validity ranges
 #'
 #' @param con RPostgres connection object.
-#' @param records
-#' @param valid_from
-#' @param release_date
-#' @param access
-#' @param schema
+#' @param records named list of records to store
+#' @param schema timeseries schema name
+#'
 #' @importFrom RPostgres dbWriteTable
 db_tmp_store <- function(con,
-                         records) {
+                         records,
+                         schema = "timeseries") {
 
   # TODO: add mechanism for setting column names (for e.g. metadata)
   # Note, it's important to create the coverage column here because of an

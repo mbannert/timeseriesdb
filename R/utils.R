@@ -119,7 +119,7 @@ db_grant_to_admin <- function(con,
                               table,
                               schema = "timeseries") {
   dbExecute(con,
-            sprintf("GRANT SELECT, UPDATE, INSERT ON %s TO %s",
+            sprintf("GRANT SELECT, UPDATE, INSERT, DELETE ON %s TO %s",
                     dbQuoteIdentifier(con, table),
                     dbQuoteIdentifier(con, sprintf("%s_admin", schema))))
 }

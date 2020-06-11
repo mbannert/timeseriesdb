@@ -18,7 +18,8 @@ store_records <- function(con,
   tryCatch(
     dbWithTransaction(con, {
       db_tmp_store(con,
-                   records)
+                   records,
+                   schema)
 
 
       fromJSON(db_call_function(con,

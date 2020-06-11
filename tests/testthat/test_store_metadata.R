@@ -55,6 +55,7 @@ test_that("is passes correct args to db_call_function unlocalized", {
     dbWriteTable = mock(),
     dbExecute = mock(),
     db_call_function = fake_db_call_function,
+    db_grant_to_admin = mock(),
     {
       db_store_ts_metadata("con",
                            as.tsmeta.list(
@@ -83,7 +84,8 @@ test_with_fresh_db(con_admin, "reader may not store metadata", {
   expect_error(db_store_ts_metadata(con_reader,
                        create_tsmeta(ts1 = list(field = "value")),
                        valid_from = "2020-06-10",
-                       locale = "de"),
+                       locale = "de",
+                       schema = "tsdb_test"),
                "may store metadata")
 })
 
@@ -91,7 +93,8 @@ test_with_fresh_db(con_admin, "db_store_ts_metadata localized returns 'ok'", {
   result <- db_store_ts_metadata(con_writer,
                                  create_tsmeta(ts1 = list(field = "value")),
                                  valid_from = "2020-01-01",
-                                 locale = "de")
+                                 locale = "de",
+                                 schema = "tsdb_test")
 
   expect_equal(
     result,
@@ -104,7 +107,8 @@ test_with_fresh_db(con_admin, "db_store_ts_metadata localized warns on missing k
     db_store_ts_metadata(con_writer,
                          create_tsmeta(tsx = list(field = "value")),
                          valid_from = "2020-01-01",
-                         locale = "de"),
+                         locale = "de",
+                         schema = "tsdb_test"),
     "catalog")
 })
 
@@ -113,7 +117,8 @@ test_with_fresh_db(con_admin, "db_store_ts_metadata localized missing key warnin
     db_store_ts_metadata(con_writer,
                          create_tsmeta(tsx = list(field = "value")),
                          valid_from = "2020-01-01",
-                         locale = "de"))
+                         locale = "de",
+                         schema = "tsdb_test"))
 
   expect_equal(
     result,
@@ -133,11 +138,13 @@ test_with_fresh_db(con_admin, "storing older vintages is a nono", {
   db_store_ts_metadata(con_writer,
                        create_tsmeta(ts1 = list(field = "value")),
                        "2020-02-01",
-                       "de")
+                       "de",
+                       schema = "tsdb_test")
   expect_warning(db_store_ts_metadata(con_writer,
                                       create_tsmeta(ts1 = list(field = "value")),
                                       "2020-01-01",
-                                      "de"),
+                                      "de",
+                                      schema = "tsdb_test"),
                  "vintage")
 })
 
@@ -145,11 +152,13 @@ test_with_fresh_db(con_admin, "storing older vintages warning contents", {
   db_store_ts_metadata(con_writer,
                        create_tsmeta(ts1 = list(field = "value")),
                        "2020-02-01",
-                       locale = "de")
+                       locale = "de",
+                       schema = "tsdb_test")
   result <- suppressWarnings(db_store_ts_metadata(con_writer,
                                                   create_tsmeta(ts1 = list(field = "value")),
                                                   "2020-01-01",
-                                                  locale = "de"))
+                                                  locale = "de",
+                                                  schema = "tsdb_test"))
 
   expect_equal(
     result,
@@ -169,12 +178,14 @@ test_with_fresh_db(con_admin, "invalid keys and invalid vintages", {
   db_store_ts_metadata(con_writer,
                        create_tsmeta(ts1 = list(field = "value")),
                        "2020-02-01",
-                       locale = "de")
+                       locale = "de",
+                       schema = "tsdb_test")
   warnings <- capture_warnings(db_store_ts_metadata(con_writer,
                                                   create_tsmeta(ts1 = list(field = "value"),
                                                               tsx = list(field = "value")),
                                                   "2020-01-01",
-                                                  locale = "de"))
+                                                  locale = "de",
+                                                  schema = "tsdb_test"))
 
   expect_length(warnings, 2)
   expect_match(warnings, "vintage", all = FALSE)
@@ -188,10 +199,11 @@ test_with_fresh_db(con_admin, "db_store_ts_metadata localized stores metadata", 
   db_store_ts_metadata(con_writer,
                        create_tsmeta(ts1 = list(field = "value")),
                        valid_from = "2020-01-01",
-                       locale = "de")
+                       locale = "de",
+                       schema = "tsdb_test")
 
   result <- dbGetQuery(con_admin, "SELECT ts_key, validity, locale, metadata
-                       FROM timeseries.metadata_localized
+                       FROM tsdb_test.metadata_localized
                        WHERE ts_key = 'ts1'")
   expect_equal(
     result,
@@ -203,15 +215,17 @@ test_with_fresh_db(con_admin, "db_store_ts_metadata localized can add fields", {
   db_store_ts_metadata(con_writer,
                        create_tsmeta(ts1 = list(field = "value")),
                        valid_from = "2020-01-01",
-                       locale = "de")
+                       locale = "de",
+                       schema = "tsdb_test")
   db_store_ts_metadata(con_writer,
                        create_tsmeta(ts1 = list(field2 = 3)),
                        valid_from = "2020-01-01",
                        locale = "de",
-                       on_conflict = "update")
+                       on_conflict = "update",
+                       schema = "tsdb_test")
 
   result <- dbGetQuery(con_admin, "SELECT ts_key, validity, locale, metadata
-                       FROM timeseries.metadata_localized
+                       FROM tsdb_test.metadata_localized
                        WHERE ts_key = 'ts1'")
   expect_equal(
     result,
@@ -223,15 +237,17 @@ test_with_fresh_db(con_admin, "db_store_ts_metadata localized can override field
   db_store_ts_metadata(con_writer,
                        create_tsmeta(ts1 = list(field = "value")),
                        valid_from = "2020-01-01",
-                       locale = "de")
+                       locale = "de",
+                       schema = "tsdb_test")
   db_store_ts_metadata(con_writer,
                        create_tsmeta(ts1 = list(field = "new_value")),
                        valid_from = "2020-01-01",
                        locale = "de",
-                       on_conflict = "update")
+                       on_conflict = "update",
+                       schema = "tsdb_test")
 
   result <- dbGetQuery(con_admin, "SELECT ts_key, validity, locale, metadata
-                       FROM timeseries.metadata_localized
+                       FROM tsdb_test.metadata_localized
                        WHERE ts_key = 'ts1'")
   expect_equal(
     result,
@@ -243,15 +259,17 @@ test_with_fresh_db(con_admin, "db_store_ts_metadata localized can overwrite reco
   db_store_ts_metadata(con_writer,
                        create_tsmeta(ts1 = list(field = "value")),
                        valid_from = "2020-01-01",
-                       locale = "de")
+                       locale = "de",
+                       schema = "tsdb_test")
   db_store_ts_metadata(con_writer,
                        create_tsmeta(ts1 = list(other_field = 23)),
                        valid_from = "2020-01-01",
                        locale = "de",
-                       on_conflict = "overwrite")
+                       on_conflict = "overwrite",
+                       schema = "tsdb_test")
 
   result <- dbGetQuery(con_admin, "SELECT ts_key, validity, locale, metadata
-                       FROM timeseries.metadata_localized
+                       FROM tsdb_test.metadata_localized
                        WHERE ts_key = 'ts1'")
   expect_equal(
     result,
@@ -263,14 +281,16 @@ test_with_fresh_db(con_admin, "db_store_ts_metadata localized creates vintages",
   db_store_ts_metadata(con_writer,
                        create_tsmeta(ts1 = list(field = "value")),
                        valid_from = "2020-01-01",
-                       locale = "de")
+                       locale = "de",
+                       schema = "tsdb_test")
   db_store_ts_metadata(con_writer,
                        create_tsmeta(ts1 = list(field = "vallue")),
                        valid_from = "2020-02-01",
-                       locale = "de")
+                       locale = "de",
+                       schema = "tsdb_test")
 
   result <-  dbGetQuery(con_admin, "SELECT ts_key, validity, locale, metadata
-                        FROM timeseries.metadata_localized
+                        FROM tsdb_test.metadata_localized
                         WHERE ts_key = 'ts1'")
   expect_equal(
     result,
@@ -285,14 +305,16 @@ test_with_fresh_db(con_admin, "db_store_ts_metadata localized can hold different
   db_store_ts_metadata(con_writer,
                        create_tsmeta(ts1 = list(field = "value")),
                        valid_from = "2020-01-01",
-                       locale = "de")
+                       locale = "de",
+                       schema = "tsdb_test")
   db_store_ts_metadata(con_writer,
                        create_tsmeta(ts1 = list(field = "valeur")),
                        valid_from = "2020-01-01",
-                       locale = "fr")
+                       locale = "fr",
+                       schema = "tsdb_test")
 
   result <-  dbGetQuery(con_admin, "SELECT ts_key, validity, locale, metadata
-                        FROM timeseries.metadata_localized
+                        FROM tsdb_test.metadata_localized
                         WHERE ts_key = 'ts1'")
   expect_equal(
     result,
@@ -318,6 +340,7 @@ test_that("is passes correct args to db_call_function localized", {
     dbWriteTable = mock(),
     dbExecute = mock(),
     db_call_function = fake_db_call_function,
+    db_grant_to_admin = mock(),
     {
       db_store_ts_metadata("con",
                            as.tsmeta.list(
@@ -347,14 +370,16 @@ test_that("is passes correct args to db_call_function localized", {
 test_with_fresh_db(con_admin, "reader may not store unlocaloized metadata", {
   expect_error(db_store_ts_metadata(con_reader,
                                     create_tsmeta(ts1 = list(field = "value")),
-                                    valid_from = "2020-06-10"),
+                                    valid_from = "2020-06-10",
+                                    schema = "tsdb_test"),
                "may store metadata")
 })
 
 test_with_fresh_db(con_admin, "db_store_ts_metadata unlocalized returns ok", {
   result <- db_store_ts_metadata(con_writer,
                                  create_tsmeta(ts1 = list(field = "value")),
-                                 "2020-01-01")
+                                 "2020-01-01",
+                                 schema = "tsdb_test")
 
   expect_equal(
     result,
@@ -366,7 +391,8 @@ test_with_fresh_db(con_admin, "db_store_ts_metadata unlocalized warns on missing
   expect_warning(
     db_store_ts_metadata(con_writer,
                          create_tsmeta(tsx = list(field = "value")),
-                         "2020-01-01"),
+                         "2020-01-01",
+                         schema = "tsdb_test"),
                          "catalog")
 })
 
@@ -376,7 +402,8 @@ test_with_fresh_db(con_admin, "db_store_ts_metadata unlocalized missing key warn
   result <- suppressWarnings(
     db_store_ts_metadata(con_writer,
                          create_tsmeta(tsx = list(field = "value")),
-                         "2020-01-01"))
+                         "2020-01-01",
+                         schema = "tsdb_test"))
 
   expect_equal(
     result,
@@ -396,20 +423,24 @@ test_with_fresh_db(con_admin, "db_store_ts_metadata unlocalized missing key warn
 test_with_fresh_db(con_admin, "storing older vintages is a nono", {
   db_store_ts_metadata(con_writer,
                        create_tsmeta(ts1 = list(field = "value")),
-                       "2020-02-01")
+                       "2020-02-01",
+                       schema = "tsdb_test")
   expect_warning(db_store_ts_metadata(con_writer,
                                       create_tsmeta(ts1 = list(field = "value")),
-                                      "2020-01-01"),
+                                      "2020-01-01",
+                                      schema = "tsdb_test"),
                  "vintage")
 })
 
 test_with_fresh_db(con_admin, "storing older vintages warning contents", {
   db_store_ts_metadata(con_writer,
                        create_tsmeta(ts1 = list(field = "value")),
-                       "2020-02-01")
+                       "2020-02-01",
+                       schema = "tsdb_test")
   result <- suppressWarnings(db_store_ts_metadata(con_writer,
                                       create_tsmeta(ts1 = list(field = "value")),
-                                      "2020-01-01"))
+                                      "2020-01-01",
+                                      schema = "tsdb_test"))
 
   expect_equal(
     result,
@@ -428,11 +459,13 @@ test_with_fresh_db(con_admin, "storing older vintages warning contents", {
 test_with_fresh_db(con_admin, "invalid keys and invalid vintages", {
   db_store_ts_metadata(con_writer,
                        create_tsmeta(ts1 = list(field = "value")),
-                       "2020-02-01")
+                       "2020-02-01",
+                       schema = "tsdb_test")
   warnings <- capture_warnings(db_store_ts_metadata(con_writer,
                                                     create_tsmeta(ts1 = list(field = "value"),
                                                                 tsx = list(field = "value")),
-                                                    "2020-01-01"))
+                                                    "2020-01-01",
+                                                    schema = "tsdb_test"))
 
   expect_equal(length(warnings), 2)
   expect_match(warnings, "vintage", all = FALSE)
@@ -445,10 +478,11 @@ test_with_fresh_db(con_admin, "invalid keys and invalid vintages", {
 test_with_fresh_db(con_admin, "db_store_ts_metadata unlocalized stores metadata", {
   db_store_ts_metadata(con_writer,
                        create_tsmeta(ts1 = list(field = "value")),
-                       "2020-01-01")
+                       "2020-01-01",
+                       schema = "tsdb_test")
 
   result <- dbGetQuery(con_admin, "SELECT ts_key, validity, metadata
-                       FROM timeseries.metadata
+                       FROM tsdb_test.metadata
                        WHERE ts_key = 'ts1'")
   expect_equal(
     result,
@@ -459,14 +493,16 @@ test_with_fresh_db(con_admin, "db_store_ts_metadata unlocalized stores metadata"
 test_with_fresh_db(con_admin, "db_store_ts_metadata unlocalized can add fields", {
   db_store_ts_metadata(con_writer,
                        create_tsmeta(ts1 = list(field = "value")),
-                       "2020-01-01")
+                       "2020-01-01",
+                       schema = "tsdb_test")
   db_store_ts_metadata(con_writer,
                        create_tsmeta(ts1 = list(field2 = 3)),
                        "2020-01-01",
-                       on_conflict = "update")
+                       on_conflict = "update",
+                       schema = "tsdb_test")
 
   result <- dbGetQuery(con_admin, "SELECT ts_key, validity, metadata
-                       FROM timeseries.metadata
+                       FROM tsdb_test.metadata
                        WHERE ts_key = 'ts1'")
   expect_equal(
     result,
@@ -477,14 +513,16 @@ test_with_fresh_db(con_admin, "db_store_ts_metadata unlocalized can add fields",
 test_with_fresh_db(con_admin, "db_store_ts_metadata unlocalized can override fields", {
   db_store_ts_metadata(con_writer,
                        create_tsmeta(ts1 = list(field = "value")),
-                       "2020-01-01")
+                       "2020-01-01",
+                       schema = "tsdb_test")
   db_store_ts_metadata(con_writer,
                        create_tsmeta(ts1 = list(field = "new_value")),
                        "2020-01-01",
-                       on_conflict = "update")
+                       on_conflict = "update",
+                       schema = "tsdb_test")
 
   result <- dbGetQuery(con_admin, "SELECT ts_key, validity, metadata
-                       FROM timeseries.metadata
+                       FROM tsdb_test.metadata
                        WHERE ts_key = 'ts1'")
   expect_equal(
     result,
@@ -495,14 +533,16 @@ test_with_fresh_db(con_admin, "db_store_ts_metadata unlocalized can override fie
 test_with_fresh_db(con_admin, "db_store_ts_metadata unlocalized can override fields", {
   db_store_ts_metadata(con_writer,
                        create_tsmeta(ts1 = list(field = "value")),
-                       "2020-01-01")
+                       "2020-01-01",
+                       schema = "tsdb_test")
   db_store_ts_metadata(con_writer,
                        create_tsmeta(ts1 = list(itger_vield = 23)), # It's an inside joke
                        "2020-01-01",
-                       on_conflict = "overwrite")
+                       on_conflict = "overwrite",
+                       schema = "tsdb_test")
 
   result <- dbGetQuery(con_admin, "SELECT ts_key, validity, metadata
-                       FROM timeseries.metadata
+                       FROM tsdb_test.metadata
                        WHERE ts_key = 'ts1'")
   expect_equal(
     result,
@@ -513,13 +553,15 @@ test_with_fresh_db(con_admin, "db_store_ts_metadata unlocalized can override fie
 test_with_fresh_db(con_admin, "db_store_ts_metadata creates vintages", {
   db_store_ts_metadata(con_writer,
                        create_tsmeta(ts1 = list(field = "value")),
-                       valid_from = "2020-01-01")
+                       valid_from = "2020-01-01",
+                       schema = "tsdb_test")
   db_store_ts_metadata(con_writer,
                        create_tsmeta(ts1 = list(field = "vallue")),
-                       valid_from = "2020-02-01")
+                       valid_from = "2020-02-01",
+                       schema = "tsdb_test")
 
   result <-  dbGetQuery(con_admin, "SELECT ts_key, validity, metadata
-                        FROM timeseries.metadata
+                        FROM tsdb_test.metadata
                         WHERE ts_key = 'ts1'")
   expect_equal(
     result,

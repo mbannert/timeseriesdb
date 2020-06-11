@@ -14,13 +14,13 @@ is_test_db_reachable <- function(){
 }
 
 reset_db <- function(con) {
-  dbExecute(con, "DELETE FROM timeseries.collect_catalog")
-  dbExecute(con, "DELETE FROM timeseries.collections")
-  dbExecute(con, "DELETE FROM timeseries.metadata")
-  dbExecute(con, "DELETE FROM timeseries.metadata_localized")
-  dbExecute(con, "DELETE FROM timeseries.timeseries_main")
-  dbExecute(con, "DELETE FROM timeseries.catalog")
-  dbExecute(con, "DELETE FROM timeseries.datasets")
+  dbExecute(con, "DELETE FROM tsdb_test.collect_catalog")
+  dbExecute(con, "DELETE FROM tsdb_test.collections")
+  dbExecute(con, "DELETE FROM tsdb_test.metadata")
+  dbExecute(con, "DELETE FROM tsdb_test.metadata_localized")
+  dbExecute(con, "DELETE FROM tsdb_test.timeseries_main")
+  dbExecute(con, "DELETE FROM tsdb_test.catalog")
+  dbExecute(con, "DELETE FROM tsdb_test.datasets")
 }
 
 prepare_db <- function(con,
@@ -113,10 +113,10 @@ prepare_db <- function(con,
       '{"frequency": 12, "time": ["2020-01-01", "2020-02-01"], "value": [1, 2]}'
     ),
     access = c(
-      "timeseries_access_public",
-      "timeseries_access_public",
-      "timeseries_access_main",
-      "timeseries_access_main"
+      "tsdb_test_access_public",
+      "tsdb_test_access_public",
+      "tsdb_test_access_main",
+      "tsdb_test_access_main"
     )
   )
 
@@ -284,39 +284,39 @@ prepare_db <- function(con,
   reset_db(con)
   if(init_datasets) {
     dbWriteTable(con,
-                 DBI::Id(schema = "timeseries", table = "datasets"),
+                 DBI::Id(schema = "tsdb_test", table = "datasets"),
                  datasets,
                  append = TRUE)
 
     # TODO: probably rename init_catalog
     if(init_catalog) {
       dbWriteTable(con,
-                   DBI::Id(schema = "timeseries", table = "catalog"),
+                   DBI::Id(schema = "tsdb_test", table = "catalog"),
                    catalog,
                    append = TRUE)
 
       dbWriteTable(con,
-                   DBI::Id(schema = "timeseries", table = "timeseries_main"),
+                   DBI::Id(schema = "tsdb_test", table = "timeseries_main"),
                    vintages,
                    append = TRUE)
 
       dbWriteTable(con,
-                   DBI::Id(schema = "timeseries", table  = "metadata"),
+                   DBI::Id(schema = "tsdb_test", table  = "metadata"),
                    mdul,
                    append = TRUE)
 
       dbWriteTable(con,
-                   DBI::Id(schema = "timeseries", table = "metadata_localized"),
+                   DBI::Id(schema = "tsdb_test", table = "metadata_localized"),
                    mdl,
                    append = TRUE)
 
       dbWriteTable(con,
-                   DBI::Id(schema = "timeseries", table = "collections"),
+                   DBI::Id(schema = "tsdb_test", table = "collections"),
                    collections,
                    append = TRUE)
 
       dbWriteTable(con,
-                   DBI::Id(schema = "timeseries", table = "collect_catalog"),
+                   DBI::Id(schema = "tsdb_test", table = "collect_catalog"),
                    collect_catalog,
                    append = TRUE)
     }

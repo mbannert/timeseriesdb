@@ -40,76 +40,112 @@ if(is_test_db_reachable()) {
   # TODO: This would be more robust if we took charge of what time it is entirely (on db and here)
   store_time_series(con_admin,
                     tsl_state_0,
-                    "timeseries_access_main",
+                    "tsdb_test_access_main",
                     valid_from = current_date - 4,
-                    release_date = current_date - 4)
+                    release_date = current_date - 4,
+                    schema = "tsdb_test")
   store_time_series(con_admin,
                     tsl_state_1,
-                    "timeseries_access_main",
+                    "tsdb_test_access_main",
                     valid_from = current_date - 3,
-                    release_date = current_date - 1)
+                    release_date = current_date - 1,
+                    schema = "tsdb_test")
   store_time_series(con_admin,
                     tsl_state_2,
-                    "timeseries_access_main",
+                    "tsdb_test_access_main",
                     valid_from = current_date - 1,
-                    release_date = current_date + 2)
+                    release_date = current_date + 2,
+                    schema = "tsdb_test")
   store_time_series(con_admin,
                     tsl_state_2,
-                    "timeseries_access_main",
+                    "tsdb_test_access_main",
                     valid_from = current_date - 1,
-                    release_date = current_date + 2)
+                    release_date = current_date + 2,
+                    schema = "tsdb_test")
   store_time_series(con_admin,
                     tsl_state_2_v2,
-                    "timeseries_access_main",
+                    "tsdb_test_access_main",
                     valid_from = current_date + 1,
-                    release_date = current_date + 2)
+                    release_date = current_date + 2,
+                    schema = "tsdb_test")
 
   store_time_series(con_admin,
                     tsl_pblc,
-                    "timeseries_access_public")
+                    "tsdb_test_access_public",
+                    schema = "tsdb_test")
 }
 
 test_that("public reader may not read main series", {
   skip_on_cran()
-    tsl_read <- read_time_series(con_reader_public, "ts1")
+  skip_if_not(is_test_db_reachable())
+
+  tsl_read <- read_time_series(con_reader_public, "ts1", schema = "tsdb_test")
   expect_length(tsl_read, 0)
 })
 
 test_that("series with no access get skipped", {
   skip_on_cran()
-    tsl_read <- read_time_series(con_reader_public, c("ts1", "tsp"))
+  skip_if_not(is_test_db_reachable())
+
+  tsl_read <- read_time_series(con_reader_public, c("ts1", "tsp"), schema = "tsdb_test")
   expect_equal(tsl_read, tsl_pblc)
 })
 
 test_that("by default it reads the most recent valid vintage", {
   skip_on_cran()
-    tsl_read <- read_time_series(con_reader_main, "ts1")
+  skip_if_not(is_test_db_reachable())
+
+  tsl_read <- read_time_series(con_reader_main, "ts1", schema = "tsdb_test")
   expect_equal(tsl_read, tsl_state_2)
 })
 
 test_that("by default it reads the most recent valid vintage but with respecting rls date", {
   skip_on_cran()
-    tsl_read <- read_time_series(con_reader_main, "ts1", respect_release_date = TRUE)
+  skip_if_not(is_test_db_reachable())
+
+  tsl_read <- read_time_series(con_reader_main,
+                               "ts1",
+                               respect_release_date = TRUE,
+                               schema = "tsdb_test")
   expect_equal(tsl_read, tsl_state_1)
 })
 
 test_that("reading desired vintages works", {
   skip_on_cran()
-    tsl_read_1 <- read_time_series(con_reader_main, "ts1", valid_on = current_date - 4)
+  skip_if_not(is_test_db_reachable())
+
+  tsl_read_1 <- read_time_series(con_reader_main,
+                                 "ts1",
+                                 valid_on = current_date - 4,
+                                 schema = "tsdb_test")
   expect_equal(tsl_read_1, tsl_state_0)
 
-  tsl_read_2 <- read_time_series(con_reader_main, "ts1", valid_on = current_date - 2)
+  tsl_read_2 <- read_time_series(con_reader_main,
+                                 "ts1",
+                                 valid_on = current_date - 2,
+                                 schema = "tsdb_test")
   expect_equal(tsl_read_2, tsl_state_1)
 })
 
 test_that("reading vintages, respecting release date", {
   skip_on_cran()
-    tsl_read <- read_time_series(con_reader_main, "ts1", valid_on = current_date - 2, respect_release_date = TRUE)
+  skip_if_not(is_test_db_reachable())
+
+  tsl_read <- read_time_series(con_reader_main,
+                               "ts1",
+                               valid_on = current_date - 2,
+                               respect_release_date = TRUE,
+                               schema = "tsdb_test")
   expect_equal(tsl_read, tsl_state_1)
 })
 
 test_that("reading via regex works", {
   skip_on_cran()
-    tsl_read <- read_time_series(con_reader_main, "^ts", regex = TRUE)
+  skip_if_not(is_test_db_reachable())
+
+  tsl_read <- read_time_series(con_reader_main,
+                               "^ts",
+                               regex = TRUE,
+                               schema = "tsdb_test")
   expect_setequal(names(tsl_read), c("ts1", "tsp"))
 })

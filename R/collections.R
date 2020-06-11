@@ -77,7 +77,8 @@ db_collection_remove <- function(con,
 
   db_return <- fromJSON(db_call_function(con,
                                 "collection_remove",
-                                list(collection_name, user)))
+                                list(collection_name, user),
+                                schema))
 
   if(db_return$status == "error") {
     stop(db_return$message)
