@@ -130,7 +130,8 @@ setup_sql_functions <- function(con, schema = "timeseries"){
 
   for(f in fls) {
     sql <- readLines(f)
-    sql <- gsub("timeseries", schema, sql)
+    # [^m] to exclude the TABLE timeseries_main but include timeseries_admin
+    sql <- gsub("timeseries([.,_][^m])", sprintf("%s\\1", schema), sql)
     # split up SQL by a new set of lines everytime CREATE FUNCTION
     # occurs in order to send single statements using multiple execute calls
     # which is DBI / RPostgres compliant
