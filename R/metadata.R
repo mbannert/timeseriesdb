@@ -162,7 +162,7 @@ db_store_ts_metadata <- function(con,
                    locale = "text",
                    metadata = "jsonb"))
 
-    dbExecute(con, "GRANT SELECT ON tmp_md_insert TO timeseries_admin")
+    db_grant_to_admin(con, "tmp_md_insert", schema)
 
     db_return <- tryCatch(
       db_call_function(con,
@@ -192,7 +192,7 @@ db_store_ts_metadata <- function(con,
                    ts_key = "text",
                    metadata = "jsonb"))
 
-    dbExecute(con, "GRANT SELECT ON tmp_md_insert TO timeseries_admin")
+    db_grant_to_admin(con, "tmp_md_insert", schema)
 
     db_return <- tryCatch(
       db_call_function(con,

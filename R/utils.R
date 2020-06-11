@@ -100,3 +100,26 @@ db_call_function <- function(con,
     res # query returns table -> just return the DF as it comes
   }
 }
+
+
+#' GRANT all rights on a (temp) table to schema admin
+#'
+#' The SECURITY DEFINER functions do not have access to tables that
+#' are stored via dbWriteTable. Usage rights on these tables must
+#' be granted for them to be usable inside the db functions
+#'
+#' @param con RPostgres connection
+#' @param table which table to grant rights on
+#' @param schema name of the timeseries schema being worked with
+#'
+#' @importFrom DBI dbExecute dbQuoteIdentifier
+#'
+#' @export
+db_grant_to_admin <- function(con,
+                              table,
+                              schema = "timeseries") {
+  dbExecute(con,
+            sprintf("GRANT SELECT, UPDATE ON %s TO %s",
+                    dbQuoteIdentifier(con, table),
+                    dbQuoteIdentifier(con, sprintf("%s_admin", schema))))
+}

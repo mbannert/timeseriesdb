@@ -90,7 +90,7 @@ db_get_dataset_id <- function(con,
                  ts_key = "text"
                ))
 
-  grant <- dbExecute(con, "GRANT SELECT ON tmp_get_set TO timeseries_admin")
+  db_grant_to_admin(con, "tmp_get_set", schema)
 
   db_call_function(con,
                    "get_set_of_keys",
@@ -127,7 +127,7 @@ db_assign_dataset <- function(con,
                  ts_key = "text"
                ))
 
-  grant <- dbExecute(con, "GRANT SELECT ON tmp_set_assign TO timeseries_admin")
+  db_grant_to_admin(con, "tmp_set_assign", schema)
 
   # Error case: Set does not exist
   # Warning case: Only some keys found in catalog

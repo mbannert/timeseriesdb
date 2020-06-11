@@ -35,10 +35,8 @@ db_tmp_store <- function(con,
                  coverage = "daterange"
                )
   )
-  # This is needed because non-admins only use SECURITY DEFINERs and those
-  # functions belong to the admin and need to access these user specific temp
-  # tables, too.
-  grant <- dbExecute(con, "GRANT SELECT, INSERT, DELETE, UPDATE ON tmp_ts_updates TO timeseries_admin")
+
+  db_grant_to_admin(con, "tmp_ts_updates", schema)
 
 }
 
@@ -77,7 +75,9 @@ db_tmp_read <- function(con,
                  field.types = c(
                    ts_key = "text"
                  ))
-    dbExecute(con, "GRANT INSERT ON tmp_ts_read_keys TO timeseries_admin")
+
+    db_grant_to_admin(con, "tmp_ts_read_keys", schema)
+
     dbExecute(con,
               sprintf("SELECT 1 FROM %sfill_read_tmp_regex(%s)",
                       dbQuoteIdentifier(con, Id(schema = schema)),
@@ -98,8 +98,6 @@ db_tmp_read <- function(con,
     )
 
   }
-  # This is needed because non-admins only use SECURITY DEFINERs and those
-  # functions belong to the admin and need to access these user specific temp
-  # tables, too.
-  dbExecute(con, "GRANT SELECT ON tmp_ts_read_keys TO timeseries_admin")
+
+  db_grant_to_admin(con, "tmp_ts_read_keys", schema)
 }
