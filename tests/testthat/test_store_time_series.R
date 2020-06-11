@@ -117,3 +117,28 @@ test_that("it complains when it gets a non-ts_dt", {
   dt <- data.table(gronkh = numeric(), knight_in_shining_armour = numeric())
   expect_error(store_time_series("con", dt, "release", "access"))
 })
+
+test_that("it complains about character-ts in list", {
+  char_tsl <- list(
+    ts1 = ts(letters, 2020, frequency = 12)
+  )
+
+  # Yes I am using my knowledge that the db is not hit in this case. Sue me.
+  expect_error(
+    store_time_series("con", char_tsl, "release", "access"),
+    "numeric"
+  )
+})
+
+test_that("it complains about character-ts in dt", {
+  char_dt <- data.table(
+    id = "tss",
+    time = seq(Sys.Date(), length.out = 26, by = "1 months"), # thehe
+    value = letters
+  )
+
+  expect_error(
+    store_time_series("con", char_dt, "release", "access"),
+    "numeric"
+  )
+})

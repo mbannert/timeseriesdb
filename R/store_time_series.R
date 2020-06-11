@@ -63,6 +63,11 @@ store_time_series.tslist <- function(con,
 
   tsl <- tsl[keep]
 
+  modes <- sapply(tsl, mode)
+  if(any(modes != "numeric")) {
+    stop("All time series must be numeric!")
+  }
+
   store_records(con,
                 to_ts_json(tsl),
                 access,
@@ -85,6 +90,10 @@ store_time_series.data.table <- function(con,
   if(dt[, .N] == 0) {
     warning("No time series in data.table. This is a no-op.")
     return(list())
+  }
+
+  if(dt[, mode(value)] != "numeric") {
+    stop("\"value\" must be numeric.")
   }
 
   store_records(con,
