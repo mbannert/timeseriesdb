@@ -188,3 +188,13 @@ test_with_fresh_db(con_admin, "db_assign_dataset errors if set does not exist", 
     "notaset does not exist"
   )
 })
+
+
+# test db_get_list_datasets --------------------------------------------------
+test_with_fresh_db(con_admin, "db_assign_dataset returns data frame with correct names", {
+  out <- db_get_list_datasets(con_reader, schema = "tsdb_test")
+  
+  expect_s3_class(out, "data.frame")
+  expect_equal(names(out), c("set_id", "set_description"))
+})
+
