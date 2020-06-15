@@ -15,6 +15,7 @@
 #'
 #' @import data.table
 #' @importFrom RPostgres dbWriteTable
+#' @importFrom jsonlite fromJSON
 db_create_release <- function(con,
                            id,
                            title,
@@ -36,7 +37,7 @@ db_create_release <- function(con,
                  set_id = "text")
   )
 
-  tryCatch(
+  out <- tryCatch(
     db_call_function(con,
                      "create_release",
                      list(
@@ -59,6 +60,8 @@ db_create_release <- function(con,
         stop(e)
       }
     })
+
+  fromJSON(out)
 }
 
 db_update_release <- function(con,

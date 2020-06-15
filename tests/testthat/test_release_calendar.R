@@ -4,6 +4,9 @@ if(is_test_db_reachable()) {
   con_writer <- connect_to_test_db("dev_writer")
 }
 
+
+# creating releases -------------------------------------------------------
+
 test_that("defaults", {
   fake_db_call_function = mock()
 
@@ -48,7 +51,7 @@ test_with_fresh_db(con_admin, "writer may not create releases", {
   )
 })
 
-test_with_fresh_db(con_admin, "create_release returns the id", {
+test_with_fresh_db(con_admin, "create_release returns 'ok'", {
   out <- db_create_release(con_admin,
                            "another",
                            "Thor reference",
@@ -56,7 +59,7 @@ test_with_fresh_db(con_admin, "create_release returns the id", {
                            c("default"),
                            schema = "tsdb_test")
 
-  expect_equal(out, "another")
+  expect_equal(out, list(status = "ok"))
 })
 
 test_with_fresh_db(con_admin, "creating releases with duplicate id is an error", {
@@ -71,14 +74,22 @@ test_with_fresh_db(con_admin, "creating releases with duplicate id is an error",
   )
 })
 
-# TODO: Give this one a json return w/ info
 test_with_fresh_db(con_admin, "creating with nonexistent dataset", {
-  db_create_release(con_admin,
+  out <- db_create_release(con_admin,
                     "new_relese",
                     "",
                     Sys.time(),
                     c("notaset"),
                     schema = "tsdb_test")
+
+  expect_equal(
+    out,
+    list(
+      status = "failure",
+      reason = "Some datasets do not exist.",
+      missing_datasets = "notaset"
+    )
+  )
 })
 
 test_with_fresh_db(con_admin, "create_release db state", {

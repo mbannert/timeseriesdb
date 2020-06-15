@@ -1,9 +1,26 @@
 CREATE FUNCTION timeseries.create_release(p_id TEXT, p_title TEXT, p_note TEXT,
                                           p_date TIMESTAMPTZ, p_year INTEGER,
                                           p_period INTEGER, p_frequency INTEGER)
-RETURNS TEXT
+RETURNS JSON
 AS $$
+DECLARE
+  v_nonexistent_datasets TEXT[];
 BEGIN
+  SELECT array_agg(tmp.set_id)
+  FROM tmp_release_insert AS tmp
+  LEFT JOIN
+    timeseries.datasets AS dat
+  USING (set_id)
+  WHERE dat.set_id IS NULL
+  INTO v_nonexistent_datasets;
+
+  IF array_length(v_nonexistent_datasets, 1) != 0 THEN
+  -- TODO: use json_build_object for consistency
+    RETURN json_build_object('status', 'failure',
+                             'reason', 'Some datasets do not exist.',
+                             'missing_datasets', v_nonexistent_datasets);
+  END IF;
+
   INSERT INTO timeseries.release_calendar(id, title, note,
                                           release_date, reference_year,
                                           reference_period, reference_frequency)
@@ -12,7 +29,7 @@ BEGIN
   INSERT INTO timeseries.release_dataset(release_id, set_id)
   SELECT p_id, set_id FROM tmp_release_insert;
 
-  RETURN p_id;
+  RETURN '{"status": "ok"}'::JSON;
 END;
 $$ LANGUAGE PLPGSQL
 SECURITY DEFINER
