@@ -26,7 +26,7 @@ install_timeseriesdb <- function(username,
                               WHERE schema_name = $1;",
                               list(schema))$bool
 
-  if(!schema_exists) {
+  if(length(schema_exists) == 0) {
     # TODO: ya know...
     stop(sprintf("Schema %s does not exist. blabla admin bla documentation"))
   }
