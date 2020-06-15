@@ -14,8 +14,6 @@ is_test_db_reachable <- function(){
 }
 
 reset_db <- function(con) {
-  dbExecute(con, "DELETE FROM tsdb_test.release_dataset")
-  dbExecute(con, "DELETE FROM tsdb_test.release_calendar")
   dbExecute(con, "DELETE FROM tsdb_test.collect_catalog")
   dbExecute(con, "DELETE FROM tsdb_test.collections")
   dbExecute(con, "DELETE FROM tsdb_test.metadata")
@@ -31,17 +29,14 @@ prepare_db <- function(con,
 
   datasets <- data.frame(
     set_id = c(
-      "default",
       "set1",
       "set2"
     ),
     set_description = c(
-      "ya know, for when there is nothing else",
       "test set 1",
       "test set 2"
     ),
     set_md = c(
-      NA,
       '{"testno": 1}',
       '{"testno": 2}'
     )
@@ -286,75 +281,7 @@ prepare_db <- function(con,
     )
   )
 
-  release_calendar <- data.table(
-    id = c(
-      "ancient_release",
-      "last_release",
-      "future_release",
-
-      "combo_release"
-    ),
-    title = c(
-      "Rock count",
-      "Microchip count",
-      "Crystal count",
-
-      "A release with multiple sets"
-    ),
-    note = c(
-      "ugg",
-      "Bow down to Elon",
-      "Apophis is coming",
-
-      "Delayed due to virus"
-    ),
-    release_date = c(
-      as.Date("1900-01-01"),
-      Sys.Date() - 1,
-      Sys.Date() + 1,
-      Sys.Date()
-    ),
-    reference_year = c(
-      1900,
-      2020,
-      2020,
-      2020
-    ),
-    reference_period = c(
-      1,
-      6,
-      6,
-      3
-    ),
-    reference_frequency = c(
-      12,
-      12,
-      12,
-      4
-    )
-  )
-
-  release_dataset <- data.table(
-    release_id = c(
-      "ancient_release",
-      "last_release",
-      "future_release",
-
-      "combo_release",
-      "combo_release"
-    ),
-    set_id = c(
-      "set1",
-      "set1",
-      "set1",
-
-      "set1",
-      "set2"
-    )
-  )
-
   reset_db(con)
-
   if(init_datasets) {
     dbWriteTable(con,
                  DBI::Id(schema = "tsdb_test", table = "datasets"),
@@ -391,16 +318,6 @@ prepare_db <- function(con,
       dbWriteTable(con,
                    DBI::Id(schema = "tsdb_test", table = "collect_catalog"),
                    collect_catalog,
-                   append = TRUE)
-
-      dbWriteTable(con,
-                   DBI::Id(schema = "tsdb_test", table = "release_calendar"),
-                   release_calendar,
-                   append = TRUE)
-
-      dbWriteTable(con,
-                   DBI::Id(schema = "tsdb_test", table = "release_dataset"),
-                   release_dataset,
                    append = TRUE)
     }
   }
