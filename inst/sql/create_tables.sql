@@ -76,18 +76,17 @@ CREATE TABLE timeseries.collect_catalog (
 );
 
 CREATE TABLE timeseries.release_calendar (
-  id UUID PRIMARY KEY,
-  release_title TEXT,
-  release_note TEXT,
-  release_date TIMESTAMPTZ,
-  reference_year INTEGER,
-  reference_period INTEGER,
-  reference_frequency INTEGER,
-  reference_label TEXT        -- or timeseries.frequencies(frequency integer, label text)?
+  id TEXT PRIMARY KEY,
+  title TEXT NOT NULL,
+  note TEXT,
+  release_date TIMESTAMPTZ NOT NULL,
+  reference_year INTEGER NOT NULL,
+  reference_period INTEGER NOT NULL,
+  reference_frequency INTEGER NOT NULL
 );
 
 CREATE TABLE timeseries.release_dataset (
-  release_id UUID,
+  release_id TEXT,
   set_id TEXT,
   PRIMARY KEY (release_id, set_id),
   FOREIGN KEY (release_id) REFERENCES timeseries.release_calendar(id),

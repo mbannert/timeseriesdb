@@ -14,6 +14,8 @@ is_test_db_reachable <- function(){
 }
 
 reset_db <- function(con) {
+  dbExecute(con, "DELETE FROM tsdb_test.release_dataset")
+  dbExecute(con, "DELETE FROM tsdb_test.release_calendar")
   dbExecute(con, "DELETE FROM tsdb_test.collect_catalog")
   dbExecute(con, "DELETE FROM tsdb_test.collections")
   dbExecute(con, "DELETE FROM tsdb_test.metadata")
@@ -281,6 +283,77 @@ prepare_db <- function(con,
     )
   )
 
+  release_calendar <- data.table(
+    id = c(
+      "ancient_release",
+      "last_release",
+      "future_release",
+
+      "combo_release"
+    ),
+    title = c(
+      "Rock count",
+      "Microchip count",
+      "Crystal count",
+
+      "Best Data ever"
+    ),
+    note = c(
+      "It's rock science!",
+      "Bow down to Elon",
+      "Apophis is coming",
+
+      "With two datasets!"
+    ),
+    release_date = c(
+      Sys.Date() - 1000,
+      Sys.Date() - 1,
+      Sys.Date() + 1,
+
+      as.Date("2020-06-01")
+    ),
+    reference_year = c(
+      year(Sys.Date()),
+      year(Sys.Date()),
+      year(Sys.Date()),
+
+      2020
+    ),
+    reference_period = c(
+      month(Sys.Date()),
+      month(Sys.Date()),
+      month(Sys.Date()),
+
+      2
+    ),
+    reference_frequency = c(
+      12,
+      12,
+      12,
+
+      4
+    )
+  )
+
+  release_dataset <- data.table(
+    release_id = c(
+      "ancient_release",
+      "last_release",
+      "future_release",
+
+      "combo_release",
+      "combo_release"
+    ),
+    set_id = c(
+      "set1",
+      "set1",
+      "set1",
+
+      "set1",
+      "set2"
+    )
+  )
+
   reset_db(con)
   if(init_datasets) {
     dbWriteTable(con,
@@ -318,6 +391,16 @@ prepare_db <- function(con,
       dbWriteTable(con,
                    DBI::Id(schema = "tsdb_test", table = "collect_catalog"),
                    collect_catalog,
+                   append = TRUE)
+
+      dbWriteTable(con,
+                   DBI::Id(schema = "tsdb_test", table = "release_calendar"),
+                   release_calendar,
+                   append = TRUE)
+
+      dbWriteTable(con,
+                   DBI::Id(schema = "tsdb_test", table = "release_dataset"),
+                   release_dataset,
                    append = TRUE)
     }
   }
