@@ -139,12 +139,12 @@ SET search_path = timeseries, pg_temp;
 -- List all datasets and their description
 --
 -- returns: table(set_id TEXT, set_description TEXT)
-CREATE FUNCTION timeseries.get_list_datasets()
+CREATE FUNCTION timeseries.list_datasets()
 RETURNS TABLE(set_id TEXT, set_description TEXT)
 AS $$
 BEGIN
-  RETURN QUERY SELECT set_id, set_description
-  FROM timeseries.datasets
+  RETURN QUERY SELECT timeseries.datasets.set_id, timeseries.datasets.set_description
+  FROM timeseries.datasets;
 END;
 $$ LANGUAGE PLPGSQL
 SECURITY DEFINER

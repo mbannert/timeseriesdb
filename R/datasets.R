@@ -166,12 +166,12 @@ db_assign_dataset <- function(con,
 #'
 #' @return data.frame with columns `set_id` and `set_description`
 #' @export
-db_get_list_datasets <- function(con,
+db_list_datasets <- function(con,
                                  schema = "timeseries") {
   
   db_call_function(con,
-                   "get_list_datasets",
-                   schema)
+                   "list_datasets",
+                   schema = schema)
 }
 
 
