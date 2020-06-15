@@ -11,12 +11,11 @@ vignette: >
 
 # Using {timeseriesdb} 
 
-This guide explains in applied fashion how to use {timeseriesdb} effectively in practice.
+This guide explains how to use {timeseriesdb} effectively in practice.
 In order to walk through {timeseriesdb}'s functionality this document follows the 
 user story of the fictional _Crystall Ball Economics_ company. This walkthrough assumes
-that you have installed R, PostgreSQL and the {timeseriesdb} package successfully and it 
-also assumes that set up the timeseriesdb database backend using the setup routines that ship with the package. If you have troubling setting this up, please take a look at our 
-[Installtion](Guide).
+that you have installed R, PostgreSQL and the {timeseriesdb} package successfully. It 
+also assumes that set up the timeseriesdb database backend succesfully (using the setup routines that ship with the package). If you have troubling setting this up, please take a look at our [Installtion](Guide).
 
 ## Crystal Ball Economics Inc. - A User Story
 
@@ -34,7 +33,7 @@ offices in various locations.
 ## Basic Usage
 
 The obvious first step en route to interaction with any database is to connect
-to the database. {timeseriesdb} ships with a convenience function that allows 
+to the database. {timeseriesdb} comes with a convenience function that allows 
 to swiftly connect to the PostgreSQL backend. 
 
 ```{r}
@@ -47,7 +46,7 @@ con <- db_create_connection(dbname = "postgres",
 ```
 
 Once a connection is etablished, this connection can be used to read and store 
-time series. _Crystall Ball's_ Swiss researchers have composed a nice set of time
+time series. _Crystall Ball's_ Swiss researchers have composed a nifty set of time
 series that they want to store for good and share with their colleagues across
 the company. Instead of storing the data to a spreadsheet format or as R objects
 in an _.RData_ file, the researchers store time series into the PostgreSQL based
@@ -73,15 +72,59 @@ from {timeseriesdb}'s backend is as easy as writing to it.
 tsl <- read_time_series(con, c("AirPassengers","JohnsonJohnson"))
 ```
 
-The Read process
-
+The _read_ process returns a list of time series. By default, time series of regular
+frequency will be returned as list elements of class _ts_, irregular time series 
+will be returned as time series of class _xts_. 
 
 ## Vintages (Versions of Time Series)
 
-- store
-- update
+Evaluation and benchmarking of the company's own craft is to
+_Crystall Ball Inc._. The methodology team is continously on the hunt for
+improvements to the company's models. Versioning of time series plays an
+important role in this evaluation process: A series may be revised, i.e., past 
+values change. Revisions happen regularly and on purpose when preliminary data
+are published or when series are seasonally adjusted. The methodological 
+advisory board has advised the methods team to not trust original data providers
+to keep different versions of time series (vintages) available. {timeseriesdb}
+fulfills this requirement by default: When a time series of a
+unique identifier that already exists should be stored to the database, 
+{timeseriesdb} creates a new version of that series instead of overwriting it. 
+Currently one version per day is allowed. 
+
+> Note: The last available (daily) vintage may be be overwritten. This allows
+for immediate corrections in interative session even without admin rights. 
+
+TODO: NEED a some series to explain vintages here -> a few ch.kof.barometer 
+vintages could do the job... 
+
 
 ## Datasets
+
+After weeks and months of fun methodological work with the composed data, the 
+research team receives a note from management that causes immense panic: a data audit
+is its way. Scrutiny looms. Where are all the data from? Can they even legally
+use these data? Are they allowed to share these time series? 
+Do the same rules apply for all time series? But first and foremost: How can 
+the team present all this related information to the auditors?
+
+Luckily {timeseriesdb} offers a rich set of features to group datasets and 
+add data description at the time series level. {timeseriesdb} assigns every 
+time series that is about to be stored to a dataset. In their quest for
+structure, the team realizes that all series have been assigned to a dataset 
+called _default_. 
+
+```{r}
+
+db_get_dataset_id(con, names(tsl))
+
+```
+
+Great! So {timeseriesdb} has the ability to group data in datasets. 
+The team decides to create
+
+
+
+
 
 - defaults vs other datasets
 - where do we take example data from
@@ -101,6 +144,8 @@ The Read process
 
 tbd.
 
+
+## Release Date
 
 
 
