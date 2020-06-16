@@ -61,9 +61,33 @@ db_create_release <- function(con,
       }
     })
 
-  fromJSON(out)
+  parsed <- fromJSON(out)
+  if(parsed$status != "ok") {
+    if("missing_datasets" %in% names(parsed)) {
+      stop(sprintf("Some datasets do not exist: %s", paste(parsed$missing_datasets, collapse = ", ")))
+    }
+  }
+
+  parsed
 }
 
+#' Title
+#'
+#' @param con
+#' @param id
+#' @param title
+#' @param release_date
+#' @param datasets
+#' @param reference_year
+#' @param reference_period
+#' @param reference_frequency
+#' @param note
+#' @param schema
+#'
+#' @return
+#' @export
+#'
+#' @examples
 db_update_release <- function(con,
                               id,
                               title = NA,
@@ -110,5 +134,12 @@ db_update_release <- function(con,
       }
     })
 
-  fromJSON(out)
+  parsed <- fromJSON(out)
+  if(parsed$status != "ok") {
+    if("missing_datasets" %in% names(parsed)) {
+      stop(sprintf("Some datasets do not exist: %s", paste(parsed$missing_datasets, collapse = ", ")))
+    }
+  }
+
+  parsed
 }

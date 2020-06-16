@@ -8,7 +8,7 @@ if(is_test_db_reachable()) {
 # creating releases -------------------------------------------------------
 
 test_that("defaults", {
-  fake_db_call_function = mock('{"hello": "there"}')
+  fake_db_call_function = mock('{"status": "ok"}')
 
   with_mock(
     db_call_function = fake_db_call_function,
@@ -75,21 +75,14 @@ test_with_fresh_db(con_admin, "creating releases with duplicate id is an error",
 })
 
 test_with_fresh_db(con_admin, "creating with nonexistent dataset", {
-  out <- db_create_release(con_admin,
+  expect_error(
+    db_create_release(con_admin,
                     "new_release",
                     "",
                     Sys.time(),
                     c("notaset"),
-                    schema = "tsdb_test")
-
-  expect_equal(
-    out,
-    list(
-      status = "failure",
-      reason = "Some datasets do not exist.",
-      missing_datasets = "notaset"
-    )
-  )
+                    schema = "tsdb_test"),
+    "notaset")
 })
 
 test_with_fresh_db(con_admin, "create_release db state", {
@@ -134,19 +127,11 @@ test_with_fresh_db(con_admin, "update release returns ok", {
 })
 
 test_with_fresh_db(con_admin, "updating release with nonexistent set", {
-  out <- db_update_release(con_admin,
+  expect_error(db_update_release(con_admin,
                            "future_release",
                            datasets = c("notaset"),
-                           schema = "tsdb_test")
-
-  expect_equal(
-    out,
-    list(
-      status = "failure",
-      reason = "Some datasets do not exist.",
-      missing_datasets = "notaset"
-    )
-  )
+                           schema = "tsdb_test"),
+               "notaset")
 })
 
 test_with_fresh_db(con_admin, "updating a release", {
@@ -197,8 +182,6 @@ test_with_fresh_db(con_admin, "partially updating a release", {
                     schema = "tsdb_test")
 
   state <- dbGetQuery(con_admin, "SELECT * FROM tsdb_test.release_calendar WHERE id = 'future_release'")
-
-  print(state)
 
   expect_equal(
     state,
