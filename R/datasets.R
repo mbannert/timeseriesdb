@@ -158,3 +158,20 @@ db_assign_dataset <- function(con,
   # Why not both (well, one and a half)?
   out_parsed
 }
+
+#' Get All available datasets and their description
+#'
+#' @param con RPostgres connection object
+#' @param schema character Name of timeseries schema
+#'
+#' @return data.frame with columns `set_id` and `set_description`
+#' @export
+db_list_datasets <- function(con,
+                                 schema = "timeseries") {
+  
+  db_call_function(con,
+                   "list_datasets",
+                   schema = schema)
+}
+
+
