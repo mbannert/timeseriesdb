@@ -191,10 +191,20 @@ test_with_fresh_db(con_admin, "db_assign_dataset errors if set does not exist", 
 
 
 # test db_get_list_datasets --------------------------------------------------
-test_with_fresh_db(con_admin, "db_get_list_datasets returns data frame with correct names", {
-  out <- db_get_list_datasets(con_reader, schema = "tsdb_test")
+test_with_fresh_db(con_admin, "db_list_datasets returns data frame with correct names", {
+  out <- db_list_datasets(con_reader, schema = "tsdb_test")
   
-  expect_s3_class(out, "data.frame")
-  expect_equal(names(out), c("set_id", "set_description"))
+  expected <- data.frame(
+    set_id = c("default",
+      "set1",
+      "set2"
+    ),
+    set_description = c("A set that is used if no other set is specified. Every time series needs to be part of a dataset",
+      "test set 1",
+      "test set 2"
+    ),
+    stringsAsFactors = FALSE
+  )
+  
+  expect_equal(out, expected)
 })
-
