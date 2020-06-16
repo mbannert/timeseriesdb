@@ -84,3 +84,26 @@ END;
 $$ LANGUAGE PLPGSQL
 SECURITY DEFINER
 SET search_path = timeseries, pg_temp;
+
+
+CREATE FUNCTION timeseries.list_releases(p_include_past BOOLEAN DEFAULT FALSE)
+RETURNS TABLE(id TEXT,
+              title TEXT,
+              note TEXT,
+              release_date TIMESTAMPTZ,
+              reference_year INTEGER,
+              reference_period INTEGER,
+              reference_frequency INTEGER)
+AS $$
+BEGIN
+  RETURN QUERY
+  SELECT rls.id, rls.title, rls.note, rls.release_date, rls.reference_year,
+         rls.reference_period, rls.reference_frequency
+  FROM timeseries.release_calendar
+  AS rls
+  WHERE (p_include_past OR rls.release_date >= CURRENT_TIMESTAMP)
+  ORDER BY release_date, id;
+END;
+$$ LANGUAGE PLPGSQL
+SECURITY DEFINER
+SET search_path = timeseries, pg_temp;

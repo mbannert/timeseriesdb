@@ -207,3 +207,42 @@ test_with_fresh_db(con_admin, "partially updating a release", {
     )
   )
 })
+
+
+# list_releases -----------------------------------------------------------
+
+test_with_fresh_db(con_admin, "db_list_releases return shape", {
+  out <- db_list_releases(con_reader, schema = "tsdb_test")
+
+  expect_is(out, "data.frame")
+  expect_equal(
+    names(out),
+    c(
+      "id", "title", "note", "release_date", "reference_year", "reference_period",
+      "reference_frequency"
+    )
+  )
+})
+
+test_with_fresh_db(con_admin, "db_list_releases return value (approx)", {
+  out <- db_list_releases(con_reader, schema = "tsdb_test")
+
+  expect_equal(
+    out$id,
+    "future_release"
+  )
+})
+
+test_with_fresh_db(con_admin, "db_list_releases with past return value (approx)", {
+  out <- db_list_releases(con_reader, include_past = TRUE, schema = "tsdb_test")
+
+  expect_equal(
+    out$id,
+    c(
+      "ancient_release",
+      "combo_release",
+      "last_release",
+      "future_release"
+    )
+  )
+})

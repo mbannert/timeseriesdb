@@ -310,7 +310,7 @@ prepare_db <- function(con,
       Sys.Date() - 1,
       Sys.Date() + 1,
 
-      as.Date("2020-06-01")
+      Sys.Date() - 4
     ),
     reference_year = c(
       year(Sys.Date()),

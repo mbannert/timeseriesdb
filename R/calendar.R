@@ -143,3 +143,14 @@ db_update_release <- function(con,
 
   parsed
 }
+
+db_list_releases <- function(con,
+                             include_past = FALSE,
+                             schema = "timeseries") {
+  db_call_function(con,
+                   "list_releases",
+                   list(
+                     include_past
+                   ),
+                   schema = schema)
+}
