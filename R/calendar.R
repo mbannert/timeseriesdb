@@ -6,9 +6,9 @@
 #' @param id Identifier for the release e.g. 'gdb_may_2020'
 #' @param title Display title for the release
 #' @param release_date Timestamp when the release is to occur
-#' @param reference_year Year observed in the data
-#' @param reference_period Period observed in the data (e.g. month, quarter)
-#' @param reference_frequency Frequency of the data (e.g. 4 for quarterly)
+#' @param target_year Year observed in the data
+#' @param target_period Period observed in the data (e.g. month, quarter)
+#' @param target_frequency Frequency of the data (e.g. 4 for quarterly)
 #' @param note Additional remarks about the release.
 #' @param schema timeseries schema name
 #'
@@ -28,9 +28,9 @@ db_create_release <- function(con,
                            title,
                            release_date,
                            datasets,
-                           reference_year = year(release_date),
-                           reference_period = month(release_date),
-                           reference_frequency = 12,
+                           target_year = year(release_date),
+                           target_period = month(release_date),
+                           target_frequency = 12,
                            note = NA,
                            schema = "timeseries") {
   dbWriteTable(con,
@@ -52,9 +52,9 @@ db_create_release <- function(con,
                        title,
                        note,
                        release_date,
-                       reference_year,
-                       reference_period,
-                       reference_frequency
+                       target_year,
+                       target_period,
+                       target_frequency
                      ),
                      schema = schema
     ),
@@ -89,9 +89,9 @@ db_create_release <- function(con,
 #' @param id Identifier for the release e.g. 'gdb_may_2020'
 #' @param title Display title for the release
 #' @param release_date Timestamp when the release is to occur
-#' @param reference_year Year observed in the data
-#' @param reference_period Period observed in the data (e.g. month, quarter)
-#' @param reference_frequency Frequency of the data (e.g. 4 for quarterly)
+#' @param target_year Year observed in the data
+#' @param target_period Period observed in the data (e.g. month, quarter)
+#' @param target_frequency Frequency of the data (e.g. 4 for quarterly)
 #' @param note Additional remarks about the release.
 #' @param schema timeseries schema name
 #'
@@ -102,9 +102,9 @@ db_update_release <- function(con,
                               title = NA,
                               release_date = NA,
                               datasets = NA,
-                              reference_year = NA,
-                              reference_period = NA,
-                              reference_frequency = NA,
+                              target_year = NA,
+                              target_period = NA,
+                              target_frequency = NA,
                               note = NA,
                               schema = "timeseries") {
 
@@ -128,9 +128,9 @@ db_update_release <- function(con,
                        title,
                        note,
                        release_date,
-                       reference_year,
-                       reference_period,
-                       reference_frequency,
+                       target_year,
+                       target_period,
+                       target_frequency,
                        !is.na(datasets)
                      ),
                      schema = schema

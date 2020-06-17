@@ -312,21 +312,21 @@ prepare_db <- function(con,
 
       Sys.Date() + 4
     ),
-    reference_year = c(
+    target_year = c(
       year(Sys.Date()),
       year(Sys.Date()),
       year(Sys.Date()),
 
       2020
     ),
-    reference_period = c(
+    target_period = c(
       month(Sys.Date()),
       month(Sys.Date()),
       month(Sys.Date()),
 
       2
     ),
-    reference_frequency = c(
+    target_frequency = c(
       12,
       12,
       12,

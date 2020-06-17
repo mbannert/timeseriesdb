@@ -80,9 +80,9 @@ CREATE TABLE timeseries.release_calendar (
   title TEXT NOT NULL,
   note TEXT,
   release_date TIMESTAMPTZ NOT NULL,
-  reference_year INTEGER NOT NULL,
-  reference_period INTEGER NOT NULL,
-  reference_frequency INTEGER NOT NULL
+  target_year INTEGER,
+  target_period INTEGER,
+  target_frequency INTEGER
 );
 
 CREATE TABLE timeseries.release_dataset (

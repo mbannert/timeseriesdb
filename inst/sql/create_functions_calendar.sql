@@ -41,8 +41,8 @@ BEGIN
   END IF;
 
   INSERT INTO timeseries.release_calendar(id, title, note,
-                                          release_date, reference_year,
-                                          reference_period, reference_frequency)
+                                          release_date, target_year,
+                                          target_period, target_frequency)
   VALUES (p_id, p_title, p_note, p_date, p_year, p_period, p_frequency);
 
   INSERT INTO timeseries.release_dataset(release_id, set_id)
@@ -108,9 +108,9 @@ BEGIN
     title = COALESCE(p_title, cal.title),
     note = COALESCE(p_note, cal.note),
     release_date = COALESCE(p_date, cal.release_date),
-    reference_year = COALESCE(p_year, cal.reference_year),
-    reference_period = COALESCE(p_period, cal.reference_period),
-    reference_frequency = COALESCE(p_frequency, cal.reference_frequency)
+    target_year = COALESCE(p_year, cal.target_year),
+    target_period = COALESCE(p_period, cal.target_period),
+    target_frequency = COALESCE(p_frequency, cal.target_frequency)
   WHERE id = p_id;
 
   RETURN json_build_object('status', 'ok');
@@ -129,14 +129,14 @@ RETURNS TABLE(id TEXT,
               title TEXT,
               note TEXT,
               release_date TIMESTAMPTZ,
-              reference_year INTEGER,
-              reference_period INTEGER,
-              reference_frequency INTEGER)
+              target_year INTEGER,
+              target_period INTEGER,
+              target_frequency INTEGER)
 AS $$
 BEGIN
   RETURN QUERY
-  SELECT rls.id, rls.title, rls.note, rls.release_date, rls.reference_year,
-         rls.reference_period, rls.reference_frequency
+  SELECT rls.id, rls.title, rls.note, rls.release_date, rls.target_year,
+         rls.target_period, rls.target_frequency
   FROM timeseries.release_calendar
   AS rls
   WHERE (p_include_past OR rls.release_date >= CURRENT_TIMESTAMP)

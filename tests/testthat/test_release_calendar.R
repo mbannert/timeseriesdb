@@ -103,9 +103,9 @@ test_with_fresh_db(con_admin, "create_release db state", {
       note = NA_character_,
       # TODO: see #155
       release_date = as.POSIXct("2020-06-15 15:09"),
-      reference_year = 2020,
-      reference_period = 6,
-      reference_frequency = 12,
+      target_year = 2020,
+      target_period = 6,
+      target_frequency = 12,
       stringsAsFactors = FALSE
     )
   )
@@ -141,9 +141,9 @@ test_with_fresh_db(con_admin, "updating a release", {
                     note = "Note",
                     release_date = as.Date("2021-01-01"),
                     datasets = c("set2"),
-                    reference_year = 2020,
-                    reference_period = 1,
-                    reference_frequency = 6,
+                    target_year = 2020,
+                    target_period = 1,
+                    target_frequency = 6,
                     schema = "tsdb_test")
 
   state <- dbGetQuery(con_admin, "SELECT * FROM tsdb_test.release_calendar WHERE id = 'future_release'")
@@ -155,9 +155,9 @@ test_with_fresh_db(con_admin, "updating a release", {
       title = "A new title",
       note = "Note",
       release_date = as.Date("2021-01-01"),
-      reference_year = 2020,
-      reference_period = 1,
-      reference_frequency = 6,
+      target_year = 2020,
+      target_period = 1,
+      target_frequency = 6,
       stringsAsFactors = FALSE
     )
   )
@@ -178,7 +178,7 @@ test_with_fresh_db(con_admin, "partially updating a release", {
                     id = "future_release",
                     title = "A new title",
                     release_date = as.Date("2031-04-01"),
-                    reference_period = 3,
+                    target_period = 3,
                     schema = "tsdb_test")
 
   state <- dbGetQuery(con_admin, "SELECT * FROM tsdb_test.release_calendar WHERE id = 'future_release'")
@@ -190,9 +190,9 @@ test_with_fresh_db(con_admin, "partially updating a release", {
       title = "A new title",
       note = "Apophis is coming",
       release_date = as.Date("2031-04-01"),
-      reference_year = 2020,
-      reference_period = 3,
-      reference_frequency = 12,
+      target_year = 2020,
+      target_period = 3,
+      target_frequency = 12,
       stringsAsFactors = FALSE
     )
   )
@@ -218,8 +218,8 @@ test_with_fresh_db(con_admin, "db_list_releases return shape", {
   expect_equal(
     names(out),
     c(
-      "id", "title", "note", "release_date", "reference_year", "reference_period",
-      "reference_frequency"
+      "id", "title", "note", "release_date", "target_year", "target_period",
+      "target_frequency"
     )
   )
 })
@@ -229,7 +229,7 @@ test_with_fresh_db(con_admin, "db_list_releases return value (approx)", {
 
   expect_equal(
     out$id,
-    "future_release"
+    c("future_release", "combo_release")
   )
 })
 
@@ -240,9 +240,9 @@ test_with_fresh_db(con_admin, "db_list_releases with past return value (approx)"
     out$id,
     c(
       "ancient_release",
-      "combo_release",
       "last_release",
-      "future_release"
+      "future_release",
+      "combo_release"
     )
   )
 })
