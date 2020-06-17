@@ -250,7 +250,7 @@ test_with_fresh_db(con_admin, "db_list_releases with past return value (approx)"
 
 # get next release --------------------------------------------------------
 
-test_with_fresh_db(con_admin, "db_get_next_release_for_set return shape", {
+test_with_fresh_db(con_admin, "db_get_next_release_for return shape", {
   out <- db_get_next_release_for_set(con_reader, "set1", schema = "tsdb_test")
 
   expect_is(out, "data.frame")
@@ -266,6 +266,29 @@ test_with_fresh_db(con_admin, "db_get_next_release", {
       set_id = c("set1", "set2"),
       release_id = c("future_release", "combo_release"),
       release_date = c(Sys.Date() + 1, Sys.Date() + 4),
+      stringsAsFactors = FALSE
+    )
+  )
+})
+
+# get latest release ------------------------------------------------------
+
+test_with_fresh_db(con_admin, "db_get_latest_release_for_set return shape", {
+  out <- db_get_latest_release_for_set(con_reader, "set1", schema = "tsdb_test")
+
+  expect_is(out, "data.frame")
+  expect_equal(names(out), c("set_id", "release_id", "release_date"))
+})
+
+test_with_fresh_db(con_admin, "db_get_latest_release_for_set return", {
+  out <- db_get_latest_release_for_set(con_reader, "set1", schema = "tsdb_test")
+
+  expect_equal(
+    out,
+    data.frame(
+      set_id = "set1",
+      release_id = "last_release",
+      release_date = Sys.Date() - 1,
       stringsAsFactors = FALSE
     )
   )

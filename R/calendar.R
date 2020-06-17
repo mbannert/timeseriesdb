@@ -200,3 +200,32 @@ db_get_next_release_for_set <- function(con,
                    "get_next_release_for_sets",
                    schema = schema)
 }
+
+#' Get the latest Release for Given Datasets
+#'
+#' @param con RPostgres connection
+#' @param set_ids Sets to get release dates for
+#' @param schema Timeseries schema name
+#'
+#' @return data.frame with columns `set_id`, `release_id`, `release_date`
+#' @export
+db_get_latest_release_for_set <- function(con,
+                                          set_ids,
+                                          schema = "timeseries") {
+  dbWriteTable(con,
+               "tmp_get_release",
+               data.table(
+                 set_id = set_ids
+               ),
+               temporary = TRUE,
+               overwrite = TRUE,
+               field.types = c(
+                 set_id = "text"
+               ))
+
+  db_grant_to_admin(con, "tmp_get_release", schema)
+
+  db_call_function(con,
+                   "get_latest_release_for_sets",
+                   schema = schema)
+}

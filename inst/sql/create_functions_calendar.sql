@@ -175,3 +175,28 @@ END;
 $$ LANGUAGE PLPGSQL
 SECURITY DEFINER
 SET search_path = timeseries, pg_temp;
+
+
+CREATE FUNCTION timeseries.get_latest_release_for_sets()
+RETURNS TABLE(set_id TEXT,
+              release_id TEXT,
+              release_date TIMESTAMPTZ)
+AS $$
+BEGIN
+  RETURN QUERY
+  WITH releases_with_set AS (
+    SELECT rls.release_id, tmp.set_id
+    FROM timeseries.release_dataset AS rls
+    JOIN tmp_get_release AS tmp
+    USING(set_id)
+  )
+  SELECT DISTINCT ON(releases_with_set.set_id)  releases_with_set.set_id, rls.id AS release_id, rls.release_date
+  FROM timeseries.release_calendar AS rls
+  JOIN releases_with_set
+  ON rls.id = releases_with_set.release_id
+  WHERE rls.release_date <= CURRENT_TIMESTAMP
+  ORDER BY releases_with_set.set_id, rls.release_date DESC;
+END;
+$$ LANGUAGE PLPGSQL
+SECURITY DEFINER
+SET search_path = timeseries, pg_temp;
