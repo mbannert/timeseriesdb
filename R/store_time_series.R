@@ -96,6 +96,10 @@ store_time_series.data.table <- function(con,
     stop("\"value\" must be numeric.")
   }
 
+  if(anyDuplicated(dt, by = c("id", "time")) > 0) {
+    stop("data.table contains duplicated (id, time) pairs. Are there duplicate series?")
+  }
+
   store_records(con,
                 to_ts_json(dt),
                 access,

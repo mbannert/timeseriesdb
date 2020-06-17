@@ -7,7 +7,7 @@ tsl <- list(
 class(tsl) <- c("tslist", "list")
 
 dt <- data.table(
-  id = c("ts1", "ts2"),
+  id = rep(c("ts1", "ts2"), each = 2),
   time = seq(as.Date("2019-01-01"), length.out = 2, by = "1 month"),
   value = 1:4
 )
@@ -140,5 +140,18 @@ test_that("it complains about character-ts in dt", {
   expect_error(
     store_time_series("con", char_dt, "release", "access"),
     "numeric"
+  )
+})
+
+test_that("id complains about duplicate series in dt", {
+  dup_dt <- data.table(
+    id = "dupli_mac_dupleton",
+    time = rep(seq(Sys.Date(), length.out = 13, by = "3 month"), each = 2),
+    value = pi
+  )
+
+  expect_error(
+    store_time_series("con", dup_dt, "release", "access"),
+    "duplicated"
   )
 })
