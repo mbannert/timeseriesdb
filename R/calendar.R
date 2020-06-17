@@ -13,9 +13,11 @@
 #' @param schema timeseries schema name
 #'
 #' @details
-#' reference_period changes meaning depending on the frequency of the release.
+#' target_period changes meaning depending on the frequency of the release.
 #' e.g. period 2 for quarterly data (reference_frequency = 4) means Q2 whereas
 #' period 2 for monthly data (frequency 12) means February
+#' In other words: target_year and target_period mark the end of the time series
+#' in the release.
 #'
 #' @return a status list
 #'
