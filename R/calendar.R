@@ -1,21 +1,28 @@
-#' Title
+#' Create an Entry in the Release Calendar
 #'
-#' @param con
-#' @param id
-#' @param title
-#' @param release_date
-#' @param reference_year
-#' @param reference_period
-#' @param reference_frequency
-#' @param note
-#' @param schema
+#' Only timeseries admins may create and modify releases
 #'
-#' @return
-#' @export
+#' @param con RPostgres connection
+#' @param id Identifier for the release e.g. 'gdb_may_2020'
+#' @param title Display title for the release
+#' @param release_date Timestamp when the release is to occur
+#' @param reference_year Year observed in the data
+#' @param reference_period Period observed in the data (e.g. month, quarter)
+#' @param reference_frequency Frequency of the data (e.g. 4 for quarterly)
+#' @param note Additional remarks about the release.
+#' @param schema timeseries schema name
+#'
+#' @details
+#' reference_period changes meaning depending on the frequency of the release.
+#' e.g. period 2 for quarterly data (reference_frequency = 4) means Q2 whereas
+#' period 2 for monthly data (frequency 12) means February
+#'
+#' @return a status list
 #'
 #' @import data.table
 #' @importFrom RPostgres dbWriteTable
 #' @importFrom jsonlite fromJSON
+#' @export
 db_create_release <- function(con,
                            id,
                            title,
@@ -71,23 +78,25 @@ db_create_release <- function(con,
   parsed
 }
 
-#' Title
+#' Update an Existing Release Record
 #'
-#' @param con
-#' @param id
-#' @param title
-#' @param release_date
-#' @param datasets
-#' @param reference_year
-#' @param reference_period
-#' @param reference_frequency
-#' @param note
-#' @param schema
+#' Any parameters provided to this function will overwrite the corresponding
+#' fields in the database. Parameters set to NA (default) will leave the
+#' corresponding fields untouched.
+#' For details see db_create_release
 #'
-#' @return
+#' @param con RPostgres connection
+#' @param id Identifier for the release e.g. 'gdb_may_2020'
+#' @param title Display title for the release
+#' @param release_date Timestamp when the release is to occur
+#' @param reference_year Year observed in the data
+#' @param reference_period Period observed in the data (e.g. month, quarter)
+#' @param reference_frequency Frequency of the data (e.g. 4 for quarterly)
+#' @param note Additional remarks about the release.
+#' @param schema timeseries schema name
+#'
+#' @return a status list
 #' @export
-#'
-#' @examples
 db_update_release <- function(con,
                               id,
                               title = NA,
@@ -144,6 +153,14 @@ db_update_release <- function(con,
   parsed
 }
 
+#' List Data on Registered Releases
+#'
+#' @param con RPostgres connection
+#' @param include_past Should past releases be included? Defaults to FALSE
+#' @param schema Timeseries schema name
+#'
+#' @return data.frame with columns `id`, `title`, `note`, `release_date`, `reference_year`, `reference_period`, `reference_frequency`
+#' @export
 db_list_releases <- function(con,
                              include_past = FALSE,
                              schema = "timeseries") {
@@ -155,6 +172,14 @@ db_list_releases <- function(con,
                    schema = schema)
 }
 
+#' Get Next Release Date for Given Datasets
+#'
+#' @param con RPostgres connection
+#' @param set_ids Sets to get release dates for
+#' @param schema Timeseries schema name
+#'
+#' @return data.frame with columns `set_id`, `release_id`, `release_date`
+#' @export
 db_get_next_release_for_set <- function(con,
                                         set_ids,
                                         schema = "timeseries") {

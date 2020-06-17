@@ -1,3 +1,21 @@
+-- Create a new release
+--
+-- A release marks the point in time where new data for a group of datasets are
+-- to be made public.
+-- The year and period fields identify what time the data themselves are about.
+-- Numbers may be released with a certain lag such that the release for
+-- e.g. March are only released in mit April so this release would have
+-- 3 as its period and 4-15 as its release date.
+--
+-- param: p_id The identifier of the release e.g. 'gdp_march_2020'
+-- param: p_title Display title for the release
+-- param: p_note Additional remarks
+-- param: p_date The timestamptz when the release is to occur
+-- param: p_year The year the release pertains to
+-- param: p_period The period (month, quarter etc) the release pertains to
+-- param: p_frequency The frequency of the release e.g. 4 for quarterly
+--
+-- returns: json {"status": "", "reason": "", "missing_datasets", [""]}
 CREATE FUNCTION timeseries.create_release(p_id TEXT, p_title TEXT, p_note TEXT,
                                           p_date TIMESTAMPTZ, p_year INTEGER,
                                           p_period INTEGER, p_frequency INTEGER)
@@ -36,6 +54,23 @@ $$ LANGUAGE PLPGSQL
 SECURITY DEFINER
 SET search_path = timeseries, pg_temp;
 
+
+
+-- Update an existing release
+--
+-- Any fields provided to update_release will overwrite the existing data for the
+-- given release. The other fields remain untouched.
+--
+-- param: p_id The identifier of the release e.g. 'gdp_march_2020'
+-- param: p_title Display title for the release
+-- param: p_note Additional remarks
+-- param: p_date The timestamptz when the release is to occur
+-- param: p_year The year the release pertains to
+-- param: p_period The period (month, quarter etc) the release pertains to
+-- param: p_frequency The frequency of the release e.g. 4 for quarterly
+-- param: p_sets_change Do the sets of the release change? Guards against reading from a nonexistent temp table
+--
+-- returns: json {"status": "", "reason": "", "missing_datasets", [""]}
 CREATE FUNCTION timeseries.update_release(p_id TEXT, p_title TEXT, p_note TEXT,
                                           p_date TIMESTAMPTZ, p_year INTEGER,
                                           p_period INTEGER, p_frequency INTEGER,
@@ -85,6 +120,10 @@ SECURITY DEFINER
 SET search_path = timeseries, pg_temp;
 
 
+-- List all content of the release table
+--
+-- param: p_include_past Should releases in the past be included? Default FALSE
+--
 CREATE FUNCTION timeseries.list_releases(p_include_past BOOLEAN DEFAULT FALSE)
 RETURNS TABLE(id TEXT,
               title TEXT,
@@ -107,6 +146,12 @@ $$ LANGUAGE PLPGSQL
 SECURITY DEFINER
 SET search_path = timeseries, pg_temp;
 
+
+-- Get the next release date for a given set of datasets
+--
+-- tmp_get_release has column (set_id TEXT)
+--
+-- returns: a table with (set_id TEXT, release_id TEXT, release_date TIMESTAMPTZ)
 CREATE FUNCTION timeseries.get_next_release_for_sets()
 RETURNS TABLE(set_id TEXT,
               release_id TEXT,
