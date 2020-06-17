@@ -55,7 +55,6 @@ BEGIN
     INTO v_nonexistent_datasets;
 
     IF array_length(v_nonexistent_datasets, 1) != 0 THEN
-    -- TODO: use json_build_object for consistency
       RETURN json_build_object('status', 'failure',
                                'reason', 'Some datasets do not exist.',
                                'missing_datasets', v_nonexistent_datasets);
@@ -103,6 +102,30 @@ BEGIN
   AS rls
   WHERE (p_include_past OR rls.release_date >= CURRENT_TIMESTAMP)
   ORDER BY release_date, id;
+END;
+$$ LANGUAGE PLPGSQL
+SECURITY DEFINER
+SET search_path = timeseries, pg_temp;
+
+CREATE FUNCTION timeseries.get_next_release_for_sets()
+RETURNS TABLE(set_id TEXT,
+              release_id TEXT,
+              release_date TIMESTAMPTZ)
+AS $$
+BEGIN
+  RETURN QUERY
+  WITH releases_with_set AS (
+    SELECT rls.release_id, tmp.set_id
+    FROM timeseries.release_dataset AS rls
+    JOIN tmp_get_release AS tmp
+    USING(set_id)
+  )
+  SELECT DISTINCT ON(releases_with_set.set_id) releases_with_set.set_id, rls.id AS release_id, rls.release_date
+  FROM timeseries.release_calendar AS rls
+  JOIN releases_with_set
+  ON rls.id = releases_with_set.release_id
+  WHERE rls.release_date > CURRENT_TIMESTAMP
+  ORDER BY releases_with_set.set_id, rls.release_date;
 END;
 $$ LANGUAGE PLPGSQL
 SECURITY DEFINER

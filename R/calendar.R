@@ -154,3 +154,24 @@ db_list_releases <- function(con,
                    ),
                    schema = schema)
 }
+
+db_get_next_release_for_set <- function(con,
+                                        set_ids,
+                                        schema = "timeseries") {
+  dbWriteTable(con,
+               "tmp_get_release",
+               data.table(
+                 set_id = set_ids
+               ),
+               temporary = TRUE,
+               overwrite = TRUE,
+               field.types = c(
+                 set_id = "text"
+               ))
+
+  db_grant_to_admin(con, "tmp_get_release", schema)
+
+  db_call_function(con,
+                   "get_next_release_for_sets",
+                   schema = schema)
+}
