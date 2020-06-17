@@ -159,18 +159,18 @@ RETURNS TABLE(set_id TEXT,
 AS $$
 BEGIN
   RETURN QUERY
-  WITH releases_with_set AS (
-    SELECT rls.release_id, tmp.set_id
-    FROM timeseries.release_dataset AS rls
-    JOIN tmp_get_release AS tmp
-    USING(set_id)
+  WITH rlscal AS (
+    SELECT rls.set_id, rls.release_id, cal.release_date
+    FROM timeseries.release_calendar AS cal
+    JOIN timeseries.release_dataset AS rls
+    ON rls.release_id = cal.id
+    WHERE cal.release_date > CURRENT_TIMESTAMP
   )
-  SELECT DISTINCT ON(releases_with_set.set_id) releases_with_set.set_id, rls.id AS release_id, rls.release_date
-  FROM timeseries.release_calendar AS rls
-  JOIN releases_with_set
-  ON rls.id = releases_with_set.release_id
-  WHERE rls.release_date > CURRENT_TIMESTAMP
-  ORDER BY releases_with_set.set_id, rls.release_date;
+  SELECT DISTINCT ON(tmp.set_id) tmp.set_id, rlscal.release_id, rlscal.release_date
+  FROM tmp_get_release AS tmp
+  LEFT JOIN rlscal
+  USING(set_id)
+  ORDER BY tmp.set_id, rlscal.release_date;
 END;
 $$ LANGUAGE PLPGSQL
 SECURITY DEFINER
@@ -188,18 +188,18 @@ RETURNS TABLE(set_id TEXT,
 AS $$
 BEGIN
   RETURN QUERY
-  WITH releases_with_set AS (
-    SELECT rls.release_id, tmp.set_id
-    FROM timeseries.release_dataset AS rls
-    JOIN tmp_get_release AS tmp
-    USING(set_id)
+  WITH rlscal AS (
+    SELECT rls.set_id, rls.release_id, cal.release_date
+    FROM timeseries.release_calendar AS cal
+    JOIN timeseries.release_dataset AS rls
+    ON rls.release_id = cal.id
+    WHERE cal.release_date <= CURRENT_TIMESTAMP
   )
-  SELECT DISTINCT ON(releases_with_set.set_id)  releases_with_set.set_id, rls.id AS release_id, rls.release_date
-  FROM timeseries.release_calendar AS rls
-  JOIN releases_with_set
-  ON rls.id = releases_with_set.release_id
-  WHERE rls.release_date <= CURRENT_TIMESTAMP
-  ORDER BY releases_with_set.set_id, rls.release_date DESC;
+  SELECT DISTINCT ON(tmp.set_id) tmp.set_id, rlscal.release_id, rlscal.release_date
+  FROM tmp_get_release AS tmp
+  LEFT JOIN rlscal
+  USING(set_id)
+  ORDER BY tmp.set_id, rlscal.release_date DESC;
 END;
 $$ LANGUAGE PLPGSQL
 SECURITY DEFINER

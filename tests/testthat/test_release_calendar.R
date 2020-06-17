@@ -271,6 +271,20 @@ test_with_fresh_db(con_admin, "db_get_next_release", {
   )
 })
 
+test_with_fresh_db(con_admin, "db_get_next_release with missing set", {
+  out <- db_get_next_release_for_set(con_reader, c("set1", "bananas"), schema = "tsdb_test")
+
+  expect_equal(
+    out,
+    data.frame(
+      set_id = c("bananas", "set1"),
+      release_id = c(NA, "future_release"),
+      release_date = c(as.POSIXct(NA), as.POSIXct(Sys.Date() + 1, origin = "1970-01-01")),
+      stringsAsFactors = FALSE
+    )
+  )
+})
+
 # get latest release ------------------------------------------------------
 
 test_with_fresh_db(con_admin, "db_get_latest_release_for_set return shape", {
@@ -289,6 +303,20 @@ test_with_fresh_db(con_admin, "db_get_latest_release_for_set return", {
       set_id = "set1",
       release_id = "last_release",
       release_date = Sys.Date() - 1,
+      stringsAsFactors = FALSE
+    )
+  )
+})
+
+test_with_fresh_db(con_admin, "db_get_latest_release with missing set", {
+  out <- db_get_latest_release_for_set(con_reader, c("set1", "bananas"), schema = "tsdb_test")
+
+  expect_equal(
+    out,
+    data.frame(
+      set_id = c("bananas", "set1"),
+      release_id = c(NA, "last_release"),
+      release_date = c(as.POSIXct(NA), as.POSIXct(Sys.Date() - 1, origin = "1970-01-01")),
       stringsAsFactors = FALSE
     )
   )
