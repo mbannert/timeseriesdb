@@ -88,7 +88,7 @@ test_with_fresh_db(con_admin, "reader may not store", {
                                  valid_from = "2019-01-01",
                                  release_date = "2019-01-02",
                                  schema = "tsdb_test"),
-               "may store")
+               "sufficient privileges")
 })
 
 test_with_fresh_db(con_admin, "It returns a status json", {

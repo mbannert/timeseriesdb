@@ -28,7 +28,7 @@ test_with_fresh_db(con_admin, "writer may not create sets", hard_reset = TRUE, {
                       "a set for testing",
                       meta(field = "value"),
                       schema = "tsdb_test"),
-    "Only admins")
+    "sufficient privileges")
 })
 
 test_with_fresh_db(con_admin, "writer may not create sets", hard_reset = TRUE, {
@@ -38,7 +38,7 @@ test_with_fresh_db(con_admin, "writer may not create sets", hard_reset = TRUE, {
                       "a set for testing",
                       meta(field = "value"),
                       schema = "tsdb_test"),
-    "Only admins")
+    "sufficient privileges")
 })
 
 test_with_fresh_db(con_admin, "creating dataset", hard_reset = TRUE, {
@@ -152,7 +152,7 @@ test_with_fresh_db(con_admin, "db_get_dataset_id with missing key", {
 test_with_fresh_db(con_admin, "reader may not assign dataset", {
   expect_error(
     db_assign_dataset(con_reader, c("ts3", "ts4"), "set1", schema = "tsdb_test"),
-    "write permissions to assign")
+    "sufficient privileges")
 })
 
 test_with_fresh_db(con_admin, "db_assign_dataset returns status object", {
@@ -193,7 +193,7 @@ test_with_fresh_db(con_admin, "db_assign_dataset errors if set does not exist", 
 # test db_get_list_datasets --------------------------------------------------
 test_with_fresh_db(con_admin, "db_list_datasets returns data frame with correct names", {
   out <- db_list_datasets(con_reader, schema = "tsdb_test")
-  
+
   expected <- data.frame(
     set_id = c("default",
       "set1",
@@ -205,6 +205,6 @@ test_with_fresh_db(con_admin, "db_list_datasets returns data frame with correct 
     ),
     stringsAsFactors = FALSE
   )
-  
+
   expect_equal(out, expected)
 })

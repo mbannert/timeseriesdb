@@ -92,7 +92,15 @@ db_call_function <- function(con,
                           paste(sprintf("$%d", 1:length(args)), collapse = ", "),
                           ""))
 
-  res <- dbGetQuery(con, query, args)
+  res <- tryCatch(
+    dbGetQuery(con, query, args),
+    error = function(e) {
+      if(grepl("permission denied for function", e)) {
+        stop("You do not have sufficient privileges to perform this action.")
+      } else {
+        stop(e)
+      }
+    })
 
   if(fname %in% names(res)) {
     res[[fname]] # query returns value (e.g. JSON) -> unwrap the value
