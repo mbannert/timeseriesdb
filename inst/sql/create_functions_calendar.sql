@@ -176,7 +176,11 @@ $$ LANGUAGE PLPGSQL
 SECURITY DEFINER
 SET search_path = timeseries, pg_temp;
 
-
+-- Get the latest release date for a given set of datasets
+--
+-- tmp_get_release has column (set_id TEXT)
+--
+-- returns: a table with (set_id TEXT, release_id TEXT, release_date TIMESTAMPTZ)
 CREATE FUNCTION timeseries.get_latest_release_for_sets()
 RETURNS TABLE(set_id TEXT,
               release_id TEXT,
