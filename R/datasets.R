@@ -81,20 +81,17 @@ db_get_dataset_keys <- function(con,
 db_get_dataset_id <- function(con,
                                ts_keys,
                                schema = "timeseries") {
-  dbWriteTable(con,
-               "tmp_get_set",
-               data.frame(ts_key = ts_keys),
-               temporary = TRUE,
-               overwrite = TRUE,
-               field.types = c(
-                 ts_key = "text"
-               ))
 
-  db_grant_to_admin(con, "tmp_get_set", schema)
-
-  db_call_function(con,
-                   "get_set_of_keys",
-                   schema = schema)
+  db_with_temp_table(con,
+                     "tmp_get_set",
+                     data.frame(ts_key = ts_keys),
+                     field.types = c(
+                       ts_key = "text"
+                     ),
+                     db_call_function(con,
+                                      "get_set_of_keys",
+                                      schema = schema),
+                     schema = schema)
 }
 
 #' Assign Time Series Identifiers to a Dataset
@@ -118,34 +115,29 @@ db_assign_dataset <- function(con,
                               set_name,
                               schema = "timeseries") {
 
-  dbWriteTable(con,
-               "tmp_set_assign",
-               data.frame(ts_key = ts_keys),
-               temporary = TRUE,
-               overwrite = TRUE,
-               field.types = c(
-                 ts_key = "text"
-               ))
-
-  db_grant_to_admin(con, "tmp_set_assign", schema)
-
   # Error case: Set does not exist
   # Warning case: Only some keys found in catalog
   # Success case: you know what that means...
-  out <- tryCatch(
-    db_call_function(con,
-       "assign_dataset",
-       list(
-         set_name
-       ),
-       schema),
-    error = function(e) {
-      if(grepl("permission denied for function assign_dataset", e)) {
-        stop("You need write permissions to assign time series to datasets.")
-      } else {
-        stop(e)
-      }
-    })
+
+  out <- db_with_temp_table(con,
+                           "tmp_set_assign",
+                           data.frame(ts_key = ts_keys),
+                           field.types = c(ts_key = "text"),
+                           tryCatch(
+                             db_call_function(con,
+                                              "assign_dataset",
+                                              list(
+                                                set_name
+                                              ),
+                                              schema),
+                             error = function(e) {
+                               if(grepl("permission denied for function assign_dataset", e)) {
+                                 stop("You need write permissions to assign time series to datasets.")
+                               } else {
+                                 stop(e)
+                               }
+                             }),
+                           schema = schema)
 
   out_parsed <- jsonlite::fromJSON(out)
 
@@ -168,7 +160,7 @@ db_assign_dataset <- function(con,
 #' @export
 db_list_datasets <- function(con,
                                  schema = "timeseries") {
-  
+
   db_call_function(con,
                    "list_datasets",
                    schema = schema)

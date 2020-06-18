@@ -49,13 +49,11 @@ test_that("is passes correct args to db_call_function unlocalized", {
   fake_db_call_function = mock()
 
   with_mock(
-    db_tmp_read = mock(),
+    db_with_temp_table = function(con, name, content, field.types, code, schema){eval(code)},
     toJSON = mock("json"),
     fromJSON = mock(list(status = "ok")),
-    dbWriteTable = mock(),
     dbExecute = mock(),
     db_call_function = fake_db_call_function,
-    db_grant_to_admin = mock(),
     {
       db_store_ts_metadata("con",
                            as.tsmeta.list(
@@ -334,13 +332,11 @@ test_that("is passes correct args to db_call_function localized", {
   fake_db_call_function = mock()
 
   with_mock(
-    db_tmp_read = mock(),
+    db_with_temp_table = function(con, name, content, field.types, code, schema){eval(code)},
     toJSON = mock("json"),
     fromJSON = mock(list(status = "ok")),
-    dbWriteTable = mock(),
     dbExecute = mock(),
     db_call_function = fake_db_call_function,
-    db_grant_to_admin = mock(),
     {
       db_store_ts_metadata("con",
                            as.tsmeta.list(

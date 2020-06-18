@@ -149,3 +149,4 @@ test_that("reading via regex works", {
                                schema = "tsdb_test")
   expect_setequal(names(tsl_read), c("ts1", "tsp"))
 })
+
