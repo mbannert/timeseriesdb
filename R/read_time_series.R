@@ -13,11 +13,8 @@
 #'
 #' @return list of time series. List elements vary depending on nature of time series, i.e., regular vs. irregular time series.
 #' @import data.table
-#' @importFrom DBI dbHasCompleted dbQuoteIdentifier Id
-#' @importFrom RPostgres dbSendQuery dbFetch dbClearResult dbQuoteLiteral
+#' @importFrom RPostgres dbSendQuery dbClearResult dbQuoteLiteral dbQuoteIdentifier Id
 #' @export
-#'
-#' @examples
 read_time_series <- function(con,
                              ts_keys,
                              valid_on = NA,
@@ -36,13 +33,7 @@ read_time_series <- function(con,
                                                      dbQuoteIdentifier(con, Id(schema = schema)),
                                                      dbQuoteLiteral(con, valid_on),
                                                      dbQuoteLiteral(con, respect_release_date)))
-                            tsl <- list()
-
-                            while(!dbHasCompleted(res)) {
-                              chunk <- data.table(dbFetch(res, n = chunksize))
-
-                              tsl[chunk[, ts_key]] <- chunk[, .(ts_obj = list(json_to_ts(ts_data))), by = ts_key]$ts_obj
-                            }
+                            tsl <- get_tsl_from_res(res, chunksize)
                             dbClearResult(res)
                             tsl
                           },
@@ -50,6 +41,19 @@ read_time_series <- function(con,
 
 
   class(tsl) <- c("tslist", "list")
+
+  tsl
+}
+
+#' @importFrom RPostgres dbHasCompleted dbFetch
+#' @import data.table
+get_tsl_from_res <- function(res, chunksize = 10000) {
+  tsl <- list()
+  while(!dbHasCompleted(res)) {
+    chunk <- data.table(dbFetch(res, n = chunksize))
+
+    tsl[chunk[, ts_key]] <- chunk[, .(ts_obj = list(json_to_ts(ts_data))), by = ts_key]$ts_obj
+  }
 
   tsl
 }
