@@ -173,7 +173,7 @@ db_list_datasets <- function(con,
 db_dataset_delete <- function(con,
                               set_name,
                               schema = "timeseries") {
-  confirmation <- readline("This will permanently delete ALL time series associated with that set!
+  confirmation <- readline("This will permanently delete ALL time series associated with that set, including their histories!
                            Please type the name of the set you wish to delete to confirm:\n")
 
   db_dataset_delete_(con, set_name, confirmation, schema)
