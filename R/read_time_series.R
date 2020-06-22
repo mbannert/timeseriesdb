@@ -45,6 +45,35 @@ read_time_series <- function(con,
   tsl
 }
 
+
+#' Title
+#'
+#' @param con
+#' @param dataset
+#' @param valid_on
+#' @param respect_release_date
+#' @param schema
+#' @param chunksize
+#'
+#' @export
+db_read_time_series_dataset <- function(con,
+                                        dataset,
+                                        valid_on = NA,
+                                        respect_release_date = FALSE,
+                                        schema = "timeseries",
+                                        chunksize = 10000) {
+  res <- dbSendQuery(con, sprintf("SELECT * FROM %sread_ts_dataset_raw(%s, %s, %s)",
+                                  dbQuoteIdentifier(con, Id(schema = schema)),
+                                  dbQuoteLiteral(con, dataset),
+                                  dbQuoteLiteral(con, valid_on),
+                                  dbQuoteLiteral(con, respect_release_date)))
+
+  tsl <- get_tsl_from_res(res, chunksize)
+  dbClearResult(res)
+  class(tsl) <- c("tslist", "list")
+  tsl
+}
+
 #' @importFrom RPostgres dbHasCompleted dbFetch
 #' @import data.table
 get_tsl_from_res <- function(res, chunksize = 10000) {
