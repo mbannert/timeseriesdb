@@ -17,6 +17,7 @@ REVOKE EXECUTE ON FUNCTION timeseries.md_local_upsert FROM public;
 REVOKE EXECUTE ON FUNCTION timeseries.build_meta_status FROM public;
 REVOKE EXECUTE ON FUNCTION timeseries.insert_from_tmp FROM public;
 REVOKE EXECUTE ON FUNCTION timeseries.list_datasets FROM public;
+REVOKE EXECUTE ON FUNCTION timeseries.dataset_delete FROM public;
 
 GRANT EXECUTE ON FUNCTION timeseries.insert_collect_from_tmp TO timeseries_reader;
 GRANT EXECUTE ON FUNCTION timeseries.collection_remove TO timeseries_reader;

@@ -150,3 +150,28 @@ $$ LANGUAGE PLPGSQL
 SECURITY DEFINER
 SET search_path = timeseries, pg_temp;
 
+
+CREATE FUNCTION timeseries.dataset_delete(p_dataset_name TEXT,
+                                          p_confirm_dataset_name TEXT)
+RETURNS JSON
+AS $$
+BEGIN
+  IF NOT EXISTS (
+    SELECT 1 FROM timeseries.datasets
+    WHERE set_id = p_dataset_name
+  ) THEN
+    RETURN json_build_object('status', 'warning', 'reason', 'Dataset ' || p_dataset_name || ' does not exist.');
+  ELSIF (p_dataset_name != p_confirm_dataset_name) THEN
+    RETURN json_build_object('status', 'error', 'reason', 'Dataset name and confirmation do not match.');
+  END IF;
+
+  DELETE
+  FROM timeseries.datasets
+  WHERE set_id = p_dataset_name
+  AND p_dataset_name = p_confirm_dataset_name;
+
+  RETURN json_build_object('status', 'ok');
+END;
+$$ LANGUAGE PLPGSQL
+SECURITY DEFINER
+SET search_path = timeseries, pg_temp;
