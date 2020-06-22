@@ -34,33 +34,21 @@ if(is_test_db_reachable()) {
 }
 
 test_with_fresh_db(con_admin, "public reader may not read main series", {
-  skip_on_cran()
-  skip_if_not(is_test_db_reachable())
-
   tsl_read <- read_time_series(con_reader_public, "rts1", schema = "tsdb_test")
   expect_length(tsl_read, 0)
 })
 
 test_with_fresh_db(con_admin, "series with no access get skipped", {
-  skip_on_cran()
-  skip_if_not(is_test_db_reachable())
-
   tsl_read <- read_time_series(con_reader_public, c("rts1", "rtsp"), schema = "tsdb_test")
   expect_equal(tsl_read, tsl_pblc)
 })
 
 test_with_fresh_db(con_admin, "by default it reads the most recent valid vintage", {
-  skip_on_cran()
-  skip_if_not(is_test_db_reachable())
-
   tsl_read <- read_time_series(con_reader_main, "rts1", schema = "tsdb_test")
   expect_equal(tsl_read, tsl_state_2)
 })
 
 test_with_fresh_db(con_admin, "by default it reads the most recent valid vintage but with respecting rls date", {
-  skip_on_cran()
-  skip_if_not(is_test_db_reachable())
-
   tsl_read <- read_time_series(con_reader_main,
                                "rts1",
                                respect_release_date = TRUE,
@@ -69,9 +57,6 @@ test_with_fresh_db(con_admin, "by default it reads the most recent valid vintage
 })
 
 test_with_fresh_db(con_admin, "reading desired vintages works", {
-  skip_on_cran()
-  skip_if_not(is_test_db_reachable())
-
   tsl_read_1 <- read_time_series(con_reader_main,
                                  "rts1",
                                  valid_on = Sys.Date() - 4,
@@ -86,9 +71,6 @@ test_with_fresh_db(con_admin, "reading desired vintages works", {
 })
 
 test_with_fresh_db(con_admin, "reading vintages, respecting release date", {
-  skip_on_cran()
-  skip_if_not(is_test_db_reachable())
-
   tsl_read <- read_time_series(con_reader_main,
                                "rts1",
                                valid_on = Sys.Date() - 2,
@@ -98,13 +80,9 @@ test_with_fresh_db(con_admin, "reading vintages, respecting release date", {
 })
 
 test_with_fresh_db(con_admin, "reading via regex works", {
-  skip_on_cran()
-  skip_if_not(is_test_db_reachable())
-
   tsl_read <- read_time_series(con_reader_main,
                                "^rts",
                                regex = TRUE,
                                schema = "tsdb_test")
   expect_setequal(names(tsl_read), c("rts1", "rtsp"))
 })
-
