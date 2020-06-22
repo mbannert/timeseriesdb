@@ -86,3 +86,45 @@ test_with_fresh_db(con_admin, "reading via regex works", {
                                schema = "tsdb_test")
   expect_setequal(names(tsl_read), c("rts1", "rtsp"))
 })
+
+
+
+# reading datasets --------------------------------------------------------
+
+test_with_fresh_db(con_admin, "reading a whole dataset works", {
+  tsl_read <- db_read_time_series_dataset(con_reader_main,
+                                          "set_read",
+                                          schema = "tsdb_test")
+
+  exp <- structure(c(tsl_state_2, tsl_pblc), class = c("tslist", "list"))
+
+  expect_equal(tsl_read, exp)
+})
+
+test_with_fresh_db(con_admin, "reading whole dataset, reapecting release date",  {
+  tsl_read <- db_read_time_series_dataset(con_reader_main,
+                                          "set_read",
+                                          respect_release_date = TRUE,
+                                          schema = "tsdb_test")
+
+  exp <- structure(c(tsl_state_1, tsl_pblc), class = c("tslist", "list"))
+
+  expect_equal(tsl_read, exp)
+})
+
+test_with_fresh_db(con_admin, "reading whole dataset, leaving out prohibited series", {
+  tsl_read <- db_read_time_series_dataset(con_reader_public,
+                                          "set_read",
+                                          schema = "tsdb_test")
+
+  expect_equal(tsl_read, tsl_pblc)
+})
+
+test_with_fresh_db(con_admin, "reading older vintages of dataset", {
+  tsl_read <- db_read_time_series_dataset(con_reader_main,
+                                          "set_read",
+                                          valid_on = Sys.Date() - 4,
+                                          schema = "tsdb_test")
+
+  expect_equal(tsl_read, tsl_state_0)
+})
