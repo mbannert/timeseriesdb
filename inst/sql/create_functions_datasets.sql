@@ -151,6 +151,11 @@ SECURITY DEFINER
 SET search_path = timeseries, pg_temp;
 
 
+
+-- Read all (accessible) series in a dataset
+--
+-- This function wraps read_ts_raw, filling the tmp_ts_read_keys table with
+-- keys in the desired dataset.
 CREATE FUNCTION timeseries.read_ts_dataset_raw(p_set_id TEXT,
                                                 p_valid_on DATE DEFAULT CURRENT_DATE,
                                                 p_respect_release_date BOOLEAN DEFAULT FALSE)
