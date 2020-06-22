@@ -46,13 +46,15 @@ read_time_series <- function(con,
 }
 
 
-#' Title
+#' Read all Time Series in a Dataset
 #'
-#' @param con
-#' @param dataset
-#' @param valid_on
-#' @param respect_release_date
-#' @param schema
+#' @param con RPostgres connection object.
+#' @param dataset character Name of the dataset to read
+#' @param valid_on character representing a date of the form YYYY-MM-DD.
+#' @param respect_release_date boolean Should the release embargo of a time series be respected? Defaults to FALSE.
+#'                             This option makes sense when the function is used in an API in that sense that users
+#'                             do not have direct access to this function and therefore cannot simply switch barameters.
+#' @param schema character name of the schema
 #' @param chunksize
 #'
 #' @export
@@ -74,14 +76,23 @@ db_read_time_series_dataset <- function(con,
   tsl
 }
 
-#' Title
+#' Read all Time Series in a User Collection
 #'
-#' @param con
-#' @param dataset
-#' @param valid_on
-#' @param respect_release_date
-#' @param schema
+#'
+#' @param con RPostgres connection object.
+#' @param collection_name character Name of the collection to read
+#' @param collection_owner character Owner of the collection to read
+#' @param valid_on character representing a date of the form YYYY-MM-DD.
+#' @param respect_release_date boolean Should the release embargo of a time series be respected? Defaults to FALSE.
+#'                             This option makes sense when the function is used in an API in that sense that users
+#'                             do not have direct access to this function and therefore cannot simply switch barameters.
+#' @param schema character name of the schema
 #' @param chunksize
+#'
+#' @details
+#' Collections are identified by their name and owner. Several collections
+#' with the same name but different owners may exist, therefore both need to be supplied
+#' in order to uniquely identify a collection.
 #'
 #' @export
 db_read_time_series_collection <- function(con,
