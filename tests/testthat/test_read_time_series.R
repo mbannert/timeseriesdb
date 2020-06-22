@@ -128,3 +128,12 @@ test_with_fresh_db(con_admin, "reading older vintages of dataset", {
 
   expect_equal(tsl_read, tsl_state_0)
 })
+
+test_with_fresh_db(con_admin, "reading nonexistend set", {
+  tsl_read <- db_read_time_series_dataset(con_reader_main,
+                                          "notaset",
+                                          schema = "tsdb_test")
+
+  expect_is(tsl_read, "tslist")
+  expect_length(tsl_read, 0)
+})
