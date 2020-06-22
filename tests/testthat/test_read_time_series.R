@@ -90,6 +90,7 @@ test_with_fresh_db(con_admin, "reading via regex works", {
 
 
 # reading datasets --------------------------------------------------------
+context("reading datasets")
 
 test_with_fresh_db(con_admin, "reading a whole dataset works", {
   tsl_read <- db_read_time_series_dataset(con_reader_main,
@@ -132,6 +133,62 @@ test_with_fresh_db(con_admin, "reading older vintages of dataset", {
 test_with_fresh_db(con_admin, "reading nonexistend set", {
   tsl_read <- db_read_time_series_dataset(con_reader_main,
                                           "notaset",
+                                          schema = "tsdb_test")
+
+  expect_is(tsl_read, "tslist")
+  expect_length(tsl_read, 0)
+})
+
+
+# reading collections --------------------------------------------------------
+context("reading collections")
+
+test_with_fresh_db(con_admin, "reading a collection works", {
+  tsl_read <- db_read_time_series_collection(con_reader_main,
+                                             "readtest",
+                                             "test",
+                                             schema = "tsdb_test")
+
+  exp <- structure(c(tsl_state_2, tsl_pblc), class = c("tslist", "list"))
+
+  expect_equal(tsl_read, exp)
+})
+
+test_with_fresh_db(con_admin, "reading collection, respecting release date",  {
+  tsl_read <- db_read_time_series_collection(con_reader_main,
+                                          "readtest",
+                                          "test",
+                                          respect_release_date = TRUE,
+                                          schema = "tsdb_test")
+
+  exp <- structure(c(tsl_state_1, tsl_pblc), class = c("tslist", "list"))
+
+  expect_equal(tsl_read, exp)
+})
+
+test_with_fresh_db(con_admin, "reading collection, leaving out prohibited series", {
+  tsl_read <- db_read_time_series_collection(con_reader_public,
+                                          "readtest",
+                                          "test",
+                                          schema = "tsdb_test")
+
+  expect_equal(tsl_read, tsl_pblc)
+})
+
+test_with_fresh_db(con_admin, "reading older vintages of collection", {
+  tsl_read <- db_read_time_series_collection(con_reader_main,
+                                          "readtest",
+                                          "test",
+                                          valid_on = Sys.Date() - 4,
+                                          schema = "tsdb_test")
+
+  expect_equal(tsl_read, tsl_state_0)
+})
+
+test_with_fresh_db(con_admin, "reading nonexistend collection", {
+  tsl_read <- db_read_time_series_collection(con_reader_main,
+                                          "readtest",
+                                          "mineallmine",
                                           schema = "tsdb_test")
 
   expect_is(tsl_read, "tslist")

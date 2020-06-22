@@ -313,22 +313,26 @@ prepare_db <- function(con,
     id = c(
       "bc4ad148-516a-11ea-8d77-2e728ce88125",
       "bc4ad40e-516a-11ea-8d77-2e728ce88125",
-      "bc4ad558-516a-11ea-8d77-2e728ce88125"
+      "bc4ad558-516a-11ea-8d77-2e728ce88125",
+      "09bb7ef8-127a-4fcd-8122-399debb9ed60"
     ),
     name = c(
       "tests first",
       "tests second",
-      "some random one"
+      "some random one",
+      "readtest"
     ),
     owner = c(
       "test",
       "test",
-      "johnny_public"
+      "johnny_public",
+      "test"
     ),
     description = c(
       "the first collection ever",
       NA,
-      "yo check out these awesome public time series!"
+      "yo check out these awesome public time series!",
+      "time series for testing readers"
     )
   )
 
@@ -343,7 +347,10 @@ prepare_db <- function(con,
 
       "bc4ad558-516a-11ea-8d77-2e728ce88125",
       "bc4ad558-516a-11ea-8d77-2e728ce88125",
-      "bc4ad558-516a-11ea-8d77-2e728ce88125"
+      "bc4ad558-516a-11ea-8d77-2e728ce88125",
+
+      "09bb7ef8-127a-4fcd-8122-399debb9ed60",
+      "09bb7ef8-127a-4fcd-8122-399debb9ed60"
     ),
     ts_key = c(
       "ts1",
@@ -355,7 +362,10 @@ prepare_db <- function(con,
 
       "ts1",
       "ts4",
-      "vts1"
+      "vts1",
+
+      "rts1",
+      "rtsp"
     )
   )
 
