@@ -1,0 +1,41 @@
+#' Title
+#'
+#' @param con
+#' @param ts_keys
+#' @param schema
+#'
+#' @export
+#'
+#' @importFrom jsonlite fromJSON
+db_delete_time_series <- function(con,
+                                  ts_keys,
+                                  schema = "timeseries") {
+  message("This operation will PERMANENTLY delete the specified time series, including their histories and metadata. If this is what you intend to do, please type yes below.")
+
+  ans <- readline("answer: ")
+
+  if(ans != "yes") {
+    stop(sprintf("You typed %s, aborting.", ans))
+  }
+
+  out <- db_with_temp_table(con,
+                            "tmp_ts_delete_keys",
+                            data.frame(
+                              ts_key = ts_keys
+                            ),
+                            field.types = c(ts_key = "text"),
+                            {
+                              tryCatch(
+                                db_call_function(con, "delete_ts", schema = schema),
+                                error = function(e) {
+                                  if(grepl("permission denied for function delete_ts", e)) {
+                                    stop("Only timeseries admins may delete time series.")
+                                  } else {
+                                    stop(e)
+                                  }
+                                }
+                              )
+                            },
+                            schema = schema)
+  fromJSON(out)
+}

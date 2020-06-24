@@ -179,6 +179,8 @@ db_dataset_delete <- function(con,
   db_dataset_delete_(con, set_name, confirmation, schema)
 }
 
+# TODO: with_mock solves the need for this extra layer.
+
 # This is the unexported counterpart of db_dataset_delete
 # The idea is to have it in this form for testing, though the benefit
 # may be marginal.
