@@ -66,3 +66,42 @@ test_with_fresh_db(con_admin, "deleting ts cleans house", {
 test_with_fresh_db(con_admin, "deleting all ts in a set removes said set", {
   skip("need to figure out if we actually want this behavior")
 })
+
+
+# deleting the edge -------------------------------------------------------
+
+
+context("deleting ts - edge")
+
+test_with_fresh_db(con_admin, "writer may not delete edge", {
+  expect_error(
+    db_delete_latest_vintage(con_writer, c("vts1", "vts2"), schema = "tsdb_test"),
+    "Only timeseries admins"
+  )
+})
+
+test_with_fresh_db(con_admin, "db_delete_latest_vintage returns a status", {
+  out <- db_delete_latest_vintage(con_admin, "vts1", schema = "tsdb_test")
+
+  expect_equal(out, list(status = "ok"))
+})
+
+test_with_fresh_db(con_admin, "db_delete_latest_vinage", {
+  db_delete_latest_vintage(con_admin, c("vts1", "vts2"), schema = "tsdb_test")
+
+  main <- dbGetQuery(con_admin, "SELECT * FROM tsdb_test.timeseries_main")
+
+  ids_deleted <- c(
+    "f6aa6c70-41ae-11ea-b77f-2e728ce88125",
+    "f6aa6ee6-41ae-11ea-b77f-2e728ce88125"
+  )
+
+  expect_false(any(ids_deleted %in% main$id))
+
+  ids_kept <- c(
+    "f6aa69c8-41ae-11ea-b77f-2e728ce88125",
+    "f6aa6dba-41ae-11ea-b77f-2e728ce88125"
+  )
+
+  expect_true(all(ids_kept %in% main$id))
+})

@@ -175,3 +175,25 @@ END;
 $$ LANGUAGE PLPGSQL
 SECURITY DEFINER
 SET search_path = timeseries, pg_temp;
+
+CREATE FUNCTION timeseries.delete_ts_edge()
+RETURNS JSON
+AS $$
+BEGIN
+  WITH ids_to_delete AS (
+    SELECT DISTINCT ON (ts_key) id
+    FROM tsdb_test.timeseries_main mn
+    JOIN tmp_ts_delete_keys del
+    USING(ts_key)
+    ORDER BY ts_key, validity DESC
+  )
+  DELETE
+  FROM timeseries.timeseries_main mn
+  USING ids_to_delete ids
+  WHERE mn.id = ids.id;
+
+  RETURN json_build_object('status', 'ok');
+END;
+$$ LANGUAGE PLPGSQL
+SECURITY DEFINER
+SET search_path = timeseries, pg_temp;

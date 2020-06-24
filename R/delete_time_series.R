@@ -39,3 +39,40 @@ db_delete_time_series <- function(con,
                             schema = schema)
   fromJSON(out)
 }
+
+#' Title
+#'
+#' @param con
+#' @param ts_keys
+#' @param schema
+#'
+#' @export
+#'
+#' @importFrom jsonlite fromJSON
+db_delete_latest_vintage <- function(con,
+                                     ts_keys,
+                                     schema = "timeseries") {
+  # TODO: ask for confirmation?
+
+  out <- db_with_temp_table(con,
+                            "tmp_ts_delete_keys",
+                            data.frame(
+                              ts_key = ts_keys
+                            ),
+                            field.types = c(ts_key = "text"),
+                            {
+                              tryCatch(
+                                db_call_function(con, "delete_ts_edge", schema = schema),
+                                error = function(e) {
+                                  if(grepl("permission denied for function delete_ts_edge", e)) {
+                                    stop("Only timeseries admins may delete vintages.")
+                                  } else {
+                                    stop(e)
+                                  }
+                                }
+                              )
+                            },
+                            schema = schema)
+
+  fromJSON(out)
+}
