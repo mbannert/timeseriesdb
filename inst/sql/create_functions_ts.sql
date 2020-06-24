@@ -197,3 +197,19 @@ END;
 $$ LANGUAGE PLPGSQL
 SECURITY DEFINER
 SET search_path = timeseries, pg_temp;
+
+CREATE FUNCTION timeseries.delete_ts_old_vintages(p_older_than DATE)
+RETURNS JSON
+AS $$
+BEGIN
+  DELETE
+  FROM timeseries.timeseries_main mn
+  USING tmp_ts_delete_keys tmp
+  WHERE mn.ts_key = tmp.ts_key
+  AND mn.validity <= p_older_than;
+
+  RETURN json_build_object('status', 'ok');
+END;
+$$ LANGUAGE PLPGSQL
+SECURITY DEFINER
+SET search_path = timeseries, pg_temp;

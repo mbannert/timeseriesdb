@@ -105,3 +105,41 @@ test_with_fresh_db(con_admin, "db_delete_latest_vinage", {
 
   expect_true(all(ids_kept %in% main$id))
 })
+
+
+
+# deleting old vintages ---------------------------------------------------
+
+context("deleting ts - trimming old vintages")
+
+test_with_fresh_db(con_admin, "writer may not delete old vintages", {
+  expect_error(
+    db_delete_old_vintages(con_writer, "vts1", as.Date("2020-01-10"), "tsdb_test"),
+    "Only timeseries admins"
+  )
+})
+
+test_with_fresh_db(con_admin, "db_delete_old_vintages returns status", {
+  out <- db_delete_old_vintages(con_admin, "vts1", as.Date("2020-01-10"), "tsdb_test")
+
+  expect_equal(out, list(status = "ok"))
+})
+
+test_with_fresh_db(con_admin, "db_delete_old_vintages", {
+  db_delete_old_vintages(con_admin, c("vts1", "vts2"), as.Date("2020-01-10"), "tsdb_test")
+
+  main <- dbGetQuery(con_admin, "SELECT * FROM tsdb_test.timeseries_main")
+
+  ids_deleted <- c(
+    "f6aa69c8-41ae-11ea-b77f-2e728ce88125",
+    "f6aa6dba-41ae-11ea-b77f-2e728ce88125"
+  )
+
+  expect_false(any(ids_deleted %in% main$id))
+
+  ids_kept <- c(
+    "f6aa6c70-41ae-11ea-b77f-2e728ce88125",
+    "f6aa6ee6-41ae-11ea-b77f-2e728ce88125"
+  )
+  expect_true(all(ids_kept %in% main$id))
+})

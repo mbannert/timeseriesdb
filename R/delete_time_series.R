@@ -76,3 +76,39 @@ db_delete_latest_vintage <- function(con,
 
   fromJSON(out)
 }
+
+db_delete_old_vintages <- function(con,
+                                   ts_keys,
+                                   older_than,
+                                   schema = "timeseries") {
+  # TODO: ask for confirmation?
+
+  out <- db_with_temp_table(con,
+                            "tmp_ts_delete_keys",
+                            data.frame(
+                              ts_key = ts_keys
+                            ),
+                            field.types = c(ts_key = "text"),
+                            {
+                              tryCatch(
+                                db_call_function(
+                                  con,
+                                  "delete_ts_old_vintages",
+                                  list(
+                                    older_than
+                                  ),
+                                  schema = schema
+                                ),
+                                error = function(e) {
+                                  if(grepl("permission denied for function delete_ts_old_vintages", e)) {
+                                    stop("Only timeseries admins may delete vintages.")
+                                  } else {
+                                    stop(e)
+                                  }
+                                }
+                              )
+                            },
+                            schema = schema)
+
+  fromJSON(out)
+}
