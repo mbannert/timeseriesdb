@@ -143,3 +143,14 @@ test_with_fresh_db(con_admin, "db_delete_old_vintages", {
   )
   expect_true(all(ids_kept %in% main$id))
 })
+
+test_with_fresh_db(con_admin, "db_delete_old_vintages with character date", {
+  db_delete_old_vintages(con_admin, "vts1", "2020-01-12", "tsdb_test")
+})
+
+test_with_fresh_db(con_admin, "db_delete_old_vintages with garbage date", {
+  expect_error(
+    db_delete_old_vintages(con_admin, "vts1", "bananas", "tsdb_test"),
+    "of the form"
+  )
+})

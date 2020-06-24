@@ -102,6 +102,8 @@ db_delete_old_vintages <- function(con,
                                 error = function(e) {
                                   if(grepl("permission denied for function delete_ts_old_vintages", e)) {
                                     stop("Only timeseries admins may delete vintages.")
+                                  } else if(grepl("input syntax for type date", e)) {
+                                    stop("Invalid date supplied. older_than must be a Date or a string of the form YYYY-MM-DD.")
                                   } else {
                                     stop(e)
                                   }
