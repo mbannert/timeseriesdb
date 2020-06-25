@@ -27,7 +27,7 @@ db_create_dataset <- function(con,
                    set_md,
                    jsonlite::toJSON(set_md, auto_unbox = TRUE, null = "null"))
 
-  # TODO: Catch duplicate key error and thrown more informative one
+  # TODO: use JSON return
   tryCatch(
     db_call_function(con,
                    "create_dataset",
@@ -38,9 +38,7 @@ db_create_dataset <- function(con,
                    ),
                    schema),
     error = function(e) {
-      if(grepl("permission denied for function create_dataset", e)) {
-        stop("Only admins may create new datasets.")
-      } else if(grepl("violates unique constraint \"datasets_pkey\"", e)) {
+      if(grepl("violates unique constraint \"datasets_pkey\"", e)) {
         stop("A dataset by that name already exists.")
       } else {
         stop(e)
@@ -123,20 +121,12 @@ db_assign_dataset <- function(con,
                            "tmp_set_assign",
                            data.frame(ts_key = ts_keys),
                            field.types = c(ts_key = "text"),
-                           tryCatch(
-                             db_call_function(con,
-                                              "assign_dataset",
-                                              list(
-                                                set_name
-                                              ),
-                                              schema),
-                             error = function(e) {
-                               if(grepl("permission denied for function assign_dataset", e)) {
-                                 stop("You need write permissions to assign time series to datasets.")
-                               } else {
-                                 stop(e)
-                               }
-                             }),
+                           db_call_function(con,
+                            "assign_dataset",
+                            list(
+                              set_name
+                            ),
+                            schema),
                            schema = schema)
 
   out_parsed <- jsonlite::fromJSON(out)

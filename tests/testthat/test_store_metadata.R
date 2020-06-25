@@ -84,7 +84,7 @@ test_with_fresh_db(con_admin, "reader may not store metadata", {
                                     valid_from = "2020-06-10",
                                     locale = "de",
                                     schema = "tsdb_test"),
-               "may store metadata")
+               "sufficient privileges")
 })
 
 test_with_fresh_db(con_admin, "db_store_ts_metadata localized returns 'ok'", {
@@ -368,7 +368,7 @@ test_with_fresh_db(con_admin, "reader may not store unlocaloized metadata", {
                                     create_tsmeta(ts1 = list(field = "value")),
                                     valid_from = "2020-06-10",
                                     schema = "tsdb_test"),
-               "may store metadata")
+               "sufficient privileges")
 })
 
 test_with_fresh_db(con_admin, "db_store_ts_metadata unlocalized returns ok", {

@@ -151,6 +151,7 @@ db_store_ts_metadata <- function(con,
       stringsAsFactors = FALSE
     )
 
+
     db_return <- db_with_temp_table(con,
                                     "tmp_md_insert",
                                     md_table,
@@ -158,19 +159,11 @@ db_store_ts_metadata <- function(con,
                                       ts_key = "text",
                                       locale = "text",
                                       metadata = "jsonb"),
-                                    tryCatch(
                                       db_call_function(con,
                                                        "md_local_upsert",
                                                        list(as.Date(valid_from), on_conflict),
                                                        schema = schema),
-                                      error = function(e) {
-                                        if(grepl("permission denied for function md_local_upsert", e)) {
-                                          stop("Only writer and aymin may store metadata.")
-                                        } else {
-                                          stop(e)
-                                        }
-                                      }),
-                                    schema = schema)
+                                     schema = schema)
   } else {
     md_table <- data.frame(
       ts_key = names(metadata),
@@ -178,24 +171,17 @@ db_store_ts_metadata <- function(con,
       stringsAsFactors = FALSE
     )
 
+
     db_return <- db_with_temp_table(con,
                                    "tmp_md_insert",
                                    md_table,
                                    field.types = c(
                                      ts_key = "text",
                                      metadata = "jsonb"),
-                                   tryCatch(
                                      db_call_function(con,
                                                       "md_unlocal_upsert",
                                                       list(as.Date(valid_from), on_conflict),
                                                       schema = schema),
-                                     error = function(e) {
-                                       if(grepl("permission denied for function md_unlocal_upsert", e)) {
-                                         stop("Only writer and aymin may store metadata.")
-                                       } else {
-                                         stop(e)
-                                       }
-                                     }),
                                    schema = schema)
   }
 
