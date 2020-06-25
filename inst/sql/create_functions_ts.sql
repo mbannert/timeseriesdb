@@ -155,6 +155,8 @@ SET search_path = timeseries, pg_temp;
 
 -- Completely Purge a Time Series from the database
 --
+-- tmp_ts_delete_keys (ts_key TEXT)
+--
 -- Removes all vintages, metadata, catalog entries, collection entries and dataset entries
 -- (also the set if it ends up empty).
 -- Use VERY SPARINGLY!
@@ -173,6 +175,9 @@ $$ LANGUAGE PLPGSQL
 SECURITY DEFINER
 SET search_path = timeseries, pg_temp;
 
+-- Delete the latest vintage from given time series
+--
+-- tmp_ts_delete_keys (ts_key TEXT)
 CREATE FUNCTION timeseries.delete_ts_edge()
 RETURNS JSON
 AS $$
@@ -195,6 +200,12 @@ $$ LANGUAGE PLPGSQL
 SECURITY DEFINER
 SET search_path = timeseries, pg_temp;
 
+
+-- Delete vintages older than some date
+--
+-- param p_older_than The cut off point. All vintages older than that date are removed.
+--
+-- tmp_ts_delete_keys (ts_key TEXT)
 CREATE FUNCTION timeseries.delete_ts_old_vintages(p_older_than DATE)
 RETURNS JSON
 AS $$
