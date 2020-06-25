@@ -79,20 +79,17 @@ db_get_dataset_keys <- function(con,
 db_get_dataset_id <- function(con,
                                ts_keys,
                                schema = "timeseries") {
-  dbWriteTable(con,
-               "tmp_get_set",
-               data.frame(ts_key = ts_keys),
-               temporary = TRUE,
-               overwrite = TRUE,
-               field.types = c(
-                 ts_key = "text"
-               ))
 
-  db_grant_to_admin(con, "tmp_get_set", schema)
-
-  db_call_function(con,
-                   "get_set_of_keys",
-                   schema = schema)
+  db_with_temp_table(con,
+                     "tmp_get_set",
+                     data.frame(ts_key = ts_keys),
+                     field.types = c(
+                       ts_key = "text"
+                     ),
+                     db_call_function(con,
+                                      "get_set_of_keys",
+                                      schema = schema),
+                     schema = schema)
 }
 
 #' Assign Time Series Identifiers to a Dataset
@@ -116,26 +113,21 @@ db_assign_dataset <- function(con,
                               set_name,
                               schema = "timeseries") {
 
-  dbWriteTable(con,
-               "tmp_set_assign",
-               data.frame(ts_key = ts_keys),
-               temporary = TRUE,
-               overwrite = TRUE,
-               field.types = c(
-                 ts_key = "text"
-               ))
-
-  db_grant_to_admin(con, "tmp_set_assign", schema)
-
   # Error case: Set does not exist
   # Warning case: Only some keys found in catalog
   # Success case: you know what that means...
-  out <- db_call_function(con,
-                           "assign_dataset",
-                           list(
-                             set_name
-                           ),
-                           schema)
+
+  out <- db_with_temp_table(con,
+                           "tmp_set_assign",
+                           data.frame(ts_key = ts_keys),
+                           field.types = c(ts_key = "text"),
+                           db_call_function(con,
+                            "assign_dataset",
+                            list(
+                              set_name
+                            ),
+                            schema),
+                           schema = schema)
 
   out_parsed <- jsonlite::fromJSON(out)
 
