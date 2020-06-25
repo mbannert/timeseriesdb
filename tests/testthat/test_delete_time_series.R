@@ -141,7 +141,9 @@ test_with_fresh_db(con_admin, "db_trim_history", {
 })
 
 test_with_fresh_db(con_admin, "db_trim_history with character date", {
-  db_trim_history(con_admin, "vts1", "2020-01-12", "tsdb_test")
+  out <- db_trim_history(con_admin, "vts1", "2020-01-12", "tsdb_test")
+
+  expect_equal(out, list(status = "ok"))
 })
 
 test_with_fresh_db(con_admin, "db_trim_history with garbage date", {
