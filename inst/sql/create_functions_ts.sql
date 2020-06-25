@@ -158,9 +158,6 @@ SET search_path = timeseries, pg_temp;
 -- Removes all vintages, metadata, catalog entries, collection entries and dataset entries
 -- (also the set if it ends up empty).
 -- Use VERY SPARINGLY!
---
--- the trigger manage_dataset on catalog cleans up the corresponding dataset(s)
--- should any end up empty after deletion of the keys
 CREATE FUNCTION timeseries.delete_ts()
 RETURNS JSON
 AS $$
