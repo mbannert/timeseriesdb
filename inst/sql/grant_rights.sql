@@ -23,7 +23,6 @@ REVOKE EXECUTE ON FUNCTION timeseries.delete_ts_edge FROM public;
 REVOKE EXECUTE ON FUNCTION timeseries.delete_ts_old_vintages FROM public;
 
 REVOKE EXECUTE ON FUNCTION timeseries.prevent_delete_default_dataset FROM public;
-REVOKE EXECUTE ON FUNCTION timeseries.manage_dataset FROM public
 
 GRANT EXECUTE ON FUNCTION timeseries.insert_collect_from_tmp TO timeseries_reader;
 GRANT EXECUTE ON FUNCTION timeseries.collection_remove TO timeseries_reader;
