@@ -95,10 +95,10 @@ db_delete_latest_vintage <- function(con,
 #'
 #' @export
 #' @importFrom jsonlite fromJSON
-db_delete_old_vintages <- function(con,
-                                   ts_keys,
-                                   older_than,
-                                   schema = "timeseries") {
+db_trim_history <- function(con,
+                            ts_keys,
+                            older_than,
+                            schema = "timeseries") {
   out <- db_with_temp_table(con,
                             "tmp_ts_delete_keys",
                             data.frame(

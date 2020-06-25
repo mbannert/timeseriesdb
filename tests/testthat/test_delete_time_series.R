@@ -110,19 +110,19 @@ context("deleting ts - trimming old vintages")
 
 test_with_fresh_db(con_admin, "writer may not delete old vintages", {
   expect_error(
-    db_delete_old_vintages(con_writer, "vts1", as.Date("2020-01-10"), "tsdb_test"),
+    db_trim_history(con_writer, "vts1", as.Date("2020-01-10"), "tsdb_test"),
     "Only timeseries admins"
   )
 })
 
-test_with_fresh_db(con_admin, "db_delete_old_vintages returns status", {
-  out <- db_delete_old_vintages(con_admin, "vts1", as.Date("2020-01-10"), "tsdb_test")
+test_with_fresh_db(con_admin, "db_trim_history returns status", {
+  out <- db_trim_history(con_admin, "vts1", as.Date("2020-01-10"), "tsdb_test")
 
   expect_equal(out, list(status = "ok"))
 })
 
-test_with_fresh_db(con_admin, "db_delete_old_vintages", {
-  db_delete_old_vintages(con_admin, c("vts1", "vts2"), as.Date("2020-01-10"), "tsdb_test")
+test_with_fresh_db(con_admin, "db_trim_history", {
+  db_trim_history(con_admin, c("vts1", "vts2"), as.Date("2020-01-10"), "tsdb_test")
 
   main <- dbGetQuery(con_admin, "SELECT * FROM tsdb_test.timeseries_main")
 
@@ -140,13 +140,13 @@ test_with_fresh_db(con_admin, "db_delete_old_vintages", {
   expect_true(all(ids_kept %in% main$id))
 })
 
-test_with_fresh_db(con_admin, "db_delete_old_vintages with character date", {
-  db_delete_old_vintages(con_admin, "vts1", "2020-01-12", "tsdb_test")
+test_with_fresh_db(con_admin, "db_trim_history with character date", {
+  db_trim_history(con_admin, "vts1", "2020-01-12", "tsdb_test")
 })
 
-test_with_fresh_db(con_admin, "db_delete_old_vintages with garbage date", {
+test_with_fresh_db(con_admin, "db_trim_history with garbage date", {
   expect_error(
-    db_delete_old_vintages(con_admin, "vts1", "bananas", "tsdb_test"),
+    db_trim_history(con_admin, "vts1", "bananas", "tsdb_test"),
     "of the form"
   )
 })
