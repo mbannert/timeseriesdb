@@ -164,18 +164,10 @@ db_store_ts_metadata <- function(con,
 
     db_grant_to_admin(con, "tmp_md_insert", schema)
 
-    db_return <- tryCatch(
-      db_call_function(con,
+    db_return <- db_call_function(con,
                       "md_local_upsert",
                       list(as.Date(valid_from), on_conflict),
-                            schema = schema),
-      error = function(e) {
-        if(grepl("permission denied for function md_local_upsert", e)) {
-          stop("Only writer and aymin may store metadata.")
-        } else {
-          stop(e)
-        }
-      })
+                            schema = schema)
   } else {
     md_table <- data.frame(
       ts_key = names(metadata),
@@ -194,18 +186,10 @@ db_store_ts_metadata <- function(con,
 
     db_grant_to_admin(con, "tmp_md_insert", schema)
 
-    db_return <- tryCatch(
-      db_call_function(con,
-                       "md_unlocal_upsert",
-                       list(as.Date(valid_from), on_conflict),
-                       schema = schema),
-      error = function(e) {
-        if(grepl("permission denied for function md_unlocal_upsert", e)) {
-          stop("Only writer and aymin may store metadata.")
-        } else {
-          stop(e)
-        }
-      })
+    db_return <- db_call_function(con,
+                                   "md_unlocal_upsert",
+                                   list(as.Date(valid_from), on_conflict),
+                                   schema = schema)
   }
 
   out <- fromJSON(db_return, simplifyDataFrame = FALSE)
