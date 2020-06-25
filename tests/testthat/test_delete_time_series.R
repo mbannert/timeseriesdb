@@ -63,10 +63,6 @@ test_with_fresh_db(con_admin, "deleting ts cleans house", {
   )
 })
 
-test_with_fresh_db(con_admin, "deleting all ts in a set removes said set", {
-  skip("need to figure out if we actually want this behavior")
-})
-
 
 # deleting the edge -------------------------------------------------------
 
