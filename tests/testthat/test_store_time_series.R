@@ -70,6 +70,14 @@ test_that("it handles non-ts-likes", {
     })
 })
 
+test_that("It handles duplicate names", {
+  tsl_local <- tsl
+  names(tsl_local) <- c("tsa", "tsa")
+  expect_error(
+    store_time_series("con", tsl_local, "release", "access"),
+    "duplicate keys"
+  )
+})
 
 # # store time series from data.table  ##########################
 

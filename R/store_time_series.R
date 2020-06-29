@@ -52,6 +52,10 @@ store_time_series.tslist <- function(con,
     return(list())
   }
 
+  if(any(duplicated(names(tsl)))) {
+    stop("Time series list contains duplicate keys.")
+  }
+
   # SANITY CHECK ##############
   keep <- sapply(tsl, function(x) inherits(x,c("ts","zoo","xts")))
   dontkeep <- !keep
