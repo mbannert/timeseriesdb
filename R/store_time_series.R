@@ -24,6 +24,7 @@ store_time_series <- function(con,
 }
 
 #'@export
+# TODO: Add a test for this
 store_time_series.list <- function(con,
                                    tsl,
                                    access = NA,
@@ -50,6 +51,10 @@ store_time_series.tslist <- function(con,
   if(length(tsl) == 0) {
     warning("Ts list is empty. This is a no-op.")
     return(list())
+  }
+
+  if(any(duplicated(names(tsl)))) {
+    stop("Time series list contains duplicate keys.")
   }
 
   # SANITY CHECK ##############
@@ -94,6 +99,10 @@ store_time_series.data.table <- function(con,
 
   if(dt[, mode(value)] != "numeric") {
     stop("\"value\" must be numeric.")
+  }
+
+  if(anyDuplicated(dt, by = c("id", "time")) > 0) {
+    stop("data.table contains duplicated (id, time) pairs. Are there duplicate series?")
   }
 
   store_records(con,
