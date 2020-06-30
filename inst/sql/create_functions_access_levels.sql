@@ -30,26 +30,24 @@ BEGIN
   IF NOT EXISTS (SELECT 1 FROM timeseries.access_levels
     WHERE role = role_name) THEN 
     RETURN json_build_object('status', 'warning',
-                         'message', 'Role cound not be found.');
+                         'message', 'role does not exist.');
                          
   ELSIF EXISTS (SELECT 1 FROM timeseries.timeseries_main
     WHERE access = role_name) THEN 
-    RETURN json_build_object('status', 'warning',
-                         'message', 'Role is still in use in timeseries_main');
+    RETURN json_build_object('status', 'error',
+                         'reason', 'role is still in use in timeseries_main');
   
   ELSE  
     DELETE FROM timeseries.access_levels
     WHERE role = role_name;
     RETURN json_build_object('status', 'ok',
-                         'message', 'Role successfully deleted',
+                         'message', 'role successfully deleted',
                          'role', role_name);
   END IF;
 END;
 $$ LANGUAGE PLPGSQL
 SECURITY DEFINER
 SET search_path = timeseries, pg_temp;
-
-
 
 
 -- Add access_levels
@@ -59,18 +57,29 @@ SET search_path = timeseries, pg_temp;
 -- returns: json {"status": "", "message": "", ["id"]: ""}
 CREATE FUNCTION timeseries.access_levels_insert(role_name TEXT,
                                                 role_description TEXT, 
-                                                role_default )
+                                                role_default NULL)
 RETURNS JSON
 AS $$
-  INSERT INTO timeseries.access_levels(role, description)
-  VALUES(role_name, role_description)
-
-  RETURN json_build_object('status', 'ok',
-                         'message', 'Role successfully inserted',
+BEGIN
+  IF NOT EXISTS (SELECT 1 FROM timeseries.access_levels
+      WHERE role = role_name) THEN 
+    INSERT INTO timeseries.access_levels(role, description)
+      VALUES(role_name, role_description, role_default);
+   
+  ELSIF EXISTS (SELECT 1 FROM timeseries.timeseries_main
+    WHERE access = role_name) THEN 
+    RETURN json_build_object('status', 'error',
+                         'reason', 'role already exists');  
+      
+  END IF;   
+  
+EXCEPTION  
+  WHEN triggered_action_exception THEN 
+    RETURN json_build_object('status', 'error',
+                         'message', 'it can not be an access level',
                          'role', role_name);
 
 END;
 $$ LANGUAGE PLPGSQL
 SECURITY DEFINER
 SET search_path = timeseries, pg_temp;
-
