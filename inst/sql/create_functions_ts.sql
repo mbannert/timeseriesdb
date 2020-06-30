@@ -110,7 +110,42 @@ SECURITY DEFINER
 SET search_path = timeseries, pg_temp;
 
 
+-- Change the access level for given time series
+--
+-- Optionally specify exact vintage to change
+--
+-- tmp_ts_access_keys (ts_key TEXT)
+--
+-- param:  p_level TEXT, the access level to set the series to
+-- param:  p_validity DATE, the exact vintage for which to change the access level
+--
+-- By default all vintages are set to the specified level
+CREATE FUNCTION timeseries.change_access_level(p_level TEXT,
+                                               p_validity DATE DEFAULT NULL)
+RETURNS JSON
+AS $$
+BEGIN
+-- TODO: check for missing keys?
+--       is it time for a helper for that?? table names change tho
+  IF NOT EXISTS (
+    SELECT 1
+    FROM timeseries.access_levels
+    WHERE role = p_level
+  ) THEN
+    RETURN json_build_object('status', 'error', 'message', 'Role ' || p_level || ' is not a valid access level.');
+  END IF;
 
+  UPDATE timeseries.timeseries_main mn
+  SET access = p_level
+  FROM tmp_ts_access_keys tmp
+  WHERE tmp.ts_key = mn.ts_key
+  AND (p_validity IS NULL OR mn.validity = p_validity);
+
+  RETURN json_build_object('status', 'ok');
+END;
+$$ LANGUAGE PLPGSQL
+SECURITY DEFINER
+SET search_path = timeseries, pg_temp;
 
 
 
