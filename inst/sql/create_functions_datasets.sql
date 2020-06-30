@@ -49,9 +49,10 @@ CREATE FUNCTION timeseries.keys_in_dataset(id TEXT)
 RETURNS TABLE(ts_key TEXT)
 AS $$
 BEGIN
-  RETURN QUERY SELECT timeseries.catalog.ts_key
-  FROM timeseries.catalog
-  WHERE id = set_id;
+  RETURN QUERY SELECT cat.ts_key
+  FROM timeseries.catalog cat
+  WHERE id = set_id
+  ORDER BY cat.ts_key;
 END;
 $$ LANGUAGE PLPGSQL
 SECURITY DEFINER
@@ -73,7 +74,8 @@ BEGIN
   RETURN QUERY SELECT tmp.ts_key, cat.set_id
   FROM tmp_get_set AS tmp
   LEFT JOIN timeseries.catalog AS cat
-  USING (ts_key);
+  USING (ts_key)
+  ORDER BY cat.set_id;
 END;
 $$ LANGUAGE PLPGSQL
 SECURITY DEFINER
@@ -143,8 +145,9 @@ CREATE FUNCTION timeseries.list_datasets()
 RETURNS TABLE(set_id TEXT, set_description TEXT)
 AS $$
 BEGIN
-  RETURN QUERY SELECT timeseries.datasets.set_id, timeseries.datasets.set_description
-  FROM timeseries.datasets;
+  RETURN QUERY SELECT ds.set_id, ds.set_description
+  FROM timeseries.datasets ds
+  ORDER BY ds.set_id;
 END;
 $$ LANGUAGE PLPGSQL
 SECURITY DEFINER
