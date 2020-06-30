@@ -13,13 +13,13 @@ index_to_date <- function (x, as.string = FALSE)
   # If called as index_to_date(time(a_ts))
   # x is a ts. Unclass it so we can work with the faster basic operators
   x <- c(x)
-  
+
   years <- floor(x + 1/24)
   months <- floor(12*(x - years + 1/24)) + 1
   # No support for days currently
   # datestr <- paste(years, months, 1, sep = "-")
   datestr <- sprintf("%d-%02d-01", years, months)
-  
+
   if(!as.string) {
     return(as.Date(datestr))
   } else {
@@ -116,19 +116,19 @@ db_create_connection <- function(dbname,
       stop(sprintf("Could not find password in %s!", env_pass_name))
     }
   } else {
-    
-    if(is.null(passwd) & !passwd_from_file & commandArgs()[1] == "RStudio"){
+
+    if(is.null(passwd) && !passwd_from_file && commandArgs()[1] == "RStudio"){
       passwd <- .rs.askForPassword("Please enter your database password: ")
     }
-    
+
     if(passwd_from_file){
       passwd <- readLines(passwd)[line_no]
     }
-    
+
   }
 
   options <- sprintf("--application_name=%s", connection_description)
-  
+
   dbConnect(drv = Postgres(),
             dbname = dbname,
             user = user,
@@ -161,9 +161,9 @@ db_call_function <- function(con,
                    ifelse(length(args) > 0,
                           paste(sprintf("$%d", 1:length(args)), collapse = ", "),
                           ""))
-  
+
   res <- dbGetQuery(con, query, args)
-  
+
   if(fname %in% names(res)) {
     res[[fname]] # query returns value (e.g. JSON) -> unwrap the value
   } else {
