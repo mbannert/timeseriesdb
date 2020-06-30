@@ -102,29 +102,39 @@ get_list_depth <- function(this) {
 #' @importFrom DBI dbConnect
 #' @export
 db_create_connection <- function(dbname,
-                          user = Sys.info()['user'],
+                          user = Sys.info()[['user']],
                           host = "localhost",
                           passwd = NULL,
                           passwd_from_file = FALSE,
                           line_no = 1,
-                          env_pass_name = NULL,
+                          passwd_from_env = FALSE,
                           connection_description = "timeseriesdb",
                           port = 5432){
-  if(!is.null(env_pass_name)){
-    passwd <- Sys.getenv(env_pass_name)
+  if(passwd_from_env){
+    env_name <- passwd
+    passwd <- Sys.getenv(env_name)
     if(passwd == "") {
-      stop(sprintf("Could not find password in %s!", env_pass_name))
+      stop(sprintf("Could not find password in %s!", env_name))
     }
-  } else {
+  } else if(passwd_from_file) {
+    if(!file.exists(passwd)) {
+      stop("Password file does not exist.")
+    }
 
-    if(is.null(passwd) && !passwd_from_file && commandArgs()[1] == "RStudio"){
+    pwdlines <- readLines(passwd)
+    nlines <- length(pwdlines)
+
+    if(nlines < line_no) {
+      stop(sprintf("line_no too great (password file only has %d lines)", nlines))
+    }
+
+    passwd <- pwdlines[nlines]
+  } else if(is.null(passwd)) {
+    if(commandArgs()[1] == "RStudio") {
       passwd <- .rs.askForPassword("Please enter your database password: ")
+    } else {
+      stop("Unable to obtain password. Please use passwd_from_file or pass the password directly via passwd.")
     }
-
-    if(passwd_from_file){
-      passwd <- readLines(passwd)[line_no]
-    }
-
   }
 
   options <- sprintf("--application_name=%s", connection_description)
