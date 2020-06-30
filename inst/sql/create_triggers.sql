@@ -41,3 +41,25 @@ BEFORE INSERT OR UPDATE
 ON timeseries.access_levels
 FOR EACH ROW
 EXECUTE PROCEDURE timeseries.ensure_access_level_is_role();
+
+CREATE FUNCTION timeseries.prevent_delete_default_access_level()
+RETURNS TRIGGER AS
+$$
+BEGIN
+  IF TG_OP = 'DELETE' THEN
+    IF OLD.is_default THEN
+      RAISE EXCEPTION 'Role % is the default role. Please assign a different default before deleting.', OLD.role;
+    END IF;
+  END IF;
+
+  RETURN OLD;
+END;
+$$ LANGUAGE PLPGSQL
+SECURITY DEFINER
+SET search_path = timeseries, pg_temp;
+
+CREATE TRIGGER access_level_no_delete_default
+BEFORE DELETE ON
+timeseries.access_levels
+FOR EACH ROW
+EXECUTE PROCEDURE timeseries.prevent_delete_default_access_level();
