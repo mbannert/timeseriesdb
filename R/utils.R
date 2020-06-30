@@ -70,6 +70,10 @@ get_list_depth <- function(this) {
 }
 
 
+# Mocking functions from base does not work :shrug:
+readPasswordFile <- readLines
+
+
 #' Create Database Connection
 #'
 #' Connects to the PostgreSQL database backend of timeseriesdb. This function
@@ -121,14 +125,14 @@ db_create_connection <- function(dbname,
       stop("Password file does not exist.")
     }
 
-    pwdlines <- readLines(passwd)
+    pwdlines <- readPasswordFile(passwd)
     nlines <- length(pwdlines)
 
     if(nlines < line_no) {
       stop(sprintf("line_no too great (password file only has %d lines)", nlines))
     }
 
-    passwd <- pwdlines[nlines]
+    passwd <- pwdlines[line_no]
   } else if(is.null(passwd)) {
     if(commandArgs()[1] == "RStudio") {
       passwd <- .rs.askForPassword("Please enter your database password: ")
