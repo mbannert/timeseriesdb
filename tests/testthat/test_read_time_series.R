@@ -139,6 +139,12 @@ test_with_fresh_db(con_admin, "reading nonexistend set", {
   expect_length(tsl_read, 0)
 })
 
+test_with_fresh_db(con_admin, "reading multiple sets", {
+  tsl_read <- db_read_time_series_dataset(con_reader_main,
+                                          c("set_read", "default"),
+                                          schema = "tsdb_test")
+  expect_setequal(names(tsl_read), c("rts1", "rtsp", "vts1", "vts2"))
+})
 
 # reading collections --------------------------------------------------------
 context("reading collections")

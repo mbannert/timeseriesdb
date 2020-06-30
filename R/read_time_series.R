@@ -49,7 +49,7 @@ read_time_series <- function(con,
 #' Read all Time Series in a Dataset
 #'
 #' @param con RPostgres connection object.
-#' @param dataset character Name of the dataset to read
+#' @param datasets character Names of the datasets to read
 #' @param valid_on character representing a date of the form YYYY-MM-DD.
 #' @param respect_release_date boolean Should the release embargo of a time series be respected? Defaults to FALSE.
 #'                             This option makes sense when the function is used in an API in that sense that users
@@ -59,21 +59,29 @@ read_time_series <- function(con,
 #'
 #' @export
 db_read_time_series_dataset <- function(con,
-                                        dataset,
+                                        datasets,
                                         valid_on = NA,
                                         respect_release_date = FALSE,
                                         schema = "timeseries",
                                         chunksize = 10000) {
-  res <- dbSendQuery(con, sprintf("SELECT * FROM %sread_ts_dataset_raw(%s, %s, %s)",
-                                  dbQuoteIdentifier(con, Id(schema = schema)),
-                                  dbQuoteLiteral(con, dataset),
-                                  dbQuoteLiteral(con, valid_on),
-                                  dbQuoteLiteral(con, respect_release_date)))
+  db_with_temp_table(con,
+              "tmp_datasets_read",
+              data.frame(
+                set_id = datasets
+              ),
+              field.types = c(set_id = "text"),
+              {
+                res <- dbSendQuery(con, sprintf("SELECT * FROM %sread_ts_dataset_raw(%s, %s)",
+                                                dbQuoteIdentifier(con, Id(schema = schema)),
+                                                dbQuoteLiteral(con, valid_on),
+                                                dbQuoteLiteral(con, respect_release_date)))
 
-  tsl <- get_tsl_from_res(res, chunksize)
-  dbClearResult(res)
-  class(tsl) <- c("tslist", "list")
-  tsl
+                tsl <- get_tsl_from_res(res, chunksize)
+                dbClearResult(res)
+                class(tsl) <- c("tslist", "list")
+                tsl
+              },
+              schema = schema)
 }
 
 #' Read all Time Series in a User Collection

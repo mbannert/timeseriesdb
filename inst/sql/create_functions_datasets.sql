@@ -156,9 +156,10 @@ SET search_path = timeseries, pg_temp;
 --
 -- This function wraps read_ts_raw, filling the tmp_ts_read_keys table with
 -- keys in the desired dataset.
-CREATE FUNCTION timeseries.read_ts_dataset_raw(p_set_id TEXT,
-                                                p_valid_on DATE DEFAULT CURRENT_DATE,
-                                                p_respect_release_date BOOLEAN DEFAULT FALSE)
+--
+-- tmp_datasets_read (set_id TEXT)
+CREATE FUNCTION timeseries.read_ts_dataset_raw(p_valid_on DATE DEFAULT CURRENT_DATE,
+                                               p_respect_release_date BOOLEAN DEFAULT FALSE)
 RETURNS TABLE(ts_key TEXT, ts_data JSON)
 AS $$
 BEGIN
@@ -169,7 +170,8 @@ BEGIN
   AS (
     SELECT cat.ts_key
     FROM timeseries.catalog AS cat
-    WHERE cat.set_id = p_set_id
+    JOIN tmp_datasets_read
+    USING(set_id)
   );
 
   RETURN QUERY
