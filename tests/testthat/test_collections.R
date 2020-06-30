@@ -269,10 +269,10 @@ test_with_fresh_db(con_admin, "db_collection_delete with missing user+collection
                                         schema = "tsdb_test"))
 
   result_collections <- dbGetQuery(con_admin, "SELECT * FROM tsdb_test.collections")
-  expect_equal(nrow(result_collections), 3)
+  expect_equal(nrow(result_collections), 4)
 
   result_collect_catalog <- dbGetQuery(con_admin, "SELECT * FROM tsdb_test.collect_catalog")
-  expect_equal(nrow(result_collect_catalog), 8)
+  expect_equal(nrow(result_collect_catalog), 10)
 })
 
 test_with_fresh_db(con_admin, "reader may delete collections", {

@@ -150,3 +150,33 @@ $$ LANGUAGE PLPGSQL
 SECURITY DEFINER
 SET search_path = timeseries, pg_temp;
 
+
+
+-- Read all (accessible) series in a dataset
+--
+-- This function wraps read_ts_raw, filling the tmp_ts_read_keys table with
+-- keys in the desired dataset.
+--
+-- tmp_datasets_read (set_id TEXT)
+CREATE FUNCTION timeseries.read_ts_dataset_raw(p_valid_on DATE DEFAULT CURRENT_DATE,
+                                               p_respect_release_date BOOLEAN DEFAULT FALSE)
+RETURNS TABLE(ts_key TEXT, ts_data JSON)
+AS $$
+BEGIN
+  -- TODO: check for existence of set here? If so: need to RAISE an error as returning
+  --       JSON is not an option
+  CREATE TEMPORARY TABLE tmp_ts_read_keys
+  ON COMMIT DROP
+  AS (
+    SELECT cat.ts_key
+    FROM timeseries.catalog AS cat
+    JOIN tmp_datasets_read
+    USING(set_id)
+  );
+
+  RETURN QUERY
+  SELECT * FROM timeseries.read_ts_raw(p_valid_on, p_respect_release_date);
+END;
+$$ LANGUAGE PLPGSQL
+SECURITY DEFINER
+SET search_path = timeseries, pg_temp;
