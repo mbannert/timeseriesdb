@@ -289,7 +289,8 @@ test_with_fresh_db(con_admin, "db_store_ts_metadata localized creates vintages",
 
   result <-  dbGetQuery(con_admin, "SELECT ts_key, validity, locale, metadata
                         FROM tsdb_test.metadata_localized
-                        WHERE ts_key = 'ts1'")
+                        WHERE ts_key = 'ts1'
+                        ORDER BY tsdb_test.metadata_localized.validity")
   expect_equal(
     result,
     meta_fixture_df(c("ts1", "ts1"),
@@ -558,7 +559,8 @@ test_with_fresh_db(con_admin, "db_store_ts_metadata creates vintages", {
 
   result <-  dbGetQuery(con_admin, "SELECT ts_key, validity, metadata
                         FROM tsdb_test.metadata
-                        WHERE ts_key = 'ts1'")
+                        WHERE ts_key = 'ts1'
+                        ORDER BY tsdb_test.metadata.validity")
   expect_equal(
     result,
     meta_fixture_df(c("ts1", "ts1"),

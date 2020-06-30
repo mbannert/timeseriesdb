@@ -35,8 +35,8 @@ names_to_test <- setdiff(main_names, c("id", "created_by", "created_at"))
 #                   release_date = "2019-01-02",
 #                   schema = "tsdb_test")
 #
-# catalog_after_insert_1 <- dbGetQuery(con_admin, "SELECT * FROM tsdb_test.catalog")
-# main_after_insert_1 <- dbGetQuery(con_admin, "SELECT * FROM tsdb_test.timeseries_main")
+# catalog_after_insert_1 <- dbGetQuery(con_admin, "SELECT * FROM tsdb_test.catalog ORDER BY ts_key")
+# main_after_insert_1 <- dbGetQuery(con_admin, "SELECT * FROM tsdb_test.timeseries_main ORDER BY ts_key, validity")
 #
 # store_time_series(con_writer,
 #                   tsl,
@@ -45,8 +45,8 @@ names_to_test <- setdiff(main_names, c("id", "created_by", "created_at"))
 #                   release_date = "2019-02-02",
 #                   schema = "tsdb_test")
 #
-# catalog_after_insert_2 <- dbGetQuery(con_admin, "SELECT * FROM tsdb_test.catalog")
-# main_after_insert_2 <- dbGetQuery(con_admin, "SELECT * FROM tsdb_test.timeseries_main")
+# catalog_after_insert_2 <- dbGetQuery(con_admin, "SELECT * FROM tsdb_test.catalog ORDER BY ts_key")
+# main_after_insert_2 <- dbGetQuery(con_admin, "SELECT * FROM tsdb_test.timeseries_main ORDER BY ts_key, validity")
 #
 # store_time_series(con_writer,
 #                   tsl,
@@ -55,8 +55,8 @@ names_to_test <- setdiff(main_names, c("id", "created_by", "created_at"))
 #                   release_date = "2019-03-02",
 #                   schema = "tsdb_test")
 #
-# catalog_after_insert_3 <- dbGetQuery(con_admin, "SELECT * FROM tsdb_test.catalog")
-# main_after_insert_3 <- dbGetQuery(con_admin, "SELECT * FROM tsdb_test.timeseries_main")
+# catalog_after_insert_3 <- dbGetQuery(con_admin, "SELECT * FROM tsdb_test.catalog ORDER BY ts_key")
+# main_after_insert_3 <- dbGetQuery(con_admin, "SELECT * FROM tsdb_test.timeseries_main ORDER BY ts_key, validity")
 #
 # store_time_series(con_writer,
 #                   tsl_update,
@@ -65,7 +65,7 @@ names_to_test <- setdiff(main_names, c("id", "created_by", "created_at"))
 #                   release_date = "2019-03-02",
 #                   schema = "tsdb_test")
 #
-# main_after_update <- dbGetQuery(con_admin, "SELECT * FROM tsdb_test.timeseries_main")
+# main_after_update <- dbGetQuery(con_admin, "SELECT * FROM tsdb_test.timeseries_main ORDER BY ts_key, validity")
 #
 # save(
 #   catalog_after_insert_1,
@@ -110,14 +110,14 @@ test_with_fresh_db(con_admin, hard_reset = TRUE, "Inserts produce valid state", 
                     release_date = "2019-01-02",
                     schema = "tsdb_test")
   expect_equal(
-    dbGetQuery(con_admin, "SELECT * FROM tsdb_test.catalog"),
+    dbGetQuery(con_admin, "SELECT * FROM tsdb_test.catalog ORDER BY ts_key"),
     catalog_after_insert_1
   )
   main_names <- c("id", "ts_key", "validity", "coverage", "release_date", "created_by",
                   "created_at", "ts_data", "access")
   names_to_test <- setdiff(main_names, c("id", "created_by", "created_at"))
   expect_equal(
-    dbGetQuery(con_admin, "SELECT * FROM tsdb_test.timeseries_main")[, names_to_test],
+    dbGetQuery(con_admin, "SELECT * FROM tsdb_test.timeseries_main ORDER BY ts_key, validity")[, names_to_test],
     main_after_insert_1[, names_to_test]
   )
 
@@ -128,11 +128,11 @@ test_with_fresh_db(con_admin, hard_reset = TRUE, "Inserts produce valid state", 
                     release_date = "2019-02-02",
                     schema = "tsdb_test")
   expect_equal(
-    dbGetQuery(con_admin, "SELECT * FROM tsdb_test.catalog"),
+    dbGetQuery(con_admin, "SELECT * FROM tsdb_test.catalog ORDER BY ts_key"),
     catalog_after_insert_2
   )
   expect_equal(
-    dbGetQuery(con_admin, "SELECT * FROM tsdb_test.timeseries_main")[, names_to_test],
+    dbGetQuery(con_admin, "SELECT * FROM tsdb_test.timeseries_main ORDER BY ts_key, validity")[, names_to_test],
     main_after_insert_2[, names_to_test]
   )
 
@@ -143,11 +143,11 @@ test_with_fresh_db(con_admin, hard_reset = TRUE, "Inserts produce valid state", 
                     release_date = "2019-03-02",
                     schema = "tsdb_test")
   expect_equal(
-    dbGetQuery(con_admin, "SELECT * FROM tsdb_test.catalog"),
+    dbGetQuery(con_admin, "SELECT * FROM tsdb_test.catalog ORDER BY ts_key"),
     catalog_after_insert_3
   )
   expect_equal(
-    dbGetQuery(con_admin, "SELECT * FROM tsdb_test.timeseries_main")[, names_to_test],
+    dbGetQuery(con_admin, "SELECT * FROM tsdb_test.timeseries_main ORDER BY ts_key, validity")[, names_to_test],
     main_after_insert_3[, names_to_test]
   )
 })
@@ -212,7 +212,7 @@ test_with_fresh_db(con_admin, hard_reset = TRUE, "storing with edge vintage caus
                     schema = "tsdb_test")
 
   expect_equal(
-    dbGetQuery(con_admin, "SELECT * FROM tsdb_test.timeseries_main")[, names_to_test],
+    dbGetQuery(con_admin, "SELECT * FROM tsdb_test.timeseries_main ORDER BY ts_key, validity")[, names_to_test],
     main_after_update[, names_to_test]
   )
 })
@@ -267,7 +267,7 @@ test_with_fresh_db(con_admin, hard_reset = TRUE, "overwriting older vintage is n
                     schema = "tsdb_test")
 
   expect_equal(
-    dbGetQuery(con_admin, "SELECT * FROM tsdb_test.timeseries_main")[, names_to_test],
+    dbGetQuery(con_admin, "SELECT * FROM tsdb_test.timeseries_main ORDER BY ts_key, validity")[, names_to_test],
     main_after_insert_3[, names_to_test]
   )
 })

@@ -47,7 +47,7 @@ test_with_fresh_db(con_admin, "creating dataset", hard_reset = TRUE, {
                     "a set for testing",
                     meta(field = "value"),
                     schema = "tsdb_test")
-  result <- dbGetQuery(con_admin, "SELECT * FROM tsdb_test.datasets")
+  result <- dbGetQuery(con_admin, "SELECT * FROM tsdb_test.datasets ORDER BY set_id")
 
   expect_is(result$set_md, "pq_json")
 
@@ -85,7 +85,7 @@ test_with_fresh_db(con_admin, "defaults for description and md", hard_reset = TR
                     "defaulttestset",
                     schema = "tsdb_test")
 
-  result <- dbGetQuery(con_admin, "SELECT * FROM tsdb_test.datasets")
+  result <- dbGetQuery(con_admin, "SELECT * FROM tsdb_test.datasets ORDER BY set_id")
 
   result$set_md <- as.character(result$set_md)
 
