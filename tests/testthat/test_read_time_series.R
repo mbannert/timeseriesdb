@@ -33,7 +33,7 @@ if(is_test_db_reachable()) {
   con_reader_public <- connect_to_test_db("dev_reader_public")
   con_reader_main <- connect_to_test_db("dev_reader_main")
 
-  reset_db(con_admin)
+  prepare_db(con_admin)
 
   current_date <- dbGetQuery(con_admin, "SELECT CURRENT_DATE")$current_date
 
