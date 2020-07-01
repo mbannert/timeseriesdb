@@ -41,6 +41,43 @@ db_change_access_level <- function(con,
   parsed
 }
 
+#' Change the Access Level for Time Series Dataset
+#'
+#' TODO: put this in the same doc as db_change_access_level? yes
+#'
+#' @param con
+#' @param dataset
+#' @param new_access_level
+#' @param validity
+#' @param schema
+#'
+#' @return
+#' @export
+#' @importFrom jsonlite fromJSON
+db_change_access_level_dataset <- function(con,
+                                           dataset,
+                                           new_access_level,
+                                           validity = NA,
+                                           schema = "timeseries") {
+  out <- db_call_function(con,
+                          "change_access_level_dataset",
+                          list(
+                            dataset,
+                            new_access_level,
+                            validity
+                          ),
+                          schema = schema)
+  parsed <- fromJSON(out)
+
+  if(parsed$status == "error") {
+    stop(parsed$message)
+  } else if(parsed$status == "warning") {
+    warning(parsed$message)
+  }
+
+  parsed
+}
+
 #' Get All access levels and their description
 #'
 #' @param con RPostgres connection object
