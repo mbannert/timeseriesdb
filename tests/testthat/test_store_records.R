@@ -273,11 +273,23 @@ test_with_fresh_db(con_admin, hard_reset = TRUE, "overwriting older vintage is n
 })
 
 test_with_fresh_db(con_admin, hard_reset = TRUE, "store_time_series uses the default access level", {
+  xx <- dbGetQuery(con_admin, "select * from tsdb_test.access_levels")
+  print(xx)
+
   store_time_series(con_writer, tsl[1], schema = "tsdb_test")
 
   acl <- dbGetQuery(con_admin, "SELECT access FROM tsdb_test.timeseries_main")$access
   dflt <- dbGetQuery(con_admin, "SELECT role FROM tsdb_test.access_levels WHERE is_default")$role
   expect_equal(acl, dflt)
+})
+
+test_with_fresh_db(con_admin, hard_reset = TRUE, "store_time_series without default set", {
+  dbExecute(con_admin, "UPDATE tsdb_test.access_levels SET is_default = NULL")
+
+  expect_error(
+    store_time_series(con_writer, tsl[1], schema = "tsdb_test"),
+    "not determine"
+  )
 })
 
 test_with_fresh_db(con_admin, hard_reset = TRUE, "store_time_series complains about invalid access level", {

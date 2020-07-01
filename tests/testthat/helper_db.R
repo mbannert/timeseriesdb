@@ -21,6 +21,9 @@ reset_db <- function(con) {
   dbExecute(con, "DELETE FROM tsdb_test.timeseries_main")
   dbExecute(con, "DELETE FROM tsdb_test.catalog")
   dbExecute(con, "DELETE FROM tsdb_test.datasets")
+  dbExecute(con, "ALTER TABLE tsdb_test.access_levels DISABLE TRIGGER access_level_no_delete_default")
+  dbExecute(con, "DELETE FROM tsdb_test.access_levels")
+  dbExecute(con, "ALTER TABLE tsdb_test.access_levels ENABLE TRIGGER access_level_no_delete_default")
 }
 
 prepare_db <- function(con,
@@ -369,7 +372,31 @@ prepare_db <- function(con,
     )
   )
 
+  access_levels <- data.table(
+    role = c(
+      "tsdb_test_access_public",
+      "tsdb_test_access_main",
+      "tsdb_test_access_restricted"
+    ),
+    description = c(
+      "Publicly available time series",
+      "Non-public time series without license restrictions",
+      "License restricted time series"
+    ),
+    is_default = c(
+      NA,
+      TRUE,
+      NA
+    )
+  )
+
   reset_db(con)
+
+  dbWriteTable(con,
+               DBI::Id(schema = "tsdb_test", table = "access_levels"),
+               access_levels,
+               append = TRUE)
+
   if(init_datasets) {
     dbWriteTable(con,
                  DBI::Id(schema = "tsdb_test", table = "datasets"),
