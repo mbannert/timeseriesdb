@@ -14,3 +14,26 @@ test_with_fresh_db(con_admin, "reader may not change access levels", {
     "sufficient privileges"
   )
 })
+
+# test db_list_access_levels --------------------------------------------------
+test_with_fresh_db(con_admin, "db_list_access_levels returns data frame with correct names", {
+  out <- db_list_access_levels(con_reader, schema = "tsdb_test")
+
+  expected <- data.frame(
+    role = c("tsdb_test_access_public",
+               "tsdb_test_access_main",
+               "tsdb_test_access_restricted"
+    ),
+    description = c("Publicly available time series",
+                    "Non-public time series without license restrictions",
+                    "License restricted time series"
+    ),
+    is_default = c(NA,
+                   TRUE,
+                   NA
+    ),
+    stringsAsFactors = FALSE
+  )
+
+  expect_equal(out, expected)
+})
