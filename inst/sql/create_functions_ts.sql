@@ -16,7 +16,7 @@
 --       -> saves storing 10s of 1000s of copies into tmp table
 CREATE FUNCTION timeseries.insert_from_tmp(p_validity DATE,
                                            p_release_date TIMESTAMPTZ,
-                                           p_access TEXT)
+                                           p_access TEXT DEFAULT NULL)
 RETURNS JSON
 AS $$
 DECLARE
@@ -49,11 +49,24 @@ BEGIN
   UPDATE tmp_ts_updates
   SET coverage = concat('[', ts_data->'time'->0, ',', ts_data->'time'->-1, ')')::daterange;
 
+  IF p_access IS NULL THEN
+    SELECT role
+    FROM timeseries.access_levels
+    WHERE is_default
+    INTO p_access;
+  END IF;
+
+  IF p_access IS NULL THEN
+    RETURN json_build_object('status', 'error',
+                              -- TODO: Once we have a "assign as default" helper, mention it here
+                              'message', 'Can not determine default access level.');
+  END IF;
+
   -- Main insert
   INSERT INTO timeseries.timeseries_main(ts_key, validity, coverage, release_date, ts_data, access)
   SELECT tmp.ts_key, COALESCE(p_validity, CURRENT_DATE), tmp.coverage,
             COALESCE(p_release_date, CURRENT_TIMESTAMP), tmp.ts_data,
-            COALESCE(p_access, (SELECT role FROM timeseries.access_levels WHERE is_default))
+            p_access
   FROM tmp_ts_updates AS tmp
   LEFT JOIN timeseries.timeseries_main AS main
   ON tmp.ts_key = main.ts_key

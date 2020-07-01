@@ -27,7 +27,7 @@ store_records <- function(con,
     ts_data = unlist(records),
     coverage = NA
   )
-  tryCatch(
+  out <- tryCatch(
       db_with_temp_table(con,
                          "tmp_ts_updates",
                          dt,
@@ -52,4 +52,12 @@ store_records <- function(con,
         stop(e)
       }
   })
+
+  if(out$status == "error") {
+    stop(out$message)
+  } else if(out$status == "warning") {
+    warning(out$message)
+  }
+
+  out
 }
