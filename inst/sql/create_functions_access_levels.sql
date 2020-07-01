@@ -2,12 +2,12 @@
 --
 -- returns: table(set_id TEXT, set_description TEXT)
 CREATE FUNCTION timeseries.list_access_levels()
-RETURNS TABLE(role TEXT, 
-              description TEXT, 
+RETURNS TABLE(role TEXT,
+              description TEXT,
               is_default BOOLEAN)
 AS $$
   BEGIN
-  RETURN QUERY SELECT timeseries.access_levels.role, 
+  RETURN QUERY SELECT timeseries.access_levels.role,
                       timeseries.access_levels.description,
                       timeseries.access_levels.is_default
 FROM timeseries.access_levels;
@@ -28,16 +28,16 @@ RETURNS JSON
 AS $$
 BEGIN
   IF NOT EXISTS (SELECT 1 FROM timeseries.access_levels
-    WHERE role = role_name) THEN 
+    WHERE role = role_name) THEN
     RETURN json_build_object('status', 'warning',
                          'message', 'role does not exist.');
-                         
+
   ELSIF EXISTS (SELECT 1 FROM timeseries.timeseries_main
-    WHERE access = role_name) THEN 
+    WHERE access = role_name) THEN
     RETURN json_build_object('status', 'error',
                          'reason', 'role is still in use in timeseries_main');
-  
-  ELSE  
+
+  ELSE
     DELETE FROM timeseries.access_levels
     WHERE role = role_name;
     RETURN json_build_object('status', 'ok',
@@ -56,25 +56,25 @@ SET search_path = timeseries, pg_temp;
 --
 -- returns: json {"status": "", "message": "", ["id"]: ""}
 CREATE FUNCTION timeseries.access_levels_insert(role_name TEXT,
-                                                role_description TEXT, 
-                                                role_default NULL)
+                                                role_description TEXT,
+                                                role_default BOOLEAN)
 RETURNS JSON
 AS $$
 BEGIN
   IF NOT EXISTS (SELECT 1 FROM timeseries.access_levels
-      WHERE role = role_name) THEN 
+      WHERE role = role_name) THEN
     INSERT INTO timeseries.access_levels(role, description)
       VALUES(role_name, role_description, role_default);
-   
+
   ELSIF EXISTS (SELECT 1 FROM timeseries.timeseries_main
-    WHERE access = role_name) THEN 
+    WHERE access = role_name) THEN
     RETURN json_build_object('status', 'error',
-                         'reason', 'role already exists');  
-      
-  END IF;   
-  
-EXCEPTION  
-  WHEN triggered_action_exception THEN 
+                         'reason', 'role already exists');
+
+  END IF;
+
+EXCEPTION
+  WHEN triggered_action_exception THEN
     RETURN json_build_object('status', 'error',
                          'message', 'it can not be an access level',
                          'role', role_name);
