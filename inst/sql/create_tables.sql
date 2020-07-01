@@ -29,7 +29,7 @@ CREATE TABLE timeseries.timeseries_main(
   created_by TEXT DEFAULT CURRENT_USER,
   created_at TIMESTAMPTZ DEFAULT CURRENT_TIMESTAMP,
   ts_data JSON,
-  access TEXT,
+  access TEXT NOT NULL,
   UNIQUE (ts_key, validity),
   FOREIGN KEY (ts_key) REFERENCES timeseries.catalog(ts_key), --ON DELETE CASCADE
   FOREIGN KEY (access) REFERENCES timeseries.access_levels(role)
