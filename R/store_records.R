@@ -15,26 +15,38 @@ store_records <- function(con,
     release_date <- format(as.POSIXct(release_date), "%Y-%m-%d %T %z")
   }
 
+  # TODO: add mechanism for setting column names (for e.g. metadata)
+  # Note, it's important to create the coverage column here because of an
+  # rights issue: The tmp_ts_updates table will belong to the user logged in.
+  # Because in PostgreSQL tables can only be altered by the OWNER and therefore
+  # the insert function which runs as SECURITY DEFINER (the rights of the user
+  # who created them) can't AlTER the temp table it needs to
+  # contain the coverage column from the start.
+  dt <- data.table(
+    ts_key = names(records),
+    ts_data = unlist(records),
+    coverage = NA
+  )
   tryCatch(
-    dbWithTransaction(con, {
-      db_tmp_store(con,
-                   records,
-                   schema)
-
-
-      fromJSON(db_call_function(con,
-                                "insert_from_tmp",
-                                list(
-                                  valid_from,
-                                  release_date,
-                                  access
-                                ),
-                                schema))
-    }),
+      db_with_temp_table(con,
+                         "tmp_ts_updates",
+                         dt,
+                         field.types = c(
+                           ts_key = "text",
+                           ts_data = "json",
+                           coverage = "daterange"
+                         ),
+                         fromJSON(db_call_function(con,
+                                                   "insert_from_tmp",
+                                                   list(
+                                                     valid_from,
+                                                     release_date,
+                                                     access
+                                                   ),
+                                                   schema)),
+                         schema = schema),
     error = function(e) {
-      if(grepl("permission denied for function insert_from_tmp", e)) {
-        stop("Only writer and above may store time series.")
-      } else if(grepl("timeseries_main_access_fkey", e)) {
+      if(grepl("timeseries_main_access_fkey", e)) {
         stop(sprintf("\"%s\" is not a valid access level. Use db_get_access_levels to find registered levels.", access))
       } else {
         stop(e)

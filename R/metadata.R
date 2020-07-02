@@ -128,7 +128,6 @@ print.tsmeta <- function(x, ...) {
 #' @return status list created from DB status return JSON.
 #'
 #' @importFrom jsonlite fromJSON toJSON
-#' @importFrom RPostgres dbWriteTable
 #' @export
 #'
 #' @examples
@@ -152,30 +151,19 @@ db_store_ts_metadata <- function(con,
       stringsAsFactors = FALSE
     )
 
-    dbWriteTable(con,
-                 "tmp_md_insert",
-                 md_table,
-                 temporary = TRUE,
-                 overwrite = TRUE,
-                 field.types = c(
-                   ts_key = "text",
-                   locale = "text",
-                   metadata = "jsonb"))
 
-    db_grant_to_admin(con, "tmp_md_insert", schema)
-
-    db_return <- tryCatch(
-      db_call_function(con,
-                      "md_local_upsert",
-                      list(as.Date(valid_from), on_conflict),
-                            schema = schema),
-      error = function(e) {
-        if(grepl("permission denied for function md_local_upsert", e)) {
-          stop("Only writer and aymin may store metadata.")
-        } else {
-          stop(e)
-        }
-      })
+    db_return <- db_with_temp_table(con,
+                                    "tmp_md_insert",
+                                    md_table,
+                                    field.types = c(
+                                      ts_key = "text",
+                                      locale = "text",
+                                      metadata = "jsonb"),
+                                      db_call_function(con,
+                                                       "md_local_upsert",
+                                                       list(as.Date(valid_from), on_conflict),
+                                                       schema = schema),
+                                     schema = schema)
   } else {
     md_table <- data.frame(
       ts_key = names(metadata),
@@ -183,29 +171,18 @@ db_store_ts_metadata <- function(con,
       stringsAsFactors = FALSE
     )
 
-    dbWriteTable(con,
-                 "tmp_md_insert",
-                 md_table,
-                 temporary = TRUE,
-                 overwrite = TRUE,
-                 field.types = c(
-                   ts_key = "text",
-                   metadata = "jsonb"))
 
-    db_grant_to_admin(con, "tmp_md_insert", schema)
-
-    db_return <- tryCatch(
-      db_call_function(con,
-                       "md_unlocal_upsert",
-                       list(as.Date(valid_from), on_conflict),
-                       schema = schema),
-      error = function(e) {
-        if(grepl("permission denied for function md_unlocal_upsert", e)) {
-          stop("Only writer and aymin may store metadata.")
-        } else {
-          stop(e)
-        }
-      })
+    db_return <- db_with_temp_table(con,
+                                   "tmp_md_insert",
+                                   md_table,
+                                   field.types = c(
+                                     ts_key = "text",
+                                     metadata = "jsonb"),
+                                     db_call_function(con,
+                                                      "md_unlocal_upsert",
+                                                      list(as.Date(valid_from), on_conflict),
+                                                      schema = schema),
+                                   schema = schema)
   }
 
   out <- fromJSON(db_return, simplifyDataFrame = FALSE)
@@ -242,27 +219,23 @@ db_read_ts_metadata <- function(con,
                                 regex = FALSE,
                                 locale = NULL,
                                 schema = "timeseries") {
-  db_tmp_read(
-    con,
-    ts_keys,
-    regex,
-    schema
-  )
-
-  # TODO: should missing ts have NA values or just be missing?
-  # TODO: chunking?
-
-  if(is.null(locale)) {
-    db_return <- db_call_function(con,
-                                  "read_metadata_raw",
-                                  list(as.Date(valid_on)),
-                                  schema = schema)
-  } else {
-    db_return <- db_call_function(con,
-                                  "read_metadata_localized_raw",
-                                  list(as.Date(valid_on), locale),
-                                  schema = schema)
-  }
+  db_return <- db_with_tmp_read(con,
+                                ts_keys,
+                                regex,
+                                {
+                                  if(is.null(locale)) {
+                                    db_call_function(con,
+                                                     "read_metadata_raw",
+                                                     list(as.Date(valid_on)),
+                                                     schema = schema)
+                                  } else {
+                                    db_call_function(con,
+                                                     "read_metadata_localized_raw",
+                                                     list(as.Date(valid_on), locale),
+                                                     schema = schema)
+                                  }
+                                },
+                                schema = schema)
 
   out <- fromJSON(paste0("[",
                          paste(db_return$metadata, collapse = ","),
@@ -297,22 +270,22 @@ db_get_metadata_validity <- function(con,
                                  regex = FALSE,
                                  locale = NULL,
                                  schema = "timeseries") {
-  db_tmp_read(
-    con,
-    ts_keys,
-    regex,
-    schema)
-
-  if(is.null(locale)) {
-    out <- db_call_function(con,
-                     "get_latest_vintages_metadata",
-                     schema = schema)
-  } else {
-    out <- db_call_function(con,
-                     "get_latest_vintages_metadata_localized",
-                     list(locale),
-                     schema = schema)
-  }
+  out <- db_with_tmp_read(con,
+                          ts_keys,
+                          regex,
+                          {
+                            if(is.null(locale)) {
+                              out <- db_call_function(con,
+                                                      "get_latest_vintages_metadata",
+                                                      schema = schema)
+                            } else {
+                              out <- db_call_function(con,
+                                                      "get_latest_vintages_metadata_localized",
+                                                      list(locale),
+                                                      schema = schema)
+                            }
+                          },
+                          schema = schema)
 
   as.data.table(out)
 }
