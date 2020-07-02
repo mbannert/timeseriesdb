@@ -150,7 +150,7 @@ BEGIN
   WHERE name = col_name
   AND owner = col_owner) THEN
     RETURN json_build_object('status', 'warning',
-                             'message', 'Collection cound not be found for this user.');
+                             'message', 'Collection could not be found for this user.');
   ELSE
     DELETE FROM timeseries.collections
     WHERE owner = col_owner
