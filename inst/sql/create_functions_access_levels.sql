@@ -7,10 +7,12 @@ RETURNS TABLE(role TEXT,
               is_default BOOLEAN)
 AS $$
   BEGIN
-  RETURN QUERY SELECT timeseries.access_levels.role,
-                      timeseries.access_levels.description,
-                      timeseries.access_levels.is_default
-FROM timeseries.access_levels;
+  RETURN QUERY SELECT levels.role,
+                      levels.description,
+                      levels.is_default
+  FROM timeseries.access_levels as levels
+  ORDER BY levels.role;
+
 END;
 $$ LANGUAGE PLPGSQL
 SECURITY DEFINER

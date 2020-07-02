@@ -12,16 +12,16 @@ test_with_fresh_db(con_admin, "db_list_access_levels returns data frame with cor
   out <- db_list_access_levels(con_reader, schema = "tsdb_test")
   
   expected <- data.frame(
-    role = c("tsdb_test_access_public",
-               "tsdb_test_access_main",
-               "tsdb_test_access_restricted"
+    role = c("tsdb_test_access_main",
+             "tsdb_test_access_public",
+             "tsdb_test_access_restricted"
     ),
-    description = c("Publicly available time series",
-                    "Non-public time series without license restrictions",
+    description = c("Non-public time series without license restrictions",
+                    "Publicly available time series",
                     "License restricted time series"
     ),
-    is_default = c(NA,
-                   TRUE,
+    is_default = c(TRUE,
+                   NA,
                    NA
     ),
     stringsAsFactors = FALSE
@@ -34,7 +34,7 @@ test_with_fresh_db(con_admin, "db_list_access_levels returns data frame with cor
 # test db_delete_access_levels --------------------------------------------------
 test_with_fresh_db(con_admin, "deleting access level in use", {
   expect_error(
-    db_delete_access_levels(prueba_con, "tsdb_test_access_public", "tsdb_test"),
+    db_delete_access_levels(con_admin, "tsdb_test_access_public", "tsdb_test"),
     "is still in use in timeseries_main"
   )
 })
@@ -62,9 +62,10 @@ test_with_fresh_db(con_admin, "db deleting access level works", {
   expect_equal(out, expected)
 })
 
-test_with_fresh_db(con_admin, "db deleting access level works", {
+test_with_fresh_db(con_admin, "db rights to delete access level", {
   expect_error(db_delete_access_levels(con_writer, 
                                  "tsdb_test_access_restricted",
-                                 schema = "tsdb_test"))
+                                 schema = "tsdb_test"),
+               "not have sufficient privileges")
 })
 
