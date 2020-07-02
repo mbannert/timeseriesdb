@@ -49,13 +49,11 @@ test_that("is passes correct args to db_call_function unlocalized", {
   fake_db_call_function = mock()
 
   with_mock(
-    db_tmp_read = mock(),
+    db_with_temp_table = function(con, name, content, field.types, code, schema){eval(code)},
     toJSON = mock("json"),
     fromJSON = mock(list(status = "ok")),
-    dbWriteTable = mock(),
     dbExecute = mock(),
     db_call_function = fake_db_call_function,
-    db_grant_to_admin = mock(),
     {
       db_store_ts_metadata("con",
                            as.tsmeta.list(
@@ -86,7 +84,7 @@ test_with_fresh_db(con_admin, "reader may not store metadata", {
                                     valid_from = "2020-06-10",
                                     locale = "de",
                                     schema = "tsdb_test"),
-               "may store metadata")
+               "sufficient privileges")
 })
 
 test_with_fresh_db(con_admin, "db_store_ts_metadata localized returns 'ok'", {
@@ -291,7 +289,8 @@ test_with_fresh_db(con_admin, "db_store_ts_metadata localized creates vintages",
 
   result <-  dbGetQuery(con_admin, "SELECT ts_key, validity, locale, metadata
                         FROM tsdb_test.metadata_localized
-                        WHERE ts_key = 'ts1'")
+                        WHERE ts_key = 'ts1'
+                        ORDER BY tsdb_test.metadata_localized.validity")
   expect_equal(
     result,
     meta_fixture_df(c("ts1", "ts1"),
@@ -334,13 +333,11 @@ test_that("is passes correct args to db_call_function localized", {
   fake_db_call_function = mock()
 
   with_mock(
-    db_tmp_read = mock(),
+    db_with_temp_table = function(con, name, content, field.types, code, schema){eval(code)},
     toJSON = mock("json"),
     fromJSON = mock(list(status = "ok")),
-    dbWriteTable = mock(),
     dbExecute = mock(),
     db_call_function = fake_db_call_function,
-    db_grant_to_admin = mock(),
     {
       db_store_ts_metadata("con",
                            as.tsmeta.list(
@@ -372,7 +369,7 @@ test_with_fresh_db(con_admin, "reader may not store unlocaloized metadata", {
                                     create_tsmeta(ts1 = list(field = "value")),
                                     valid_from = "2020-06-10",
                                     schema = "tsdb_test"),
-               "may store metadata")
+               "sufficient privileges")
 })
 
 test_with_fresh_db(con_admin, "db_store_ts_metadata unlocalized returns ok", {
@@ -562,7 +559,8 @@ test_with_fresh_db(con_admin, "db_store_ts_metadata creates vintages", {
 
   result <-  dbGetQuery(con_admin, "SELECT ts_key, validity, metadata
                         FROM tsdb_test.metadata
-                        WHERE ts_key = 'ts1'")
+                        WHERE ts_key = 'ts1'
+                        ORDER BY tsdb_test.metadata.validity")
   expect_equal(
     result,
     meta_fixture_df(c("ts1", "ts1"),
