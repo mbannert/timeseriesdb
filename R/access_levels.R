@@ -33,7 +33,7 @@ db_delete_access_levels <- function(con,
                    ),
                    schema = schema)
   
-  out_parsed <- jsonlite::fromJSON(out)
+  out_parsed <- fromJSON(out)
   
   if(out_parsed$status == "warning") {
     warning(access_level_name,
@@ -48,10 +48,12 @@ db_delete_access_levels <- function(con,
 }
 
 
-#' Delete a role in access levels table
+#' Insert a role in access levels table
 #'
 #' @param con RPostgres connection object
 #' @param access_level_name character name of the access level
+#' @param access_level_description character description of the access level. Defaults to NA.
+#' @param access_level_default should the new access level be a default. Defaults to NA.
 #' @param schema character name of the schema. Defaults to 'timeseries'.
 #'
 #' @importFrom jsonlite fromJSON
@@ -61,7 +63,7 @@ db_insert_access_levels <- function(con,
                                     access_level_description = NA,
                                     access_level_default = NA,
                                     schema = "timeseries") {
-  
+
   out <- db_call_function(con,
                           "access_levels_insert",
                           list(
@@ -71,7 +73,7 @@ db_insert_access_levels <- function(con,
                           ),
                           schema = schema)
   
-  out_parsed <- jsonlite::fromJSON(out)
+  out_parsed <- fromJSON(out)
   
   if(out_parsed$status == "warning") {
     warning(out_parsed$message)

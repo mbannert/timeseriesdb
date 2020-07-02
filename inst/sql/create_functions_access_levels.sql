@@ -84,7 +84,7 @@ BEGIN
 
   ELSE 
     RETURN json_build_object('status', 'warning',
-                         'message', 'access level '||access_level_name||' already exists ');                
+                         'message', 'access level '||access_level_name||' already exists');                
 
   END IF;
   
