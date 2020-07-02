@@ -7,7 +7,7 @@
 #' @export
 db_list_access_levels <- function(con,
                                   schema = "timeseries") {
-  
+
   db_call_function(con,
                    "list_access_levels",
                    schema = schema)
@@ -25,26 +25,26 @@ db_list_access_levels <- function(con,
 db_delete_access_levels <- function(con,
                                     access_level_name,
                            schema = "timeseries") {
-  
+
   out <- db_call_function(con,
                    "access_levels_delete",
                    list(
                      access_level_name
                    ),
                    schema = schema)
-  
+
   out_parsed <- jsonlite::fromJSON(out)
-  
+
   if(out_parsed$status == "warning") {
     warning(access_level_name,
             " ",
             out_parsed$message)
   } else if(out_parsed$status == "error") {
     stop(out_parsed$message)
-  } 
-  
+  }
+
   out_parsed
-  
+
 }
 
 
@@ -61,7 +61,7 @@ db_insert_access_levels <- function(con,
                                     access_level_description = NA,
                                     access_level_default = NA,
                                     schema = "timeseries") {
-  
+
   out <- db_call_function(con,
                           "access_levels_insert",
                           list(
@@ -70,17 +70,41 @@ db_insert_access_levels <- function(con,
                             access_level_default
                           ),
                           schema = schema)
-  
+
   out_parsed <- jsonlite::fromJSON(out)
-  
+
   if(out_parsed$status == "warning") {
     warning(out_parsed$message)
   } else if(out_parsed$status == "error") {
     stop(out_parsed$message)
-  } 
-  
+  }
+
   out_parsed
-  
+
 }
 
+#' Set the Default Access Level
+#'
+#' @param con Postgres  connection object
+#' @param access_level character Name of the access level to set as the default
+#' @param schema character Timeseries schema name
+#'
+#' @export
+#' @importFrom jsonlite fromJSON
+db_set_default_access_level <- function(con,
+                                        access_level,
+                                        schema = "timeseries") {
+  out <- db_call_function(con,
+                          "set_access_level_default",
+                          list(
+                            access_level
+                          ),
+                          schema = schema)
+  out_parsed <- fromJSON(out)
 
+  if(out_parsed$status == "error") {
+    stop(out_parsed$message)
+  }
+
+  out_parsed
+}
