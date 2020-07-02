@@ -3,7 +3,7 @@
 #' @param con RPostgres connection object
 #' @param schema character Name of timeseries schema
 #'
-#' @return data.frame with columns `role` and `description` and `is_default`
+#' @return access levels data.frame with columns `role` and `description` and `is_default`
 #' @export
 db_list_access_levels <- function(con,
                                   schema = "timeseries") {
@@ -17,35 +17,70 @@ db_list_access_levels <- function(con,
 #' Delete a role in access levels table
 #'
 #' @param con RPostgres connection object
-#' @param del_role name of the role to remove
-#' @param schema character Name of timeseries schema
+#' @param access_level_name character name of the access level
+#' @param schema character name of the schema. Defaults to 'timeseries'.
 #'
-#' @return data.frame with columns `role` and `description` and `is_default`
+#' @importFrom jsonlite fromJSON
 #' @export
-db_delete_role <- function(con,
-                           del_role,
+db_delete_access_levels <- function(con,
+                                    access_level_name,
                            schema = "timeseries") {
   
   out <- db_call_function(con,
                    "access_levels_delete",
                    list(
-                     del_role
+                     access_level_name
                    ),
                    schema = schema)
   
   out_parsed <- jsonlite::fromJSON(out)
   
   if(out_parsed$status == "warning") {
-    warning(del_role,
+    warning(access_level_name,
             " ",
             out_parsed$message)
   } else if(out_parsed$status == "error") {
-    stop(del_role,
-         " ",
-         out_parsed$reason)
-  } else if(out_parsed$status == "ok") {
-    cat(del_role,
-        out_parsed$message)
-  }
+    stop(out_parsed$message)
+  } 
+  
+  out_parsed
   
 }
+
+
+#' Delete a role in access levels table
+#'
+#' @param con RPostgres connection object
+#' @param access_level_name character name of the access level
+#' @param schema character name of the schema. Defaults to 'timeseries'.
+#'
+#' @importFrom jsonlite fromJSON
+#' @export
+db_insert_access_levels <- function(con,
+                                    access_level_name,
+                                    access_level_description = NA,
+                                    access_level_default = NA,
+                                    schema = "timeseries") {
+  
+  out <- db_call_function(con,
+                          "access_levels_insert",
+                          list(
+                            access_level_name,
+                            access_level_description,
+                            access_level_default
+                          ),
+                          schema = schema)
+  
+  out_parsed <- jsonlite::fromJSON(out)
+  
+  if(out_parsed$status == "warning") {
+    warning(out_parsed$message)
+  } else if(out_parsed$status == "error") {
+    stop(out_parsed$message)
+  } 
+  
+  out_parsed
+  
+}
+
+

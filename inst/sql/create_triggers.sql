@@ -27,7 +27,8 @@ BEGIN
     FROM pg_catalog.pg_roles
     WHERE rolname = NEW.role
   ) THEN
-    RAISE EXCEPTION 'Role % does not exist so it can not be an access level.', NEW.role;
+    RAISE EXCEPTION 'Role % does not exist so it can not be an access level.', 
+    NEW.role USING ERRCODE='09000';
   END IF;
 
   RETURN NEW;
@@ -48,7 +49,8 @@ $$
 BEGIN
   IF TG_OP = 'DELETE' THEN
     IF OLD.is_default THEN
-      RAISE EXCEPTION 'Role % is the default role. Please assign a different default before deleting.', OLD.role;
+      RAISE EXCEPTION 'Role % is the default access level. Please assign a different default before deleting.', 
+      OLD.role USING ERRCODE='09000';
     END IF;
   END IF;
 
