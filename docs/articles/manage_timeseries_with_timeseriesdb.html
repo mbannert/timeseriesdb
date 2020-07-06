@@ -94,7 +94,7 @@
       <h1>Manage Time Series with {timeseriesdb}</h1>
                         <h4 class="author">Matthias Bannert</h4>
             
-            <h4 class="date">2020-06-10</h4>
+            <h4 class="date">2020-06-24</h4>
       
       <small class="dont-index">Source: <a href="https://github.com/mbannert/timeseriesdb/blob/master/vignettes/manage_timeseries_with_timeseriesdb.Rmd"><code>vignettes/manage_timeseries_with_timeseriesdb.Rmd</code></a></small>
       <div class="hidden name"><code>manage_timeseries_with_timeseriesdb.Rmd</code></div>
@@ -106,7 +106,7 @@
 <div id="using-timeseriesdb" class="section level1">
 <h1 class="hasAnchor">
 <a href="#using-timeseriesdb" class="anchor"></a>Using {timeseriesdb}</h1>
-<p>This guide explains in applied fashion how to use {timeseriesdb} effectively in practice. In order to walk through {timeseriesdb}’s functionality this document follows the user story of the fictional <em>Crystall Ball Economics</em> company. This walkthrough assumes that you have installed R, PostgreSQL and the {timeseriesdb} package successfully and it also assumes that set up the timeseriesdb database backend using the setup routines that ship with the package. If you have troubling setting this up, please take a look at our <a href="Guide">Installtion</a>.</p>
+<p>This guide explains how to use {timeseriesdb} effectively in practice. In order to walk through {timeseriesdb}’s functionality this document follows the user story of the fictional <em>Crystall Ball Economics</em> company. This walkthrough assumes that you have installed R, PostgreSQL and the {timeseriesdb} package successfully. It also assumes that set up the timeseriesdb database backend succesfully (using the setup routines that ship with the package). If you have troubling setting this up, please take a look at our <a href="Guide">Installtion</a>.</p>
 <div id="crystal-ball-economics-inc----a-user-story" class="section level2">
 <h2 class="hasAnchor">
 <a href="#crystal-ball-economics-inc----a-user-story" class="anchor"></a>Crystal Ball Economics Inc. - A User Story</h2>
@@ -123,14 +123,14 @@
 <div id="basic-usage" class="section level2">
 <h2 class="hasAnchor">
 <a href="#basic-usage" class="anchor"></a>Basic Usage</h2>
-<p>The obvious first step en route to interaction with any database is to connect to the database. {timeseriesdb} ships with a convenience function that allows to swiftly connect to the PostgreSQL backend.</p>
+<p>The obvious first step en route to interaction with any database is to connect to the database. {timeseriesdb} comes with a convenience function that allows to swiftly connect to the PostgreSQL backend.</p>
 <div class="sourceCode" id="cb1"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb1-1" data-line-number="1"><span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span>(timeseriesdb)</a>
 <a class="sourceLine" id="cb1-2" data-line-number="2">con &lt;-<span class="st"> </span><span class="kw"><a href="../reference/db_create_connection.html">db_create_connection</a></span>(<span class="dt">dbname =</span> <span class="st">"postgres"</span>,</a>
 <a class="sourceLine" id="cb1-3" data-line-number="3">                            <span class="dt">user =</span> <span class="st">"dev_admin"</span>,</a>
 <a class="sourceLine" id="cb1-4" data-line-number="4">                            <span class="dt">host =</span>  <span class="st">"localhost"</span>,</a>
 <a class="sourceLine" id="cb1-5" data-line-number="5">                            <span class="dt">passwd =</span> <span class="st">"dev_admin"</span>,</a>
 <a class="sourceLine" id="cb1-6" data-line-number="6">                            <span class="dt">port =</span> <span class="dv">1111</span>)</a></code></pre></div>
-<p>Once a connection is etablished, this connection can be used to read and store time series. <em>Crystall Ball’s</em> Swiss researchers have composed a nice set of time series that they want to store for good and share with their colleagues across the company. Instead of storing the data to a spreadsheet format or as R objects in an <em>.RData</em> file, the researchers store time series into the PostgreSQL based backend.</p>
+<p>Once a connection is etablished, this connection can be used to read and store time series. <em>Crystall Ball’s</em> Swiss researchers have composed a nifty set of time series that they want to store for good and share with their colleagues across the company. Instead of storing the data to a spreadsheet format or as R objects in an <em>.RData</em> file, the researchers store time series into the PostgreSQL based backend.</p>
 <p>{timeseriesdb} ships with the dataset <em>demoseries</em>.</p>
 <div class="sourceCode" id="cb2"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb2-1" data-line-number="1">demoseries &lt;-<span class="st"> </span><span class="kw"><a href="https://rdrr.io/r/base/list.html">list</a></span>(</a>
 <a class="sourceLine" id="cb2-2" data-line-number="2">  <span class="dt">JohnsonJohnson =</span> JohnsonJohnson,</a>
@@ -145,19 +145,27 @@
 ## [1] "the world is full of rainbows"</code></pre>
 <p>Once news spread around the company that new data are available, company researchers around the globe want to take a look at the new data. Reading from {timeseriesdb}’s backend is as easy as writing to it.</p>
 <div class="sourceCode" id="cb4"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb4-1" data-line-number="1">tsl &lt;-<span class="st"> </span><span class="kw"><a href="../reference/read_time_series.html">read_time_series</a></span>(con, <span class="kw"><a href="https://rdrr.io/r/base/c.html">c</a></span>(<span class="st">"AirPassengers"</span>,<span class="st">"JohnsonJohnson"</span>))</a></code></pre></div>
-<p>The Read process</p>
+<p>The <em>read</em> process returns a list of time series. By default, time series of regular frequency will be returned as list elements of class <em>ts</em>, irregular time series will be returned as time series of class <em>xts</em>.</p>
 </div>
 <div id="vintages-versions-of-time-series" class="section level2">
 <h2 class="hasAnchor">
 <a href="#vintages-versions-of-time-series" class="anchor"></a>Vintages (Versions of Time Series)</h2>
-<ul>
-<li>store</li>
-<li>update</li>
-</ul>
+<p>Evaluation and benchmarking of the company’s own craft is to <em>Crystall Ball Inc.</em>. The methodology team is continously on the hunt for improvements to the company’s models. Versioning of time series plays an important role in this evaluation process: A series may be revised, i.e., past values change. Revisions happen regularly and on purpose when preliminary data are published or when series are seasonally adjusted. The methodological advisory board has advised the methods team to not trust original data providers to keep different versions of time series (vintages) available. {timeseriesdb} fulfills this requirement by default: When a time series of a unique identifier that already exists should be stored to the database, {timeseriesdb} creates a new version of that series instead of overwriting it. Currently one version per day is allowed.</p>
+<blockquote>
+<p>Note: The last available (daily) vintage may be be overwritten. This allows for immediate corrections in interative session even without admin rights.</p>
+</blockquote>
+<p>TODO: NEED a some series to explain vintages here -&gt; a few ch.kof.barometer vintages could do the job…</p>
 </div>
 <div id="datasets" class="section level2">
 <h2 class="hasAnchor">
 <a href="#datasets" class="anchor"></a>Datasets</h2>
+<p>After weeks and months of fun methodological work with the composed data, the research team receives a note from management that causes immense panic: a data audit is its way. Scrutiny looms. Where are all the data from? Can they even legally use these data? Are they allowed to share these time series? Do the same rules apply for all time series? But first and foremost: How can the team present all this related information to the auditors?</p>
+<p>Luckily {timeseriesdb} offers a rich set of features to group datasets and add data description at the time series level. {timeseriesdb} assigns every time series that is about to be stored to a dataset. In their quest for structure, the team realizes that all series have been assigned to a dataset called <em>default</em>.</p>
+<div class="sourceCode" id="cb5"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb5-1" data-line-number="1"><span class="kw"><a href="../reference/db_get_dataset_id.html">db_get_dataset_id</a></span>(con, <span class="kw"><a href="https://rdrr.io/r/base/names.html">names</a></span>(tsl))</a></code></pre></div>
+<pre><code>##           ts_key  set_id
+## 1  AirPassengers default
+## 2 JohnsonJohnson  stocks</code></pre>
+<p>Great! So {timeseriesdb} has the ability to group data in datasets. The team decides to create</p>
 <ul>
 <li>defaults vs other datasets</li>
 <li>where do we take example data from</li>
@@ -184,6 +192,10 @@
 <h2 class="hasAnchor">
 <a href="#collections-individual-bookmarks" class="anchor"></a>Collections (Individual Bookmarks)</h2>
 <p>tbd.</p>
+</div>
+<div id="release-date" class="section level2">
+<h2 class="hasAnchor">
+<a href="#release-date" class="anchor"></a>Release Date</h2>
 <p><em>timeseriesdb</em> maps R time series objects to PostgreSQL relations for permanent storage. Instead of writing time series to spreadsheet files or .RData on disk, <strong>timeseriesdb</strong> uses a PostgreSQL schema which allows to store data alongside extensive, context aware, multi-lingual meta information. <strong>timeseriesdb</strong> aims at time series from official statistics which are typically published on a monthly, quarterly or yearly basis. Unlike many time series database which excel at appending single observations at record speed and on-the-fly aggregations on database level, <strong>timeseriesdb</strong> is focused on large upsert operations. That is, check whether a series is available and perform and update if that is the case and an insert if not. This is the case for example when an entire time series is revised such as in the case of GDP revisions or seasonal adjustment.</p>
 </div>
 <div id="getting-started" class="section level2">
@@ -205,15 +217,15 @@
 <h3 class="hasAnchor">
 <a href="#install-the-r-package-stable-version" class="anchor"></a>Install the R package (stable version)</h3>
 <p>Yay! <strong>timeseriesdb</strong> is on CRAN now. Installing the stable version (right choice for most users) is a matter of running on your R console</p>
-<div class="sourceCode" id="cb5"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb5-1" data-line-number="1"><span class="kw"><a href="https://rdrr.io/r/utils/install.packages.html">install.packages</a></span>(<span class="st">"timeseriesdb"</span>)</a></code></pre></div>
+<div class="sourceCode" id="cb7"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb7-1" data-line-number="1"><span class="kw"><a href="https://rdrr.io/r/utils/install.packages.html">install.packages</a></span>(<span class="st">"timeseriesdb"</span>)</a></code></pre></div>
 <p>or using R (Studio’s) <strong>G</strong>raphical <strong>U</strong>ser <strong>I</strong>nterface.</p>
 </div>
 <div id="install-the-r-packages-developer-version" class="section level3">
 <h3 class="hasAnchor">
 <a href="#install-the-r-packages-developer-version" class="anchor"></a>Install the R packages (developer version)</h3>
 <p>The latest version of the <strong>timeseriesdb</strong> is available from <a href="https://github.com/mbannert/timeseriesdb">github account</a>. The <strong>devtools</strong> package is an easy way to directly install packages directly from github.</p>
-<div class="sourceCode" id="cb6"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb6-1" data-line-number="1"><span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span>(devtools)</a>
-<a class="sourceLine" id="cb6-2" data-line-number="2"><span class="kw"><a href="https://rdrr.io/pkg/devtools/man/remote-reexports.html">install_github</a></span>(<span class="st">'mbannert/timeseriesdb'</span>)</a></code></pre></div>
+<div class="sourceCode" id="cb8"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb8-1" data-line-number="1"><span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span>(devtools)</a>
+<a class="sourceLine" id="cb8-2" data-line-number="2"><span class="kw"><a href="https://rdrr.io/pkg/devtools/man/remote-reexports.html">install_github</a></span>(<span class="st">'mbannert/timeseriesdb'</span>)</a></code></pre></div>
 </div>
 <div id="set-up-postgresql" class="section level3">
 <h3 class="hasAnchor">
@@ -381,6 +393,7 @@ storeTimeSeries(names(tsl),con, tsl, valid_from = '2018-08-01')
       <li><a href="#meta-data-data-descriptions">Meta Data (Data Descriptions)</a></li>
       <li><a href="#access-rights">Access Rights</a></li>
       <li><a href="#collections-individual-bookmarks">Collections (Individual Bookmarks)</a></li>
+      <li><a href="#release-date">Release Date</a></li>
       <li><a href="#getting-started">Getting Started</a></li>
       <li><a href="#basic-usage-1">Basic Usage</a></li>
       <li><a href="#packages-that-work-well-with-timeseriesdb">Packages that work well with timeseriesdb</a></li>

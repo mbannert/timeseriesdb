@@ -68,13 +68,13 @@ db_get_dataset_id(con, c("AirPassengers", "JohnsonJohnson"))
 
 You can easily add new datasets. Note though, that dataset are not user specific, but global groups. The user specific analog to sets is called collection in will be described later on. 
 
-```{r}
+```{r, eval=FALSE}
 db_create_dataset(con, "stocks",
                   set_description = "Stock market returns.")
 ```
 Once a set is created you can move existing series to that set. 
 
-```{r}
+```{r, eval=FALSE}
 db_assign_dataset(con,"JohnsonJohnson","stocks")
 db_get_dataset_id(con, c("AirPassengers", "JohnsonJohnson"))
 ```

@@ -95,7 +95,7 @@
             <h3 class="subtitle">Introduction to {timeseriesdb}</h3>
                         <h4 class="author">Matthias Bannert and Severin Thöni</h4>
             
-            <h4 class="date">2020-06-10</h4>
+            <h4 class="date">2020-06-24</h4>
       
       <small class="dont-index">Source: <a href="https://github.com/mbannert/timeseriesdb/blob/master/vignettes/get_started.Rmd"><code>vignettes/get_started.Rmd</code></a></small>
       <div class="hidden name"><code>get_started.Rmd</code></div>
@@ -161,28 +161,22 @@
 <p>In {timeseriesdb} <em>every</em> time series belongs to a dataset. If no dataset is specified when a time series is stored, the series automagically gets assigned to the <em>default</em> dataset.</p>
 <p>The idea behind datasets is to group time series according to their source and allow for group level data description. The following helpers help you to explore which keys are in a given set and which keys are in which set.</p>
 <div class="sourceCode" id="cb10"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb10-1" data-line-number="1"><span class="kw"><a href="../reference/db_get_dataset_keys.html">db_get_dataset_keys</a></span>(con, <span class="dt">set_name =</span> <span class="st">"default"</span>)</a></code></pre></div>
-<pre><code>## [1] "AirPassengers"  "JohnsonJohnson"</code></pre>
+<pre><code>## [1] "AirPassengers"</code></pre>
 <div class="sourceCode" id="cb12"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb12-1" data-line-number="1"><span class="kw"><a href="../reference/db_get_dataset_id.html">db_get_dataset_id</a></span>(con, <span class="kw"><a href="https://rdrr.io/r/base/c.html">c</a></span>(<span class="st">"AirPassengers"</span>, <span class="st">"JohnsonJohnson"</span>))</a></code></pre></div>
 <pre><code>##           ts_key  set_id
 ## 1  AirPassengers default
-## 2 JohnsonJohnson default</code></pre>
+## 2 JohnsonJohnson  stocks</code></pre>
 <p>You can easily add new datasets. Note though, that dataset are not user specific, but global groups. The user specific analog to sets is called collection in will be described later on.</p>
 <div class="sourceCode" id="cb14"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb14-1" data-line-number="1"><span class="kw"><a href="../reference/db_create_dataset.html">db_create_dataset</a></span>(con, <span class="st">"stocks"</span>,</a>
 <a class="sourceLine" id="cb14-2" data-line-number="2">                  <span class="dt">set_description =</span> <span class="st">"Stock market returns."</span>)</a></code></pre></div>
-<pre><code>## [1] "stocks"</code></pre>
 <p>Once a set is created you can move existing series to that set.</p>
-<div class="sourceCode" id="cb16"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb16-1" data-line-number="1"><span class="kw"><a href="../reference/db_assign_dataset.html">db_assign_dataset</a></span>(con,<span class="st">"JohnsonJohnson"</span>,<span class="st">"stocks"</span>)</a></code></pre></div>
-<pre><code>## $status
-## [1] "ok"</code></pre>
-<div class="sourceCode" id="cb18"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb18-1" data-line-number="1"><span class="kw"><a href="../reference/db_get_dataset_id.html">db_get_dataset_id</a></span>(con, <span class="kw"><a href="https://rdrr.io/r/base/c.html">c</a></span>(<span class="st">"AirPassengers"</span>, <span class="st">"JohnsonJohnson"</span>))</a></code></pre></div>
-<pre><code>##           ts_key  set_id
-## 1  AirPassengers default
-## 2 JohnsonJohnson  stocks</code></pre>
+<div class="sourceCode" id="cb15"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb15-1" data-line-number="1"><span class="kw"><a href="../reference/db_assign_dataset.html">db_assign_dataset</a></span>(con,<span class="st">"JohnsonJohnson"</span>,<span class="st">"stocks"</span>)</a>
+<a class="sourceLine" id="cb15-2" data-line-number="2"><span class="kw"><a href="../reference/db_get_dataset_id.html">db_get_dataset_id</a></span>(con, <span class="kw"><a href="https://rdrr.io/r/base/c.html">c</a></span>(<span class="st">"AirPassengers"</span>, <span class="st">"JohnsonJohnson"</span>))</a></code></pre></div>
 </div>
 <div id="metadata" class="section level2">
 <h2 class="hasAnchor">
 <a href="#metadata" class="anchor"></a>Metadata</h2>
-<div class="sourceCode" id="cb20"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb20-1" data-line-number="1"><span class="kw"><a href="../reference/db_read_ts_metadata.html">db_read_ts_metadata</a></span>(con, <span class="st">"AirPassengers"</span>)</a></code></pre></div>
+<div class="sourceCode" id="cb16"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb16-1" data-line-number="1"><span class="kw"><a href="../reference/db_read_ts_metadata.html">db_read_ts_metadata</a></span>(con, <span class="st">"AirPassengers"</span>)</a></code></pre></div>
 <pre><code>## Empty object of class tsmeta</code></pre>
 </div>
 <div id="collections-aka-playlists" class="section level2">
