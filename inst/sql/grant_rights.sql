@@ -17,6 +17,10 @@ REVOKE EXECUTE ON FUNCTION timeseries.md_local_upsert FROM public;
 REVOKE EXECUTE ON FUNCTION timeseries.build_meta_status FROM public;
 REVOKE EXECUTE ON FUNCTION timeseries.insert_from_tmp FROM public;
 REVOKE EXECUTE ON FUNCTION timeseries.list_datasets FROM public;
+REVOKE EXECUTE ON FUNCTION timeseries.list_access_levels FROM public;
+REVOKE EXECUTE ON FUNCTION timeseries.access_levels_insert FROM public;
+REVOKE EXECUTE ON FUNCTION timeseries.set_access_level_default FROM public;
+REVOKE EXECUTE ON FUNCTION timeseries.access_levels_delete FROM public;
 
 GRANT EXECUTE ON FUNCTION timeseries.insert_collect_from_tmp TO timeseries_reader;
 GRANT EXECUTE ON FUNCTION timeseries.collection_remove TO timeseries_reader;
@@ -31,6 +35,7 @@ GRANT EXECUTE ON FUNCTION timeseries.get_latest_vintages_metadata TO timeseries_
 GRANT EXECUTE ON FUNCTION timeseries.get_latest_vintages_metadata_localized TO timeseries_reader;
 GRANT EXECUTE ON FUNCTION timeseries.fill_read_tmp_regex TO timeseries_reader;
 GRANT EXECUTE ON FUNCTION timeseries.list_datasets TO timeseries_reader;
+GRANT EXECUTE ON FUNCTION timeseries.list_access_levels TO timeseries_reader;
 
 GRANT EXECUTE ON FUNCTION timeseries.assign_dataset TO timeseries_writer;
 GRANT EXECUTE ON FUNCTION timeseries.md_unlocal_upsert TO timeseries_writer;
