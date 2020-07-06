@@ -1,15 +1,17 @@
 -- create schema, admin, reader, writer
 
--- Create access level role and insert it into newschema.access_levels
+-- Create access level role
 
 -- run R setup on new schema as schema-admin
 
+-- insert access role into newschema.access_levels
 
 -- Fill le catalog
 -- These will all have the default dataset
 INSERT INTO newschema.catalog ts_key (
   SELECT ts_key
   FROM oldschema.timeseries_main
+  LIMIT 1000
 );
 
 
@@ -26,6 +28,9 @@ AS (
          ) AS ts_data,
          NULL AS coverage
   FROM oldschema.timeseries_main
+  WHERE ts_key IN (
+    SELECT ts_key from newschema.catalog
+  )
 );
 
 -- ...the sneaky way
@@ -39,6 +44,9 @@ ON COMMIT DROP
 AS (
   SELECT ts_key, locale_info AS locale, meta_data AS metadata
   FROM oldschema.meta_data_localized
+  WHERE ts_key IN (
+    SELECT ts_key FROM newschema.catalog
+  )
 );
 
 SELECT * FROM newschema.md_local_upsert(CURRENT_DATE, 'overwrite');
@@ -50,6 +58,9 @@ AS (
   SELECT ts_key, meta_data AS metadata
   FROM oldschema.meta_data_unlocalized
   WHERE meta_data IS NOT NULL
+  AND ts_key IN (
+    SELECT ts_key FROM newschema.catalog
+  )
 );
 
 SELECT * FROM newschema.md_unlocal_upsert(CURRENT_DATE, 'overwrite');
