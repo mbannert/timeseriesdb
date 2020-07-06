@@ -10,6 +10,14 @@
 #' @export
 index_to_date <- function (x, as.string = FALSE)
 {
+  if(inherits(x, "Date")) {
+    if(as.string) {
+      return(as.character(x))
+    } else {
+      return(x)
+    }
+  }
+
   # If called as index_to_date(time(a_ts))
   # x is a ts. Unclass it so we can work with the faster basic operators
   x <- c(x)
