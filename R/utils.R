@@ -86,17 +86,12 @@ readPasswordFile <- readLines
 #'             this is often the user for the database, too so you do not have to specify
 #'             your username explicitly if that is the case.
 #' @param host character denoting the hostname. Defaults to localhost.
-#' @param passwd character password. Defaults to NULL triggering an R Studio function that
-#' asks for your passwords interactively if you are on R Studio.
+#' @param passwd character password, file or environment name. Defaults to NULL triggering an R Studio function that
+#' asks for your passwords interactively if you are on R Studio. Make sure to adapt the boolean params correspondingly.
 #' @param passwd_from_file boolean if set to TRUE the passwd param is interpreted as a file
 #'                         location for a password file such as .pgpass. Make sure to be very
 #'                         restrictive with file permissions if you store a password to a file.
 #' @param line_no integer specify line number of password file that holds the actual password.
-#' @param env_pass_name character name of the environment that holds a password. Defaults to NULL.
-#'                      If set, this way of obtaining the password is preferred over all other ways.
-#'                      Other specification will be ignored if this parameter is set.
-#'                      Storing passwords in environment variables can be very handy when
-#'                      working in a docker environment.
 #' @param connection_description character connection description describing the application
 #'                               that connects to the database. This is mainly helpful for
 #'                               DB admins and shows up in the pg_stat_activity table.
