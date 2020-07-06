@@ -18,7 +18,13 @@ install_timeseriesdb <- function(username,
                                  host = "localhost",
                                  port = 5432,
                                  schema = "timeseries") {
-  con <- dbConnect(Postgres(), database, host, port, username, password)
+  # TODO: Should this not take a connection as parameter?
+  con <- dbConnect(Postgres(),
+                   dbname = database,
+                   host = host,
+                   port = port,
+                   user = username,
+                   password = password)
 
   schema_exists <- dbGetQuery(con,
                               "SELECT true
