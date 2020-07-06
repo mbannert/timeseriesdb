@@ -11,19 +11,31 @@ if(is_test_db_reachable()) {
 }
 
 test_with_fresh_db(con, hard_reset = TRUE, "vintage id is a uuid", {
-  store_time_series(con, tsl, access = "timeseries_access_public", valid_from = "2019-01-01")
+  store_time_series(con,
+                    tsl,
+                    access = "tsdb_test_access_public",
+                    valid_from = "2019-01-01",
+                    schema = "tsdb_test")
 
-  out <- dbGetQuery(con, "SELECT * FROM timeseries.timeseries_main")
+  out <- dbGetQuery(con, "SELECT * FROM tsdb_test.timeseries_main")
 
   expect_match(out$id, "[0-9a-fA-F]{8}\\-[0-9a-fA-F]{4}\\-[0-9a-fA-F]{4}\\-[0-9a-fA-F]{4}\\-[0-9a-fA-F]{12}")
 })
 
 test_with_fresh_db(con, hard_reset = TRUE, "it can deal with string valid_from", {
-  expect_error(store_time_series(con, tsl, access = "timeseries_access_public", valid_from = "2019-01-01"),
+  expect_error(store_time_series(con,
+                                 tsl,
+                                 access = "tsdb_test_access_public",
+                                 valid_from = "2019-01-01",
+                                 schema = "tsdb_test"),
                NA)
 })
 
 test_with_fresh_db(con, hard_reset = TRUE, "it can deal with string release_date", {
-  expect_error(store_time_series(con, tsl, access = "timeseries_access_public", release_date = "2019-01-01"),
+  expect_error(store_time_series(con,
+                                 tsl,
+                                 access = "tsdb_test_access_public",
+                                 release_date = "2019-01-01",
+                                 schema = "tsdb_test"),
                NA)
 })

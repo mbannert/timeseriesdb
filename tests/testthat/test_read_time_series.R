@@ -2,29 +2,28 @@
 
 context("read_time_series")
 
-# TODO: move this into helper_db as a fixture
 tsl_state_0 <- list(
-  ts1 = ts(rep(1.9, 10), 2019, frequency = 4)
+  rts1 = ts(rep(1.9, 10), 2019, frequency = 4)
 )
 class(tsl_state_0) <- c("tslist", "list")
 
 tsl_state_1 <- list(
-  ts1 = ts(rep(2, 10), 2019, frequency = 4)
+  rts1 = ts(rep(2, 10), 2019, frequency = 4)
 )
 class(tsl_state_1) <- c("tslist", "list")
 
 tsl_state_2 <- list(
-  ts1 = ts(rep(2.1, 10), 2019, frequency = 4)
+  rts1 = ts(rep(2.1, 10), 2019, frequency = 4)
 )
 class(tsl_state_2) <- c("tslist", "list")
 
 tsl_state_2_v2 <- list(
-  ts1 = ts(rep(2.1415926, 10), 2019, frequency = 4)
+  rts1 = ts(rep(2.1415926, 10), 2019, frequency = 4)
 )
 class(tsl_state_2_v2) <- c("tslist", "list")
 
 tsl_pblc <- list(
-  tsp = ts(rep(3, 10), 2019, frequency = 4)
+  rtsp = ts(rep(3, 10), 2019, frequency = 4)
 )
 class(tsl_pblc) <- c("tslist", "list")
 
@@ -33,83 +32,212 @@ if(is_test_db_reachable()) {
   con_reader_public <- connect_to_test_db("dev_reader_public")
   con_reader_main <- connect_to_test_db("dev_reader_main")
 
-  reset_db(con_admin)
+  prepare_db(con_admin)
 
   current_date <- dbGetQuery(con_admin, "SELECT CURRENT_DATE")$current_date
 
   # TODO: This would be more robust if we took charge of what time it is entirely (on db and here)
   store_time_series(con_admin,
                     tsl_state_0,
-                    "timeseries_access_main",
+                    "tsdb_test_access_main",
                     valid_from = current_date - 4,
-                    release_date = current_date - 4)
+                    release_date = current_date - 4,
+                    schema = "tsdb_test")
   store_time_series(con_admin,
                     tsl_state_1,
-                    "timeseries_access_main",
+                    "tsdb_test_access_main",
                     valid_from = current_date - 3,
-                    release_date = current_date - 1)
+                    release_date = current_date - 1,
+                    schema = "tsdb_test")
   store_time_series(con_admin,
                     tsl_state_2,
-                    "timeseries_access_main",
+                    "tsdb_test_access_main",
                     valid_from = current_date - 1,
-                    release_date = current_date + 2)
+                    release_date = current_date + 2,
+                    schema = "tsdb_test")
   store_time_series(con_admin,
                     tsl_state_2,
-                    "timeseries_access_main",
+                    "tsdb_test_access_main",
                     valid_from = current_date - 1,
-                    release_date = current_date + 2)
+                    release_date = current_date + 2,
+                    schema = "tsdb_test")
   store_time_series(con_admin,
                     tsl_state_2_v2,
-                    "timeseries_access_main",
+                    "tsdb_test_access_main",
                     valid_from = current_date + 1,
-                    release_date = current_date + 2)
+                    release_date = current_date + 2,
+                    schema = "tsdb_test")
 
   store_time_series(con_admin,
                     tsl_pblc,
-                    "timeseries_access_public")
+                    "tsdb_test_access_public",
+                    schema = "tsdb_test")
 }
 
-test_that("public reader may not read main series", {
-  skip_on_cran()
-    tsl_read <- read_time_series(con_reader_public, "ts1")
+test_with_fresh_db(con_admin, "public reader may not read main series", {
+  tsl_read <- read_time_series(con_reader_public, "rts1", schema = "tsdb_test")
   expect_length(tsl_read, 0)
 })
 
-test_that("series with no access get skipped", {
-  skip_on_cran()
-    tsl_read <- read_time_series(con_reader_public, c("ts1", "tsp"))
+test_with_fresh_db(con_admin, "series with no access get skipped", {
+  tsl_read <- read_time_series(con_reader_public, c("rts1", "rtsp"), schema = "tsdb_test")
   expect_equal(tsl_read, tsl_pblc)
 })
 
-test_that("by default it reads the most recent valid vintage", {
-  skip_on_cran()
-    tsl_read <- read_time_series(con_reader_main, "ts1")
+test_with_fresh_db(con_admin, "by default it reads the most recent valid vintage", {
+  tsl_read <- read_time_series(con_reader_main, "rts1", schema = "tsdb_test")
   expect_equal(tsl_read, tsl_state_2)
 })
 
-test_that("by default it reads the most recent valid vintage but with respecting rls date", {
-  skip_on_cran()
-    tsl_read <- read_time_series(con_reader_main, "ts1", respect_release_date = TRUE)
+test_with_fresh_db(con_admin, "by default it reads the most recent valid vintage but with respecting rls date", {
+  tsl_read <- read_time_series(con_reader_main,
+                               "rts1",
+                               respect_release_date = TRUE,
+                               schema = "tsdb_test")
   expect_equal(tsl_read, tsl_state_1)
 })
 
-test_that("reading desired vintages works", {
-  skip_on_cran()
-    tsl_read_1 <- read_time_series(con_reader_main, "ts1", valid_on = current_date - 4)
+test_with_fresh_db(con_admin, "reading desired vintages works", {
+  tsl_read_1 <- read_time_series(con_reader_main,
+                                 "rts1",
+                                 valid_on = Sys.Date() - 4,
+                                 schema = "tsdb_test")
   expect_equal(tsl_read_1, tsl_state_0)
 
-  tsl_read_2 <- read_time_series(con_reader_main, "ts1", valid_on = current_date - 2)
+  tsl_read_2 <- read_time_series(con_reader_main,
+                                 "rts1",
+                                 valid_on = Sys.Date() - 2,
+                                 schema = "tsdb_test")
   expect_equal(tsl_read_2, tsl_state_1)
 })
 
-test_that("reading vintages, respecting release date", {
-  skip_on_cran()
-    tsl_read <- read_time_series(con_reader_main, "ts1", valid_on = current_date - 2, respect_release_date = TRUE)
+test_with_fresh_db(con_admin, "reading vintages, respecting release date", {
+  tsl_read <- read_time_series(con_reader_main,
+                               "rts1",
+                               valid_on = Sys.Date() - 2,
+                               respect_release_date = TRUE,
+                               schema = "tsdb_test")
   expect_equal(tsl_read, tsl_state_1)
 })
 
-test_that("reading via regex works", {
-  skip_on_cran()
-    tsl_read <- read_time_series(con_reader_main, "^ts", regex = TRUE)
-  expect_setequal(names(tsl_read), c("ts1", "tsp"))
+test_with_fresh_db(con_admin, "reading via regex works", {
+  tsl_read <- read_time_series(con_reader_main,
+                               "^rts",
+                               regex = TRUE,
+                               schema = "tsdb_test")
+  expect_setequal(names(tsl_read), c("rts1", "rtsp"))
+})
+
+
+
+# reading datasets --------------------------------------------------------
+context("reading datasets")
+
+test_with_fresh_db(con_admin, "reading a whole dataset works", {
+  tsl_read <- db_read_time_series_dataset(con_reader_main,
+                                          "set_read",
+                                          schema = "tsdb_test")
+
+  exp <- structure(c(tsl_state_2, tsl_pblc), class = c("tslist", "list"))
+
+  expect_equal(tsl_read, exp)
+})
+
+test_with_fresh_db(con_admin, "reading whole dataset, reapecting release date",  {
+  tsl_read <- db_read_time_series_dataset(con_reader_main,
+                                          "set_read",
+                                          respect_release_date = TRUE,
+                                          schema = "tsdb_test")
+
+  exp <- structure(c(tsl_state_1, tsl_pblc), class = c("tslist", "list"))
+
+  expect_equal(tsl_read, exp)
+})
+
+test_with_fresh_db(con_admin, "reading whole dataset, leaving out prohibited series", {
+  tsl_read <- db_read_time_series_dataset(con_reader_public,
+                                          "set_read",
+                                          schema = "tsdb_test")
+
+  expect_equal(tsl_read, tsl_pblc)
+})
+
+test_with_fresh_db(con_admin, "reading older vintages of dataset", {
+  tsl_read <- db_read_time_series_dataset(con_reader_main,
+                                          "set_read",
+                                          valid_on = Sys.Date() - 4,
+                                          schema = "tsdb_test")
+
+  expect_equal(tsl_read, tsl_state_0)
+})
+
+test_with_fresh_db(con_admin, "reading nonexistend set", {
+  tsl_read <- db_read_time_series_dataset(con_reader_main,
+                                          "notaset",
+                                          schema = "tsdb_test")
+
+  expect_is(tsl_read, "tslist")
+  expect_length(tsl_read, 0)
+})
+
+test_with_fresh_db(con_admin, "reading multiple sets", {
+  tsl_read <- db_read_time_series_dataset(con_reader_main,
+                                          c("set_read", "default"),
+                                          schema = "tsdb_test")
+  expect_setequal(names(tsl_read), c("rts1", "rtsp", "vts1", "vts2"))
+})
+
+# reading collections --------------------------------------------------------
+context("reading collections")
+
+test_with_fresh_db(con_admin, "reading a collection works", {
+  tsl_read <- db_read_time_series_collection(con_reader_main,
+                                             "readtest",
+                                             "test",
+                                             schema = "tsdb_test")
+
+  exp <- structure(c(tsl_state_2, tsl_pblc), class = c("tslist", "list"))
+
+  expect_equal(tsl_read, exp)
+})
+
+test_with_fresh_db(con_admin, "reading collection, respecting release date",  {
+  tsl_read <- db_read_time_series_collection(con_reader_main,
+                                          "readtest",
+                                          "test",
+                                          respect_release_date = TRUE,
+                                          schema = "tsdb_test")
+
+  exp <- structure(c(tsl_state_1, tsl_pblc), class = c("tslist", "list"))
+
+  expect_equal(tsl_read, exp)
+})
+
+test_with_fresh_db(con_admin, "reading collection, leaving out prohibited series", {
+  tsl_read <- db_read_time_series_collection(con_reader_public,
+                                          "readtest",
+                                          "test",
+                                          schema = "tsdb_test")
+
+  expect_equal(tsl_read, tsl_pblc)
+})
+
+test_with_fresh_db(con_admin, "reading older vintages of collection", {
+  tsl_read <- db_read_time_series_collection(con_reader_main,
+                                          "readtest",
+                                          "test",
+                                          valid_on = Sys.Date() - 4,
+                                          schema = "tsdb_test")
+
+  expect_equal(tsl_read, tsl_state_0)
+})
+
+test_with_fresh_db(con_admin, "reading nonexistend collection", {
+  tsl_read <- db_read_time_series_collection(con_reader_main,
+                                          "readtest",
+                                          "mineallmine",
+                                          schema = "tsdb_test")
+
+  expect_is(tsl_read, "tslist")
+  expect_length(tsl_read, 0)
 })

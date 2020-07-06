@@ -20,21 +20,17 @@ db_collection_add <- function(con,
   dt <- data.table(
     ts_key = keys)
 
-  dbWriteTable(con,
-               "tmp_collect_updates",
-               dt,
-               temporary = TRUE,
-               overwrite = TRUE,
-               field.types = c(
-                 ts_key = "text")
-  )
-
-  dbExecute(con, "GRANT SELECT ON tmp_collect_updates TO timeseries_admin")
-
-  db_return <- fromJSON(db_call_function(con,
-                                "insert_collect_from_tmp",
-                                list(collection_name, user, description),
-                                schema = schema))
+  db_return <- db_with_temp_table(con,
+                                 "tmp_collect_updates",
+                                 dt,
+                                 field.types = c(
+                                   ts_key = "text"
+                                 ),
+                                 fromJSON(db_call_function(con,
+                                                           "insert_collect_from_tmp",
+                                                           list(collection_name, user, description),
+                                                           schema = schema)),
+                                 schema = schema)
 
   if(db_return$status == "warning") {
     warning(db_return$message)
@@ -65,19 +61,18 @@ db_collection_remove <- function(con,
 
   # write temp table
   dt <- data.table(ts_key = keys)
-  dbWriteTable(con,
-               "tmp_collection_remove",
-               dt,
-               temporary = TRUE,
-               overwrite = TRUE,
-               field.types = c(ts_key = "text")
-  )
 
-  dbExecute(con, "GRANT SELECT ON tmp_collection_remove TO timeseries_admin")
-
-  db_return <- fromJSON(db_call_function(con,
-                                "collection_remove",
-                                list(collection_name, user)))
+  db_return <- db_with_temp_table(con,
+                                  "tmp_collection_remove",
+                                  dt,
+                                  field.types = c(
+                                    ts_key = "text"
+                                  ),
+                                  fromJSON(db_call_function(con,
+                                                            "collection_remove",
+                                                            list(collection_name, user),
+                                                            schema)),
+                                  schema = schema)
 
   if(db_return$status == "error") {
     stop(db_return$message)

@@ -10,7 +10,7 @@ test_that("returns an empty list if there are no ts matching criteria", {
   #                        "bla")),
   #       list()
   #     )
-  #     
+  #
   #     expect_equal(
   #       suppressWarnings(read_time_series("con",
   #                        "bla",
