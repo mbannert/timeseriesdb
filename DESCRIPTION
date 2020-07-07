@@ -15,7 +15,7 @@ Imports:
 Suggests:
     openxlsx,
     knitr,
-    testthat,
+    testthat (>= 2.1.0),
     covr,
     mockery
 VignetteBuilder: knitr
