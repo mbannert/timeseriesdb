@@ -28,7 +28,7 @@ test_with_fresh_db(con_admin, "writer may not create sets", hard_reset = TRUE, {
                       "a set for testing",
                       meta(field = "value"),
                       schema = "tsdb_test"),
-    "Only admins")
+    "sufficient privileges")
 })
 
 test_with_fresh_db(con_admin, "writer may not create sets", hard_reset = TRUE, {
@@ -38,7 +38,7 @@ test_with_fresh_db(con_admin, "writer may not create sets", hard_reset = TRUE, {
                       "a set for testing",
                       meta(field = "value"),
                       schema = "tsdb_test"),
-    "Only admins")
+    "sufficient privileges")
 })
 
 test_with_fresh_db(con_admin, "creating dataset", hard_reset = TRUE, {
@@ -47,7 +47,7 @@ test_with_fresh_db(con_admin, "creating dataset", hard_reset = TRUE, {
                     "a set for testing",
                     meta(field = "value"),
                     schema = "tsdb_test")
-  result <- dbGetQuery(con_admin, "SELECT * FROM tsdb_test.datasets")
+  result <- dbGetQuery(con_admin, "SELECT * FROM tsdb_test.datasets ORDER BY set_id")
 
   expect_is(result$set_md, "pq_json")
 
@@ -85,7 +85,7 @@ test_with_fresh_db(con_admin, "defaults for description and md", hard_reset = TR
                     "defaulttestset",
                     schema = "tsdb_test")
 
-  result <- dbGetQuery(con_admin, "SELECT * FROM tsdb_test.datasets")
+  result <- dbGetQuery(con_admin, "SELECT * FROM tsdb_test.datasets ORDER BY set_id")
 
   result$set_md <- as.character(result$set_md)
 
@@ -152,7 +152,7 @@ test_with_fresh_db(con_admin, "db_get_dataset_id with missing key", {
 test_with_fresh_db(con_admin, "reader may not assign dataset", {
   expect_error(
     db_assign_dataset(con_reader, c("ts3", "ts4"), "set1", schema = "tsdb_test"),
-    "write permissions to assign")
+    "sufficient privileges")
 })
 
 test_with_fresh_db(con_admin, "db_assign_dataset returns status object", {
@@ -193,18 +193,20 @@ test_with_fresh_db(con_admin, "db_assign_dataset errors if set does not exist", 
 # test db_get_list_datasets --------------------------------------------------
 test_with_fresh_db(con_admin, "db_list_datasets returns data frame with correct names", {
   out <- db_list_datasets(con_reader, schema = "tsdb_test")
-  
+
   expected <- data.frame(
     set_id = c("default",
       "set1",
-      "set2"
+      "set2",
+      "set_read"
     ),
     set_description = c("A set that is used if no other set is specified. Every time series needs to be part of a dataset",
       "test set 1",
-      "test set 2"
+      "test set 2",
+      "where the series for read tests live"
     ),
     stringsAsFactors = FALSE
   )
-  
+
   expect_equal(out, expected)
 })
