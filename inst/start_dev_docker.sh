@@ -28,7 +28,7 @@ rm extensions.sql
 sed 's/timeseries/tsdb_test/g' sql/create_dev_admin.sql > admin.sql
 PGPASSWORD=pgking psql -p 1111 -h 'localhost' -d postgres -U postgres -f admin.sql
 rm admin.sql
-R -e "devtools::load_all('../'); install_timeseriesdb('dev_admin', 'dev_admin', 'postgres', 'localhost', 1111, 'tsdb_test')"
+R -e "devtools::load_all('../'); install_timeseriesdb('dev_admin', 'dev_admin', 'postgres', 'localhost', 1111, 'tsdb_test', verbose = TRUE)"
 sed 's/timeseries/tsdb_test/g' sql/finalize_dev_env.sql > fin.sql
 PGPASSWORD=pgking psql -p 1111 -h 'localhost' -d postgres -U postgres -f fin.sql
 rm fin.sql
