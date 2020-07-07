@@ -19,6 +19,7 @@ REVOKE EXECUTE ON FUNCTION timeseries.insert_from_tmp FROM public;
 REVOKE EXECUTE ON FUNCTION timeseries.list_datasets FROM public;
 REVOKE EXECUTE ON FUNCTION timeseries.create_release FROM public;
 REVOKE EXECUTE ON FUNCTION timeseries.update_release FROM public;
+REVOKE EXECUTE ON FUNCTION timeseries.cancel_release FROM public;
 REVOKE EXECUTE ON FUNCTION timeseries.list_releases FROM public;
 REVOKE EXECUTE ON FUNCTION timeseries.list_access_levels FROM public;
 REVOKE EXECUTE ON FUNCTION timeseries.access_levels_insert FROM public;

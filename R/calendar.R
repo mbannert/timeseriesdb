@@ -158,6 +158,17 @@ db_update_release <- function(con,
   parsed
 }
 
+db_cancel_release <- function(con,
+                              release_id,
+                              schema = "timeseries") {
+  db_call_function(con,
+                   "cancel_release",
+                   list(
+                     release_id
+                   ),
+                   schema = schema)
+}
+
 #' List Data on Registered Releases
 #'
 #' @param con RPostgres connection

@@ -220,6 +220,16 @@ test_with_fresh_db(con_admin, "updating a nonexistent release", {
   )
 })
 
+
+# cancel releases ---------------------------------------------------------
+
+test_with_fresh_db(con_admin, "writer may not cancel releases", {
+  expect_error(
+    db_cancel_release(con_writer, "future_release", schema = "tsdb_test"),
+    "Only timeseries admin"
+  )
+})
+
 # list_releases -----------------------------------------------------------
 
 test_with_fresh_db(con_admin, "db_list_releases return shape", {

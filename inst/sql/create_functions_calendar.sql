@@ -129,6 +129,40 @@ SECURITY DEFINER
 SET search_path = timeseries, pg_temp;
 
 
+CREATE FUNCTION timeseries.cancel_release(p_id TEXT)
+RETURNS JSON
+AS $$
+DECLARE
+  v_deleted_id TEXT;
+BEGIN
+  IF EXISTS (
+    SELECT
+    FROM timeseries.release_calendar
+    WHERE id = p_id
+  ) THEN
+    DELETE
+    FROM timeseries.release_calendar
+    WHERE id = p_id
+    AND release_date > CURRENT_TIMESTAMP
+    RETURNING id
+    INTO v_deleted_id;
+
+    IF v_deleted_id IS NOT NULL THEN
+      RETURN json_build_object('status', 'ok');
+    ELSE
+      RETURN json_build_object('status', 'failure',
+                               'message', 'Release ' || p_id || ' has already passed.');
+    END IF;
+  END IF;
+
+  -- deleting a nonexistent release -> fine by us
+  RETURN json_build_object('status', 'ok');
+END;
+$$ LANGUAGE PLPGSQL
+SECURITY DEFINER
+SET search_path = timeseries, pg_temp;
+
+
 -- List all content of the release table
 --
 -- param: p_include_past Should releases in the past be included? Default FALSE

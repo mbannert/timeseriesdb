@@ -50,11 +50,8 @@ export(setup_sql_triggers)
 export(store_time_series)
 import(data.table)
 importFrom(DBI,Id)
-<<<<<<< HEAD
 importFrom(DBI,dbExecute)
-=======
 importFrom(DBI,dbConnect)
->>>>>>> ver_1_0_from_scratch
 importFrom(DBI,dbHasCompleted)
 importFrom(DBI,dbExecute)
 importFrom(DBI,dbQuoteIdentifier)
