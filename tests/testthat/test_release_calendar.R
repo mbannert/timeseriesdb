@@ -47,7 +47,7 @@ test_with_fresh_db(con_admin, "writer may not create releases", {
                       Sys.time(),
                       c("set1"),
                       schema = "tsdb_test"),
-    "Only timeseries admin"
+    "sufficient privileges"
   )
 })
 
@@ -226,7 +226,53 @@ test_with_fresh_db(con_admin, "updating a nonexistent release", {
 test_with_fresh_db(con_admin, "writer may not cancel releases", {
   expect_error(
     db_cancel_release(con_writer, "future_release", schema = "tsdb_test"),
-    "Only timeseries admin"
+    "sufficient privileges"
+  )
+})
+
+test_with_fresh_db(con_admin, "release cancel returns status", {
+  out <- db_cancel_release(con_admin, "future_release", schema = "tsdb_test")
+
+  expect_equal(
+    out,
+    list(
+      status = "ok"
+    )
+  )
+})
+
+test_with_fresh_db(con_admin, "release cancel db state", {
+  db_cancel_release(con_admin, "future_release", schema = "tsdb_test")
+
+  state_calendar <- dbGetQuery(con_admin, "SELECT id
+                                           FROM tsdb_test.release_calendar
+                                           ORDER BY id")
+  expect_equal(
+    state_calendar$id,
+    c("ancient_release", "combo_release", "last_release")
+  )
+
+  state_calendar_sets <- dbGetQuery(con_admin, "SELECT *
+                                                FROM tsdb_test.release_dataset
+                                                WHERE release_id = 'future_release'")
+  expect_equal(nrow(state_calendar_sets), 0)
+})
+
+test_with_fresh_db(con_admin, "cancelling a nonexistent release is a-OK", {
+  out <- db_cancel_release(con_admin, "life_the_universe_and_everything", schema = "tsdb_test")
+
+  expect_equal(
+    out,
+    list(
+      status = "ok"
+    )
+  )
+})
+
+test_with_fresh_db(con_admin, "cancelling a past release is against the auditors' wishes", {
+  expect_error(
+    db_cancel_release(con_admin, "ancient_release", schema = "tsdb_test"),
+    "has already passed"
   )
 })
 

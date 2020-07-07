@@ -129,6 +129,11 @@ SECURITY DEFINER
 SET search_path = timeseries, pg_temp;
 
 
+-- Cancel a scheduled release
+--
+-- Cancelling past releases should not be possible (no rewriting history)
+--
+-- param: p_id ID of the release to cancel
 CREATE FUNCTION timeseries.cancel_release(p_id TEXT)
 RETURNS JSON
 AS $$

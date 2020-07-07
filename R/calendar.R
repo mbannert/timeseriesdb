@@ -158,15 +158,31 @@ db_update_release <- function(con,
   parsed
 }
 
+#' Cancel a Scheduled Release
+#'
+#' Attempts to cancel a release that has already passed will result in an error.
+#'
+#' @param con RPostgres connection object
+#' @param release_id character ID of the release to cancel
+#' @param schema character Timeseries schema name
+#'
+#' @importFrom jsonlite fromJSON
 db_cancel_release <- function(con,
                               release_id,
                               schema = "timeseries") {
-  db_call_function(con,
-                   "cancel_release",
-                   list(
-                     release_id
-                   ),
-                   schema = schema)
+  # TODO: We shoulda try-caught all failures in db_call_function
+  out <- fromJSON(db_call_function(con,
+                                   "cancel_release",
+                                   list(
+                                     release_id
+                                   ),
+                                   schema = schema))
+
+  if(out$status == "failure") {
+    stop(out$message)
+  }
+
+  out
 }
 
 #' List Data on Registered Releases
