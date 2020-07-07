@@ -17,7 +17,8 @@ install_timeseriesdb <- function(username,
                                  database,
                                  host = "localhost",
                                  port = 5432,
-                                 schema = "timeseries") {
+                                 schema = "timeseries",
+                                 verbose = FALSE) {
   # TODO: Should this not take a connection as parameter?
   con <- dbConnect(Postgres(),
                    dbname = database,
@@ -32,15 +33,21 @@ install_timeseriesdb <- function(username,
                               WHERE schema_name = $1;",
                               list(schema))$bool
 
-  if(!schema_exists) {
+  if(length(schema_exists) == 0) {
     # TODO: ya know...
     stop(sprintf("Schema %s does not exist. blabla admin bla documentation"))
   }
 
-  setup_sql_tables(con, schema)
-  setup_sql_functions(con, schema)
-  setup_sql_triggers(con, schema)
-  grant_sql_rights(con, schema)
+  prnt <- function(x) {
+    if(verbose) {
+      message(x)
+    }
+  }
+
+  setup_sql_tables(con, schema, prnt)
+  setup_sql_functions(con, schema, prnt)
+  setup_sql_triggers(con, schema, prnt)
+  grant_sql_rights(con, schema, prnt)
 }
 
 
@@ -97,7 +104,8 @@ setup_sql_roles <- function(con, schema = "timeseries") {
 #' @param con PostgreSQL connection object created by the RPostgres package.
 #' @param schema character schema name, defaults to 'timeseries'.
 #' @export
-setup_sql_tables <- function(con, schema = "timeseries"){
+setup_sql_tables <- function(con, schema = "timeseries", prnt = identity){
+  prnt("Setting up tables...")
   sql <- readLines(system.file("sql/create_tables.sql",
                                package = "timeseriesdb"))
   sql <- gsub("timeseries\\.", sprintf("%s.", schema), sql)
@@ -106,8 +114,10 @@ setup_sql_tables <- function(con, schema = "timeseries"){
   # which is DBI / RPostgres compliant
   lapply(split(sql, cumsum(grepl("CREATE|INSERT INTO",sql))),
          function(x){
+           prnt(x[1])
            dbExecute(con, paste(x, collapse = "\n"))
          })
+  prnt("Done")
 }
 
 
@@ -124,7 +134,8 @@ setup_sql_tables <- function(con, schema = "timeseries"){
 #' @param con PostgreSQL connection object created by the RPostgres package.
 #' @param schema character schema name, defaults to 'timeseries'.
 #' @export
-setup_sql_functions <- function(con, schema = "timeseries"){
+setup_sql_functions <- function(con, schema = "timeseries", prnt = identity){
+  prnt("Setting up functions")
   fls <- list.files(
     system.file(
       "sql",
@@ -135,6 +146,7 @@ setup_sql_functions <- function(con, schema = "timeseries"){
   )
 
   for(f in fls) {
+    prnt(f)
     sql <- readLines(f)
     # [^m] to exclude the TABLE timeseries_main but include timeseries_admin
     sql <- gsub("timeseries([.,_](?!main))", sprintf("%s\\1", schema), sql, perl = TRUE)
@@ -143,10 +155,12 @@ setup_sql_functions <- function(con, schema = "timeseries"){
     # which is DBI / RPostgres compliant
     lapply(split(sql, cumsum(grepl("CREATE FUNCTION",sql))),
            function(x){
+             prnt(x[1])
              dbExecute(con, paste(x, collapse = "\n"))
            })
   }
 
+  prnt("Done")
 }
 
 
@@ -160,7 +174,8 @@ setup_sql_functions <- function(con, schema = "timeseries"){
 #' @param con PostgreSQL connection object created by the RPostgres package.
 #' @param schema character schema name, defaults to 'timeseries'.
 #' @export
-setup_sql_triggers <- function(con, schema = "timeseries"){
+setup_sql_triggers <- function(con, schema = "timeseries", prnt = identity){
+  prnt("Setting up triggers")
   sql <- readLines(system.file("sql/create_triggers.sql",
                                package = "timeseriesdb"))
   sql <- gsub("timeseries", schema, sql)
@@ -169,9 +184,10 @@ setup_sql_triggers <- function(con, schema = "timeseries"){
   # which is DBI / RPostgres compliant
   lapply(split(sql, cumsum(grepl("CREATE FUNCTION|CREATE TRIGGER",sql))),
          function(x){
+           prnt(x[1])
            dbExecute(con, paste(x, collapse = "\n"))
          })
-
+  prnt("Done")
 }
 
 #' Grant execute on {timeseriesdb} functions
@@ -183,13 +199,16 @@ setup_sql_triggers <- function(con, schema = "timeseries"){
 #' @export
 #'
 #' @examples
-grant_sql_rights <- function(con, schema = "timeseries") {
+grant_sql_rights <- function(con, schema = "timeseries", prnt = identity) {
+  prnt("Setting up function rights")
   sql <- readLines(system.file("sql/grant_rights.sql",
                                package = "timeseriesdb"))
   sql <- gsub("timeseries", schema, sql)
 
   lapply(split(sql, cumsum(grepl("GRANT|REVOKE", sql))),
          function(x) {
+           prnt(x[1])
            dbExecute(con, paste(x, collapse = "\n"))
          })
+  prnt("Done")
 }
