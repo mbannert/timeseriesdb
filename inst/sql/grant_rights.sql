@@ -21,6 +21,7 @@ REVOKE EXECUTE ON FUNCTION timeseries.dataset_delete FROM public;
 REVOKE EXECUTE ON FUNCTION timeseries.delete_ts FROM public;
 REVOKE EXECUTE ON FUNCTION timeseries.delete_ts_edge FROM public;
 REVOKE EXECUTE ON FUNCTION timeseries.delete_ts_old_vintages FROM public;
+REVOKE EXECUTE ON FUNCTION timeseries.dataset_trim FROM public;
 REVOKE EXECUTE ON FUNCTION timeseries.prevent_delete_default_dataset FROM public;
 REVOKE EXECUTE ON FUNCTION timeseries.list_access_levels FROM public;
 REVOKE EXECUTE ON FUNCTION timeseries.access_levels_insert FROM public;

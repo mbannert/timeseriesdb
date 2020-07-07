@@ -214,3 +214,30 @@ db_dataset_delete_ <- function(con,
 
   out
 }
+
+#' Remove Vintages from the Beginning of Dataset
+#'
+#' Removes any vintages of the given dataset that are older than a specified date.
+#'
+#' In some cases only the last few versions of time series are of interest. This
+#' function can be used to trim off old vintages that are no longer relevant.
+#'
+#' @param con RPostgres connection object
+#' @param set_id character Name of the set to trim
+#' @param older_than Date cut off point
+#' @param schema character Time series schema name
+#'
+#' @export
+#' @importFrom jsonlite fromJSON
+db_trim_dataset_history <- function(con,
+                            set_id,
+                            older_than,
+                            schema = "timeseries") {
+  fromJSON(db_call_function(con,
+                            "dataset_trim",
+                            list(
+                              set_id,
+                              older_than
+                            ),
+                            schema = schema))
+}

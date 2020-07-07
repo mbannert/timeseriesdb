@@ -296,3 +296,38 @@ test_with_fresh_db(con_admin, "db_delete_dataset with default", {
       )
     })
 })
+
+# trimming dataset history ------------------------------------------------
+
+test_with_fresh_db(con_admin, "writer may not trim dataset", {
+  expect_error(
+    db_trim_dataset_history(con_writer, "default", as.Date("2020-01-30"), schema = "tsdb_test"),
+    "sufficient privileges"
+  )
+})
+
+test_with_fresh_db(con_admin, "trimming datasets returns ok", {
+  out <- db_trim_dataset_history(con_admin, "default", as.Date("2020-01-30"), schema = "tsdb_test")
+
+  expect_equal(
+    out,
+    list(
+      status = "ok"
+    )
+  )
+})
+
+test_with_fresh_db(con_admin, "trimming datasets db state", {
+  db_trim_dataset_history(con_admin, "default", as.Date("2020-01-30"), schema = "tsdb_test")
+
+  mn <- dbGetQuery(con_admin, "SELECT ts_key, validity FROM tsdb_test.timeseries_main where ts_key ~ 'vts' ORDER BY ts_key")
+
+  expect_equal(
+    mn,
+    data.frame(
+      ts_key = c("vts1", "vts2"),
+      validity = c(as.Date("2020-02-01"), as.Date("2020-02-01")),
+      stringsAsFactors = FALSE
+    )
+  )
+})

@@ -182,6 +182,35 @@ $$ LANGUAGE PLPGSQL
 SECURITY DEFINER
 SET search_path = timeseries, pg_temp;
 
+-- Delete vintages older than some date for whole dataset
+--
+-- param: p_dataset The dataset to trim
+-- param p_older_than The cut off point. All vintages older than that date are removed.
+--
+-- tmp_ts_delete_keys (ts_key TEXT)
+CREATE FUNCTION timeseries.dataset_trim(p_dataset TEXT,
+                                        p_older_than DATE)
+RETURNS JSON
+AS $$
+DECLARE v_out JSON;
+BEGIN
+  CREATE TEMPORARY TABLE tmp_ts_delete_keys
+  ON COMMIT DROP
+  AS (
+    SELECT ts_key
+    FROM timeseries.catalog
+    WHERE set_id = p_dataset
+  );
+
+  SELECT * FROM timeseries.delete_ts_old_vintages(p_older_than)
+  INTO v_out;
+
+  RETURN v_out;
+END;
+$$ LANGUAGE PLPGSQL
+SECURITY DEFINER
+SET search_path = timeseries, pg_temp;
+
 -- Read all (accessible) series in a dataset
 --
 -- This function wraps read_ts_raw, filling the tmp_ts_read_keys table with
