@@ -14,7 +14,16 @@ db_with_temp_table <- function(con,
 
   db_grant_to_admin(con, name, schema)
 
-  on.exit(dbRemoveTable(con, name))
+  on.exit(tryCatch(
+    dbRemoveTable(con, name),
+    warning = function(w) {
+      if(grepl("Closing open result set", w)) {
+        NULL
+      } else {
+        warning(w)
+      }
+    })
+  )
 
   force(code)
 }
@@ -43,7 +52,16 @@ db_with_tmp_read <- function(con,
     }
   }
 
-  on.exit(dbRemoveTable(con, "tmp_ts_read_keys"))
+  on.exit(tryCatch(
+    dbRemoveTable(con, "tmp_ts_read_keys"),
+    warning = function(w) {
+      if(grepl("Closing open result set", w)) {
+        NULL
+      } else {
+        warning(w)
+      }
+    })
+  )
 
   if(regex) {
     # Pre-create table to make it belong to SESSION_USER

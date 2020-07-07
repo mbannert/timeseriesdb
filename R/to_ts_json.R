@@ -1,16 +1,17 @@
 #' @importFrom jsonlite toJSON unbox
-#' @importFrom stats frequency time
+#' @importFrom stats frequency time is.ts
 to_ts_json <- function(x, ...){
   UseMethod("to_ts_json")
 }
 
 to_ts_json.tslist <- function(x, ...){
+  # TODO: xts ordered by Date class cause an error here
   l <- lapply(x, function(xx) {
     toJSON(
       list(
-        frequency = unbox(frequency(xx)),
-        time = index_to_date(time(xx), as.string = TRUE), 
-        value = xx
+        frequency = if(is.ts(xx)) { unbox(frequency(xx)) } else { unbox(NA) },
+        time = index_to_date(time(xx), as.string = TRUE),
+        value = c(unclass(xx))
       ),
       digits = NA
     )
@@ -25,7 +26,7 @@ to_ts_json.data.table <- function(x, ...){
     # Syntactically correct: it is NA. Also jsonlite translates NA into null. Neat!
     x[, freq := NA]
   }
-  
+
   dt <- x[, .(
     json = list(
       toJSON(

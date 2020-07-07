@@ -77,7 +77,8 @@ test_with_fresh_db(con_admin, "db_collection_add add new collection & keys", {
   collect_catalog_result <- dbGetQuery(con_admin, "SELECT tsdb_test.collections.id, ts_key FROM tsdb_test.collect_catalog
                                        JOIN tsdb_test.collections
                                        ON tsdb_test.collect_catalog.id = tsdb_test.collections.id
-                                       AND name = 'tests new'")
+                                       AND name = 'tests new'
+                                       ORDER BY tsdb_test.collect_catalog.ts_key")
 
   expect_equal(collect_catalog_result, data.frame(
     id = collections_result$id,
@@ -108,7 +109,8 @@ test_with_fresh_db(con_admin, "reader may create sets and add keys", {
   collect_catalog_result <- dbGetQuery(con_admin, "SELECT tsdb_test.collections.id, ts_key FROM tsdb_test.collect_catalog
                                        JOIN tsdb_test.collections
                                        ON tsdb_test.collect_catalog.id = tsdb_test.collections.id
-                                       AND name = 'tests new'")
+                                       AND name = 'tests new'
+                                       ORDER BY tsdb_test.collect_catalog.ts_key")
 
   expect_equal(collect_catalog_result, data.frame(
     id = collections_result$id,
@@ -269,10 +271,10 @@ test_with_fresh_db(con_admin, "db_collection_delete with missing user+collection
                                         schema = "tsdb_test"))
 
   result_collections <- dbGetQuery(con_admin, "SELECT * FROM tsdb_test.collections")
-  expect_equal(nrow(result_collections), 3)
+  expect_equal(nrow(result_collections), 4)
 
   result_collect_catalog <- dbGetQuery(con_admin, "SELECT * FROM tsdb_test.collect_catalog")
-  expect_equal(nrow(result_collect_catalog), 8)
+  expect_equal(nrow(result_collect_catalog), 10)
 })
 
 test_with_fresh_db(con_admin, "reader may delete collections", {

@@ -47,7 +47,7 @@ test_with_fresh_db(con_admin, "creating dataset", hard_reset = TRUE, {
                     "a set for testing",
                     meta(field = "value"),
                     schema = "tsdb_test")
-  result <- dbGetQuery(con_admin, "SELECT * FROM tsdb_test.datasets")
+  result <- dbGetQuery(con_admin, "SELECT * FROM tsdb_test.datasets ORDER BY set_id")
 
   expect_is(result$set_md, "pq_json")
 
@@ -85,7 +85,7 @@ test_with_fresh_db(con_admin, "defaults for description and md", hard_reset = TR
                     "defaulttestset",
                     schema = "tsdb_test")
 
-  result <- dbGetQuery(con_admin, "SELECT * FROM tsdb_test.datasets")
+  result <- dbGetQuery(con_admin, "SELECT * FROM tsdb_test.datasets ORDER BY set_id")
 
   result$set_md <- as.character(result$set_md)
 
@@ -197,11 +197,13 @@ test_with_fresh_db(con_admin, "db_list_datasets returns data frame with correct 
   expected <- data.frame(
     set_id = c("default",
       "set1",
-      "set2"
+      "set2",
+      "set_read"
     ),
     set_description = c("A set that is used if no other set is specified. Every time series needs to be part of a dataset",
       "test set 1",
-      "test set 2"
+      "test set 2",
+      "where the series for read tests live"
     ),
     stringsAsFactors = FALSE
   )

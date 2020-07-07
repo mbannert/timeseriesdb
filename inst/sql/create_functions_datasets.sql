@@ -49,9 +49,10 @@ CREATE FUNCTION timeseries.keys_in_dataset(id TEXT)
 RETURNS TABLE(ts_key TEXT)
 AS $$
 BEGIN
-  RETURN QUERY SELECT timeseries.catalog.ts_key
-  FROM timeseries.catalog
-  WHERE id = set_id;
+  RETURN QUERY SELECT cat.ts_key
+  FROM timeseries.catalog cat
+  WHERE id = set_id
+  ORDER BY cat.ts_key;
 END;
 $$ LANGUAGE PLPGSQL
 SECURITY DEFINER
@@ -73,7 +74,8 @@ BEGIN
   RETURN QUERY SELECT tmp.ts_key, cat.set_id
   FROM tmp_get_set AS tmp
   LEFT JOIN timeseries.catalog AS cat
-  USING (ts_key);
+  USING (ts_key)
+  ORDER BY cat.set_id;
 END;
 $$ LANGUAGE PLPGSQL
 SECURITY DEFINER
@@ -143,8 +145,9 @@ CREATE FUNCTION timeseries.list_datasets()
 RETURNS TABLE(set_id TEXT, set_description TEXT)
 AS $$
 BEGIN
-  RETURN QUERY SELECT timeseries.datasets.set_id, timeseries.datasets.set_description
-  FROM timeseries.datasets;
+  RETURN QUERY SELECT ds.set_id, ds.set_description
+  FROM timeseries.datasets ds
+  ORDER BY ds.set_id;
 END;
 $$ LANGUAGE PLPGSQL
 SECURITY DEFINER
@@ -171,6 +174,35 @@ BEGIN
   AND p_dataset_name = p_confirm_dataset_name;
 
   RETURN json_build_object('status', 'ok');
+END;
+$$ LANGUAGE PLPGSQL
+SECURITY DEFINER
+SET search_path = timeseries, pg_temp;
+
+-- Read all (accessible) series in a dataset
+--
+-- This function wraps read_ts_raw, filling the tmp_ts_read_keys table with
+-- keys in the desired dataset.
+--
+-- tmp_datasets_read (set_id TEXT)
+CREATE FUNCTION timeseries.read_ts_dataset_raw(p_valid_on DATE DEFAULT CURRENT_DATE,
+                                               p_respect_release_date BOOLEAN DEFAULT FALSE)
+RETURNS TABLE(ts_key TEXT, ts_data JSON)
+AS $$
+BEGIN
+  -- TODO: check for existence of set here? If so: need to RAISE an error as returning
+  --       JSON is not an option
+  CREATE TEMPORARY TABLE tmp_ts_read_keys
+  ON COMMIT DROP
+  AS (
+    SELECT cat.ts_key
+    FROM timeseries.catalog AS cat
+    JOIN tmp_datasets_read
+    USING(set_id)
+  );
+
+  RETURN QUERY
+  SELECT * FROM timeseries.read_ts_raw(p_valid_on, p_respect_release_date);
 END;
 $$ LANGUAGE PLPGSQL
 SECURITY DEFINER

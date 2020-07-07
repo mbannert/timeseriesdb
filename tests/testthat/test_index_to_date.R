@@ -21,3 +21,9 @@ test_that("it zero-pads the month", {
   x <- index_to_date(2019, as.string = TRUE)
   expect_true(grepl("-01-01", x))
 })
+
+test_that("It eats Dates", {
+  x <- index_to_date(as.Date("2020-02-02"), as.string = TRUE)
+
+  expect_equal(x, "2020-02-02")
+})
