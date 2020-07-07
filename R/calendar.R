@@ -11,6 +11,7 @@
 #' @param target_frequency Frequency of the data (e.g. 4 for quarterly)
 #' @param note Additional remarks about the release.
 #' @param schema timeseries schema name
+#' @param datasets character Names of datasets to include in this release
 #'
 #' @details
 #' target_period changes meaning depending on the frequency of the release.
