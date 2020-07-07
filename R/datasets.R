@@ -208,6 +208,8 @@ db_dataset_delete_ <- function(con,
 
   if(out$status == "warning") {
     warning(out$reason)
+  } else if (out$status == "failure") {
+    stop(out$message)
   }
 
   out

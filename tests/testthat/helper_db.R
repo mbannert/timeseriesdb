@@ -20,7 +20,9 @@ reset_db <- function(con) {
   dbExecute(con, "DELETE FROM tsdb_test.metadata_localized")
   dbExecute(con, "DELETE FROM tsdb_test.timeseries_main")
   dbExecute(con, "DELETE FROM tsdb_test.catalog")
+  dbExecute(con, "ALTER TABLE tsdb_test.datasets DISABLE TRIGGER no_delete_default_dataset")
   dbExecute(con, "DELETE FROM tsdb_test.datasets")
+  dbExecute(con, "ALTER TABLE tsdb_test.datasets ENABLE TRIGGER no_delete_default_dataset")
   dbExecute(con, "ALTER TABLE tsdb_test.access_levels DISABLE TRIGGER access_level_no_delete_default")
   dbExecute(con, "DELETE FROM tsdb_test.access_levels")
   dbExecute(con, "ALTER TABLE tsdb_test.access_levels ENABLE TRIGGER access_level_no_delete_default")
@@ -44,6 +46,18 @@ prepare_db <- function(con,
     set_md = c(
       '{"testno": 1}',
       '{"testno": 2}',
+      NA
+    )
+  )
+
+  default_dataset <- data.frame(
+    set_id = c(
+      "default"
+    ),
+    set_description = c(
+      "A set that is used if no other set is specified. Every time series needs to be part of a dataset"
+    ),
+    set_md = c(
       NA
     )
   )
@@ -395,6 +409,11 @@ prepare_db <- function(con,
   dbWriteTable(con,
                DBI::Id(schema = "tsdb_test", table = "access_levels"),
                access_levels,
+               append = TRUE)
+
+  dbWriteTable(con,
+               DBI::Id(schema = "tsdb_test", table = "datasets"),
+               default_dataset,
                append = TRUE)
 
   if(init_datasets) {

@@ -174,6 +174,9 @@ BEGIN
   AND p_dataset_name = p_confirm_dataset_name;
 
   RETURN json_build_object('status', 'ok');
+EXCEPTION
+  WHEN triggered_action_exception THEN
+    RETURN json_build_object('status', 'failure', 'message', p_dataset_name || ' is the default dataset and may not be deleted.');
 END;
 $$ LANGUAGE PLPGSQL
 SECURITY DEFINER

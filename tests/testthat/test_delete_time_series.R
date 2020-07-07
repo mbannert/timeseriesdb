@@ -20,7 +20,7 @@ test_with_fresh_db(con_admin, "writer may not delete whole ts", {
     {
       expect_error(
         db_delete_time_series(con_writer, "vts1", schema = "tsdb_test"),
-        "Only timeseries admins"
+        "sufficient privileges"
       )
     }
   )
@@ -72,7 +72,7 @@ context("deleting ts - edge")
 test_with_fresh_db(con_admin, "writer may not delete edge", {
   expect_error(
     db_delete_latest_vintage(con_writer, c("vts1", "vts2"), schema = "tsdb_test"),
-    "Only timeseries admins"
+    "sufficient privileges"
   )
 })
 
@@ -111,7 +111,7 @@ context("deleting ts - trimming old vintages")
 test_with_fresh_db(con_admin, "writer may not delete old vintages", {
   expect_error(
     db_trim_history(con_writer, "vts1", as.Date("2020-01-10"), "tsdb_test"),
-    "Only timeseries admins"
+    "sufficient privileges"
   )
 })
 
