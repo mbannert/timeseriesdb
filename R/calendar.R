@@ -150,6 +150,8 @@ db_update_release <- function(con,
   if(parsed$status != "ok") {
     if("missing_datasets" %in% names(parsed)) {
       stop(sprintf("Some datasets do not exist: %s", paste(parsed$missing_datasets, collapse = ", ")))
+    } else {
+      stop(parsed$message)
     }
   }
 

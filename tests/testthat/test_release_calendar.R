@@ -208,6 +208,17 @@ test_with_fresh_db(con_admin, "partially updating a release", {
   )
 })
 
+test_with_fresh_db(con_admin, "updating a nonexistent release", {
+  expect_error(
+    db_update_release(con_admin,
+                      id = "phishing_blindly",
+                      title = "A new title",
+                      release_date = as.Date("2031-04-01"),
+                      target_period = 3,
+                      schema = "tsdb_test"),
+    "phishing_blindly does not exist"
+  )
+})
 
 # list_releases -----------------------------------------------------------
 

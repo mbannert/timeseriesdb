@@ -80,6 +80,14 @@ AS $$
 DECLARE
   v_nonexistent_datasets TEXT[];
 BEGIN
+  IF NOT EXISTS (
+    SELECT FROM timeseries.release_calendar
+    WHERE id = p_id
+  ) THEN
+    RETURN json_build_object('status', 'failure',
+                             'message', 'Release ' || p_id || ' does not exist.');
+  END IF;
+
   IF p_sets_change THEN
     SELECT array_agg(tmp.set_id)
     FROM tmp_release_update AS tmp
@@ -91,6 +99,7 @@ BEGIN
 
     IF array_length(v_nonexistent_datasets, 1) != 0 THEN
       RETURN json_build_object('status', 'failure',
+                               -- TODO: change ALL OF THESE to 'message', not 'reason' (except maybe the rainbow one)
                                'reason', 'Some datasets do not exist.',
                                'missing_datasets', v_nonexistent_datasets);
     END IF;
