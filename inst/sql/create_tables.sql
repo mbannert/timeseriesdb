@@ -17,7 +17,7 @@ CREATE UNIQUE INDEX ON timeseries.access_levels(is_default) WHERE is_default = t
 CREATE TABLE timeseries.catalog(
     ts_key TEXT PRIMARY KEY,
     set_id TEXT DEFAULT 'default',
-    FOREIGN KEY (set_id) REFERENCES timeseries.datasets(set_id) --ON DELETE CASCADE
+    FOREIGN KEY (set_id) REFERENCES timeseries.datasets(set_id) ON DELETE CASCADE
 );
 
 CREATE TABLE timeseries.timeseries_main(
