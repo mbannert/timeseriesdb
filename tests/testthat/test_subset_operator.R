@@ -17,6 +17,6 @@ test_that("subset works",{
   tsl_copy <- tsl
   tsl_copy[[2]] <- NULL
   expect_equal(x, tsl_copy)
-  
-  
+
+
 })

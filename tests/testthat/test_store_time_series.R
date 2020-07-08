@@ -7,7 +7,7 @@ tsl <- list(
 class(tsl) <- c("tslist", "list")
 
 dt <- data.table(
-  id = c("ts1", "ts2"),
+  id = rep(c("ts1", "ts2"), each = 2),
   time = seq(as.Date("2019-01-01"), length.out = 2, by = "1 month"),
   value = 1:4
 )
@@ -31,9 +31,9 @@ test_that("it calls through to store_records", {
         "release_date",
         "schema"
       )
-      
+
       expect_called(store_recs, 1)
-      
+
       expect_args(
         store_recs,
         1,
@@ -70,6 +70,14 @@ test_that("it handles non-ts-likes", {
     })
 })
 
+test_that("It handles duplicate names", {
+  tsl_local <- tsl
+  names(tsl_local) <- c("tsa", "tsa")
+  expect_error(
+    store_time_series("con", tsl_local, "release", "access"),
+    "duplicate keys"
+  )
+})
 
 # # store time series from data.table  ##########################
 
@@ -116,4 +124,42 @@ test_that("it handles empty lists", {
 test_that("it complains when it gets a non-ts_dt", {
   dt <- data.table(gronkh = numeric(), knight_in_shining_armour = numeric())
   expect_error(store_time_series("con", dt, "release", "access"))
+})
+
+test_that("it complains about character-ts in list", {
+  char_tsl <- list(
+    ts1 = ts(letters, 2020, frequency = 12)
+  )
+
+  # Yes I am using my knowledge that the db is not hit in this case. Sue me.
+  expect_error(
+    store_time_series("con", char_tsl, "release", "access"),
+    "numeric"
+  )
+})
+
+test_that("it complains about character-ts in dt", {
+  char_dt <- data.table(
+    id = "tss",
+    time = seq(Sys.Date(), length.out = 26, by = "1 months"), # thehe
+    value = letters
+  )
+
+  expect_error(
+    store_time_series("con", char_dt, "release", "access"),
+    "numeric"
+  )
+})
+
+test_that("id complains about duplicate series in dt", {
+  dup_dt <- data.table(
+    id = "dupli_mac_dupleton",
+    time = rep(seq(Sys.Date(), length.out = 13, by = "3 month"), each = 2),
+    value = pi
+  )
+
+  expect_error(
+    store_time_series("con", dup_dt, "release", "access"),
+    "duplicated"
+  )
 })

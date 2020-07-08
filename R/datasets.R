@@ -27,7 +27,7 @@ db_create_dataset <- function(con,
                    set_md,
                    jsonlite::toJSON(set_md, auto_unbox = TRUE, null = "null"))
 
-  # TODO: Catch duplicate key error and thrown more informative one
+  # TODO: use JSON return
   tryCatch(
     db_call_function(con,
                    "create_dataset",
@@ -38,9 +38,7 @@ db_create_dataset <- function(con,
                    ),
                    schema),
     error = function(e) {
-      if(grepl("permission denied for function create_dataset", e)) {
-        stop("Only admins may create new datasets.")
-      } else if(grepl("violates unique constraint \"datasets_pkey\"", e)) {
+      if(grepl("violates unique constraint \"datasets_pkey\"", e)) {
         stop("A dataset by that name already exists.")
       } else {
         stop(e)
@@ -81,20 +79,17 @@ db_get_dataset_keys <- function(con,
 db_get_dataset_id <- function(con,
                                ts_keys,
                                schema = "timeseries") {
-  dbWriteTable(con,
-               "tmp_get_set",
-               data.frame(ts_key = ts_keys),
-               temporary = TRUE,
-               overwrite = TRUE,
-               field.types = c(
-                 ts_key = "text"
-               ))
 
-  grant <- dbExecute(con, "GRANT SELECT ON tmp_get_set TO timeseries_admin")
-
-  db_call_function(con,
-                   "get_set_of_keys",
-                   schema = schema)
+  db_with_temp_table(con,
+                     "tmp_get_set",
+                     data.frame(ts_key = ts_keys),
+                     field.types = c(
+                       ts_key = "text"
+                     ),
+                     db_call_function(con,
+                                      "get_set_of_keys",
+                                      schema = schema),
+                     schema = schema)
 }
 
 #' Assign Time Series Identifiers to a Dataset
@@ -118,34 +113,21 @@ db_assign_dataset <- function(con,
                               set_name,
                               schema = "timeseries") {
 
-  dbWriteTable(con,
-               "tmp_set_assign",
-               data.frame(ts_key = ts_keys),
-               temporary = TRUE,
-               overwrite = TRUE,
-               field.types = c(
-                 ts_key = "text"
-               ))
-
-  grant <- dbExecute(con, "GRANT SELECT ON tmp_set_assign TO timeseries_admin")
-
   # Error case: Set does not exist
   # Warning case: Only some keys found in catalog
   # Success case: you know what that means...
-  out <- tryCatch(
-    db_call_function(con,
-       "assign_dataset",
-       list(
-         set_name
-       ),
-       schema),
-    error = function(e) {
-      if(grepl("permission denied for function assign_dataset", e)) {
-        stop("You need write permissions to assign time series to datasets.")
-      } else {
-        stop(e)
-      }
-    })
+
+  out <- db_with_temp_table(con,
+                           "tmp_set_assign",
+                           data.frame(ts_key = ts_keys),
+                           field.types = c(ts_key = "text"),
+                           db_call_function(con,
+                            "assign_dataset",
+                            list(
+                              set_name
+                            ),
+                            schema),
+                           schema = schema)
 
   out_parsed <- jsonlite::fromJSON(out)
 
@@ -157,4 +139,105 @@ db_assign_dataset <- function(con,
 
   # Why not both (well, one and a half)?
   out_parsed
+}
+
+#' Get All available datasets and their description
+#'
+#' @param con RPostgres connection object
+#' @param schema character Name of timeseries schema
+#'
+#' @return data.frame with columns `set_id` and `set_description`
+#' @export
+db_list_datasets <- function(con,
+                                 schema = "timeseries") {
+
+  db_call_function(con,
+                   "list_datasets",
+                   schema = schema)
+}
+
+
+#' Irrevocably delete all time series in a set and the set itself
+#'
+#' This function can only be used manually.
+#' It asks the user to manually input confirmation to prevent accidental
+#' unintentional deletion of datasets.
+#'
+#' @param con PostgreSQL connection
+#' @param set_name character Name of the set to delete
+#' @param schema character Name of timeseries schema
+#'
+#' @return character Name of the deleted set, NA on failure
+#' @export
+#'
+db_dataset_delete <- function(con,
+                              set_name,
+                              schema = "timeseries") {
+  message("This will permanently delete ALL time series associated with that set,\n**including their histories**.")
+  confirmation <- readline("Retype dataset name to confirm: ")
+  db_dataset_delete_(con, set_name, confirmation, schema)
+}
+
+# TODO: with_mock solves the need for this extra layer.
+
+# This is the unexported counterpart of db_dataset_delete
+# The idea is to have it in this form for testing, though the benefit
+# may be marginal.
+# To prevent users from directly calling this function via `:::`
+# it will throw an error unless called from inside `db_dataset_delete`
+#' @importFrom jsonlite fromJSON
+db_dataset_delete_ <- function(con,
+                               set_name,
+                               set_name_confirm,
+                               schema = "timeseries") {
+  if(set_name_confirm != set_name) {
+    stop("Confirmation failed!")
+  }
+
+  if(is.null(sys.call(-1)) || as.character(as.list(sys.call(-1))[[1]]) != "db_dataset_delete") {
+    stop("This function is not to be called directly!")
+  }
+
+  out <- fromJSON(db_call_function(con,
+                                   "dataset_delete",
+                                   list(
+                                     set_name,
+                                     set_name_confirm
+                                   ),
+                                   schema = schema))
+
+  if(out$status == "warning") {
+    warning(out$reason)
+  } else if (out$status == "failure") {
+    stop(out$message)
+  }
+
+  out
+}
+
+#' Remove Vintages from the Beginning of Dataset
+#'
+#' Removes any vintages of the given dataset that are older than a specified date.
+#'
+#' In some cases only the last few versions of time series are of interest. This
+#' function can be used to trim off old vintages that are no longer relevant.
+#'
+#' @param con RPostgres connection object
+#' @param set_id character Name of the set to trim
+#' @param older_than Date cut off point
+#' @param schema character Time series schema name
+#'
+#' @export
+#' @importFrom jsonlite fromJSON
+db_trim_dataset_history <- function(con,
+                            set_id,
+                            older_than,
+                            schema = "timeseries") {
+  fromJSON(db_call_function(con,
+                            "dataset_trim",
+                            list(
+                              set_id,
+                              older_than
+                            ),
+                            schema = schema))
 }

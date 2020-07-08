@@ -5,7 +5,7 @@
 -- tmp_collect_updates has columns (ts_key TEXT)
 --
 -- returns: JSON {"status": "", "message": "", ["invalid_keys": [""]]}
-CREATE FUNCTION timeseries.insert_collect_from_tmp(collection_name TEXT,
+CREATE OR REPLACE FUNCTION timeseries.insert_collect_from_tmp(collection_name TEXT,
                                                    col_owner TEXT,
                                                    description TEXT)
 RETURNS JSON
@@ -69,7 +69,7 @@ SET search_path = timeseries, pg_temp;
 -- param: col_owner the owner of the collection
 --
 -- returns: json {"status": "", "message": "", ["removed_collection"]: ""}
-CREATE FUNCTION timeseries.collection_remove(col_name TEXT, col_owner TEXT)
+CREATE OR REPLACE FUNCTION timeseries.collection_remove(col_name TEXT, col_owner TEXT)
 RETURNS JSON
 AS $$
 DECLARE
@@ -138,7 +138,7 @@ SET search_path = timeseries, pg_temp;
 -- param: col_owner the owner of the collection
 --
 -- returns: json {"status": "", "message": "", ["id"]: ""}
-CREATE FUNCTION timeseries.collection_delete(col_name TEXT,
+CREATE OR REPLACE FUNCTION timeseries.collection_delete(col_name TEXT,
                                              col_owner TEXT)
 RETURNS JSON
 AS $$
@@ -150,7 +150,7 @@ BEGIN
   WHERE name = col_name
   AND owner = col_owner) THEN
     RETURN json_build_object('status', 'warning',
-                             'message', 'Collection cound not be found for this user.');
+                             'message', 'Collection could not be found for this user.');
   ELSE
     DELETE FROM timeseries.collections
     WHERE owner = col_owner
@@ -162,6 +162,36 @@ BEGIN
                              'message', 'Collection successfully deleted',
                              'id', deleted_id);
   END IF;
+END;
+$$ LANGUAGE PLPGSQL
+SECURITY DEFINER
+SET search_path = timeseries, pg_temp;
+
+-- Read all (accessible) series in a collection
+--
+-- This function wraps read_ts_raw, filling the tmp_ts_read_keys table with
+-- keys in the desired collection.
+CREATE OR REPLACE FUNCTION timeseries.read_ts_collection_raw(
+                                                  p_name TEXT,
+                                                  p_owner TEXT,
+                                                  p_valid_on DATE DEFAULT CURRENT_DATE,
+                                                  p_respect_release_date BOOLEAN DEFAULT FALSE)
+RETURNS TABLE(ts_key TEXT, ts_data JSON)
+AS $$
+BEGIN
+  CREATE TEMPORARY TABLE tmp_ts_read_keys
+  ON COMMIT DROP
+  AS (
+    SELECT colcat.ts_key
+    FROM timeseries.collections col
+    JOIN timeseries.collect_catalog colcat
+    ON col.id = colcat.id
+    WHERE col.owner = p_owner
+      AND col.name = p_name
+  );
+
+  RETURN QUERY
+  SELECT * FROM timeseries.read_ts_raw(p_valid_on, p_respect_release_date);
 END;
 $$ LANGUAGE PLPGSQL
 SECURITY DEFINER

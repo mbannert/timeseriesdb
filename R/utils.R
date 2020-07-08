@@ -10,16 +10,24 @@
 #' @export
 index_to_date <- function (x, as.string = FALSE)
 {
+  if(inherits(x, "Date")) {
+    if(as.string) {
+      return(as.character(x))
+    } else {
+      return(x)
+    }
+  }
+
   # If called as index_to_date(time(a_ts))
   # x is a ts. Unclass it so we can work with the faster basic operators
   x <- c(x)
-  
+
   years <- floor(x + 1/24)
   months <- floor(12*(x - years + 1/24)) + 1
   # No support for days currently
   # datestr <- paste(years, months, 1, sep = "-")
   datestr <- sprintf("%d-%02d-01", years, months)
-  
+
   if(!as.string) {
     return(as.Date(datestr))
   } else {
@@ -70,54 +78,74 @@ get_list_depth <- function(this) {
 }
 
 
+# Mocking functions from base does not work :shrug:
+readPasswordFile <- readLines
+
+
 #' Create Database Connection
-#' 
+#'
 #' Connects to the PostgreSQL database backend of timeseriesdb. This function
 #' is convenience wrapper around DBI's dbConnect. It's less general than the DBI
-#' function and only works for PostgreSQL, but it is a little more convenient 
+#' function and only works for PostgreSQL, but it is a little more convenient
 #' because of its defaults / assumptions.
-#' 
+#'
 #' @param dbname character name of the database.
-#' @param user character name of the database user. Defaults to the user of the R session. this is often the user for the database, too so you do not have to specify your username explicitly if that is the case.
+#' @param user character name of the database user. Defaults to the user of the R session.
+#'             this is often the user for the database, too so you do not have to specify
+#'             your username explicitly if that is the case.
 #' @param host character denoting the hostname. Defaults to localhost.
-#' @param passwd character password. Defaults to NULL triggering an R Studio function that
-#' asks for your passwords interactively if you are on R Studio. 
-#' @param passwd_from_file boolean if set to TRUE the passwd param is interpreted as a file location for a password file such as .pgpass. Make sure to be very restrictive with file permissions if you store a password to a file. 
+#' @param passwd character password, file or environment name. Defaults to NULL triggering an R Studio function that
+#' asks for your passwords interactively if you are on R Studio. Make sure to adapt the boolean params correspondingly.
+#' @param passwd_from_file boolean if set to TRUE the passwd param is interpreted as a file
+#'                         location for a password file such as .pgpass. Make sure to be very
+#'                         restrictive with file permissions if you store a password to a file.
 #' @param line_no integer specify line number of password file that holds the actual password.
-#' @param env_pass_name character name of the environment that holds a password. Defaults to NULL. If set, this way of obtaining the password is preferred over all other ways. Other specification will be ignored if this parameter is set. Storing passwords in environment variables can be very handy when working in a docker environment. 
-#' @param connection_description character connection description describing the application that connects to the database. This is mainly helpful for DB admins and shows up in the pg_stat_activity table. Defaults to 'timeseriesdb'. Avoid spaces as this is a psql option. 
-#' @param port integer defaults to 5432, the PostgreSQL standard port. 
+#' @param connection_description character connection description describing the application
+#'                               that connects to the database. This is mainly helpful for
+#'                               DB admins and shows up in the pg_stat_activity table.
+#'                               Defaults to 'timeseriesdb'. Avoid spaces as this is a psql option.
+#' @param port integer defaults to 5432, the PostgreSQL standard port.
 #' @importFrom RPostgres Postgres
 #' @importFrom DBI dbConnect
 #' @export
 db_create_connection <- function(dbname,
-                          user = Sys.info()['user'],
+                          user = Sys.info()[['user']],
                           host = "localhost",
                           passwd = NULL,
                           passwd_from_file = FALSE,
                           line_no = 1,
-                          env_pass_name = NULL,
+                          passwd_from_env = FALSE,
                           connection_description = "timeseriesdb",
                           port = 5432){
-  if(!is.null(env_pass_name)){
-    passwd <- Sys.getenv(env_pass_name)
+  if(passwd_from_env){
+    env_name <- passwd
+    passwd <- Sys.getenv(env_name)
     if(passwd == "") {
-      stop(sprintf("Could not find password in %s!", env_pass_name))
+      stop(sprintf("Could not find password in %s!", env_name))
     }
-  } else {
-    
-    if(is.null(passwd) & !passwd_from_file & commandArgs()[1] == "RStudio"){
+  } else if(passwd_from_file) {
+    if(!file.exists(passwd)) {
+      stop("Password file does not exist.")
+    }
+
+    pwdlines <- readPasswordFile(passwd)
+    nlines <- length(pwdlines)
+
+    if(nlines < line_no) {
+      stop(sprintf("line_no too great (password file only has %d lines)", nlines))
+    }
+
+    passwd <- pwdlines[line_no]
+  } else if(is.null(passwd)) {
+    if(commandArgs()[1] == "RStudio") {
       passwd <- .rs.askForPassword("Please enter your database password: ")
+    } else {
+      stop("Unable to obtain password. Please use passwd_from_file or pass the password directly via passwd.")
     }
-    
-    if(passwd_from_file){
-      passwd <- readLines(passwd)[line_no]
-    }
-    
   }
 
   options <- sprintf("--application_name=%s", connection_description)
-  
+
   dbConnect(drv = Postgres(),
             dbname = dbname,
             user = user,
@@ -150,12 +178,43 @@ db_call_function <- function(con,
                    ifelse(length(args) > 0,
                           paste(sprintf("$%d", 1:length(args)), collapse = ", "),
                           ""))
-  
-  res <- dbGetQuery(con, query, args)
-  
+
+  res <- tryCatch(
+    dbGetQuery(con, query, args),
+    error = function(e) {
+      if(grepl("permission denied for function", e)) {
+        stop("You do not have sufficient privileges to perform this action.")
+      } else {
+        stop(e)
+      }
+    })
+
   if(fname %in% names(res)) {
     res[[fname]] # query returns value (e.g. JSON) -> unwrap the value
   } else {
     res # query returns table -> just return the DF as it comes
   }
+}
+
+
+#' GRANT all rights on a (temp) table to schema admin
+#'
+#' The SECURITY DEFINER functions do not have access to tables that
+#' are stored via dbWriteTable. Usage rights on these tables must
+#' be granted for them to be usable inside the db functions
+#'
+#' @param con RPostgres connection
+#' @param table which table to grant rights on
+#' @param schema name of the timeseries schema being worked with
+#'
+#' @importFrom DBI dbExecute dbQuoteIdentifier
+#'
+#' @export
+db_grant_to_admin <- function(con,
+                              table,
+                              schema = "timeseries") {
+  dbExecute(con,
+            sprintf("GRANT SELECT, UPDATE, INSERT, DELETE ON %s TO %s",
+                    dbQuoteIdentifier(con, table),
+                    dbQuoteIdentifier(con, sprintf("%s_admin", schema))))
 }

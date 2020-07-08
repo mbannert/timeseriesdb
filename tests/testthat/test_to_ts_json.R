@@ -11,7 +11,7 @@ test_that("it works on tslists", {
     my_ts = ts(1:5, start = 2019, frequency = 12)
   )
   class(tsl) <- c("tslist", "list")
-  
+
   tsj <- to_ts_json(tsl)
   test_tsj(tsj)
 })
@@ -21,7 +21,7 @@ test_that("it pretty-unboxes ts of length 1", {
     my_ts = ts(1, start = 2019, frequency = 12)
   )
   class(tsl) <- c("tslist", "list")
-  
+
   tsj <- to_ts_json(tsl)
   expect_equal(unclass(tsj[[1]]), '{"frequency":12,"time":["2019-01-01"],"value":[1]}')
 })
@@ -31,7 +31,7 @@ test_that("it does not throw away precision", {
     my_ts = ts(rep(pi, 100), start = 2019, frequency = 12)
   )
   class(tsl) <- c("tslist", "list")
-  
+
   tsj <- to_ts_json(tsl)
   expect_match(as.character(tsj), as.character(pi))
 })
@@ -45,7 +45,7 @@ test_that("it works on ts_dts", {
     value = 1:5,
     freq = 12
   )
-  
+
   tsj <- to_ts_json(dt)
   test_tsj(tsj)
 })
@@ -57,7 +57,7 @@ test_that("it pretty-unboxes ts of length 1", {
     value = 1,
     freq = 12
   )
-  
+
   tsj <- to_ts_json(dt)
   expect_equal(unclass(tsj[[1]]), '{"frequency":12,"time":["2019-01-01"],"value":[1]}')
 })
@@ -68,7 +68,7 @@ test_that("it sets frequency to null when unknown", {
     time = seq(as.Date("2019-01-01"), length.out = 1, by = "1 month"),
     value = 1
   )
-  
+
   tsj <- to_ts_json(dt)
   expect_equal(unclass(tsj[[1]]), '{"frequency":null,"time":["2019-01-01"],"value":[1]}')
 })
@@ -79,7 +79,7 @@ test_that("assigning names works with nTs > 1", {
     time = seq(as.Date("2019-01-01"), length.out = 2, by = "1 month"),
     value = 1:4
   )
-  
+
   # This is testthat for "expect to not throw an error"
   expect_error(to_ts_json(dt), NA)
 })
@@ -90,7 +90,22 @@ test_that("it does not throw away precision", {
     time = seq(as.Date("2019-01-01"), length.out = 10, by = "1 month"),
     value = pi
   )
-  
+
   tsj <- to_ts_json(dt)
   expect_match(as.character(tsj), as.character(pi))
+})
+
+test_that("It eats irregular time series", {
+  x_ts <- list(
+    xxts = xts::xts(
+      c(1, 2, 3),
+      order.by = c(zoo::as.yearmon("2019-01-01"), zoo::as.yearmon("2020-01-01"), zoo::as.yearmon("2020-03-01"))
+  ))
+  class(x_ts) <- c("tslist", "list")
+  tsj <- to_ts_json(x_ts)
+
+  expect_equal(
+    unclass(tsj[[1]]),
+    '{"frequency":null,"time":["2019-01-01","2020-01-01","2020-03-01"],"value":[1,2,3]}'
+  )
 })

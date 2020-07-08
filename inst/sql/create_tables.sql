@@ -17,8 +17,7 @@ CREATE UNIQUE INDEX ON timeseries.access_levels(is_default) WHERE is_default = t
 CREATE TABLE timeseries.catalog(
     ts_key TEXT PRIMARY KEY,
     set_id TEXT DEFAULT 'default',
-    data_desc JSONB,
-    FOREIGN KEY (set_id) REFERENCES timeseries.datasets(set_id) --ON DELETE CASCADE
+    FOREIGN KEY (set_id) REFERENCES timeseries.datasets(set_id) ON DELETE CASCADE
 );
 
 CREATE TABLE timeseries.timeseries_main(
@@ -32,7 +31,7 @@ CREATE TABLE timeseries.timeseries_main(
   ts_data JSON,
   access TEXT,
   UNIQUE (ts_key, validity),
-  FOREIGN KEY (ts_key) REFERENCES timeseries.catalog(ts_key), --ON DELETE CASCADE
+  FOREIGN KEY (ts_key) REFERENCES timeseries.catalog(ts_key) ON DELETE CASCADE,
   FOREIGN KEY (access) REFERENCES timeseries.access_levels(role)
 );
 
@@ -72,5 +71,23 @@ CREATE TABLE timeseries.collect_catalog (
   ts_key TEXT,
   PRIMARY KEY (id,ts_key),
   FOREIGN KEY (id) REFERENCES timeseries.collections(id) ON DELETE CASCADE,
-  FOREIGN KEY (ts_key) REFERENCES timeseries.catalog(ts_key) ON DELETE CASCADE -- should we??
+  FOREIGN KEY (ts_key) REFERENCES timeseries.catalog(ts_key) ON DELETE CASCADE
+);
+
+CREATE TABLE timeseries.release_calendar (
+  id TEXT PRIMARY KEY,
+  title TEXT NOT NULL,
+  note TEXT,
+  release_date TIMESTAMPTZ NOT NULL,
+  target_year INTEGER,
+  target_period INTEGER,
+  target_frequency INTEGER
+);
+
+CREATE TABLE timeseries.release_dataset (
+  release_id TEXT,
+  set_id TEXT,
+  PRIMARY KEY (release_id, set_id),
+  FOREIGN KEY (release_id) REFERENCES timeseries.release_calendar(id) ON DELETE CASCADE,
+  FOREIGN KEY (set_id) REFERENCES timeseries.datasets(set_id)
 );

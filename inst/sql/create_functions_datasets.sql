@@ -1,7 +1,7 @@
 -- Check whether a given dataset exists
 --
 -- returns: true if so, false if not
-CREATE FUNCTION timeseries.dataset_exists(dataset_name TEXT)
+CREATE OR REPLACE FUNCTION timeseries.dataset_exists(dataset_name TEXT)
 RETURNS BOOL
 AS $$
 BEGIN
@@ -23,7 +23,7 @@ SET search_path = timeseries, pg_temp;
 --
 -- returns: name of the set
 -- TODO: Check for conflict and change return type to json
-CREATE FUNCTION timeseries.create_dataset(dataset_name TEXT,
+CREATE OR REPLACE FUNCTION timeseries.create_dataset(dataset_name TEXT,
                                           dataset_description TEXT DEFAULT NULL,
                                           dataset_md JSON DEFAULT NULL)
 RETURNS TEXT
@@ -45,13 +45,14 @@ SET search_path = timeseries, pg_temp;
 -- param: id the name of the set
 --
 -- returns: table(ts_key TEXT)
-CREATE FUNCTION timeseries.keys_in_dataset(id TEXT)
+CREATE OR REPLACE FUNCTION timeseries.keys_in_dataset(id TEXT)
 RETURNS TABLE(ts_key TEXT)
 AS $$
 BEGIN
-  RETURN QUERY SELECT timeseries.catalog.ts_key
-  FROM timeseries.catalog
-  WHERE id = set_id;
+  RETURN QUERY SELECT cat.ts_key
+  FROM timeseries.catalog cat
+  WHERE id = set_id
+  ORDER BY cat.ts_key;
 END;
 $$ LANGUAGE PLPGSQL
 SECURITY DEFINER
@@ -66,14 +67,15 @@ SET search_path = timeseries, pg_temp;
 -- tmp_get_set has columns (ts_key TEXT)
 --
 -- returns: table(ts_key TEXT, set_id TEXT)
-CREATE FUNCTION timeseries.get_set_of_keys()
+CREATE OR REPLACE FUNCTION timeseries.get_set_of_keys()
 RETURNS TABLE(ts_key TEXT, set_id TEXT)
 AS $$
 BEGIN
   RETURN QUERY SELECT tmp.ts_key, cat.set_id
   FROM tmp_get_set AS tmp
   LEFT JOIN timeseries.catalog AS cat
-  USING (ts_key);
+  USING (ts_key)
+  ORDER BY cat.set_id;
 END;
 $$ LANGUAGE PLPGSQL
 SECURITY DEFINER
@@ -94,7 +96,7 @@ SET search_path = timeseries, pg_temp;
 -- tmp_set_assign has columns (ts_key TEXT)
 --
 -- returns: json {"status": "", "message": "", "offending_keys": [""]}
-CREATE FUNCTION timeseries.assign_dataset(id TEXT)
+CREATE OR REPLACE FUNCTION timeseries.assign_dataset(id TEXT)
 RETURNS JSON
 AS $$
 DECLARE
@@ -126,6 +128,114 @@ BEGIN
   ELSE
     RETURN '{"status": "ok"}'::JSON;
   END IF;
+END;
+$$ LANGUAGE PLPGSQL
+SECURITY DEFINER
+SET search_path = timeseries, pg_temp;
+
+
+
+
+
+
+-- List all datasets and their description
+--
+-- returns: table(set_id TEXT, set_description TEXT)
+CREATE OR REPLACE FUNCTION timeseries.list_datasets()
+RETURNS TABLE(set_id TEXT, set_description TEXT)
+AS $$
+BEGIN
+  RETURN QUERY SELECT ds.set_id, ds.set_description
+  FROM timeseries.datasets ds
+  ORDER BY ds.set_id;
+END;
+$$ LANGUAGE PLPGSQL
+SECURITY DEFINER
+SET search_path = timeseries, pg_temp;
+
+
+CREATE FUNCTION timeseries.dataset_delete(p_dataset_name TEXT,
+                                          p_confirm_dataset_name TEXT)
+RETURNS JSON
+AS $$
+BEGIN
+  IF NOT EXISTS (
+    SELECT 1 FROM timeseries.datasets
+    WHERE set_id = p_dataset_name
+  ) THEN
+    RETURN json_build_object('status', 'warning', 'reason', 'Dataset ' || p_dataset_name || ' does not exist.');
+  ELSIF (p_dataset_name != p_confirm_dataset_name) THEN
+    RETURN json_build_object('status', 'error', 'reason', 'Dataset name and confirmation do not match.');
+  END IF;
+
+  DELETE
+  FROM timeseries.datasets
+  WHERE set_id = p_dataset_name
+  AND p_dataset_name = p_confirm_dataset_name;
+
+  RETURN json_build_object('status', 'ok');
+EXCEPTION
+  WHEN triggered_action_exception THEN
+    RETURN json_build_object('status', 'failure', 'message', p_dataset_name || ' is the default dataset and may not be deleted.');
+END;
+$$ LANGUAGE PLPGSQL
+SECURITY DEFINER
+SET search_path = timeseries, pg_temp;
+
+
+-- Delete vintages older than some date for whole dataset
+--
+-- param: p_dataset The dataset to trim
+-- param p_older_than The cut off point. All vintages older than that date are removed.
+--
+-- tmp_ts_delete_keys (ts_key TEXT)
+CREATE FUNCTION timeseries.dataset_trim(p_dataset TEXT,
+                                        p_older_than DATE)
+RETURNS JSON
+AS $$
+DECLARE v_out JSON;
+BEGIN
+  CREATE TEMPORARY TABLE tmp_ts_delete_keys
+  ON COMMIT DROP
+  AS (
+    SELECT ts_key
+    FROM timeseries.catalog
+    WHERE set_id = p_dataset
+  );
+
+  SELECT * FROM timeseries.delete_ts_old_vintages(p_older_than)
+  INTO v_out;
+
+  RETURN v_out;
+END;
+$$ LANGUAGE PLPGSQL
+SECURITY DEFINER
+SET search_path = timeseries, pg_temp;
+
+-- Read all (accessible) series in a dataset
+--
+-- This function wraps read_ts_raw, filling the tmp_ts_read_keys table with
+-- keys in the desired dataset.
+--
+-- tmp_datasets_read (set_id TEXT)
+CREATE OR REPLACE FUNCTION timeseries.read_ts_dataset_raw(p_valid_on DATE DEFAULT CURRENT_DATE,
+                                                          p_respect_release_date BOOLEAN DEFAULT FALSE)
+RETURNS TABLE(ts_key TEXT, ts_data JSON)
+AS $$
+BEGIN
+  -- TODO: check for existence of set here? If so: need to RAISE an error as returning
+  --       JSON is not an option
+  CREATE TEMPORARY TABLE tmp_ts_read_keys
+  ON COMMIT DROP
+  AS (
+    SELECT cat.ts_key
+    FROM timeseries.catalog AS cat
+    JOIN tmp_datasets_read
+    USING(set_id)
+  );
+
+  RETURN QUERY
+  SELECT * FROM timeseries.read_ts_raw(p_valid_on, p_respect_release_date);
 END;
 $$ LANGUAGE PLPGSQL
 SECURITY DEFINER
