@@ -1,7 +1,7 @@
 -- Check whether a given dataset exists
 --
 -- returns: true if so, false if not
-CREATE FUNCTION timeseries.dataset_exists(dataset_name TEXT)
+CREATE OR REPLACE FUNCTION timeseries.dataset_exists(dataset_name TEXT)
 RETURNS BOOL
 AS $$
 BEGIN
@@ -23,7 +23,7 @@ SET search_path = timeseries, pg_temp;
 --
 -- returns: name of the set
 -- TODO: Check for conflict and change return type to json
-CREATE FUNCTION timeseries.create_dataset(dataset_name TEXT,
+CREATE OR REPLACE FUNCTION timeseries.create_dataset(dataset_name TEXT,
                                           dataset_description TEXT DEFAULT NULL,
                                           dataset_md JSON DEFAULT NULL)
 RETURNS TEXT
@@ -45,7 +45,7 @@ SET search_path = timeseries, pg_temp;
 -- param: id the name of the set
 --
 -- returns: table(ts_key TEXT)
-CREATE FUNCTION timeseries.keys_in_dataset(id TEXT)
+CREATE OR REPLACE FUNCTION timeseries.keys_in_dataset(id TEXT)
 RETURNS TABLE(ts_key TEXT)
 AS $$
 BEGIN
@@ -67,7 +67,7 @@ SET search_path = timeseries, pg_temp;
 -- tmp_get_set has columns (ts_key TEXT)
 --
 -- returns: table(ts_key TEXT, set_id TEXT)
-CREATE FUNCTION timeseries.get_set_of_keys()
+CREATE OR REPLACE FUNCTION timeseries.get_set_of_keys()
 RETURNS TABLE(ts_key TEXT, set_id TEXT)
 AS $$
 BEGIN
@@ -96,7 +96,7 @@ SET search_path = timeseries, pg_temp;
 -- tmp_set_assign has columns (ts_key TEXT)
 --
 -- returns: json {"status": "", "message": "", "offending_keys": [""]}
-CREATE FUNCTION timeseries.assign_dataset(id TEXT)
+CREATE OR REPLACE FUNCTION timeseries.assign_dataset(id TEXT)
 RETURNS JSON
 AS $$
 DECLARE
@@ -141,7 +141,7 @@ SET search_path = timeseries, pg_temp;
 -- List all datasets and their description
 --
 -- returns: table(set_id TEXT, set_description TEXT)
-CREATE FUNCTION timeseries.list_datasets()
+CREATE OR REPLACE FUNCTION timeseries.list_datasets()
 RETURNS TABLE(set_id TEXT, set_description TEXT)
 AS $$
 BEGIN
@@ -161,7 +161,7 @@ SET search_path = timeseries, pg_temp;
 -- keys in the desired dataset.
 --
 -- tmp_datasets_read (set_id TEXT)
-CREATE FUNCTION timeseries.read_ts_dataset_raw(p_valid_on DATE DEFAULT CURRENT_DATE,
+CREATE OR REPLACE FUNCTION timeseries.read_ts_dataset_raw(p_valid_on DATE DEFAULT CURRENT_DATE,
                                                p_respect_release_date BOOLEAN DEFAULT FALSE)
 RETURNS TABLE(ts_key TEXT, ts_data JSON)
 AS $$

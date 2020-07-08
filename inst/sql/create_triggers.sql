@@ -1,4 +1,4 @@
-CREATE FUNCTION timeseries.prevent_delete_default_dataset()
+CREATE OR REPLACE FUNCTION timeseries.prevent_delete_default_dataset()
 RETURNS TRIGGER AS
 $$
 BEGIN
@@ -18,7 +18,7 @@ ON timeseries.datasets
 FOR EACH ROW
 EXECUTE PROCEDURE timeseries.prevent_delete_default_dataset();
 
-CREATE FUNCTION timeseries.ensure_access_level_is_role()
+CREATE OR REPLACE FUNCTION timeseries.ensure_access_level_is_role()
 RETURNS TRIGGER AS
 $$
 BEGIN
@@ -43,7 +43,7 @@ ON timeseries.access_levels
 FOR EACH ROW
 EXECUTE PROCEDURE timeseries.ensure_access_level_is_role();
 
-CREATE FUNCTION timeseries.prevent_delete_default_access_level()
+CREATE OR REPLACE FUNCTION timeseries.prevent_delete_default_access_level()
 RETURNS TRIGGER AS
 $$
 BEGIN

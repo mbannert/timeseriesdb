@@ -1,7 +1,7 @@
 -- List all registered levels
 --
 -- returns: table(set_id TEXT, set_description TEXT)
-CREATE FUNCTION timeseries.list_access_levels()
+CREATE OR REPLACE FUNCTION timeseries.list_access_levels()
 RETURNS TABLE(role TEXT,
               description TEXT,
               is_default BOOLEAN)
@@ -25,7 +25,7 @@ SET search_path = timeseries, pg_temp;
 -- role: role to remove
 --
 -- returns: json {"status": "", "message": "", ["id"]: ""}
-CREATE FUNCTION timeseries.access_levels_delete(access_level TEXT)
+CREATE OR REPLACE FUNCTION timeseries.access_levels_delete(access_level TEXT)
 RETURNS JSON
 AS $$
 DECLARE
@@ -64,7 +64,7 @@ SET search_path = timeseries, pg_temp;
 -- role: role to add
 -- role: role to add
 -- returns: json {"status": "", "message": "", ["id"]: ""}
-CREATE FUNCTION timeseries.access_levels_insert(access_level_name TEXT,
+CREATE OR REPLACE FUNCTION timeseries.access_levels_insert(access_level_name TEXT,
                                                 access_level_description TEXT DEFAULT NULL,
                                                 access_level_default BOOLEAN DEFAULT NULL)
 RETURNS JSON
@@ -108,7 +108,7 @@ SET search_path = timeseries, pg_temp;
 -- role: role to add
 -- 
 -- returns: json {"status": "", "message": "", ["id"]: ""}
-CREATE FUNCTION timeseries.set_access_level_default(access_level_name TEXT)
+CREATE OR REPLACE FUNCTION timeseries.set_access_level_default(access_level_name TEXT)
 RETURNS JSON
 AS $$
 BEGIN

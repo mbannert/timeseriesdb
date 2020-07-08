@@ -14,7 +14,7 @@
 -- returns: json {"status": "", "message": "", ["offending_keys": ""]}
 -- TODO: validity, release_date, access could be params for this function
 --       -> saves storing 10s of 1000s of copies into tmp table
-CREATE FUNCTION timeseries.insert_from_tmp(p_validity DATE,
+CREATE OR REPLACE FUNCTION timeseries.insert_from_tmp(p_validity DATE,
                                            p_release_date TIMESTAMPTZ,
                                            p_access TEXT)
 RETURNS JSON
@@ -96,7 +96,7 @@ SET search_path = timeseries, pg_temp;
 -- param: pattern regular expression to find keys
 --
 -- returns: json {"status": "", "message": "", ["removed_collection"]: ""}
-CREATE FUNCTION timeseries.fill_read_tmp_regex(pattern TEXT)
+CREATE OR REPLACE FUNCTION timeseries.fill_read_tmp_regex(pattern TEXT)
 RETURNS VOID
 AS $$
 BEGIN
@@ -124,7 +124,7 @@ SET search_path = timeseries, pg_temp;
 --        time be held back?
 --
 -- returns: TABLE(ts_key TEXT, ts_data JSON)
-CREATE FUNCTION timeseries.read_ts_raw(valid_on DATE DEFAULT CURRENT_DATE,
+CREATE OR REPLACE FUNCTION timeseries.read_ts_raw(valid_on DATE DEFAULT CURRENT_DATE,
                                        respect_release_date BOOLEAN DEFAULT false)
 RETURNS TABLE(ts_key TEXT, ts_data JSON)
 AS $$
