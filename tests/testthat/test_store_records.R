@@ -283,8 +283,23 @@ test_with_fresh_db(con_admin, hard_reset = TRUE, "store_time_series uses the def
 test_with_fresh_db(con_admin, hard_reset = TRUE, "store_time_series complains about invalid access level", {
   expect_error(store_time_series(con_writer,
                                  tsl,
-                                 "my_preceous",
+                                 "my_precious",
                                  schema = "tsdb_test"),
                "a valid access level")
 })
 
+test_with_fresh_db(con_admin, hard_reset = TRUE, "store_time_series with an xts", {
+  xtsl <- list(
+    rtsx = xts(seq(4), order.by = seq(as.Date("2020-01-01"), length.out = 4, by = "1 days"))
+  )
+
+  store_time_series(con_writer,
+                    xtsl,
+                    schema = "tsdb_test")
+
+  mn <- dbGetQuery(con_admin, "SELECT ts_data FROM tsdb_test.timeseries_main WHERE ts_key = 'rtsx'")
+
+  expect_match(mn$ts_data, '"frequency":null')
+  expect_match(mn$ts_data, '"time":\\["2020-01-01","2020-01-02","2020-01-03","2020-01-04"\\]')
+  expect_match(mn$ts_data, '"value":\\[1,2,3,4\\]')
+})

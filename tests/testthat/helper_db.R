@@ -68,6 +68,7 @@ prepare_db <- function(con,
     ts_key = c(
       "rtsp",
       "rts1",
+      "rtsx",
       "ts1",
       "ts2",
       "ts3",
@@ -77,6 +78,7 @@ prepare_db <- function(con,
       "vts2"
     ),
     set_id = c(
+      "set_read",
       "set_read",
       "set_read",
       "set1",
@@ -100,7 +102,8 @@ prepare_db <- function(con,
       "14f173be-501b-4e9c-9011-1864fbe11e04",
       "028115d2-b7de-4566-b337-6db09b54bae0",
       "b40bbad8-2cb5-49cb-887b-bc60bb00aabf",
-      "9c8e0206-a6ab-4b99-ab2d-3f89a69f3b3f"
+      "9c8e0206-a6ab-4b99-ab2d-3f89a69f3b3f",
+      "9c8e0206-a6ab-4b99-ab2d-3f89a69f3b3e" # OMG what a coinkidink (not ;))
     ),
     ts_key = c(
       "vts1",
@@ -112,7 +115,8 @@ prepare_db <- function(con,
       "rts1",
       "rts1",
       "rts1",
-      "rtsp"
+      "rtsp",
+      "rtsx"
     ),
     validity = c(
       "2020-01-01",
@@ -123,6 +127,7 @@ prepare_db <- function(con,
       as.character(Sys.Date() - 3),
       as.character(Sys.Date() - 1),
       as.character(Sys.Date() + 1),
+      as.character(Sys.Date()),
       as.character(Sys.Date())
     ),
     coverage = c(
@@ -135,7 +140,8 @@ prepare_db <- function(con,
       "['2019-01-01', '2021-04-01')",
       "['2019-01-01', '2021-04-01')",
       "['2019-01-01', '2021-04-01')",
-      "['2019-01-01', '2021-04-01')"
+      "['2019-01-01', '2021-04-01')",
+      "['2019-01-01', '2020-01-04')"
     ),
     release_date = c(
       "2020-01-01 00:00:00",
@@ -147,9 +153,11 @@ prepare_db <- function(con,
       format(Sys.Date() - 1, "%Y-%m-%d 00:00:00"),
       format(Sys.Date() + 2, "%Y-%m-%d 00:00:00"),
       format(Sys.Date() + 2, "%Y-%m-%d 00:00:00"),
+      format(Sys.Date(), "%Y-%m-%d 00:00:00"),
       format(Sys.Date(), "%Y-%m-%d 00:00:00")
     ),
     created_by = c(
+      "test",
       "test",
       "test",
       "test",
@@ -165,6 +173,7 @@ prepare_db <- function(con,
       "2020-01-01 00:00:00",
       "2020-01-01 00:00:00",
       "2020-01-01 00:00:00",
+      format(Sys.Date(), "%Y-%m-%d 00:00:00"),
       format(Sys.Date(), "%Y-%m-%d 00:00:00"),
       format(Sys.Date(), "%Y-%m-%d 00:00:00"),
       format(Sys.Date(), "%Y-%m-%d 00:00:00"),
@@ -201,7 +210,9 @@ prepare_db <- function(con,
       '{"frequency": 4, "time": ["2019-01-01", "2019-04-01", "2019-07-01", "2019-10-01",
                                  "2020-01-01", "2020-04-01", "2020-07-01", "2020-10-01",
                                  "2021-01-01", "2021-04-01"],
-        "value": [3, 3, 3, 3, 3, 3, 3, 3, 3, 3]}'
+        "value": [3, 3, 3, 3, 3, 3, 3, 3, 3, 3]}',
+      '{"frequency": null, "time": ["2020-01-01", "2020-01-02", "2020-01-03", "2020-01-04"],
+        "value": [1, 2, 3, 4]}'
     ),
     access = c(
       "tsdb_test_access_public",
@@ -213,6 +224,7 @@ prepare_db <- function(con,
       "tsdb_test_access_main",
       "tsdb_test_access_main",
       "tsdb_test_access_main",
+      "tsdb_test_access_public",
       "tsdb_test_access_public"
     )
   )
