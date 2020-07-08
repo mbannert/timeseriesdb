@@ -27,11 +27,20 @@ tsl_pblc <- list(
 )
 class(tsl_pblc) <- c("tslist", "list")
 
+tslx <- list(
+  rtsx = xts(seq(4), order.by = seq(as.Date("2020-01-01"), length.out = 4, by = "1 days"))
+)
+class(tslx) <- c("tslist", "list")
+
 if(is_test_db_reachable()) {
   con_admin <- connect_to_test_db()
   con_reader_public <- connect_to_test_db("dev_reader_public")
   con_reader_main <- connect_to_test_db("dev_reader_main")
 }
+
+
+# read ts -----------------------------------------------------------------
+
 
 test_with_fresh_db(con_admin, "public reader may not read main series", {
   tsl_read <- read_time_series(con_reader_public, "rts1", schema = "tsdb_test")
@@ -87,7 +96,12 @@ test_with_fresh_db(con_admin, "reading via regex works", {
   expect_setequal(names(tsl_read), c("rts1", "rtsp"))
 })
 
-
+test_with_fresh_db(con_admin, "reading an xts", {
+  tsl_read <- read_time_series(con_reader_main,
+                               "rtsx",
+                               schema = "tsdb_test")
+  expect_equal(tsl_read, tslx)
+})
 
 # reading datasets --------------------------------------------------------
 context("reading datasets")
