@@ -22,6 +22,16 @@ AS $$
 DECLARE
   v_invalid_keys TEXT[];
 BEGIN
+  IF p_access IS NULL
+  AND NOT EXISTS (
+    SELECT 1
+    FROM timeseries.access_levels
+    WHERE is_default
+  ) THEN
+    RETURN json_build_object('status', 'failure',
+                             'message', 'No access level supplied and no default configured on the database.');
+  END IF;
+
   WITH inv_keys AS (
     SELECT DISTINCT tmp.ts_key
     FROM tmp_ts_updates AS tmp
