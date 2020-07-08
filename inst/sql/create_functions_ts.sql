@@ -152,3 +152,72 @@ END;
 $$ LANGUAGE PLPGSQL
 SECURITY DEFINER
 SET search_path = timeseries, pg_temp;
+
+-- Completely Purge a Time Series from the database
+--
+-- tmp_ts_delete_keys (ts_key TEXT)
+--
+-- Removes all vintages, metadata, catalog entries, collection entries and dataset entries
+-- (also the set if it ends up empty).
+-- Use VERY SPARINGLY!
+CREATE FUNCTION timeseries.delete_ts()
+RETURNS JSON
+AS $$
+BEGIN
+  DELETE
+  FROM timeseries.catalog cat
+  USING tmp_ts_delete_keys del
+  WHERE del.ts_key = cat.ts_key;
+
+  RETURN json_build_object('status', 'ok');
+END;
+$$ LANGUAGE PLPGSQL
+SECURITY DEFINER
+SET search_path = timeseries, pg_temp;
+
+-- Delete the latest vintage from given time series
+--
+-- tmp_ts_delete_keys (ts_key TEXT)
+CREATE FUNCTION timeseries.delete_ts_edge()
+RETURNS JSON
+AS $$
+BEGIN
+  WITH ids_to_delete AS (
+    SELECT DISTINCT ON (ts_key) id
+    FROM tsdb_test.timeseries_main mn
+    JOIN tmp_ts_delete_keys del
+    USING(ts_key)
+    ORDER BY ts_key, validity DESC
+  )
+  DELETE
+  FROM timeseries.timeseries_main mn
+  USING ids_to_delete ids
+  WHERE mn.id = ids.id;
+
+  RETURN json_build_object('status', 'ok');
+END;
+$$ LANGUAGE PLPGSQL
+SECURITY DEFINER
+SET search_path = timeseries, pg_temp;
+
+
+-- Delete vintages older than some date
+--
+-- param p_older_than The cut off point. All vintages older than that date are removed.
+--
+-- tmp_ts_delete_keys (ts_key TEXT)
+CREATE FUNCTION timeseries.delete_ts_old_vintages(p_older_than DATE)
+RETURNS JSON
+AS $$
+BEGIN
+  DELETE
+  FROM timeseries.timeseries_main mn
+  USING tmp_ts_delete_keys tmp
+  WHERE mn.ts_key = tmp.ts_key
+  AND mn.validity <= p_older_than;
+
+  RETURN json_build_object('status', 'ok');
+END;
+$$ LANGUAGE PLPGSQL
+SECURITY DEFINER
+SET search_path = timeseries, pg_temp;

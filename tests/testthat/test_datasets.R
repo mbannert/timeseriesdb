@@ -210,3 +210,124 @@ test_with_fresh_db(con_admin, "db_list_datasets returns data frame with correct 
 
   expect_equal(out, expected)
 })
+
+
+# delete datasets ---------------------------------------------------------
+
+context("datasets - delete")
+
+test_with_fresh_db(con_admin, "writer may NOT delete datasets", {
+  hacky_readline <- mock("set1")
+
+  with_mock(
+    readline = hacky_readline,
+    {
+      expect_error(db_dataset_delete(con_writer, "set1", schema = "tsdb_test"))
+    }
+  )
+})
+
+test_with_fresh_db(con_admin, "db_delete_dataset", {
+  hacky_readline <- mock("set1")
+
+  with_mock(
+    readline = hacky_readline,
+    {
+      db_dataset_delete(con_admin, "set1", schema = "tsdb_test")
+      result_cat <- dbGetQuery(con_admin, "SELECT set_id FROM tsdb_test.catalog WHERE set_id = 'set1'")$set_id
+      result_sets <- dbGetQuery(con_admin, "SELECT set_id FROM tsdb_test.datasets WHERE set_id = 'set1'")$set_id
+
+      expect_length(result_cat, 0)
+      expect_length(result_sets, 0)
+    }
+  )
+})
+
+test_with_fresh_db(con_admin, "db_delete_dataset returns\"ok\"", {
+  hacky_readline <- mock("set1")
+
+  with_mock(
+    readline = hacky_readline,
+    {
+      out <- db_dataset_delete(con_admin, "set1", schema = "tsdb_test")
+      expect_equal(out, list(status = "ok"))
+    }
+  )
+})
+
+test_with_fresh_db(con_admin, "db_delete_dataset with missing set", {
+  hacky_readline <- mock("set_un")
+
+  with_mock(
+    readline = hacky_readline,
+    {
+      out <- expect_warning(
+        db_dataset_delete(con_admin, "set_un", schema = "tsdb_test"),
+        "does not exist"
+      )
+
+      expect_equal(out, list(status = "warning", reason = "Dataset set_un does not exist."))
+    }
+  )
+})
+
+test_with_fresh_db(con_admin, "db_delete_dataset with wrong confirm", {
+  hacky_readline <- mock("set_uno")
+
+  with_mock(
+    readline = hacky_readline,
+    {
+      expect_error(db_dataset_delete(con_admin, "set1", schema = "tsdb_test"))
+    }
+  )
+})
+
+test_that("db_dataset_delete_ errors when called directly", {
+  expect_error(db_dataset_delete_("", "a", "a"), "directly")
+})
+
+test_with_fresh_db(con_admin, "db_delete_dataset with default", {
+  with_mock(
+    readline = mock("default"),
+    {
+      expect_error(
+        db_dataset_delete(con_admin, "default", schema = "tsdb_test"),
+        "may not be"
+      )
+    })
+})
+
+# trimming dataset history ------------------------------------------------
+
+test_with_fresh_db(con_admin, "writer may not trim dataset", {
+  expect_error(
+    db_trim_dataset_history(con_writer, "default", as.Date("2020-01-30"), schema = "tsdb_test"),
+    "sufficient privileges"
+  )
+})
+
+test_with_fresh_db(con_admin, "trimming datasets returns ok", {
+  out <- db_trim_dataset_history(con_admin, "default", as.Date("2020-01-30"), schema = "tsdb_test")
+
+  expect_equal(
+    out,
+    list(
+      status = "ok"
+    )
+  )
+})
+
+test_with_fresh_db(con_admin, "trimming datasets db state", {
+  db_trim_dataset_history(con_admin, "default", as.Date("2020-01-30"), schema = "tsdb_test")
+
+  mn <- dbGetQuery(con_admin, "SELECT ts_key, validity FROM tsdb_test.timeseries_main where ts_key ~ 'vts' ORDER BY ts_key")
+
+  expect_equal(
+    mn,
+    data.frame(
+      ts_key = c("vts1", "vts2"),
+      validity = c(as.Date("2020-02-01"), as.Date("2020-02-01")),
+      stringsAsFactors = FALSE
+    )
+  )
+})

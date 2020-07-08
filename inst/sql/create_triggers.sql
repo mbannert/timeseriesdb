@@ -3,7 +3,7 @@ RETURNS TRIGGER AS
 $$
 BEGIN
   IF OLD.set_id = 'default' THEN
-    RETURN NULL;
+    RAISE EXCEPTION 'Can not delete the default dataset.' USING ERRCODE='09000';
   END IF;
 
   RETURN OLD;

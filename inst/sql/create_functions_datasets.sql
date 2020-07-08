@@ -154,6 +154,62 @@ SECURITY DEFINER
 SET search_path = timeseries, pg_temp;
 
 
+CREATE FUNCTION timeseries.dataset_delete(p_dataset_name TEXT,
+                                          p_confirm_dataset_name TEXT)
+RETURNS JSON
+AS $$
+BEGIN
+  IF NOT EXISTS (
+    SELECT 1 FROM timeseries.datasets
+    WHERE set_id = p_dataset_name
+  ) THEN
+    RETURN json_build_object('status', 'warning', 'reason', 'Dataset ' || p_dataset_name || ' does not exist.');
+  ELSIF (p_dataset_name != p_confirm_dataset_name) THEN
+    RETURN json_build_object('status', 'error', 'reason', 'Dataset name and confirmation do not match.');
+  END IF;
+
+  DELETE
+  FROM timeseries.datasets
+  WHERE set_id = p_dataset_name
+  AND p_dataset_name = p_confirm_dataset_name;
+
+  RETURN json_build_object('status', 'ok');
+EXCEPTION
+  WHEN triggered_action_exception THEN
+    RETURN json_build_object('status', 'failure', 'message', p_dataset_name || ' is the default dataset and may not be deleted.');
+END;
+$$ LANGUAGE PLPGSQL
+SECURITY DEFINER
+SET search_path = timeseries, pg_temp;
+
+-- Delete vintages older than some date for whole dataset
+--
+-- param: p_dataset The dataset to trim
+-- param p_older_than The cut off point. All vintages older than that date are removed.
+--
+-- tmp_ts_delete_keys (ts_key TEXT)
+CREATE FUNCTION timeseries.dataset_trim(p_dataset TEXT,
+                                        p_older_than DATE)
+RETURNS JSON
+AS $$
+DECLARE v_out JSON;
+BEGIN
+  CREATE TEMPORARY TABLE tmp_ts_delete_keys
+  ON COMMIT DROP
+  AS (
+    SELECT ts_key
+    FROM timeseries.catalog
+    WHERE set_id = p_dataset
+  );
+
+  SELECT * FROM timeseries.delete_ts_old_vintages(p_older_than)
+  INTO v_out;
+
+  RETURN v_out;
+END;
+$$ LANGUAGE PLPGSQL
+SECURITY DEFINER
+SET search_path = timeseries, pg_temp;
 
 -- Read all (accessible) series in a dataset
 --
