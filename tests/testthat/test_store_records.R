@@ -280,6 +280,15 @@ test_with_fresh_db(con_admin, hard_reset = TRUE, "store_time_series uses the def
   expect_equal(acl, dflt)
 })
 
+test_with_fresh_db(con_admin, hard_reset = TRUE, "store_time_series without default access level set", {
+  dbExecute(con_admin, "UPDATE tsdb_test.access_levels SET is_default = NULL")
+
+  expect_error(
+    store_time_series(con_writer, tsl[1], schema = "tsdb_test"),
+    "access level supplied"
+  )
+})
+
 test_with_fresh_db(con_admin, hard_reset = TRUE, "store_time_series complains about invalid access level", {
   expect_error(store_time_series(con_writer,
                                  tsl,
