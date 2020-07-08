@@ -171,7 +171,8 @@ SET search_path = timeseries, pg_temp;
 --
 -- This function wraps read_ts_raw, filling the tmp_ts_read_keys table with
 -- keys in the desired collection.
-CREATE OR REPLACE FUNCTION timeseries.read_ts_collection_raw(p_name TEXT,
+CREATE OR REPLACE FUNCTION timeseries.read_ts_collection_raw(
+                                                  p_name TEXT,
                                                   p_owner TEXT,
                                                   p_valid_on DATE DEFAULT CURRENT_DATE,
                                                   p_respect_release_date BOOLEAN DEFAULT FALSE)

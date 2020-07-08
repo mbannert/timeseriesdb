@@ -131,3 +131,50 @@ END;
 $$ LANGUAGE PLPGSQL
 SECURITY DEFINER
 SET search_path = timeseries, pg_temp;
+
+-- Change the access level for given time series
+--
+-- Optionally specify exact vintage to change
+--
+-- This is just a wrapper for change_access_level that applies to a whole dataset
+-- at a time.
+--
+-- param:  p_dataset TEXT, the dataset to set the access level for
+-- param:  p_level TEXT, the access level to set the series to
+-- param:  p_validity DATE, the exact vintage for which to change the access level
+--
+-- By default all vintages are set to the specified level
+CREATE FUNCTION timeseries.change_access_level_dataset(p_dataset TEXT,
+                                                       p_level TEXT,
+                                                       p_validity DATE DEFAULT NULL)
+RETURNS JSON
+AS $$
+DECLARE
+  v_out JSON;
+BEGIN
+  IF NOT EXISTS (
+    SELECT 1
+    FROM timeseries.datasets
+    WHERE set_id = p_dataset
+  ) THEN
+    RETURN json_build_object('status', 'warning', 'message', 'Dataset ' || p_dataset || ' does not exist.');
+  END IF;
+
+  CREATE TEMPORARY TABLE tmp_ts_access_keys
+  ON COMMIT DROP
+  AS (
+    SELECT ts_key
+    FROM timeseries.catalog
+    WHERE set_id = p_dataset
+  );
+
+  SELECT *
+  FROM timeseries.change_access_level(p_level, p_validity)
+  INTO v_out;
+
+  RETURN v_out;
+END;
+$$ LANGUAGE PLPGSQL
+SECURITY DEFINER
+SET search_path = timeseries, pg_temp;
+

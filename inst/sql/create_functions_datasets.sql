@@ -182,6 +182,7 @@ $$ LANGUAGE PLPGSQL
 SECURITY DEFINER
 SET search_path = timeseries, pg_temp;
 
+
 -- Delete vintages older than some date for whole dataset
 --
 -- param: p_dataset The dataset to trim
@@ -218,7 +219,7 @@ SET search_path = timeseries, pg_temp;
 --
 -- tmp_datasets_read (set_id TEXT)
 CREATE OR REPLACE FUNCTION timeseries.read_ts_dataset_raw(p_valid_on DATE DEFAULT CURRENT_DATE,
-                                               p_respect_release_date BOOLEAN DEFAULT FALSE)
+                                                          p_respect_release_date BOOLEAN DEFAULT FALSE)
 RETURNS TABLE(ts_key TEXT, ts_data JSON)
 AS $$
 BEGIN

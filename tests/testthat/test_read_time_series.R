@@ -38,9 +38,7 @@ if(is_test_db_reachable()) {
   con_reader_main <- connect_to_test_db("dev_reader_main")
 }
 
-
 # read ts -----------------------------------------------------------------
-
 
 test_with_fresh_db(con_admin, "public reader may not read main series", {
   tsl_read <- read_time_series(con_reader_public, "rts1", schema = "tsdb_test")
@@ -102,6 +100,7 @@ test_with_fresh_db(con_admin, "reading an xts", {
                                schema = "tsdb_test")
   expect_equal(tsl_read, tslx)
 })
+
 
 # reading datasets --------------------------------------------------------
 context("reading datasets")
