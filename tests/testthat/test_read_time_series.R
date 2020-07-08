@@ -27,52 +27,18 @@ tsl_pblc <- list(
 )
 class(tsl_pblc) <- c("tslist", "list")
 
+tslx <- list(
+  rtsx = xts(seq(4), order.by = seq(as.Date("2020-01-01"), length.out = 4, by = "1 days"))
+)
+class(tslx) <- c("tslist", "list")
+
 if(is_test_db_reachable()) {
   con_admin <- connect_to_test_db()
   con_reader_public <- connect_to_test_db("dev_reader_public")
   con_reader_main <- connect_to_test_db("dev_reader_main")
-
-  prepare_db(con_admin)
-
-  current_date <- dbGetQuery(con_admin, "SELECT CURRENT_DATE")$current_date
-
-  # TODO: This would be more robust if we took charge of what time it is entirely (on db and here)
-  store_time_series(con_admin,
-                    tsl_state_0,
-                    "tsdb_test_access_main",
-                    valid_from = current_date - 4,
-                    release_date = current_date - 4,
-                    schema = "tsdb_test")
-  store_time_series(con_admin,
-                    tsl_state_1,
-                    "tsdb_test_access_main",
-                    valid_from = current_date - 3,
-                    release_date = current_date - 1,
-                    schema = "tsdb_test")
-  store_time_series(con_admin,
-                    tsl_state_2,
-                    "tsdb_test_access_main",
-                    valid_from = current_date - 1,
-                    release_date = current_date + 2,
-                    schema = "tsdb_test")
-  store_time_series(con_admin,
-                    tsl_state_2,
-                    "tsdb_test_access_main",
-                    valid_from = current_date - 1,
-                    release_date = current_date + 2,
-                    schema = "tsdb_test")
-  store_time_series(con_admin,
-                    tsl_state_2_v2,
-                    "tsdb_test_access_main",
-                    valid_from = current_date + 1,
-                    release_date = current_date + 2,
-                    schema = "tsdb_test")
-
-  store_time_series(con_admin,
-                    tsl_pblc,
-                    "tsdb_test_access_public",
-                    schema = "tsdb_test")
 }
+
+# read ts -----------------------------------------------------------------
 
 test_with_fresh_db(con_admin, "public reader may not read main series", {
   tsl_read <- read_time_series(con_reader_public, "rts1", schema = "tsdb_test")
@@ -128,6 +94,12 @@ test_with_fresh_db(con_admin, "reading via regex works", {
   expect_setequal(names(tsl_read), c("rts1", "rtsp"))
 })
 
+test_with_fresh_db(con_admin, "reading an xts", {
+  tsl_read <- read_time_series(con_reader_main,
+                               "rtsx",
+                               schema = "tsdb_test")
+  expect_equal(tsl_read, tslx)
+})
 
 
 # reading datasets --------------------------------------------------------

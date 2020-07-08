@@ -94,3 +94,18 @@ test_that("it does not throw away precision", {
   tsj <- to_ts_json(dt)
   expect_match(as.character(tsj), as.character(pi))
 })
+
+test_that("It eats irregular time series", {
+  x_ts <- list(
+    xxts = xts::xts(
+      c(1, 2, 3),
+      order.by = c(zoo::as.yearmon("2019-01-01"), zoo::as.yearmon("2020-01-01"), zoo::as.yearmon("2020-03-01"))
+  ))
+  class(x_ts) <- c("tslist", "list")
+  tsj <- to_ts_json(x_ts)
+
+  expect_equal(
+    unclass(tsj[[1]]),
+    '{"frequency":null,"time":["2019-01-01","2020-01-01","2020-03-01"],"value":[1,2,3]}'
+  )
+})

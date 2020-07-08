@@ -5,7 +5,7 @@
 -- tmp_collect_updates has columns (ts_key TEXT)
 --
 -- returns: JSON {"status": "", "message": "", ["invalid_keys": [""]]}
-CREATE FUNCTION timeseries.insert_collect_from_tmp(collection_name TEXT,
+CREATE OR REPLACE FUNCTION timeseries.insert_collect_from_tmp(collection_name TEXT,
                                                    col_owner TEXT,
                                                    description TEXT)
 RETURNS JSON
@@ -69,7 +69,7 @@ SET search_path = timeseries, pg_temp;
 -- param: col_owner the owner of the collection
 --
 -- returns: json {"status": "", "message": "", ["removed_collection"]: ""}
-CREATE FUNCTION timeseries.collection_remove(col_name TEXT, col_owner TEXT)
+CREATE OR REPLACE FUNCTION timeseries.collection_remove(col_name TEXT, col_owner TEXT)
 RETURNS JSON
 AS $$
 DECLARE
@@ -138,7 +138,7 @@ SET search_path = timeseries, pg_temp;
 -- param: col_owner the owner of the collection
 --
 -- returns: json {"status": "", "message": "", ["id"]: ""}
-CREATE FUNCTION timeseries.collection_delete(col_name TEXT,
+CREATE OR REPLACE FUNCTION timeseries.collection_delete(col_name TEXT,
                                              col_owner TEXT)
 RETURNS JSON
 AS $$
@@ -150,7 +150,7 @@ BEGIN
   WHERE name = col_name
   AND owner = col_owner) THEN
     RETURN json_build_object('status', 'warning',
-                             'message', 'Collection cound not be found for this user.');
+                             'message', 'Collection could not be found for this user.');
   ELSE
     DELETE FROM timeseries.collections
     WHERE owner = col_owner
@@ -171,7 +171,8 @@ SET search_path = timeseries, pg_temp;
 --
 -- This function wraps read_ts_raw, filling the tmp_ts_read_keys table with
 -- keys in the desired collection.
-CREATE FUNCTION timeseries.read_ts_collection_raw(p_name TEXT,
+CREATE OR REPLACE FUNCTION timeseries.read_ts_collection_raw(
+                                                  p_name TEXT,
                                                   p_owner TEXT,
                                                   p_valid_on DATE DEFAULT CURRENT_DATE,
                                                   p_respect_release_date BOOLEAN DEFAULT FALSE)

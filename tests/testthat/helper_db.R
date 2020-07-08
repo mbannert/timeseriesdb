@@ -14,13 +14,17 @@ is_test_db_reachable <- function(){
 }
 
 reset_db <- function(con) {
+  dbExecute(con, "DELETE FROM tsdb_test.release_dataset")
+  dbExecute(con, "DELETE FROM tsdb_test.release_calendar")
   dbExecute(con, "DELETE FROM tsdb_test.collect_catalog")
   dbExecute(con, "DELETE FROM tsdb_test.collections")
   dbExecute(con, "DELETE FROM tsdb_test.metadata")
   dbExecute(con, "DELETE FROM tsdb_test.metadata_localized")
   dbExecute(con, "DELETE FROM tsdb_test.timeseries_main")
   dbExecute(con, "DELETE FROM tsdb_test.catalog")
+  dbExecute(con, "ALTER TABLE tsdb_test.datasets DISABLE TRIGGER no_delete_default_dataset")
   dbExecute(con, "DELETE FROM tsdb_test.datasets")
+  dbExecute(con, "ALTER TABLE tsdb_test.datasets ENABLE TRIGGER no_delete_default_dataset")
   dbExecute(con, "ALTER TABLE tsdb_test.access_levels DISABLE TRIGGER access_level_no_delete_default")
   dbExecute(con, "DELETE FROM tsdb_test.access_levels")
   dbExecute(con, "ALTER TABLE tsdb_test.access_levels ENABLE TRIGGER access_level_no_delete_default")
@@ -48,10 +52,23 @@ prepare_db <- function(con,
     )
   )
 
+  default_dataset <- data.frame(
+    set_id = c(
+      "default"
+    ),
+    set_description = c(
+      "A set that is used if no other set is specified. Every time series needs to be part of a dataset"
+    ),
+    set_md = c(
+      NA
+    )
+  )
+
   catalog <- data.frame(
     ts_key = c(
       "rtsp",
       "rts1",
+      "rtsx",
       "ts1",
       "ts2",
       "ts3",
@@ -61,6 +78,7 @@ prepare_db <- function(con,
       "vts2"
     ),
     set_id = c(
+      "set_read",
       "set_read",
       "set_read",
       "set1",
@@ -84,7 +102,8 @@ prepare_db <- function(con,
       "14f173be-501b-4e9c-9011-1864fbe11e04",
       "028115d2-b7de-4566-b337-6db09b54bae0",
       "b40bbad8-2cb5-49cb-887b-bc60bb00aabf",
-      "9c8e0206-a6ab-4b99-ab2d-3f89a69f3b3f"
+      "9c8e0206-a6ab-4b99-ab2d-3f89a69f3b3f",
+      "9c8e0206-a6ab-4b99-ab2d-3f89a69f3b3e" # OMG what a coinkidink (not ;))
     ),
     ts_key = c(
       "vts1",
@@ -96,7 +115,8 @@ prepare_db <- function(con,
       "rts1",
       "rts1",
       "rts1",
-      "rtsp"
+      "rtsp",
+      "rtsx"
     ),
     validity = c(
       "2020-01-01",
@@ -107,6 +127,7 @@ prepare_db <- function(con,
       as.character(Sys.Date() - 3),
       as.character(Sys.Date() - 1),
       as.character(Sys.Date() + 1),
+      as.character(Sys.Date()),
       as.character(Sys.Date())
     ),
     coverage = c(
@@ -119,7 +140,8 @@ prepare_db <- function(con,
       "['2019-01-01', '2021-04-01')",
       "['2019-01-01', '2021-04-01')",
       "['2019-01-01', '2021-04-01')",
-      "['2019-01-01', '2021-04-01')"
+      "['2019-01-01', '2021-04-01')",
+      "['2019-01-01', '2020-01-04')"
     ),
     release_date = c(
       "2020-01-01 00:00:00",
@@ -131,9 +153,11 @@ prepare_db <- function(con,
       format(Sys.Date() - 1, "%Y-%m-%d 00:00:00"),
       format(Sys.Date() + 2, "%Y-%m-%d 00:00:00"),
       format(Sys.Date() + 2, "%Y-%m-%d 00:00:00"),
+      format(Sys.Date(), "%Y-%m-%d 00:00:00"),
       format(Sys.Date(), "%Y-%m-%d 00:00:00")
     ),
     created_by = c(
+      "test",
       "test",
       "test",
       "test",
@@ -149,6 +173,7 @@ prepare_db <- function(con,
       "2020-01-01 00:00:00",
       "2020-01-01 00:00:00",
       "2020-01-01 00:00:00",
+      format(Sys.Date(), "%Y-%m-%d 00:00:00"),
       format(Sys.Date(), "%Y-%m-%d 00:00:00"),
       format(Sys.Date(), "%Y-%m-%d 00:00:00"),
       format(Sys.Date(), "%Y-%m-%d 00:00:00"),
@@ -185,7 +210,9 @@ prepare_db <- function(con,
       '{"frequency": 4, "time": ["2019-01-01", "2019-04-01", "2019-07-01", "2019-10-01",
                                  "2020-01-01", "2020-04-01", "2020-07-01", "2020-10-01",
                                  "2021-01-01", "2021-04-01"],
-        "value": [3, 3, 3, 3, 3, 3, 3, 3, 3, 3]}'
+        "value": [3, 3, 3, 3, 3, 3, 3, 3, 3, 3]}',
+      '{"frequency": null, "time": ["2020-01-01", "2020-01-02", "2020-01-03", "2020-01-04"],
+        "value": [1, 2, 3, 4]}'
     ),
     access = c(
       "tsdb_test_access_public",
@@ -197,6 +224,7 @@ prepare_db <- function(con,
       "tsdb_test_access_main",
       "tsdb_test_access_main",
       "tsdb_test_access_main",
+      "tsdb_test_access_public",
       "tsdb_test_access_public"
     )
   )
@@ -390,11 +418,87 @@ prepare_db <- function(con,
     )
   )
 
+  release_calendar <- data.table(
+    id = c(
+      "ancient_release",
+      "last_release",
+      "future_release",
+
+      "combo_release"
+    ),
+    title = c(
+      "Rock count",
+      "Microchip count",
+      "Crystal count",
+
+      "Best Data ever"
+    ),
+    note = c(
+      "It's rock science!",
+      "Bow down to Elon",
+      "Apophis is coming",
+
+      "With two datasets!"
+    ),
+    release_date = c(
+      Sys.Date() - 1000,
+      Sys.Date() - 1,
+      Sys.Date() + 1,
+
+      Sys.Date() + 4
+    ),
+    target_year = c(
+      year(Sys.Date()),
+      year(Sys.Date()),
+      year(Sys.Date()),
+
+      2020
+    ),
+    target_period = c(
+      month(Sys.Date()),
+      month(Sys.Date()),
+      month(Sys.Date()),
+
+      2
+    ),
+    target_frequency = c(
+      12,
+      12,
+      12,
+
+      4
+    )
+  )
+
+  release_dataset <- data.table(
+    release_id = c(
+      "ancient_release",
+      "last_release",
+      "future_release",
+
+      "combo_release",
+      "combo_release"
+    ),
+    set_id = c(
+      "set1",
+      "set1",
+      "set1",
+
+      "set1",
+      "set2"
+    )
+  )
+
   reset_db(con)
 
   dbWriteTable(con,
                DBI::Id(schema = "tsdb_test", table = "access_levels"),
                access_levels,
+               append = TRUE)
+
+  dbWriteTable(con,
+               DBI::Id(schema = "tsdb_test", table = "datasets"),
+               default_dataset,
                append = TRUE)
 
   if(init_datasets) {
@@ -433,6 +537,16 @@ prepare_db <- function(con,
       dbWriteTable(con,
                    DBI::Id(schema = "tsdb_test", table = "collect_catalog"),
                    collect_catalog,
+                   append = TRUE)
+
+      dbWriteTable(con,
+                   DBI::Id(schema = "tsdb_test", table = "release_calendar"),
+                   release_calendar,
+                   append = TRUE)
+
+      dbWriteTable(con,
+                   DBI::Id(schema = "tsdb_test", table = "release_dataset"),
+                   release_dataset,
                    append = TRUE)
     }
   }

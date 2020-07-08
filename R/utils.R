@@ -10,6 +10,14 @@
 #' @export
 index_to_date <- function (x, as.string = FALSE)
 {
+  if(inherits(x, "Date")) {
+    if(as.string) {
+      return(as.character(x))
+    } else {
+      return(x)
+    }
+  }
+
   # If called as index_to_date(time(a_ts))
   # x is a ts. Unclass it so we can work with the faster basic operators
   x <- c(x)
@@ -68,6 +76,85 @@ get_list_depth <- function(this) {
     0L
   )
 }
+
+
+# Mocking functions from base does not work :shrug:
+readPasswordFile <- readLines
+
+
+#' Create Database Connection
+#'
+#' Connects to the PostgreSQL database backend of timeseriesdb. This function
+#' is convenience wrapper around DBI's dbConnect. It's less general than the DBI
+#' function and only works for PostgreSQL, but it is a little more convenient
+#' because of its defaults / assumptions.
+#'
+#' @param dbname character name of the database.
+#' @param user character name of the database user. Defaults to the user of the R session.
+#'             this is often the user for the database, too so you do not have to specify
+#'             your username explicitly if that is the case.
+#' @param host character denoting the hostname. Defaults to localhost.
+#' @param passwd character password, file or environment name. Defaults to NULL triggering an R Studio function that
+#' asks for your passwords interactively if you are on R Studio. Make sure to adapt the boolean params correspondingly.
+#' @param passwd_from_file boolean if set to TRUE the passwd param is interpreted as a file
+#'                         location for a password file such as .pgpass. Make sure to be very
+#'                         restrictive with file permissions if you store a password to a file.
+#' @param line_no integer specify line number of password file that holds the actual password.
+#' @param connection_description character connection description describing the application
+#'                               that connects to the database. This is mainly helpful for
+#'                               DB admins and shows up in the pg_stat_activity table.
+#'                               Defaults to 'timeseriesdb'. Avoid spaces as this is a psql option.
+#' @param port integer defaults to 5432, the PostgreSQL standard port.
+#' @importFrom RPostgres Postgres
+#' @importFrom DBI dbConnect
+#' @export
+db_create_connection <- function(dbname,
+                          user = Sys.info()[['user']],
+                          host = "localhost",
+                          passwd = NULL,
+                          passwd_from_file = FALSE,
+                          line_no = 1,
+                          passwd_from_env = FALSE,
+                          connection_description = "timeseriesdb",
+                          port = 5432){
+  if(passwd_from_env){
+    env_name <- passwd
+    passwd <- Sys.getenv(env_name)
+    if(passwd == "") {
+      stop(sprintf("Could not find password in %s!", env_name))
+    }
+  } else if(passwd_from_file) {
+    if(!file.exists(passwd)) {
+      stop("Password file does not exist.")
+    }
+
+    pwdlines <- readPasswordFile(passwd)
+    nlines <- length(pwdlines)
+
+    if(nlines < line_no) {
+      stop(sprintf("line_no too great (password file only has %d lines)", nlines))
+    }
+
+    passwd <- pwdlines[line_no]
+  } else if(is.null(passwd)) {
+    if(commandArgs()[1] == "RStudio") {
+      passwd <- .rs.askForPassword("Please enter your database password: ")
+    } else {
+      stop("Unable to obtain password. Please use passwd_from_file or pass the password directly via passwd.")
+    }
+  }
+
+  options <- sprintf("--application_name=%s", connection_description)
+
+  dbConnect(drv = Postgres(),
+            dbname = dbname,
+            user = user,
+            host = host,
+            password = passwd,
+            port = port,
+            options = options)
+}
+
 
 
 #' Helper to construct SQL function calls

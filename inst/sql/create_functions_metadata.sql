@@ -15,7 +15,7 @@
 --
 -- returns: A json with either {"status": "ok"} or
 --          {"status": "warning", "warnings": [{"message": "", "offending_keys": [...]}, ...]}
-CREATE FUNCTION timeseries.md_unlocal_upsert(validity_in DATE, on_conflict TEXT)
+CREATE OR REPLACE FUNCTION timeseries.md_unlocal_upsert(validity_in DATE, on_conflict TEXT)
 RETURNS JSONB
 AS $$
 DECLARE
@@ -86,7 +86,7 @@ SET search_path = timeseries, pg_temp;
 --
 -- returns: A json with either {"status": "ok"} or
 --          {"status": "warning", "warnings": [{"message": "", "offending_keys": [...]}, ...]}
-CREATE FUNCTION timeseries.md_local_upsert(validity_in DATE, on_conflict TEXT)
+CREATE OR REPLACE FUNCTION timeseries.md_local_upsert(validity_in DATE, on_conflict TEXT)
 RETURNS JSON
 AS $$
 DECLARE
@@ -146,7 +146,7 @@ SET search_path = timeseries, pg_temp;
 -- param: v_invalid_keys keys for which an update of metadata was not permitted
 --
 -- returns: A json with either {"status": "ok"} or {"status": "warning", "warnings": [...warning messages...]}
-CREATE FUNCTION timeseries.build_meta_status(v_missing_keys TEXT[], v_invalid_keys TEXT[])
+CREATE OR REPLACE FUNCTION timeseries.build_meta_status(v_missing_keys TEXT[], v_invalid_keys TEXT[])
 RETURNS JSON
 AS $$
 DECLARE
@@ -204,7 +204,7 @@ SET search_path = timeseries, pg_temp;
 -- param: valid_on the date for which to get the metadata
 --
 -- returns: table(ts_key TEXT, metadata JSONB)
-CREATE FUNCTION timeseries.read_metadata_raw(valid_on DATE DEFAULT CURRENT_DATE)
+CREATE OR REPLACE FUNCTION timeseries.read_metadata_raw(valid_on DATE DEFAULT CURRENT_DATE)
 RETURNS TABLE(ts_key TEXT, metadata JSONB)
 AS $$
 BEGIN
@@ -236,7 +236,7 @@ SET search_path = timeseries, pg_temp;
 --
 -- returns: table(ts_key TEXT, metadata JSONB)
 -- TODO: loc does not necessarily need a default but then it needs to move to the front of the list
-CREATE FUNCTION timeseries.read_metadata_localized_raw(valid_on DATE DEFAULT CURRENT_DATE, loc TEXT DEFAULT 'en')
+CREATE OR REPLACE FUNCTION timeseries.read_metadata_localized_raw(valid_on DATE DEFAULT CURRENT_DATE, loc TEXT DEFAULT 'en')
 RETURNS TABLE(ts_key TEXT, metadata JSONB)
 AS $$
 BEGIN
@@ -272,7 +272,7 @@ SET search_path = timeseries, pg_temp;
 -- tmp_ts_read_keys has columns (ts_key TEXT)
 --
 -- returns: table(ts_key TEXT, metadata JSONB)
-CREATE FUNCTION timeseries.get_latest_vintages_metadata()
+CREATE OR REPLACE FUNCTION timeseries.get_latest_vintages_metadata()
 RETURNS TABLE(ts_key TEXT, validity DATE)
 AS $$
 BEGIN
@@ -300,7 +300,7 @@ SET search_path = timeseries, pg_temp;
 -- tmp_ts_read_keys has columns (ts_key TEXT)
 --
 -- returns: table(ts_key TEXT, metadata JSONB)
-CREATE FUNCTION timeseries.get_latest_vintages_metadata_localized(locale_in TEXT)
+CREATE OR REPLACE FUNCTION timeseries.get_latest_vintages_metadata_localized(locale_in TEXT)
 RETURNS TABLE(ts_key TEXT, validity DATE)
 AS $$
 BEGIN

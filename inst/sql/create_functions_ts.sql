@@ -14,7 +14,7 @@
 -- returns: json {"status": "", "message": "", ["offending_keys": ""]}
 -- TODO: validity, release_date, access could be params for this function
 --       -> saves storing 10s of 1000s of copies into tmp table
-CREATE FUNCTION timeseries.insert_from_tmp(p_validity DATE,
+CREATE OR REPLACE FUNCTION timeseries.insert_from_tmp(p_validity DATE,
                                            p_release_date TIMESTAMPTZ,
                                            p_access TEXT)
 RETURNS JSON
@@ -96,7 +96,7 @@ SET search_path = timeseries, pg_temp;
 -- param: pattern regular expression to find keys
 --
 -- returns: json {"status": "", "message": "", ["removed_collection"]: ""}
-CREATE FUNCTION timeseries.fill_read_tmp_regex(pattern TEXT)
+CREATE OR REPLACE FUNCTION timeseries.fill_read_tmp_regex(pattern TEXT)
 RETURNS VOID
 AS $$
 BEGIN
@@ -159,7 +159,7 @@ SET search_path = timeseries, pg_temp;
 --        time be held back?
 --
 -- returns: TABLE(ts_key TEXT, ts_data JSON)
-CREATE FUNCTION timeseries.read_ts_raw(valid_on DATE DEFAULT CURRENT_DATE,
+CREATE OR REPLACE FUNCTION timeseries.read_ts_raw(valid_on DATE DEFAULT CURRENT_DATE,
                                        respect_release_date BOOLEAN DEFAULT false)
 RETURNS TABLE(ts_key TEXT, ts_data JSON)
 AS $$
@@ -183,6 +183,75 @@ BEGIN
     -- Use SESSION_USER because function is executed under timeseries_admin
     AND (pg_has_role(SESSION_USER, 'timeseries_admin', 'usage') OR pg_has_role(SESSION_USER, access, 'usage'))
     ORDER BY rd.ts_key, mn.validity DESC;
+END;
+$$ LANGUAGE PLPGSQL
+SECURITY DEFINER
+SET search_path = timeseries, pg_temp;
+
+-- Completely Purge a Time Series from the database
+--
+-- tmp_ts_delete_keys (ts_key TEXT)
+--
+-- Removes all vintages, metadata, catalog entries, collection entries and dataset entries
+-- (also the set if it ends up empty).
+-- Use VERY SPARINGLY!
+CREATE FUNCTION timeseries.delete_ts()
+RETURNS JSON
+AS $$
+BEGIN
+  DELETE
+  FROM timeseries.catalog cat
+  USING tmp_ts_delete_keys del
+  WHERE del.ts_key = cat.ts_key;
+
+  RETURN json_build_object('status', 'ok');
+END;
+$$ LANGUAGE PLPGSQL
+SECURITY DEFINER
+SET search_path = timeseries, pg_temp;
+
+-- Delete the latest vintage from given time series
+--
+-- tmp_ts_delete_keys (ts_key TEXT)
+CREATE FUNCTION timeseries.delete_ts_edge()
+RETURNS JSON
+AS $$
+BEGIN
+  WITH ids_to_delete AS (
+    SELECT DISTINCT ON (ts_key) id
+    FROM tsdb_test.timeseries_main mn
+    JOIN tmp_ts_delete_keys del
+    USING(ts_key)
+    ORDER BY ts_key, validity DESC
+  )
+  DELETE
+  FROM timeseries.timeseries_main mn
+  USING ids_to_delete ids
+  WHERE mn.id = ids.id;
+
+  RETURN json_build_object('status', 'ok');
+END;
+$$ LANGUAGE PLPGSQL
+SECURITY DEFINER
+SET search_path = timeseries, pg_temp;
+
+
+-- Delete vintages older than some date
+--
+-- param p_older_than The cut off point. All vintages older than that date are removed.
+--
+-- tmp_ts_delete_keys (ts_key TEXT)
+CREATE FUNCTION timeseries.delete_ts_old_vintages(p_older_than DATE)
+RETURNS JSON
+AS $$
+BEGIN
+  DELETE
+  FROM timeseries.timeseries_main mn
+  USING tmp_ts_delete_keys tmp
+  WHERE mn.ts_key = tmp.ts_key
+  AND mn.validity <= p_older_than;
+
+  RETURN json_build_object('status', 'ok');
 END;
 $$ LANGUAGE PLPGSQL
 SECURITY DEFINER
