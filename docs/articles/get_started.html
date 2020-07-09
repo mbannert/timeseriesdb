@@ -60,9 +60,6 @@
       <a href="../articles/get_started.html">Getting Started</a>
     </li>
     <li>
-      <a href="../articles/manage_timeseries_with_timeseriesdb.html">Manage Time Series with {timeseriesdb}</a>
-    </li>
-    <li>
       <a href="../articles/metadata.html">Manage Official Statistics' Time Series Data with R and PostgreSQL</a>
     </li>
   </ul>
@@ -95,7 +92,7 @@
             <h3 class="subtitle">Introduction to {timeseriesdb}</h3>
                         <h4 class="author">Matthias Bannert and Severin Thöni</h4>
             
-            <h4 class="date">2020-06-24</h4>
+            <h4 class="date">2020-07-08</h4>
       
       <small class="dont-index">Source: <a href="https://github.com/mbannert/timeseriesdb/blob/master/vignettes/get_started.Rmd"><code>vignettes/get_started.Rmd</code></a></small>
       <div class="hidden name"><code>get_started.Rmd</code></div>
@@ -114,40 +111,29 @@
 <h2 class="hasAnchor">
 <a href="#store-time-series" class="anchor"></a>Store Time Series</h2>
 <p>Let’s take two time series from the {datasets} R package that ships with R (monthly AirPassengers, JohnsonJohnson quarterly earnings per share) and put them in to a named list. The {timeseriesdb} R package uses lists of time series or long format time series data.tables to stage time series for storing in PostgreSQL.</p>
-<div class="sourceCode" id="cb1"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb1-1" data-line-number="1">devtools<span class="op">::</span><span class="kw"><a href="https://rdrr.io/pkg/devtools/man/load_all.html">load_all</a></span>()</a></code></pre></div>
-<pre><code>## Loading timeseriesdb</code></pre>
-<div class="sourceCode" id="cb3"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb3-1" data-line-number="1"><span class="co">#library(timeseriesdb)</span></a>
-<a class="sourceLine" id="cb3-2" data-line-number="2"></a>
-<a class="sourceLine" id="cb3-3" data-line-number="3">con &lt;-<span class="st"> </span><span class="kw">dbConnect</span>(RPostgres<span class="op">::</span><span class="kw"><a href="https://rdrr.io/pkg/RPostgres/man/Postgres.html">Postgres</a></span>(),</a>
-<a class="sourceLine" id="cb3-4" data-line-number="4">                 <span class="dt">dbname =</span> <span class="st">"postgres"</span>,</a>
-<a class="sourceLine" id="cb3-5" data-line-number="5">                 <span class="dt">user =</span> <span class="st">"dev_admin"</span>,</a>
-<a class="sourceLine" id="cb3-6" data-line-number="6">                 <span class="dt">host =</span> <span class="st">"localhost"</span>,</a>
-<a class="sourceLine" id="cb3-7" data-line-number="7">                 <span class="dt">password =</span> <span class="st">"dev_admin"</span>,</a>
-<a class="sourceLine" id="cb3-8" data-line-number="8">                 <span class="dt">port =</span> <span class="dv">1111</span>)</a>
-<a class="sourceLine" id="cb3-9" data-line-number="9">tsl &lt;-<span class="st"> </span><span class="kw"><a href="https://rdrr.io/r/base/list.html">list</a></span>(<span class="dt">AirPassengers =</span> AirPassengers,</a>
-<a class="sourceLine" id="cb3-10" data-line-number="10">            <span class="dt">JohnsonJohnson =</span> JohnsonJohnson)</a>
-<a class="sourceLine" id="cb3-11" data-line-number="11"><span class="kw"><a href="../reference/store_time_series.html">store_time_series</a></span>(con, tsl, <span class="st">"main"</span>)</a></code></pre></div>
-<pre><code>## $status
-## [1] "ok"
-## 
-## $reason
-## [1] "the world is full of rainbows"</code></pre>
+<div class="sourceCode" id="cb1"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb1-1" data-line-number="1">devtools<span class="op">::</span><span class="kw"><a href="https://rdrr.io/pkg/devtools/man/load_all.html">load_all</a></span>()</a>
+<a class="sourceLine" id="cb1-2" data-line-number="2"><span class="co">#library(timeseriesdb)</span></a>
+<a class="sourceLine" id="cb1-3" data-line-number="3"></a>
+<a class="sourceLine" id="cb1-4" data-line-number="4">con &lt;-<span class="st"> </span><span class="kw">dbConnect</span>(RPostgres<span class="op">::</span><span class="kw"><a href="https://rdrr.io/pkg/RPostgres/man/Postgres.html">Postgres</a></span>(),</a>
+<a class="sourceLine" id="cb1-5" data-line-number="5">                 <span class="dt">dbname =</span> <span class="st">"postgres"</span>,</a>
+<a class="sourceLine" id="cb1-6" data-line-number="6">                 <span class="dt">user =</span> <span class="st">"dev_admin"</span>,</a>
+<a class="sourceLine" id="cb1-7" data-line-number="7">                 <span class="dt">host =</span> <span class="st">"localhost"</span>,</a>
+<a class="sourceLine" id="cb1-8" data-line-number="8">                 <span class="dt">password =</span> <span class="st">"dev_admin"</span>,</a>
+<a class="sourceLine" id="cb1-9" data-line-number="9">                 <span class="dt">port =</span> <span class="dv">1111</span>)</a>
+<a class="sourceLine" id="cb1-10" data-line-number="10">tsl &lt;-<span class="st"> </span><span class="kw"><a href="https://rdrr.io/r/base/list.html">list</a></span>(<span class="dt">AirPassengers =</span> AirPassengers,</a>
+<a class="sourceLine" id="cb1-11" data-line-number="11">            <span class="dt">JohnsonJohnson =</span> JohnsonJohnson)</a>
+<a class="sourceLine" id="cb1-12" data-line-number="12"><span class="kw"><a href="../reference/store_time_series.html">store_time_series</a></span>(con, tsl, <span class="st">"main"</span>,</a>
+<a class="sourceLine" id="cb1-13" data-line-number="13">                  <span class="dt">schema =</span> <span class="st">"tsdb_test"</span>)</a></code></pre></div>
 </div>
 <div id="basic-read-time-series" class="section level2">
 <h2 class="hasAnchor">
 <a href="#basic-read-time-series" class="anchor"></a>Basic Read Time Series</h2>
-<div class="sourceCode" id="cb5"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb5-1" data-line-number="1"><span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span>(tstools)</a></code></pre></div>
-<pre><code>## Loading required package: zoo</code></pre>
-<pre><code>## 
-## Attaching package: 'zoo'</code></pre>
-<pre><code>## The following objects are masked from 'package:base':
-## 
-##     as.Date, as.Date.numeric</code></pre>
-<div class="sourceCode" id="cb9"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb9-1" data-line-number="1">out &lt;-<span class="st"> </span><span class="kw"><a href="../reference/read_time_series.html">read_time_series</a></span>(con, <span class="kw"><a href="https://rdrr.io/r/base/c.html">c</a></span>(<span class="st">"JohnsonJohnson"</span>,</a>
-<a class="sourceLine" id="cb9-2" data-line-number="2">                               <span class="st">"AirPassengers"</span>))</a>
-<a class="sourceLine" id="cb9-3" data-line-number="3"><span class="kw"><a href="https://rdrr.io/pkg/tstools/man/tsplot.html">tsplot</a></span>(out[<span class="dv">1</span>],</a>
-<a class="sourceLine" id="cb9-4" data-line-number="4">       <span class="dt">tsr =</span> out[<span class="dv">2</span>])</a></code></pre></div>
-<p><img src="get_started_files/figure-html/unnamed-chunk-2-1.png" width="700"></p>
+<div class="sourceCode" id="cb2"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb2-1" data-line-number="1"><span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span>(tstools)</a>
+<a class="sourceLine" id="cb2-2" data-line-number="2">out &lt;-<span class="st"> </span><span class="kw"><a href="../reference/read_time_series.html">read_time_series</a></span>(con, <span class="kw"><a href="https://rdrr.io/r/base/c.html">c</a></span>(<span class="st">"JohnsonJohnson"</span>,</a>
+<a class="sourceLine" id="cb2-3" data-line-number="3">                               <span class="st">"AirPassengers"</span>),</a>
+<a class="sourceLine" id="cb2-4" data-line-number="4">                        <span class="dt">schema =</span> <span class="st">"tsdb_test"</span>)</a>
+<a class="sourceLine" id="cb2-5" data-line-number="5"><span class="kw"><a href="https://rdrr.io/pkg/tstools/man/tsplot.html">tsplot</a></span>(out[<span class="dv">1</span>],</a>
+<a class="sourceLine" id="cb2-6" data-line-number="6">       <span class="dt">tsr =</span> out[<span class="dv">2</span>])</a></code></pre></div>
 </div>
 <div id="versioning-of-time-series-vintages" class="section level2">
 <h2 class="hasAnchor">
@@ -160,24 +146,24 @@
 <a href="#datasets" class="anchor"></a>Datasets</h2>
 <p>In {timeseriesdb} <em>every</em> time series belongs to a dataset. If no dataset is specified when a time series is stored, the series automagically gets assigned to the <em>default</em> dataset.</p>
 <p>The idea behind datasets is to group time series according to their source and allow for group level data description. The following helpers help you to explore which keys are in a given set and which keys are in which set.</p>
-<div class="sourceCode" id="cb10"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb10-1" data-line-number="1"><span class="kw"><a href="../reference/db_get_dataset_keys.html">db_get_dataset_keys</a></span>(con, <span class="dt">set_name =</span> <span class="st">"default"</span>)</a></code></pre></div>
-<pre><code>## [1] "AirPassengers"</code></pre>
-<div class="sourceCode" id="cb12"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb12-1" data-line-number="1"><span class="kw"><a href="../reference/db_get_dataset_id.html">db_get_dataset_id</a></span>(con, <span class="kw"><a href="https://rdrr.io/r/base/c.html">c</a></span>(<span class="st">"AirPassengers"</span>, <span class="st">"JohnsonJohnson"</span>))</a></code></pre></div>
-<pre><code>##           ts_key  set_id
-## 1  AirPassengers default
-## 2 JohnsonJohnson  stocks</code></pre>
+<div class="sourceCode" id="cb3"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb3-1" data-line-number="1"><span class="kw"><a href="../reference/db_get_dataset_keys.html">db_get_dataset_keys</a></span>(con, <span class="dt">set_name =</span> <span class="st">"default"</span>,</a>
+<a class="sourceLine" id="cb3-2" data-line-number="2">                    <span class="dt">schema =</span> <span class="st">"tsdb_test"</span>)</a>
+<a class="sourceLine" id="cb3-3" data-line-number="3"><span class="kw"><a href="../reference/db_get_dataset_id.html">db_get_dataset_id</a></span>(con, <span class="kw"><a href="https://rdrr.io/r/base/c.html">c</a></span>(<span class="st">"AirPassengers"</span>, <span class="st">"JohnsonJohnson"</span>),</a>
+<a class="sourceLine" id="cb3-4" data-line-number="4">                  <span class="dt">schema =</span> <span class="st">"tsdb_test"</span>)</a></code></pre></div>
 <p>You can easily add new datasets. Note though, that dataset are not user specific, but global groups. The user specific analog to sets is called collection in will be described later on.</p>
-<div class="sourceCode" id="cb14"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb14-1" data-line-number="1"><span class="kw"><a href="../reference/db_create_dataset.html">db_create_dataset</a></span>(con, <span class="st">"stocks"</span>,</a>
-<a class="sourceLine" id="cb14-2" data-line-number="2">                  <span class="dt">set_description =</span> <span class="st">"Stock market returns."</span>)</a></code></pre></div>
+<div class="sourceCode" id="cb4"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb4-1" data-line-number="1"><span class="kw"><a href="../reference/db_create_dataset.html">db_create_dataset</a></span>(con, <span class="st">"stocks"</span>,</a>
+<a class="sourceLine" id="cb4-2" data-line-number="2">                  <span class="dt">set_description =</span> <span class="st">"Stock market returns."</span>,</a>
+<a class="sourceLine" id="cb4-3" data-line-number="3">                  <span class="dt">schema =</span> <span class="st">"tsdb_test"</span>)</a></code></pre></div>
 <p>Once a set is created you can move existing series to that set.</p>
-<div class="sourceCode" id="cb15"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb15-1" data-line-number="1"><span class="kw"><a href="../reference/db_assign_dataset.html">db_assign_dataset</a></span>(con,<span class="st">"JohnsonJohnson"</span>,<span class="st">"stocks"</span>)</a>
-<a class="sourceLine" id="cb15-2" data-line-number="2"><span class="kw"><a href="../reference/db_get_dataset_id.html">db_get_dataset_id</a></span>(con, <span class="kw"><a href="https://rdrr.io/r/base/c.html">c</a></span>(<span class="st">"AirPassengers"</span>, <span class="st">"JohnsonJohnson"</span>))</a></code></pre></div>
+<div class="sourceCode" id="cb5"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb5-1" data-line-number="1"><span class="kw"><a href="../reference/db_assign_dataset.html">db_assign_dataset</a></span>(con,<span class="st">"JohnsonJohnson"</span>,<span class="st">"stocks"</span>,</a>
+<a class="sourceLine" id="cb5-2" data-line-number="2">                  <span class="dt">schema =</span> <span class="st">"tsdb_test"</span>)</a>
+<a class="sourceLine" id="cb5-3" data-line-number="3"><span class="kw"><a href="../reference/db_get_dataset_id.html">db_get_dataset_id</a></span>(con, <span class="kw"><a href="https://rdrr.io/r/base/c.html">c</a></span>(<span class="st">"AirPassengers"</span>, <span class="st">"JohnsonJohnson"</span>), <span class="dt">schema =</span> <span class="st">"tsdb_test"</span>)</a></code></pre></div>
 </div>
 <div id="metadata" class="section level2">
 <h2 class="hasAnchor">
 <a href="#metadata" class="anchor"></a>Metadata</h2>
-<div class="sourceCode" id="cb16"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb16-1" data-line-number="1"><span class="kw"><a href="../reference/db_read_ts_metadata.html">db_read_ts_metadata</a></span>(con, <span class="st">"AirPassengers"</span>)</a></code></pre></div>
-<pre><code>## Empty object of class tsmeta</code></pre>
+<div class="sourceCode" id="cb6"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb6-1" data-line-number="1"><span class="kw"><a href="../reference/db_read_ts_metadata.html">db_read_ts_metadata</a></span>(con, <span class="st">"AirPassengers"</span>,</a>
+<a class="sourceLine" id="cb6-2" data-line-number="2">                    <span class="dt">schema =</span> <span class="st">"tsdb_test"</span>)</a></code></pre></div>
 </div>
 <div id="collections-aka-playlists" class="section level2">
 <h2 class="hasAnchor">

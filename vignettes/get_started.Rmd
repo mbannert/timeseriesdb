@@ -1,6 +1,6 @@
 ---
-title: "Getting Started"
-subtitle: "Introduction to {timeseriesdb}"
+title: "Basic Usage"
+subtitle: "Getting Started}"
 author: "Matthias Bannert and Severin Thöni"
 date: "`r Sys.Date()`"
 output: rmarkdown::html_vignette
@@ -12,18 +12,15 @@ vignette: >
 
 ## Starting Point
 
-This guide assumes you have installed the {timeseriesdb} R package and a local PostgreSQL client library successfully. We also assume that you have a PostgreSQL database running somewhere that you can connect to. 
-
-For the remainder of this guide we assume PostgreSQL runs on a local docker container accessible on port 1111.
+This guide assumes you have installed the {timeseriesdb} R package and a local PostgreSQL client library successfully. We also assume that you have a PostgreSQL database running somewhere that you can connect to. (*For the remainder of this guide we assume PostgreSQL runs on a local docker container accessible via port 1111.*)
 
 
 ## Store Time Series 
 
-Let's take two time series from the {datasets} R package that ships with R (monthly AirPassengers, JohnsonJohnson quarterly earnings per share) and put them in to a named list. The {timeseriesdb} R package uses lists of time series or long format time series data.tables to stage time series for storing in PostgreSQL. 
+Let's take two time series from the {datasets} R package that ships with R (monthly AirPassengers, JohnsonJohnson quarterly earnings per share) and put them into a named list. The {timeseriesdb} R package uses lists of time series or long format time series `data.tables` to store one or more time series into PostgreSQL. 
 
-```{r}
-devtools::load_all()
-#library(timeseriesdb)
+```{r, eval=FALSE}
+library(timeseriesdb)
 
 con <- dbConnect(RPostgres::Postgres(),
                  dbname = "postgres",
@@ -33,62 +30,62 @@ con <- dbConnect(RPostgres::Postgres(),
                  port = 1111)
 tsl <- list(AirPassengers = AirPassengers,
             JohnsonJohnson = JohnsonJohnson)
-store_time_series(con, tsl, "main")
+store_time_series(con, tsl, "main",
+                  schema = "tsdb_test")
 
 ```
  
-## Basic Read Time Series
+## Read Time Series
  
-```{r}
-library(tstools)
+Now let's read the series we have just stored to the database into R again. 
+Note that `read_time_series` returns a list of time series whose elements' names
+are the time series keys (unique identifiers) from the database. In this case
+example we use our [{tstools}]() package to visualize both series. 
+ 
+```{r, eval=FALSE}
+
 out <- read_time_series(con, c("JohnsonJohnson",
-                               "AirPassengers"))
-tsplot(out[1],
-       tsr = out[2])
+                               "AirPassengers"),
+                        schema = "tsdb_test")
+
+library(tstools)
+tsplot(AirPassengers = out$AirPassengers,
+       tsr = list(JohnsonJohnson = out$JohnsonJohnson))
 ```
 
-## Versioning of Time Series (Vintages)
+```{r,echo=FALSE}
+library(tstools)
+out <- list(AirPassengers = AirPassengers,
+            JohnsonJohnson = JohnsonJohnson)
+tsplot(AirPassengers = out$AirPassengers,
+       tsr = list(JohnsonJohnson = out$JohnsonJohnson))
 
-{timeseriesdb} keeps track of different versions of a time series. This feature was designed with regular releases of data in mind. In official and economic statistics, releases do not simply mean to append another observation at end of time series. Seasonal adjustment and other filters as well data corrections cause revisions of a time series. In order to keep research, e.g., forecasts reproducible, it is important to archive all versions of a time series. Doing so, allows to assess forecast performance and makes sure the state of information at the time the forecast was made can be reproduced.
-
-{timeseriesdb} allows to store one version of a time series per day, i.e., series 
 
 
-## Datasets
-
-In {timeseriesdb} *every* time series belongs to a dataset. If no dataset is specified when a time series is stored, the series automagically gets assigned to the *default* dataset.
-
-The idea behind datasets is to group time series according to their source and allow for group level data description. The
-following helpers help you to explore which keys are in a given set and which keys are in which set.
-
-```{r}
-db_get_dataset_keys(con, set_name = "default")
-db_get_dataset_id(con, c("AirPassengers", "JohnsonJohnson"))
 ```
 
-You can easily add new datasets. Note though, that dataset are not user specific, but global groups. The user specific analog to sets is called collection in will be described later on. 
+
+
+## Basic Metadata 
+
+To most basic way to store data descriptions is to assign meta information 
+at the time series level. 
 
 ```{r, eval=FALSE}
-db_create_dataset(con, "stocks",
-                  set_description = "Stock market returns.")
-```
-Once a set is created you can move existing series to that set. 
-
-```{r, eval=FALSE}
-db_assign_dataset(con,"JohnsonJohnson","stocks")
-db_get_dataset_id(con, c("AirPassengers", "JohnsonJohnson"))
+db_read_ts_metadata(con, "AirPassengers",
+                    schema = "tsdb_test")
 ```
 
 
+## Advanced Use
 
-## Metadata 
+{timeseriesdb} offers a plethora of features beyond mere storage of time series and 
+their descriptions: {timeseriesdb} can keep track of different versions of the 
+same time series (vintages), group time series into datasets, store user specific 
+collection of series, manage access on time series level and manage release dates. 
 
-```{r}
-db_read_ts_metadata(con, "AirPassengers")
-```
+The learn more about these advanced features read the [advanced usage vignette]().
 
-
-## Collections (aka playlists)
 
 
 

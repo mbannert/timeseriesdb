@@ -1,0 +1,57 @@
+---
+title: "Advanced Usage"
+author: "Matthias Bannert and Severin Thöni"
+date: "`r Sys.Date()`"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{Getting Started}
+  %\VignetteEngine{knitr::rmarkdown}
+  \usepackage[utf8]{inputenc}
+---
+
+## Starting Point
+
+see basics + basics.
+
+## Register Datasets
+
+## Remove 
+
+
+## Versioning of Time Series (Vintages)
+
+{timeseriesdb} keeps track of different versions of a time series. This feature was designed with regular releases of data in mind. In official and economic statistics, releases do not simply mean to append another observation at end of time series. Seasonal adjustment and other filters as well data corrections cause revisions of a time series. In order to keep research, e.g., forecasts reproducible, it is important to archive all versions of a time series. Doing so, allows to assess forecast performance and makes sure the state of information at the time the forecast was made can be reproduced.
+
+{timeseriesdb} allows to store one version of a time series per day, i.e., series 
+
+
+
+## Collections (aka playlists)
+## Datasets
+
+In {timeseriesdb} *every* time series belongs to a dataset. If no dataset is specified when a time series is stored, the series automagically gets assigned to the *default* dataset.
+
+The idea behind datasets is to group time series according to their source and allow for group level data description. The
+following helpers help you to explore which keys are in a given set and which keys are in which set.
+
+```{r, eval=FALSE}
+db_get_dataset_keys(con, set_name = "default",
+                    schema = "tsdb_test")
+db_get_dataset_id(con, c("AirPassengers", "JohnsonJohnson"),
+                  schema = "tsdb_test")
+```
+
+You can easily add new datasets. Note though, that dataset are not user specific, but global groups. The user specific analog to sets is called collection in will be described later on. 
+
+```{r, eval=FALSE}
+db_create_dataset(con, "stocks",
+                  set_description = "Stock market returns.",
+                  schema = "tsdb_test")
+```
+Once a set is created you can move existing series to that set. 
+
+```{r, eval=FALSE}
+db_assign_dataset(con,"JohnsonJohnson","stocks",
+                  schema = "tsdb_test")
+db_get_dataset_id(con, c("AirPassengers", "JohnsonJohnson"), schema = "tsdb_test")
+```
