@@ -63,6 +63,9 @@
       <a href="../articles/get_started.html">Basic Usage</a>
     </li>
     <li>
+      <a href="../articles/installation_guide.html">Installation Guide</a>
+    </li>
+    <li>
       <a href="../articles/metadata.html">Manage Official Statistics' Time Series Data with R and PostgreSQL</a>
     </li>
   </ul>
@@ -106,11 +109,37 @@
 <div id="starting-point" class="section level2">
 <h2 class="hasAnchor">
 <a href="#starting-point" class="anchor"></a>Starting Point</h2>
-<p>see basics + basics.</p>
+<p>We assume you are past the basics and R, {timeseriesdb} and PostgreSQL are up and running. (<em>For the remainder of this guide we assume PostgreSQL runs on a local docker container accessible via port 1111.</em>)</p>
 </div>
-<div id="register-datasets" class="section level2">
+<div id="datasets" class="section level2">
 <h2 class="hasAnchor">
-<a href="#register-datasets" class="anchor"></a>Register Datasets</h2>
+<a href="#datasets" class="anchor"></a>Datasets</h2>
+<p>In {timeseriesdb}, all time series have to be part of a dataset. If the user stores a time series w/o specifying a dataset that series is assigned to the ‘default’ dataset. Datasets allow to group data and store data descriptions at the dataset level. Also, datasets come in handy for admin operations like deletion of an entire dataset.</p>
+</div>
+<div id="collections" class="section level2">
+<h2 class="hasAnchor">
+<a href="#collections" class="anchor"></a>Collections</h2>
+<p>Collections are user specific compositions of time series identifiers. Users of earlier versions of time series may think of this functionality as ‘sets’. To avoid any confusion, let’s be clear about the new terminology here:</p>
+<ul>
+<li><p>datasets = registration of time series into global datasets at the admin level. time series are unique ACROSS datasets.</p></li>
+<li><p>collection = playlist like user specific bookmarks. A time series can part of multiple collections, users can have multiple collections.</p></li>
+</ul>
+</div>
+<div id="advanced-meta-information" class="section level2">
+<h2 class="hasAnchor">
+<a href="#advanced-meta-information" class="anchor"></a>Advanced Meta Information</h2>
+<div id="multi-language-data-descriptions" class="section level3">
+<h3 class="hasAnchor">
+<a href="#multi-language-data-descriptions" class="anchor"></a>Multi Language Data Descriptions</h3>
+</div>
+<div id="levels-of-assignment" class="section level3">
+<h3 class="hasAnchor">
+<a href="#levels-of-assignment" class="anchor"></a>Levels of Assignment</h3>
+</div>
+</div>
+<div id="access-levels-and-rights-management" class="section level2">
+<h2 class="hasAnchor">
+<a href="#access-levels-and-rights-management" class="anchor"></a>Access Levels and Rights Management</h2>
 </div>
 <div id="remove" class="section level2">
 <h2 class="hasAnchor">
@@ -126,9 +155,9 @@
 <h2 class="hasAnchor">
 <a href="#collections-aka-playlists" class="anchor"></a>Collections (aka playlists)</h2>
 </div>
-<div id="datasets" class="section level2">
+<div id="datasets-1" class="section level2">
 <h2 class="hasAnchor">
-<a href="#datasets" class="anchor"></a>Datasets</h2>
+<a href="#datasets-1" class="anchor"></a>Datasets</h2>
 <p>In {timeseriesdb} <em>every</em> time series belongs to a dataset. If no dataset is specified when a time series is stored, the series automagically gets assigned to the <em>default</em> dataset.</p>
 <p>The idea behind datasets is to group time series according to their source and allow for group level data description. The following helpers help you to explore which keys are in a given set and which keys are in which set.</p>
 <div class="sourceCode" id="cb1"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb1-1" data-line-number="1"><span class="kw"><a href="../reference/db_get_dataset_keys.html">db_get_dataset_keys</a></span>(con, <span class="dt">set_name =</span> <span class="st">"default"</span>,</a>
@@ -153,11 +182,14 @@
 <a href="#tocnav" class="anchor"></a>Contents</h2>
       <ul class="nav nav-pills nav-stacked">
 <li><a href="#starting-point">Starting Point</a></li>
-      <li><a href="#register-datasets">Register Datasets</a></li>
+      <li><a href="#datasets">Datasets</a></li>
+      <li><a href="#collections">Collections</a></li>
+      <li><a href="#advanced-meta-information">Advanced Meta Information</a></li>
+      <li><a href="#access-levels-and-rights-management">Access Levels and Rights Management</a></li>
       <li><a href="#remove">Remove</a></li>
       <li><a href="#versioning-of-time-series-vintages">Versioning of Time Series (Vintages)</a></li>
       <li><a href="#collections-aka-playlists">Collections (aka playlists)</a></li>
-      <li><a href="#datasets">Datasets</a></li>
+      <li><a href="#datasets-1">Datasets</a></li>
       </ul>
 </div>
       </div>

@@ -11,14 +11,106 @@ vignette: >
 
 ## Starting Point
 
-see basics + basics.
+We assume you are past the basics and R, {timeseriesdb} and PostgreSQL are up and running. 
+(*For the remainder of this guide we assume PostgreSQL runs on a local docker container accessible via port 1111.*)
 
-## Register Datasets
+## Datasets
+
+In {timeseriesdb}, all time series have to be part of a dataset. If the user 
+stores a time series w/o specifying a dataset that series is assigned to the 'default'
+dataset. Datasets allow to group data and store data descriptions at the 
+dataset level. Also, datasets come in handy for admin operations like 
+deletion of an entire dataset. 
+
+
+Let's create a new dataset!
+
+```{r, eval=FALSE}
+library(kofdata)
+arr <- get_time_series("ch.zrh_airport.arrival.total")
+dep <- get_time_series("ch.zrh_airport.departure.total")
+
+store_time_series(con, c(arr,dep), schema = "tsdb_test")
+
+db_create_dataset(con, "ch.zrh_airport",
+                  set_description = "Arrivals and Departures ZH Airport",
+                  schema = "tsdb_test")
+
+# see, the new dataset is there... 
+db_list_datasets(con, schema = "tsdb_test")
+
+```
+Apparently, the dataset is empty. We need to assign some time series first.
+Make sure the time series you want to register to a set are actually around.
+Unlike `store_time_series` assigning series to a dataset is *not* a
+vintage level operation, it applies to all versions of a series. This is why time series are assigned to the 'default' schema at first when they are stored and can be moved later on. 
+
+```{r, eval=FALSE}
+db_assign_dataset(con,
+                  ts_keys = c("ch.zrh_airport.arrival.total",
+                              "ch.zrh_airport.departure.total"),
+                  set_name = "ch.zrh_airport",
+                  schema = "tsdb_test")
+
+```
+```{r}
+db_get_dataset_keys(con, "ch.zrh_airport", schema = "tsdb_test")
+```
+
+```{r}
+db_get_dataset_id(con, "ch.zrh_airport.arrival.total",
+                  schema = "tsdb_test")
+```
+
+
+## Release Management
+
+
+
+
+
+
+
+## Collections
+
+Collections are user specific compositions of time series identifiers. Users 
+of earlier versions of time series may think of this functionality as 'sets'. 
+To avoid any confusion, let's be clear about the new terminology here: 
+
+- datasets = registration of time series into global datasets at the admin level. 
+time series are unique ACROSS datasets.
+
+- collection = playlist like user specific bookmarks. A time series can part of 
+multiple collections, users can have multiple collections. 
+
+
+## Advanced Meta Information
+
+### Multi Language Data Descriptions
+
+
+### Levels of Assignment
+
+
+## Versioning of Time Series (Vintages)
+
+
+
+
+## Access Levels and Rights Management
+
+
+## Hygenie and Maintenance
+
+
+
+
+
 
 ## Remove 
 
 
-## Versioning of Time Series (Vintages)
+
 
 {timeseriesdb} keeps track of different versions of a time series. This feature was designed with regular releases of data in mind. In official and economic statistics, releases do not simply mean to append another observation at end of time series. Seasonal adjustment and other filters as well data corrections cause revisions of a time series. In order to keep research, e.g., forecasts reproducible, it is important to archive all versions of a time series. Doing so, allows to assess forecast performance and makes sure the state of information at the time the forecast was made can be reproduced.
 

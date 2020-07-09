@@ -1,0 +1,31 @@
+---
+title: "Installation Guide"
+author: "Matthias Bannert and Severin Thöni"
+date: "`r Sys.Date()`"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{Getting Started}
+  %\VignetteEngine{knitr::rmarkdown}
+  \usepackage[utf8]{inputenc}
+---
+
+## Starting Point
+
+Unix shell, basic SQL, basic R. 
+Postgres with dedicated schema running. 
+
+## Docker Dev Environment
+
+fire up .sh in inst/
+
+## run R setup scripts
+
+
+
+
+
+
+
+
+
+

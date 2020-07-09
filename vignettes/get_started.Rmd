@@ -20,20 +20,30 @@ In {timeseriesdb}, functions to interact with the database use the `db_` prefix.
 Basic read and store functions are an exception to this rule as they should be easy to find
 front and center. As opposed to that more complex, less common operations rather ask organization in a group functions... 
 
+## Create a Database Connection
+
+No matter whether you want to read or write, you'll need a database connection. {timeseriesdb}
+offers a simple wrapper function around to {DBI}'s more universal `dbConnect`:
+
+```{r, eval=FALSE}
+con <- db_create_connection(
+  dbname = "postgres",
+  user = "dev_admin",
+  host = "localhost",
+  passwd = "dev_admin",
+  port = 1111
+)
+```
+
+The resulting PostgreSQL connection object can be passed on to all of {timeseriesdb}'s
+database interaction functions. 
+
 
 ## Store Time Series 
 
 Let's take two time series from the {datasets} R package that ships with R (monthly AirPassengers, JohnsonJohnson quarterly earnings per share) and put them into a named list. The {timeseriesdb} R package uses lists of time series or long format time series `data.tables` to store one or more time series into PostgreSQL. 
 
 ```{r, eval=FALSE}
-library(timeseriesdb)
-
-con <- dbConnect(RPostgres::Postgres(),
-                 dbname = "postgres",
-                 user = "dev_admin",
-                 host = "localhost",
-                 password = "dev_admin",
-                 port = 1111)
 tsl <- list(AirPassengers = AirPassengers,
             JohnsonJohnson = JohnsonJohnson)
 store_time_series(con, tsl, "main",
