@@ -144,7 +144,7 @@ SET search_path = timeseries, pg_temp;
 -- param:  p_validity DATE, the exact vintage for which to change the access level
 --
 -- By default all vintages are set to the specified level
-CREATE FUNCTION timeseries.change_access_level_dataset(p_dataset TEXT,
+CREATE OR REPLACE FUNCTION timeseries.change_access_level_dataset(p_dataset TEXT,
                                                        p_level TEXT,
                                                        p_validity DATE DEFAULT NULL)
 RETURNS JSON

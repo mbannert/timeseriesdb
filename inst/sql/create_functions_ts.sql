@@ -130,7 +130,7 @@ SET search_path = timeseries, pg_temp;
 -- param:  p_validity DATE, the exact vintage for which to change the access level
 --
 -- By default all vintages are set to the specified level
-CREATE FUNCTION timeseries.change_access_level(p_level TEXT,
+CREATE OR REPLACE FUNCTION timeseries.change_access_level(p_level TEXT,
                                                p_validity DATE DEFAULT NULL)
 RETURNS JSON
 AS $$
@@ -205,7 +205,7 @@ SET search_path = timeseries, pg_temp;
 -- Removes all vintages, metadata, catalog entries, collection entries and dataset entries
 -- (also the set if it ends up empty).
 -- Use VERY SPARINGLY!
-CREATE FUNCTION timeseries.delete_ts()
+CREATE OR REPLACE FUNCTION timeseries.delete_ts()
 RETURNS JSON
 AS $$
 BEGIN
@@ -223,7 +223,7 @@ SET search_path = timeseries, pg_temp;
 -- Delete the latest vintage from given time series
 --
 -- tmp_ts_delete_keys (ts_key TEXT)
-CREATE FUNCTION timeseries.delete_ts_edge()
+CREATE OR REPLACE FUNCTION timeseries.delete_ts_edge()
 RETURNS JSON
 AS $$
 BEGIN
@@ -251,7 +251,7 @@ SET search_path = timeseries, pg_temp;
 -- param p_older_than The cut off point. All vintages older than that date are removed.
 --
 -- tmp_ts_delete_keys (ts_key TEXT)
-CREATE FUNCTION timeseries.delete_ts_old_vintages(p_older_than DATE)
+CREATE OR REPLACE FUNCTION timeseries.delete_ts_old_vintages(p_older_than DATE)
 RETURNS JSON
 AS $$
 BEGIN

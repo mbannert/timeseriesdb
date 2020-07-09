@@ -154,7 +154,7 @@ SECURITY DEFINER
 SET search_path = timeseries, pg_temp;
 
 
-CREATE FUNCTION timeseries.dataset_delete(p_dataset_name TEXT,
+CREATE OR REPLACE FUNCTION timeseries.dataset_delete(p_dataset_name TEXT,
                                           p_confirm_dataset_name TEXT)
 RETURNS JSON
 AS $$
@@ -189,7 +189,7 @@ SET search_path = timeseries, pg_temp;
 -- param p_older_than The cut off point. All vintages older than that date are removed.
 --
 -- tmp_ts_delete_keys (ts_key TEXT)
-CREATE FUNCTION timeseries.dataset_trim(p_dataset TEXT,
+CREATE OR REPLACE FUNCTION timeseries.dataset_trim(p_dataset TEXT,
                                         p_older_than DATE)
 RETURNS JSON
 AS $$
