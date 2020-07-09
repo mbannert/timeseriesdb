@@ -14,6 +14,12 @@ vignette: >
 
 This guide assumes you have installed the {timeseriesdb} R package and a local PostgreSQL client library successfully. We also assume that you have a PostgreSQL database running somewhere that you can connect to. (*For the remainder of this guide we assume PostgreSQL runs on a local docker container accessible via port 1111.*)
 
+## General Note
+
+In {timeseriesdb}, functions to interact with the database use the `db_` prefix. 
+Basic read and store functions are an exception to this rule as they should be easy to find
+front and center. As opposed to that more complex, less common operations rather ask organization in a group functions... 
+
 
 ## Store Time Series 
 
@@ -68,13 +74,54 @@ tsplot(AirPassengers = out$AirPassengers,
 
 ## Basic Metadata 
 
-To most basic way to store data descriptions is to assign meta information 
-at the time series level. 
+In {timeseriesdb}, the most basic way to store data descriptions is to assign non-translated (unlocalized) meta information at the time series level. In order to store meta information
+to the database, lets first create a `tsmeta` object in R. 
+
+
+```{r}
+#library(timeseriesdb)
+devtools::load_all()
+tsm <- create_tsmeta(
+  JohnsonJohnson = list(
+    title = "Historical Quarterly earnings (dollars) per Johnson & Johnson share",
+    source = "Shumway, R. H. and Stoffer, D. S. (2000) Time Series Analysis and its Applications. Second Edition. Springer. Example 1.1"  
+  ),
+  AirPassengers = list(
+    title = "The classic Box & Jenkins airline data. Monthly totals of international airline passengers",
+    source = "Box, G. E. P., Jenkins, G. M. and Reinsel, G. C. (1976) Time Series Analysis, Forecasting and Control. Third Edition. Holden-Day. Series G."
+  )
+)
+
+tsm
+```
+
+Now, pass on the `tsmeta` object to the database. 
+
 
 ```{r, eval=FALSE}
-db_read_ts_metadata(con, "AirPassengers",
-                    schema = "tsdb_test")
+
+db_store_ts_metadata(con,
+                     tsm,
+                     valid_from = Sys.Date(),
+                     schema = "tsdb_test")
+
 ```
+Note that the default locale for the write operation is NULL. 
+This means there is only one language and data descriptions are 
+not translated to different languages. If you want to learn how to add localized meta information
+or meta information at the vintage or dataset level, please read the advanced use vignette. 
+
+Reading the data from the database is just as easy: 
+
+
+```{r, eval=FALSE}
+tsm <- db_read_ts_metadata(con, c("JohnsonJohnson",
+                           "AirPassengers"),
+                    schema = "tsdb_test")
+
+
+```
+
 
 
 ## Advanced Use
