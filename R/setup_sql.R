@@ -68,7 +68,7 @@ setup_sql_extentions <- function(con, schema = "timeseries"){
   # split up SQL by a new set of lines everytime CREATE FUNCTION
   # occurs in order to send single statements using multiple execute calls
   # which is DBI / RPostgres compliant
-  lapply(split(sql, cumsum(grepl("CREATE ", sql))),
+  lapply(split(sql, cumsum(grepl("CREATE OR REPLACE ", sql))),
          function(x){
            dbExecute(con, paste(x, collapse = "\n"))
          })
