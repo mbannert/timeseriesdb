@@ -104,7 +104,17 @@ db_list_releases(con, include_past = T, schema = "tsdb_test")
 ```
 
 Cancelling a future release is simply a matter of calling [db_cancel_release()](). 
-Cancellation of past releases is not possible. 
+Cancellation of past releases is not possible, but release can be updated with [db_update_release()](). Also you can easily query the latest release
+
+
+```{r, eval=FALSE}
+db_get_latest_release_for_set(con, "ch.zrh_airport",schema = "tsdb_test")
+```
+
+Similarily use [db_get_next_release_for_set()]() to get the next upcoming
+release. 
+
+
 
 
 ## Collections
@@ -195,23 +205,30 @@ db_read_ts_metadata(con, "ch.zrh_airport.arrival.total",
 
 ```
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 ### Levels of Assignment
+
+Meta descriptions can be assigned at various levels. Descriptions
+either belong to a *dataset*, to a *time series* or two a *vintage of a time series*.
+Meta information is only loosely coupled to vintages of time
+series, because in most usecases meta descriptions do not change every time 
+there is a data revision. So by simply not updating unchanged descriptions when 
+data are revised / updated, we allow descriptions to last for multiple version of 
+a time series. 
+
+```{r, eval=FALSE}
+db_get_metadata_validity(con, "ch.zrh_airport.arrival.total", 
+                         locale = "de",
+                         schema = "tsdb_test")
+```
+
+
+helps to get and overview find out since when meta information is valid. 
+Dataset level meta information can currently only be assigned when the dataset
+is created and is not versioned. 
+
+
+
+
 
 
 ## Versioning of Time Series (Vintages)
