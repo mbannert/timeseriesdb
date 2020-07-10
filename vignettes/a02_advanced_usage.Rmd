@@ -1,0 +1,275 @@
+---
+title: "Advanced Usage"
+author: "Matthias Bannert and Severin Thöni"
+date: "`r Sys.Date()`"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{Getting Started}
+  %\VignetteEngine{knitr::rmarkdown}
+  \usepackage[utf8]{inputenc}
+---
+
+## Starting Point
+
+We assume you are past the basics and R, {timeseriesdb} and PostgreSQL are up and running. 
+(*For the remainder of this guide we assume PostgreSQL runs on a local docker container accessible via port 1111.*)
+
+## Datasets
+
+In {timeseriesdb}, all time series have to be part of a dataset. If the user 
+stores a time series w/o specifying a dataset that series is assigned to the 'default'
+dataset. Datasets allow to group data and store data descriptions at the 
+dataset level. Also, datasets come in handy for admin operations like 
+deletion of an entire dataset. 
+
+
+Let's create a new dataset!
+
+```{r, eval=FALSE}
+library(kofdata)
+arr <- get_time_series("ch.zrh_airport.arrival.total")
+dep <- get_time_series("ch.zrh_airport.departure.total")
+
+store_time_series(con, c(arr,dep), schema = "tsdb_test")
+
+db_create_dataset(con, "ch.zrh_airport",
+                  set_description = "Arrivals and Departures ZH Airport",
+                  schema = "tsdb_test")
+
+# see, the new dataset is there... 
+db_list_datasets(con, schema = "tsdb_test")
+
+```
+Apparently, the dataset is empty. We need to assign some time series first.
+Make sure the time series you want to register to a set are actually around.
+Unlike `store_time_series` assigning series to a dataset is *not* a
+vintage level operation, it applies to all versions of a series. This is why time series are assigned to the 'default' schema at first when they are stored and can be moved later on. 
+
+```{r, eval=FALSE}
+db_assign_dataset(con,
+                  ts_keys = c("ch.zrh_airport.arrival.total",
+                              "ch.zrh_airport.departure.total"),
+                  set_name = "ch.zrh_airport",
+                  schema = "tsdb_test")
+
+```
+
+**Note** that there is no such thing as remove time series from dataset. Either
+you delete a time series entirely or you assign it to another dataset.
+Think of a registry similar to a software registry. 
+
+
+To see all keys registered in a dataset simply call:
+
+```{r, eval=FALSE}
+db_get_dataset_keys(con, "ch.zrh_airport", schema = "tsdb_test")
+```
+
+To do the opposite, that is, find out which dataset series are assigned to, run:
+
+
+```{r, eval=FALSE}
+db_get_dataset_id(con, "ch.zrh_airport.arrival.total",
+                  schema = "tsdb_test")
+```
+
+## Release Management
+
+A new feature introduced with {timeseriesdb} 1.0 is its support for release management. 
+In official and economic statistics, data are usually updated periodically. Often 
+data are released on release date known in advance. Data may be available inside an institution but 
+only be released later on. In order to facilitate the publication process. 
+
+```{r, eval=FALSE}
+db_create_release(con,
+                  id = "jul_2020_air",
+                  datasets = "ch.zrh_airport",
+                  title = "Airport Data from Zurich Airport",
+                  release_date = "2020-07-08",
+                  target_year = 2020,
+                  target_period = 7,
+                  target_frequency = 12,
+                  note = "Just a test release",
+                  schema = "tsdb_test"
+                  )
+```
+
+In {timeseriesdb}, releases have an id which uniquely identifies the release.
+We recommend to choose a short human readable text identifier. Releases relate to a dataset and therefore are assigned at the dataset level. This is a good reason to make use of the datasets features as opposed to storing all series in the default set. There is a target year and target period because the release date itself may not safely identify the period it relates to (assume there July data get released at the beginning of August). 
+
+To list all releases, simply run the below code. The default is not to show releases in the past.
+
+```{r, eval=FALSE}
+db_list_releases(con, include_past = T, schema = "tsdb_test")
+```
+
+Cancelling a future release is simply a matter of calling [db_cancel_release()](). 
+Cancellation of past releases is not possible. 
+
+
+## Collections
+
+Collections are another concept introduced in v1.0. Collections are user specific compositions of time series identifiers. Users of earlier versions of time series may think of this
+functionality as 'sets'. To avoid any confusion, let's be clear about the new terminology here: 
+
+- datasets = registration of time series into global datasets. This happens typically
+at the admin level. Time series are unique ACROSS datasets.
+
+- collection = playlist like user specific bookmarks. A time series can part of 
+multiple collections, users can have multiple collections. The purpose of
+collections is to be able to re-visit a selection of time series after updates etc,
+e.g., to update time series visualizations.
+
+```{r, eval = FALSE}
+db_collection_add(con, 
+                  collection_name = "demo_collect",
+                  keys = c("ch.zrh_airport.arrival.total",
+                           "AirPassengers"),
+                  description = "Flying Around Now and Then",
+                  schema = "tsdb_test")
+```
+
+You can remove keys from a collection using [db_collection_remove()]() and 
+delete an entire collection with [db_collection_delete()]().
+
+
+## Advanced Meta Information
+
+Context aware data description is one of the core aims of {timeseriesdb}. 
+Meta information done properly can quickly become a complex topic: descriptions
+can be assigned at different levels. Descriptions can be language agnostic or 
+language specific. Moreover with versioned time series descriptions can also 
+be specific to a particular version of a time series. 
+
+### Multi Language Data Descriptions
+
+Simply create meta information objects for each language, similar to the fashion
+we've seen in the [Basic Usage]() article. Meta information objects can 
+hold descriptions for one or more time series. Make sure you do NOT change the
+language within one object. 
+
+
+```{r, eval=FALSE}
+
+de <- create_tsmeta(
+  ch.zrh_airport.arrival.total = list(
+    provider = "Flughafen Zürich",
+    description = "Eine deutschsprachige Beschreibung"
+  )
+)
+
+en <- create_tsmeta(
+  ch.zrh_airport.arrival.total = list(
+    provider = "Zurich Airport",
+    description = "An English speaking description"
+  )
+)
+
+
+
+db_store_ts_metadata(con,
+                     metadata = de,
+                     valid_from = Sys.Date(),
+                     locale = "de",
+                     schema = "tsdb_test")
+
+db_store_ts_metadata(con,
+                     metadata = en,
+                     valid_from = Sys.Date(),
+                     locale = "en",
+                     schema = "tsdb_test")
+
+
+
+```
+
+Retrieving the information is just as simple, let's get the English description... 
+
+```{r, eval=FALSE}
+
+db_read_ts_metadata(con, "ch.zrh_airport.arrival.total",
+                    locale = "en",
+                    valid_on = Sys.Date(),
+                    schema = "tsdb_test")
+
+
+```
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+### Levels of Assignment
+
+
+## Versioning of Time Series (Vintages)
+
+
+
+
+
+
+
+
+## Access Levels and Rights Management
+
+
+## Hygenie and Maintenance
+
+
+
+
+
+
+## Remove 
+
+
+
+
+{timeseriesdb} keeps track of different versions of a time series. This feature was designed with regular releases of data in mind. In official and economic statistics, releases do not simply mean to append another observation at end of time series. Seasonal adjustment and other filters as well data corrections cause revisions of a time series. In order to keep research, e.g., forecasts reproducible, it is important to archive all versions of a time series. Doing so, allows to assess forecast performance and makes sure the state of information at the time the forecast was made can be reproduced.
+
+{timeseriesdb} allows to store one version of a time series per day, i.e., series 
+
+
+
+## Collections (aka playlists)
+## Datasets
+
+In {timeseriesdb} *every* time series belongs to a dataset. If no dataset is specified when a time series is stored, the series automagically gets assigned to the *default* dataset.
+
+The idea behind datasets is to group time series according to their source and allow for group level data description. The
+following helpers help you to explore which keys are in a given set and which keys are in which set.
+
+```{r, eval=FALSE}
+db_get_dataset_keys(con, set_name = "default",
+                    schema = "tsdb_test")
+db_get_dataset_id(con, c("AirPassengers", "JohnsonJohnson"),
+                  schema = "tsdb_test")
+```
+
+You can easily add new datasets. Note though, that dataset are not user specific, but global groups. The user specific analog to sets is called collection in will be described later on. 
+
+```{r, eval=FALSE}
+db_create_dataset(con, "stocks",
+                  set_description = "Stock market returns.",
+                  schema = "tsdb_test")
+```
+Once a set is created you can move existing series to that set. 
+
+```{r, eval=FALSE}
+db_assign_dataset(con,"JohnsonJohnson","stocks",
+                  schema = "tsdb_test")
+db_get_dataset_id(con, c("AirPassengers", "JohnsonJohnson"), schema = "tsdb_test")
+```
