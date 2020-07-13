@@ -80,7 +80,7 @@ prepare_db <- function(con,
     set_id = c(
       "set_read",
       "set_read",
-      "set_read",
+      "default",
       "set1",
       "set1",
       "set2",

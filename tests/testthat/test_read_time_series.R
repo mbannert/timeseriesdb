@@ -91,7 +91,7 @@ test_with_fresh_db(con_admin, "reading via regex works", {
                                "^rts",
                                regex = TRUE,
                                schema = "tsdb_test")
-  expect_setequal(names(tsl_read), c("rts1", "rtsp"))
+  expect_setequal(names(tsl_read), c("rts1", "rtsp", "rtsx"))
 })
 
 test_with_fresh_db(con_admin, "reading an xts", {
@@ -156,7 +156,7 @@ test_with_fresh_db(con_admin, "reading multiple sets", {
   tsl_read <- db_read_time_series_dataset(con_reader_main,
                                           c("set_read", "default"),
                                           schema = "tsdb_test")
-  expect_setequal(names(tsl_read), c("rts1", "rtsp", "vts1", "vts2"))
+  expect_setequal(names(tsl_read), c("rts1", "rtsp", "rtsx", "vts1", "vts2"))
 })
 
 # reading collections --------------------------------------------------------
