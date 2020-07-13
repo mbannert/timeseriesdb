@@ -89,5 +89,5 @@ CREATE TABLE timeseries.release_dataset (
   set_id TEXT,
   PRIMARY KEY (release_id, set_id),
   FOREIGN KEY (release_id) REFERENCES timeseries.release_calendar(id) ON DELETE CASCADE,
-  FOREIGN KEY (set_id) REFERENCES timeseries.datasets(set_id)
+  FOREIGN KEY (set_id) REFERENCES timeseries.datasets(set_id) ON DELETE CASCADE
 );
