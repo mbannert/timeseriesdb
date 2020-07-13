@@ -33,6 +33,7 @@ REVOKE EXECUTE ON FUNCTION timeseries.list_access_levels FROM public;
 REVOKE EXECUTE ON FUNCTION timeseries.access_levels_insert FROM public;
 REVOKE EXECUTE ON FUNCTION timeseries.set_access_level_default FROM public;
 REVOKE EXECUTE ON FUNCTION timeseries.access_levels_delete FROM public;
+REVOKE EXECUTE ON FUNCTION timeseries.dataset_update FROM public;
 
 GRANT EXECUTE ON FUNCTION timeseries.insert_collect_from_tmp TO timeseries_reader;
 GRANT EXECUTE ON FUNCTION timeseries.collection_remove TO timeseries_reader;

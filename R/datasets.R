@@ -141,6 +141,48 @@ db_assign_dataset <- function(con,
   out_parsed
 }
 
+#' Update Description and/or Metadata of a Dataset
+#'
+#' @param con RPostgres connection object
+#' @param set_name character Name of the set do update
+#' @param description character New description. If set to NA (default) the description is left untouched
+#' @param metadata list Metadata update (see metadata_update_mode)
+#' @param metadata_update_mode character One of "update" or "overwrite". If set to "update",
+#'  new fields in the list are added to the existing metadata and existing fields overwritten.
+#'  If NA nothing happens in update mode. If set to "overwrite" ALL existing metadata is replaced.
+#' @param schema Timeseries Schema name
+#'
+#' @importFrom jsonlite toJSON fromJSON
+#' @export
+db_update_dataset <- function(con,
+                              set_name,
+                              description = NA,
+                              metadata = NA,
+                              metadata_update_mode = "update",
+                              schema = "timeseries") {
+  if(!is.na(metadata)) {
+    metadata <- toJSON(metadata, auto_unbox = TRUE, digits = NA)
+  }
+
+  out <- db_call_function(con,
+                          "dataset_update",
+                          list(
+                            set_name,
+                            description,
+                            metadata,
+                            metadata_update_mode
+                          ),
+                          schema = schema)
+
+  out_parsed <- fromJSON(out)
+
+  if(out_parsed$status == "failure") {
+    stop(out_parsed$message)
+  }
+
+  out_parsed
+}
+
 #' Get All available datasets and their description
 #'
 #' @param con RPostgres connection object

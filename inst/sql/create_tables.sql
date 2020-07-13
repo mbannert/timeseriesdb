@@ -1,7 +1,7 @@
 CREATE TABLE timeseries.datasets(
     set_id TEXT PRIMARY KEY,
     set_description TEXT,
-    set_md JSON
+    set_md JSONB
 );
 
 INSERT INTO timeseries.datasets VALUES ('default', 'A set that is used if no other set is specified. Every time series needs to be part of a dataset', NULL);
