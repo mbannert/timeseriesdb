@@ -45,6 +45,18 @@ read_time_series <- function(con,
   tsl
 }
 
+#' Read the Entire History of a Time Series
+#'
+#' This function returns a list whose keys correspond to the date on which the
+#' contained version of the time series took effect.
+#'
+#' @param con RPostgres connection
+#' @param ts_key character The key of the series to read
+#' @param respect_release_date boolean Should the release embargo of a time series be respected? Defaults to FALSE.
+#' @param schema character Time Series Schema Name
+#'
+#' @export
+#' @importFrom RPostgres dbSendQuery dbQuoteIdentifier dbQuoteLiteral Id
 read_time_series_history <- function(con,
                                      ts_key,
                                      respect_release_date = FALSE,

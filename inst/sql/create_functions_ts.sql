@@ -198,7 +198,12 @@ $$ LANGUAGE PLPGSQL
 SECURITY DEFINER
 SET search_path = timeseries, pg_temp;
 
-
+-- Read all vintages of a given time series
+--
+-- param p_key: the key to read
+-- param p_respect_release_date: should the release date be respected?
+--
+-- This function follows the same constraints (release date, access) as read_ts_raw
 CREATE OR REPLACE FUNCTION timeseries.read_ts_history_raw(p_key TEXT,
                                                           p_respect_release_date BOOLEAN DEFAULT false)
 RETURNS TABLE(validity TEXT, ts_data JSON)
