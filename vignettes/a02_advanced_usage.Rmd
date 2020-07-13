@@ -14,6 +14,27 @@ vignette: >
 We assume you are past the basics and R, {timeseriesdb} and PostgreSQL are up and running. 
 (*For the remainder of this guide we assume PostgreSQL runs on a local docker container accessible via port 1111.*)
 
+## Versioning of Time Series (Vintages)
+
+A core feature of {timeseriesdb} is the ability to store vintages, i.e., different 
+versions of time series. The package was created with official and economic statistics in mind, so data revisions and the ability to evaluate forecasts plays an important role in the package
+design. Hence {timeseriesdb} versions every time series it stores by default. 
+
+Let's assume `ts1_may` is a time series published in May 2020 and `ts1_june` is yet 
+another version of the very same time series. 
+
+
+```{r}
+library(kofdata)
+tsl <- get_time_series("ch.kof.barometer")
+
+
+
+
+```
+
+
+
 ## Datasets
 
 In {timeseriesdb}, all time series have to be part of a dataset. If the user 
@@ -72,6 +93,8 @@ To do the opposite, that is, find out which dataset series are assigned to, run:
 db_get_dataset_id(con, "ch.zrh_airport.arrival.total",
                   schema = "tsdb_test")
 ```
+
+With [db_read_time_series_dataset()]() you can read all time series from a given dataset.
 
 ## Release Management
 
@@ -212,7 +235,7 @@ either belong to a *dataset*, to a *time series* or two a *vintage of a time ser
 Meta information is only loosely coupled to vintages of time
 series, because in most usecases meta descriptions do not change every time 
 there is a data revision. So by simply not updating unchanged descriptions when 
-data are revised / updated, we allow descriptions to last for multiple version of 
+data are revised / updated, we allow descriptions to last for multiple versions of 
 a time series. 
 
 ```{r, eval=FALSE}
@@ -223,15 +246,11 @@ db_get_metadata_validity(con, "ch.zrh_airport.arrival.total",
 
 
 helps to get and overview find out since when meta information is valid. 
-Dataset level meta information can currently only be assigned when the dataset
+Note that dataset level meta information can currently only be assigned when the dataset
 is created and is not versioned. 
 
 
 
-
-
-
-## Versioning of Time Series (Vintages)
 
 
 

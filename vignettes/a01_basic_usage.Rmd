@@ -69,7 +69,7 @@ tsplot(AirPassengers = out$AirPassengers,
        tsr = list(JohnsonJohnson = out$JohnsonJohnson))
 ```
 
-```{r,echo=FALSE}
+```{r,echo=FALSE,message=FALSE, warning=FALSE}
 library(tstools)
 out <- list(AirPassengers = AirPassengers,
             JohnsonJohnson = JohnsonJohnson)

@@ -94,7 +94,7 @@
       <h1>Advanced Usage</h1>
                         <h4 class="author">Matthias Bannert and Severin Thöni</h4>
             
-            <h4 class="date">2020-07-10</h4>
+            <h4 class="date">2020-07-13</h4>
       
       <small class="dont-index">Source: <a href="https://github.com/mbannert/timeseriesdb/blob/master/vignettes/a02_advanced_usage.Rmd"><code>vignettes/a02_advanced_usage.Rmd</code></a></small>
       <div class="hidden name"><code>a02_advanced_usage.Rmd</code></div>
@@ -156,7 +156,9 @@
 <p>In {timeseriesdb}, releases have an id which uniquely identifies the release. We recommend to choose a short human readable text identifier. Releases relate to a dataset and therefore are assigned at the dataset level. This is a good reason to make use of the datasets features as opposed to storing all series in the default set. There is a target year and target period because the release date itself may not safely identify the period it relates to (assume there July data get released at the beginning of August).</p>
 <p>To list all releases, simply run the below code. The default is not to show releases in the past.</p>
 <div class="sourceCode" id="cb6"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb6-1" data-line-number="1"><span class="kw">db_list_releases</span>(con, <span class="dt">include_past =</span> T, <span class="dt">schema =</span> <span class="st">"tsdb_test"</span>)</a></code></pre></div>
-<p>Cancelling a future release is simply a matter of calling <a href="">db_cancel_release()</a>. Cancellation of past releases is not possible.</p>
+<p>Cancelling a future release is simply a matter of calling <a href="">db_cancel_release()</a>. Cancellation of past releases is not possible, but release can be updated with <a href="">db_update_release()</a>. Also you can easily query the latest release</p>
+<div class="sourceCode" id="cb7"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb7-1" data-line-number="1"><span class="kw">db_get_latest_release_for_set</span>(con, <span class="st">"ch.zrh_airport"</span>,<span class="dt">schema =</span> <span class="st">"tsdb_test"</span>)</a></code></pre></div>
+<p>Similarily use <a href="">db_get_next_release_for_set()</a> to get the next upcoming release.</p>
 </div>
 <div id="collections" class="section level2">
 <h2 class="hasAnchor">
@@ -166,24 +168,63 @@
 <li><p>datasets = registration of time series into global datasets. This happens typically at the admin level. Time series are unique ACROSS datasets.</p></li>
 <li><p>collection = playlist like user specific bookmarks. A time series can part of multiple collections, users can have multiple collections. The purpose of collections is to be able to re-visit a selection of time series after updates etc, e.g., to update time series visualizations.</p></li>
 </ul>
-<div class="sourceCode" id="cb7"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb7-1" data-line-number="1"><span class="kw"><a href="../reference/db_collection_add.html">db_collection_add</a></span>(con, </a>
-<a class="sourceLine" id="cb7-2" data-line-number="2">                  <span class="dt">collection_name =</span> <span class="st">"demo_collect"</span>,</a>
-<a class="sourceLine" id="cb7-3" data-line-number="3">                  <span class="dt">keys =</span> <span class="kw"><a href="https://rdrr.io/r/base/c.html">c</a></span>(<span class="st">"ch.zrh_airport.arrival.total"</span>,</a>
-<a class="sourceLine" id="cb7-4" data-line-number="4">                           <span class="st">"AirPassengers"</span>),</a>
-<a class="sourceLine" id="cb7-5" data-line-number="5">                  <span class="dt">description =</span> <span class="st">"Flying Around Now and Then"</span>,</a>
-<a class="sourceLine" id="cb7-6" data-line-number="6">                  <span class="dt">schema =</span> <span class="st">"tsdb_test"</span>)</a></code></pre></div>
+<div class="sourceCode" id="cb8"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb8-1" data-line-number="1"><span class="kw"><a href="../reference/db_collection_add.html">db_collection_add</a></span>(con, </a>
+<a class="sourceLine" id="cb8-2" data-line-number="2">                  <span class="dt">collection_name =</span> <span class="st">"demo_collect"</span>,</a>
+<a class="sourceLine" id="cb8-3" data-line-number="3">                  <span class="dt">keys =</span> <span class="kw"><a href="https://rdrr.io/r/base/c.html">c</a></span>(<span class="st">"ch.zrh_airport.arrival.total"</span>,</a>
+<a class="sourceLine" id="cb8-4" data-line-number="4">                           <span class="st">"AirPassengers"</span>),</a>
+<a class="sourceLine" id="cb8-5" data-line-number="5">                  <span class="dt">description =</span> <span class="st">"Flying Around Now and Then"</span>,</a>
+<a class="sourceLine" id="cb8-6" data-line-number="6">                  <span class="dt">schema =</span> <span class="st">"tsdb_test"</span>)</a></code></pre></div>
 <p>You can remove keys from a collection using <a href="">db_collection_remove()</a> and delete an entire collection with <a href="">db_collection_delete()</a>.</p>
 </div>
 <div id="advanced-meta-information" class="section level2">
 <h2 class="hasAnchor">
 <a href="#advanced-meta-information" class="anchor"></a>Advanced Meta Information</h2>
+<p>Context aware data description is one of the core aims of {timeseriesdb}. Meta information done properly can quickly become a complex topic: descriptions can be assigned at different levels. Descriptions can be language agnostic or language specific. Moreover with versioned time series descriptions can also be specific to a particular version of a time series.</p>
 <div id="multi-language-data-descriptions" class="section level3">
 <h3 class="hasAnchor">
 <a href="#multi-language-data-descriptions" class="anchor"></a>Multi Language Data Descriptions</h3>
+<p>Simply create meta information objects for each language, similar to the fashion we’ve seen in the <a href="">Basic Usage</a> article. Meta information objects can hold descriptions for one or more time series. Make sure you do NOT change the language within one object.</p>
+<div class="sourceCode" id="cb9"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb9-1" data-line-number="1">de &lt;-<span class="st"> </span><span class="kw">create_tsmeta</span>(</a>
+<a class="sourceLine" id="cb9-2" data-line-number="2">  <span class="dt">ch.zrh_airport.arrival.total =</span> <span class="kw"><a href="https://rdrr.io/r/base/list.html">list</a></span>(</a>
+<a class="sourceLine" id="cb9-3" data-line-number="3">    <span class="dt">provider =</span> <span class="st">"Flughafen Zürich",</span></a>
+<a class="sourceLine" id="cb9-4" data-line-number="4"><span class="st">    description = "</span>Eine deutschsprachige Beschreibung<span class="st">"</span></a>
+<a class="sourceLine" id="cb9-5" data-line-number="5"><span class="st">  )</span></a>
+<a class="sourceLine" id="cb9-6" data-line-number="6"><span class="st">)</span></a>
+<a class="sourceLine" id="cb9-7" data-line-number="7"></a>
+<a class="sourceLine" id="cb9-8" data-line-number="8"><span class="st">en &lt;- create_tsmeta(</span></a>
+<a class="sourceLine" id="cb9-9" data-line-number="9"><span class="st">  ch.zrh_airport.arrival.total = list(</span></a>
+<a class="sourceLine" id="cb9-10" data-line-number="10"><span class="st">    provider = "</span>Zurich Airport<span class="st">",</span></a>
+<a class="sourceLine" id="cb9-11" data-line-number="11"><span class="st">    description = "</span>An English speaking description<span class="st">"</span></a>
+<a class="sourceLine" id="cb9-12" data-line-number="12"><span class="st">  )</span></a>
+<a class="sourceLine" id="cb9-13" data-line-number="13"><span class="st">)</span></a>
+<a class="sourceLine" id="cb9-14" data-line-number="14"></a>
+<a class="sourceLine" id="cb9-15" data-line-number="15"></a>
+<a class="sourceLine" id="cb9-16" data-line-number="16"></a>
+<a class="sourceLine" id="cb9-17" data-line-number="17"><span class="st">db_store_ts_metadata(con,</span></a>
+<a class="sourceLine" id="cb9-18" data-line-number="18"><span class="st">                     metadata = de,</span></a>
+<a class="sourceLine" id="cb9-19" data-line-number="19"><span class="st">                     valid_from = Sys.Date(),</span></a>
+<a class="sourceLine" id="cb9-20" data-line-number="20"><span class="st">                     locale = "</span>de<span class="st">",</span></a>
+<a class="sourceLine" id="cb9-21" data-line-number="21"><span class="st">                     schema = "</span>tsdb_test<span class="st">")</span></a>
+<a class="sourceLine" id="cb9-22" data-line-number="22"></a>
+<a class="sourceLine" id="cb9-23" data-line-number="23"><span class="st">db_store_ts_metadata(con,</span></a>
+<a class="sourceLine" id="cb9-24" data-line-number="24"><span class="st">                     metadata = en,</span></a>
+<a class="sourceLine" id="cb9-25" data-line-number="25"><span class="st">                     valid_from = Sys.Date(),</span></a>
+<a class="sourceLine" id="cb9-26" data-line-number="26"><span class="st">                     locale = "</span>en<span class="st">",</span></a>
+<a class="sourceLine" id="cb9-27" data-line-number="27"><span class="st">                     schema = "</span>tsdb_test<span class="st">")</span></a></code></pre></div>
+<p>Retrieving the information is just as simple, let’s get the English description…</p>
+<div class="sourceCode" id="cb10"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb10-1" data-line-number="1"><span class="kw"><a href="../reference/db_read_ts_metadata.html">db_read_ts_metadata</a></span>(con, <span class="st">"ch.zrh_airport.arrival.total"</span>,</a>
+<a class="sourceLine" id="cb10-2" data-line-number="2">                    <span class="dt">locale =</span> <span class="st">"en"</span>,</a>
+<a class="sourceLine" id="cb10-3" data-line-number="3">                    <span class="dt">valid_on =</span> <span class="kw"><a href="https://rdrr.io/r/base/Sys.time.html">Sys.Date</a></span>(),</a>
+<a class="sourceLine" id="cb10-4" data-line-number="4">                    <span class="dt">schema =</span> <span class="st">"tsdb_test"</span>)</a></code></pre></div>
 </div>
 <div id="levels-of-assignment" class="section level3">
 <h3 class="hasAnchor">
 <a href="#levels-of-assignment" class="anchor"></a>Levels of Assignment</h3>
+<p>Meta descriptions can be assigned at various levels. Descriptions either belong to a <em>dataset</em>, to a <em>time series</em> or two a <em>vintage of a time series</em>. Meta information is only loosely coupled to vintages of time series, because in most usecases meta descriptions do not change every time there is a data revision. So by simply not updating unchanged descriptions when data are revised / updated, we allow descriptions to last for multiple version of a time series.</p>
+<div class="sourceCode" id="cb11"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb11-1" data-line-number="1"><span class="kw"><a href="../reference/db_get_metadata_validity.html">db_get_metadata_validity</a></span>(con, <span class="st">"ch.zrh_airport.arrival.total"</span>, </a>
+<a class="sourceLine" id="cb11-2" data-line-number="2">                         <span class="dt">locale =</span> <span class="st">"de"</span>,</a>
+<a class="sourceLine" id="cb11-3" data-line-number="3">                         <span class="dt">schema =</span> <span class="st">"tsdb_test"</span>)</a></code></pre></div>
+<p>helps to get and overview find out since when meta information is valid. Dataset level meta information can currently only be assigned when the dataset is created and is not versioned.</p>
 </div>
 </div>
 <div id="versioning-of-time-series-vintages" class="section level2">
@@ -213,18 +254,18 @@
 <a href="#datasets-1" class="anchor"></a>Datasets</h2>
 <p>In {timeseriesdb} <em>every</em> time series belongs to a dataset. If no dataset is specified when a time series is stored, the series automagically gets assigned to the <em>default</em> dataset.</p>
 <p>The idea behind datasets is to group time series according to their source and allow for group level data description. The following helpers help you to explore which keys are in a given set and which keys are in which set.</p>
-<div class="sourceCode" id="cb8"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb8-1" data-line-number="1"><span class="kw"><a href="../reference/db_get_dataset_keys.html">db_get_dataset_keys</a></span>(con, <span class="dt">set_name =</span> <span class="st">"default"</span>,</a>
-<a class="sourceLine" id="cb8-2" data-line-number="2">                    <span class="dt">schema =</span> <span class="st">"tsdb_test"</span>)</a>
-<a class="sourceLine" id="cb8-3" data-line-number="3"><span class="kw"><a href="../reference/db_get_dataset_id.html">db_get_dataset_id</a></span>(con, <span class="kw"><a href="https://rdrr.io/r/base/c.html">c</a></span>(<span class="st">"AirPassengers"</span>, <span class="st">"JohnsonJohnson"</span>),</a>
-<a class="sourceLine" id="cb8-4" data-line-number="4">                  <span class="dt">schema =</span> <span class="st">"tsdb_test"</span>)</a></code></pre></div>
+<div class="sourceCode" id="cb12"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb12-1" data-line-number="1"><span class="kw"><a href="../reference/db_get_dataset_keys.html">db_get_dataset_keys</a></span>(con, <span class="dt">set_name =</span> <span class="st">"default"</span>,</a>
+<a class="sourceLine" id="cb12-2" data-line-number="2">                    <span class="dt">schema =</span> <span class="st">"tsdb_test"</span>)</a>
+<a class="sourceLine" id="cb12-3" data-line-number="3"><span class="kw"><a href="../reference/db_get_dataset_id.html">db_get_dataset_id</a></span>(con, <span class="kw"><a href="https://rdrr.io/r/base/c.html">c</a></span>(<span class="st">"AirPassengers"</span>, <span class="st">"JohnsonJohnson"</span>),</a>
+<a class="sourceLine" id="cb12-4" data-line-number="4">                  <span class="dt">schema =</span> <span class="st">"tsdb_test"</span>)</a></code></pre></div>
 <p>You can easily add new datasets. Note though, that dataset are not user specific, but global groups. The user specific analog to sets is called collection in will be described later on.</p>
-<div class="sourceCode" id="cb9"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb9-1" data-line-number="1"><span class="kw"><a href="../reference/db_create_dataset.html">db_create_dataset</a></span>(con, <span class="st">"stocks"</span>,</a>
-<a class="sourceLine" id="cb9-2" data-line-number="2">                  <span class="dt">set_description =</span> <span class="st">"Stock market returns."</span>,</a>
-<a class="sourceLine" id="cb9-3" data-line-number="3">                  <span class="dt">schema =</span> <span class="st">"tsdb_test"</span>)</a></code></pre></div>
+<div class="sourceCode" id="cb13"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb13-1" data-line-number="1"><span class="kw"><a href="../reference/db_create_dataset.html">db_create_dataset</a></span>(con, <span class="st">"stocks"</span>,</a>
+<a class="sourceLine" id="cb13-2" data-line-number="2">                  <span class="dt">set_description =</span> <span class="st">"Stock market returns."</span>,</a>
+<a class="sourceLine" id="cb13-3" data-line-number="3">                  <span class="dt">schema =</span> <span class="st">"tsdb_test"</span>)</a></code></pre></div>
 <p>Once a set is created you can move existing series to that set.</p>
-<div class="sourceCode" id="cb10"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb10-1" data-line-number="1"><span class="kw"><a href="../reference/db_assign_dataset.html">db_assign_dataset</a></span>(con,<span class="st">"JohnsonJohnson"</span>,<span class="st">"stocks"</span>,</a>
-<a class="sourceLine" id="cb10-2" data-line-number="2">                  <span class="dt">schema =</span> <span class="st">"tsdb_test"</span>)</a>
-<a class="sourceLine" id="cb10-3" data-line-number="3"><span class="kw"><a href="../reference/db_get_dataset_id.html">db_get_dataset_id</a></span>(con, <span class="kw"><a href="https://rdrr.io/r/base/c.html">c</a></span>(<span class="st">"AirPassengers"</span>, <span class="st">"JohnsonJohnson"</span>), <span class="dt">schema =</span> <span class="st">"tsdb_test"</span>)</a></code></pre></div>
+<div class="sourceCode" id="cb14"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb14-1" data-line-number="1"><span class="kw"><a href="../reference/db_assign_dataset.html">db_assign_dataset</a></span>(con,<span class="st">"JohnsonJohnson"</span>,<span class="st">"stocks"</span>,</a>
+<a class="sourceLine" id="cb14-2" data-line-number="2">                  <span class="dt">schema =</span> <span class="st">"tsdb_test"</span>)</a>
+<a class="sourceLine" id="cb14-3" data-line-number="3"><span class="kw"><a href="../reference/db_get_dataset_id.html">db_get_dataset_id</a></span>(con, <span class="kw"><a href="https://rdrr.io/r/base/c.html">c</a></span>(<span class="st">"AirPassengers"</span>, <span class="st">"JohnsonJohnson"</span>), <span class="dt">schema =</span> <span class="st">"tsdb_test"</span>)</a></code></pre></div>
 </div>
   </div>
 
