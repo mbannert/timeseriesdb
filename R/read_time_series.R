@@ -45,6 +45,22 @@ read_time_series <- function(con,
   tsl
 }
 
+read_time_series_history <- function(con,
+                                     ts_key,
+                                     respect_release_date = FALSE,
+                                     schema = "timeseries") {
+  res <- dbSendQuery(con, sprintf("SELECT * FROM %sread_ts_history_raw(%s, %s)",
+                                  dbQuoteIdentifier(con, Id(schema = schema)),
+                                  dbQuoteLiteral(con, ts_key),
+                                  dbQuoteLiteral(con, respect_release_date)))
+
+
+  tsl <- get_tsl_from_res(res, chunksize = 10000, id.col = "validity")
+  class(tsl) <- c("tslist", "list")
+
+  dbClearResult(res)
+  tsl
+}
 
 #' Read all Time Series in a Dataset
 #'
@@ -125,12 +141,12 @@ db_read_time_series_collection <- function(con,
 
 #' @importFrom RPostgres dbHasCompleted dbFetch
 #' @import data.table
-get_tsl_from_res <- function(res, chunksize = 10000) {
+get_tsl_from_res <- function(res, chunksize = 10000, id.col = "ts_key") {
   tsl <- list()
   while(!dbHasCompleted(res)) {
     chunk <- data.table(dbFetch(res, n = chunksize))
 
-    tsl[chunk[, ts_key]] <- chunk[, .(ts_obj = list(json_to_ts(ts_data))), by = ts_key]$ts_obj
+    tsl[chunk[, get(id.col)]] <- chunk[, .(ts_obj = list(json_to_ts(ts_data))), by = list(get(id.col))]$ts_obj
   }
 
   tsl
