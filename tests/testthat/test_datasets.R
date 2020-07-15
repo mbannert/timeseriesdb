@@ -49,7 +49,7 @@ test_with_fresh_db(con_admin, "creating dataset", hard_reset = TRUE, {
                     schema = "tsdb_test")
   result <- dbGetQuery(con_admin, "SELECT * FROM tsdb_test.datasets ORDER BY set_id")
 
-  expect_is(result$set_md, "pq_json")
+  expect_is(result$set_md, "pq_jsonb")
 
   result$set_md <- as.character(result$set_md)
 
@@ -60,7 +60,7 @@ test_with_fresh_db(con_admin, "creating dataset", hard_reset = TRUE, {
       "a set for testing"),
     set_md = c(
       NA_character_,
-      '{"field":"value"}'),
+      '{"field": "value"}'),
     stringsAsFactors = FALSE
   ))
 })
@@ -211,6 +211,105 @@ test_with_fresh_db(con_admin, "db_list_datasets returns data frame with correct 
   expect_equal(out, expected)
 })
 
+
+# update datasets ---------------------------------------------------------
+
+test_with_fresh_db(con_admin, "writer may not update datasets", {
+  expect_error(
+    db_update_dataset(con_writer, "set1", "you've been haxx0rd", schema = "tsdb_test"),
+    "sufficient privileges"
+  )
+})
+
+test_with_fresh_db(con_admin, "mode must be one of overwrite or update", {
+  expect_error(
+    db_update_dataset(con_admin,
+                      "set1",
+                      "blabla",
+                      metadata_update_mode = "super mode",
+                      schema = "tsdb_test"),
+    "one of" # us! one of us!
+  )
+})
+
+test_with_fresh_db(con_admin, "updating set description returns status", {
+  out <- db_update_dataset(con_admin, "set1", "right proper", schema = "tsdb_test")
+
+  expect_equal(
+    out,
+    list(
+      status = "ok"
+    )
+  )
+})
+
+test_with_fresh_db(con_admin, "updating set description", {
+  db_update_dataset(con_admin, "set1", "right proper, mate", schema = "tsdb_test")
+
+  res <- dbGetQuery(con_admin, "SELECT * FROM tsdb_test.datasets WHERE set_id = 'set1'")
+
+  expect_equal(
+    res$set_description,
+    "right proper, mate"
+  )
+
+  expect_equal(
+    as.character(res$set_md),
+    "{\"testno\": 1}"
+  )
+})
+
+test_with_fresh_db(con_admin, "updating set metadata, update", {
+  db_update_dataset(con_admin,
+                    "set1",
+                    metadata = list(another_field = "hello"),
+                    schema = "tsdb_test")
+
+  res <- dbGetQuery(con_admin, "SELECT * FROM tsdb_test.datasets WHERE set_id = 'set1'")
+
+  expect_equal(
+    res$set_description,
+    "test set 1"
+  )
+
+  md <- as.character(res$set_md)
+
+  expect_match(
+    md,
+    '"testno": 1'
+  )
+
+  expect_match(
+    md,
+    '"another_field": "hello"'
+  )
+})
+
+test_with_fresh_db(con_admin, "updating set metadata, overwrite", {
+  db_update_dataset(con_admin,
+                    "set1",
+                    metadata = list(another_field = "hello"),
+                    metadata_update_mode = "overwrite",
+                    schema = "tsdb_test")
+
+  res <- dbGetQuery(con_admin, "SELECT * FROM tsdb_test.datasets WHERE set_id = 'set1'")
+
+  expect_equal(
+    res$set_description,
+    "test set 1"
+  )
+
+  md <- as.character(res$set_md)
+
+  expect_false(
+    grepl('"testno": 1', md)
+  )
+
+  expect_match(
+    md,
+    '"another_field": "hello"'
+  )
+})
 
 # delete datasets ---------------------------------------------------------
 
