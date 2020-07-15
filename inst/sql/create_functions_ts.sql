@@ -198,6 +198,30 @@ $$ LANGUAGE PLPGSQL
 SECURITY DEFINER
 SET search_path = timeseries, pg_temp;
 
+-- Read all vintages of a given time series
+--
+-- param p_key: the key to read
+-- param p_respect_release_date: should the release date be respected?
+--
+-- This function follows the same constraints (release date, access) as read_ts_raw
+CREATE OR REPLACE FUNCTION timeseries.read_ts_history_raw(p_key TEXT,
+                                                          p_respect_release_date BOOLEAN DEFAULT false)
+RETURNS TABLE(validity TEXT, ts_data JSON)
+AS $$
+BEGIN
+  RETURN QUERY
+  SELECT to_char(mn.validity, 'YYYYmmdd') AS validity, mn.ts_data
+  FROM timeseries.timeseries_main AS mn
+  WHERE mn.ts_key = p_key
+  AND ((NOT p_respect_release_date) OR mn.release_date <= CURRENT_TIMESTAMP)
+  AND (pg_has_role(SESSION_USER, 'timeseries_admin', 'usage') OR pg_has_role(SESSION_USER, mn.access, 'usage'))
+  ORDER BY mn.validity;
+END;
+$$LANGUAGE PLPGSQL
+SECURITY DEFINER
+SET search_path = timeseries, pg_temp;
+
+
 -- Completely Purge a Time Series from the database
 --
 -- tmp_ts_delete_keys (ts_key TEXT)
