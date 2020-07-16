@@ -91,7 +91,7 @@ test_with_fresh_db(con_admin, "reading via regex works", {
                                "^rts",
                                regex = TRUE,
                                schema = "tsdb_test")
-  expect_setequal(names(tsl_read), c("rts1", "rtsp"))
+  expect_setequal(names(tsl_read), c("rts1", "rtsp", "rtsx"))
 })
 
 test_with_fresh_db(con_admin, "reading an xts", {
@@ -101,6 +101,46 @@ test_with_fresh_db(con_admin, "reading an xts", {
   expect_equal(tsl_read, tslx)
 })
 
+
+# read all vintages -------------------------------------------------------
+
+test_with_fresh_db(con_admin, "reading all vintages of a ts", {
+  tsl_read <- read_time_series_history(con_reader_main, "rts1", schema = "tsdb_test")
+
+  expect_equal(
+    tsl_read,
+    structure(
+      c(tsl_state_0, tsl_state_1, tsl_state_2, tsl_state_2_v2),
+      names = format(c(Sys.Date() - 4, Sys.Date() - 3, Sys.Date() - 1, Sys.Date() + 1), "%Y%m%d"),
+      class = c("tslist", "list")
+    )
+  )
+})
+
+test_with_fresh_db(con_admin, "reading all vintages, respecting release date", {
+  tsl_read <- read_time_series_history(con_reader_main, "rts1", TRUE, schema = "tsdb_test")
+
+  expect_equal(
+    tsl_read,
+    structure(
+      c(tsl_state_0, tsl_state_1),
+      names = format(c(Sys.Date() - 4, Sys.Date() - 3), "%Y%m%d"),
+      class = c("tslist", "list")
+    )
+  )
+})
+
+test_with_fresh_db(con_admin, "reading all vintages respects access rights", {
+  tsl_read <- read_time_series_history(con_reader_public, "rts1", schema = "tsdb_test")
+
+  expect_equal(
+    tsl_read,
+    structure(
+      list(),
+      class = c("tslist", "list")
+    )
+  )
+})
 
 # reading datasets --------------------------------------------------------
 context("reading datasets")
@@ -156,7 +196,7 @@ test_with_fresh_db(con_admin, "reading multiple sets", {
   tsl_read <- db_read_time_series_dataset(con_reader_main,
                                           c("set_read", "default"),
                                           schema = "tsdb_test")
-  expect_setequal(names(tsl_read), c("rts1", "rtsp", "vts1", "vts2"))
+  expect_setequal(names(tsl_read), c("rts1", "rtsp", "rtsx", "vts1", "vts2"))
 })
 
 # reading collections --------------------------------------------------------

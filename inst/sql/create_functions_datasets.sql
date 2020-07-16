@@ -153,6 +153,39 @@ $$ LANGUAGE PLPGSQL
 SECURITY DEFINER
 SET search_path = timeseries, pg_temp;
 
+-- The reason this is its own function rather than ts's upsert approach is that we
+-- want to make sure mistyped set ids lead to errors and not new sets with data that
+-- should have been assigned to the actual (existing) set.
+CREATE OR REPLACE FUNCTION timeseries.dataset_update(p_dataset_id TEXT,
+                                                     p_description TEXT,
+                                                     p_md JSONB,
+                                                     p_update_mode TEXT)
+RETURNS JSON
+AS $$
+BEGIN
+  IF NOT (p_update_mode = 'update' OR p_update_mode = 'overwrite') THEN
+    RETURN json_build_object('status', 'failure', 'message', 'Update mode must be one of "update" or "overwrite".');
+  END IF;
+
+  IF NOT (SELECT * FROM timeseries.dataset_exists(p_dataset_id)) THEN
+    RETURN json_build_object('status', 'failure', 'message', 'Dataset ' || p_dataset_id || ' does not exist.');
+  END IF;
+
+  UPDATE timeseries.datasets
+  SET
+    set_description = COALESCE(p_description, set_description),
+    set_md = CASE
+              WHEN p_update_mode = 'update' THEN COALESCE(set_md || p_md, set_md)
+              WHEN p_update_mode = 'overwrite' THEN p_md
+             END
+  WHERE set_id = p_dataset_id;
+
+  RETURN json_build_object('status', 'ok');
+END;
+$$ LANGUAGE PLPGSQL
+SECURITY DEFINER
+SET search_path = timeseries, pg_temp;
+
 
 CREATE OR REPLACE FUNCTION timeseries.dataset_delete(p_dataset_name TEXT,
                                           p_confirm_dataset_name TEXT)

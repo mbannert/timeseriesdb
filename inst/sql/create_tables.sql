@@ -1,7 +1,7 @@
 CREATE TABLE timeseries.datasets(
     set_id TEXT PRIMARY KEY,
     set_description TEXT,
-    set_md JSON
+    set_md JSONB
 );
 
 INSERT INTO timeseries.datasets VALUES ('default', 'A set that is used if no other set is specified. Every time series needs to be part of a dataset', NULL);
@@ -89,5 +89,5 @@ CREATE TABLE timeseries.release_dataset (
   set_id TEXT,
   PRIMARY KEY (release_id, set_id),
   FOREIGN KEY (release_id) REFERENCES timeseries.release_calendar(id) ON DELETE CASCADE,
-  FOREIGN KEY (set_id) REFERENCES timeseries.datasets(set_id)
+  FOREIGN KEY (set_id) REFERENCES timeseries.datasets(set_id) ON DELETE CASCADE
 );
