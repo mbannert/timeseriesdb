@@ -10,26 +10,26 @@ if(is_test_db_reachable()) {
 
 test_with_fresh_db(con_admin, "reader may not change access levels", {
   expect_error(
-    db_change_access_level(con_reader, "ts1", "does not matter", schema = "tsdb_test"),
+    db_ts_change_access(con_reader, "ts1", "does not matter", schema = "tsdb_test"),
     "sufficient privileges"
   )
 })
 
 test_with_fresh_db(con_admin, "setting access level to unregistered one", {
   expect_error(
-    db_change_access_level(con_writer, "vts1", "fort_knox", schema = "tsdb_test"),
+    db_ts_change_access(con_writer, "vts1", "fort_knox", schema = "tsdb_test"),
     "fort_knox is not a valid"
   )
 })
 
 test_with_fresh_db(con_admin, "setting access level return status", {
-  out <- db_change_access_level(con_writer, "vts1", "tsdb_test_access_public", schema = "tsdb_test")
+  out <- db_ts_change_access(con_writer, "vts1", "tsdb_test_access_public", schema = "tsdb_test")
 
   expect_equal(out, list(status = "ok"))
 })
 
 test_with_fresh_db(con_admin, "setting access level for all vintages", {
-  db_change_access_level(con_writer, c("vts1", "vts2"), "tsdb_test_access_restricted", schema = "tsdb_test")
+  db_ts_change_access(con_writer, c("vts1", "vts2"), "tsdb_test_access_restricted", schema = "tsdb_test")
 
   res <- dbGetQuery(con_admin, "SELECT * FROM tsdb_test.timeseries_main WHERE ts_key ~ 'vts' ORDER BY ts_key, validity")
 
@@ -40,7 +40,7 @@ test_with_fresh_db(con_admin, "setting access level for all vintages", {
 })
 
 test_with_fresh_db(con_admin, "setting access level for specific vintages", {
-  db_change_access_level(con_writer,
+  db_ts_change_access(con_writer,
                          c("vts1", "vts2"),
                          "tsdb_test_access_restricted",
                          validity = "2020-01-01",
@@ -64,33 +64,33 @@ test_with_fresh_db(con_admin, "setting access level for specific vintages", {
 
 test_with_fresh_db(con_admin, "reader may not set access level for dataset", {
   expect_error(
-    db_change_access_level_dataset(con_reader, "ts1", "does not matter", schema = "tsdb_test"),
+    db_ts_change_access_dataset(con_reader, "ts1", "does not matter", schema = "tsdb_test"),
     "sufficient privileges"
   )
 })
 
 test_with_fresh_db(con_admin, "setting dataset access level to unregistered one", {
   expect_error(
-    db_change_access_level_dataset(con_writer, "set_read", "fort_knox", schema = "tsdb_test"),
+    db_ts_change_access_dataset(con_writer, "set_read", "fort_knox", schema = "tsdb_test"),
     "fort_knox is not a valid"
   )
 })
 
 test_with_fresh_db(con_admin, "setting dataset access level with nonexisting set", {
   expect_warning(
-    db_change_access_level_dataset(con_writer, "set_readd", "fort_knox", schema = "tsdb_test"),
+    db_ts_change_access_dataset(con_writer, "set_readd", "fort_knox", schema = "tsdb_test"),
     "Dataset set_readd"
   )
 })
 
 test_with_fresh_db(con_admin, "setting dataset access level return status", {
-  out <- db_change_access_level_dataset(con_writer, "set_read", "tsdb_test_access_public", schema = "tsdb_test")
+  out <- db_ts_change_access_dataset(con_writer, "set_read", "tsdb_test_access_public", schema = "tsdb_test")
 
   expect_equal(out, list(status = "ok"))
 })
 
 test_with_fresh_db(con_admin, "setting dataset access level for all vintages", {
-  db_change_access_level_dataset(con_writer, "set_read", "tsdb_test_access_restricted", schema = "tsdb_test")
+  db_ts_change_access_dataset(con_writer, "set_read", "tsdb_test_access_restricted", schema = "tsdb_test")
 
   res <- dbGetQuery(con_admin, "SELECT * FROM tsdb_test.timeseries_main WHERE ts_key = 'rts1' ORDER BY ts_key, validity")
 
@@ -101,7 +101,7 @@ test_with_fresh_db(con_admin, "setting dataset access level for all vintages", {
 })
 
 test_with_fresh_db(con_admin, "setting dataset access level for specific vintages", {
-  db_change_access_level_dataset(con_writer,
+  db_ts_change_access_dataset(con_writer,
                          "set_read",
                          "tsdb_test_access_restricted",
                          validity = Sys.Date() - 1,
@@ -120,9 +120,9 @@ test_with_fresh_db(con_admin, "setting dataset access level for specific vintage
   )
 })
 
-# test db_list_access_levels --------------------------------------------------
-test_with_fresh_db(con_admin, "db_list_access_levels returns data frame with correct names", {
-  out <- db_list_access_levels(con_reader, schema = "tsdb_test")
+# test db_access_list_levels --------------------------------------------------
+test_with_fresh_db(con_admin, "db_access_list_levels returns data frame with correct names", {
+  out <- db_access_list_levels(con_reader, schema = "tsdb_test")
 
   expected <- data.frame(
     role = c("tsdb_test_access_main",
@@ -144,30 +144,30 @@ test_with_fresh_db(con_admin, "db_list_access_levels returns data frame with cor
 })
 
 
-# test db_delete_access_levels --------------------------------------------------
+# test db_access_delete_level --------------------------------------------------
 test_with_fresh_db(con_admin, "deleting access level in use", {
   expect_error(
-    db_delete_access_levels(con_admin, "tsdb_test_access_public", "tsdb_test"),
+    db_access_delete_level(con_admin, "tsdb_test_access_public", "tsdb_test"),
     "is still in use in timeseries_main"
   )
 })
 
 test_with_fresh_db(con_admin, "deleting default access_level", hard_reset = TRUE, {
   expect_error(
-    db_delete_access_levels(con_admin, "tsdb_test_access_main", "tsdb_test"),
+    db_access_delete_level(con_admin, "tsdb_test_access_main", "tsdb_test"),
     "is the default access level"
   )
 })
 
 test_with_fresh_db(con_admin, "deleting not existing access level", {
   expect_warning(
-    db_delete_access_levels(con_admin, "tsdb_test_access_restricted2", "tsdb_test"),
+    db_access_delete_level(con_admin, "tsdb_test_access_restricted2", "tsdb_test"),
     "access level does not exist"
   )
 })
 
 test_with_fresh_db(con_admin, "db deleting access level works returns ok", {
-  out <- db_delete_access_levels(con_admin, 
+  out <- db_access_delete_level(con_admin, 
                                  "tsdb_test_access_restricted",
                                  schema = "tsdb_test")
   expected <- list(status ="ok")
@@ -177,7 +177,7 @@ test_with_fresh_db(con_admin, "db deleting access level works returns ok", {
 
 
 test_with_fresh_db(con_admin, "db deleting access level works", {
-  db_delete_access_levels(con_admin, 
+  db_access_delete_level(con_admin, 
                                  "tsdb_test_access_restricted",
                                  schema = "tsdb_test")
   
@@ -202,16 +202,16 @@ test_with_fresh_db(con_admin, "db deleting access level works", {
 })
 
 test_with_fresh_db(con_admin, "db rights to delete access level", {
-  expect_error(db_delete_access_levels(con_writer,
+  expect_error(db_access_delete_level(con_writer,
                                  "tsdb_test_access_restricted",
                                  schema = "tsdb_test"),
                "not have sufficient privileges")
 })
 
-# test db_insert_access_levels --------------------------------------------------
+# test db_access_create_level --------------------------------------------------
 test_with_fresh_db(con_admin, "db inserting access level that doesn't exist", {
   expect_error(
-    db_insert_access_levels(con_admin, 
+    db_access_create_level(con_admin, 
                             "tsdb_test_access_public2", 
                             schema = "tsdb_test"),
     "it can not be an access level"
@@ -220,7 +220,7 @@ test_with_fresh_db(con_admin, "db inserting access level that doesn't exist", {
 
 test_with_fresh_db(con_admin, "db inserting access level that already exists", {
   expect_warning(
-    db_insert_access_levels(con_admin, 
+    db_access_create_level(con_admin, 
                             "tsdb_test_access_main", 
                             schema = "tsdb_test"),
     "already exists"
@@ -228,7 +228,7 @@ test_with_fresh_db(con_admin, "db inserting access level that already exists", {
 })
 
 test_with_fresh_db(con_admin, "db inserting access level works default NA", {
-  db_insert_access_levels(con_admin,
+  db_access_create_level(con_admin,
                           "tsdb_test_admin",
                           access_level_description = "admin description",
                           schema = "tsdb_test")
@@ -260,7 +260,7 @@ test_with_fresh_db(con_admin, "db inserting access level works default NA", {
 })
 
 test_with_fresh_db(con_admin, "db inserting access level works stastus ok default NA", {
-  out <- db_insert_access_levels(con_admin,
+  out <- db_access_create_level(con_admin,
                           "tsdb_test_admin",
                           access_level_description = "admin description",
                           schema = "tsdb_test")
@@ -272,7 +272,7 @@ test_with_fresh_db(con_admin, "db inserting access level works stastus ok defaul
 
 
 test_with_fresh_db(con_admin, "db inserting access level works default TRUE", {
-  db_insert_access_levels(con_admin,
+  db_access_create_level(con_admin,
                           "tsdb_test_admin",
                           access_level_description = "admin description",
                           access_level_default = TRUE,
@@ -306,7 +306,7 @@ test_with_fresh_db(con_admin, "db inserting access level works default TRUE", {
 })
 
 test_with_fresh_db(con_admin, "db inserting access level works stastus ok default TRUE", {
-  out <- db_insert_access_levels(con_admin,
+  out <- db_access_create_level(con_admin,
                                  "tsdb_test_admin",
                                  access_level_description = "admin description",
                                  access_level_default = TRUE,
@@ -317,19 +317,19 @@ test_with_fresh_db(con_admin, "db inserting access level works stastus ok defaul
   expect_equal(out, expected)
 })
 
-# db_set_default_access_level ---------------------------------------------
+# db_access_set_default ---------------------------------------------
 
 test_with_fresh_db(con_admin, "writer may not change default level", {
   expect_error(
-    db_set_default_access_level(con_writer,
+    db_access_set_default(con_writer,
                                 "tsdb_test_access_public",
                                 schema = "tsdb_test"),
     "sufficient privileges"
   )
 })
 
-test_with_fresh_db(con_admin, "db_set_default_access_level returns status", {
-  out <- db_set_default_access_level(con_admin,
+test_with_fresh_db(con_admin, "db_access_set_default returns status", {
+  out <- db_access_set_default(con_admin,
                                      "tsdb_test_access_public",
                                      schema = "tsdb_test")
 
@@ -341,17 +341,17 @@ test_with_fresh_db(con_admin, "db_set_default_access_level returns status", {
   )
 })
 
-test_with_fresh_db(con_admin, "db_set_default_access_level with nonexisting level", {
+test_with_fresh_db(con_admin, "db_access_set_default with nonexisting level", {
   expect_error(
-    db_set_default_access_level(con_admin,
+    db_access_set_default(con_admin,
                                 "hank_the_hacker",
                                 schema = "tsdb_test"),
     "level hank_the_hacker"
   )
 })
 
-test_with_fresh_db(con_admin, "db_set_default_access_level sets the default", {
-  db_set_default_access_level(con_admin, "tsdb_test_access_public", schema = "tsdb_test")
+test_with_fresh_db(con_admin, "db_access_set_default sets the default", {
+  db_access_set_default(con_admin, "tsdb_test_access_public", schema = "tsdb_test")
 
   res <- dbGetQuery(con_admin, "SELECT * FROM tsdb_test.access_levels WHERE is_default")
 

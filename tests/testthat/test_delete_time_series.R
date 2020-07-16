@@ -9,7 +9,7 @@ test_that("it aborts if the user does not type yes", {
   fake_readline <- mock("nope")
   with_mock(
     readline = fake_readline,
-    expect_error(db_delete_time_series("con", "vts2", "tsdb_test"), "nope")
+    expect_error(db_ts_delete("con", "vts2", "tsdb_test"), "nope")
   )
 })
 
@@ -19,20 +19,20 @@ test_with_fresh_db(con_admin, "writer may not delete whole ts", {
     readline = fake_readline,
     {
       expect_error(
-        db_delete_time_series(con_writer, "vts1", schema = "tsdb_test"),
+        db_ts_delete(con_writer, "vts1", schema = "tsdb_test"),
         "sufficient privileges"
       )
     }
   )
 })
 
-test_with_fresh_db(con_admin, "db_delete_time_series returns a status", {
+test_with_fresh_db(con_admin, "db_ts_delete returns a status", {
   fake_readline <- mock("yes")
 
   with_mock(
     readline = fake_readline,
     {
-      out <- db_delete_time_series(con_admin, "vts1", schema = "tsdb_test")
+      out <- db_ts_delete(con_admin, "vts1", schema = "tsdb_test")
       expect_equal(out, list(status = "ok"))
     }
   )
@@ -43,7 +43,7 @@ test_with_fresh_db(con_admin, "deleting ts cleans house", {
   with_mock(
     readline = fake_readline,
     {
-      db_delete_time_series(con_admin, c("vts1", "vts2"), schema = "tsdb_test")
+      db_ts_delete(con_admin, c("vts1", "vts2"), schema = "tsdb_test")
 
       vintages <- dbGetQuery(con_admin, "SELECT * FROM tsdb_test.timeseries_main WHERE ts_key = ANY('{vts1, vts2}'::TEXT[])")
       expect_equal(nrow(vintages), 0)
@@ -71,19 +71,19 @@ context("deleting ts - edge")
 
 test_with_fresh_db(con_admin, "writer may not delete edge", {
   expect_error(
-    db_delete_latest_vintage(con_writer, c("vts1", "vts2"), schema = "tsdb_test"),
+    db_ts_delete_latest_version(con_writer, c("vts1", "vts2"), schema = "tsdb_test"),
     "sufficient privileges"
   )
 })
 
-test_with_fresh_db(con_admin, "db_delete_latest_vintage returns a status", {
-  out <- db_delete_latest_vintage(con_admin, "vts1", schema = "tsdb_test")
+test_with_fresh_db(con_admin, "db_ts_delete_latest_version returns a status", {
+  out <- db_ts_delete_latest_version(con_admin, "vts1", schema = "tsdb_test")
 
   expect_equal(out, list(status = "ok"))
 })
 
 test_with_fresh_db(con_admin, "db_delete_latest_vinage", {
-  db_delete_latest_vintage(con_admin, c("vts1", "vts2"), schema = "tsdb_test")
+  db_ts_delete_latest_version(con_admin, c("vts1", "vts2"), schema = "tsdb_test")
 
   main <- dbGetQuery(con_admin, "SELECT * FROM tsdb_test.timeseries_main")
 
@@ -110,19 +110,19 @@ context("deleting ts - trimming old vintages")
 
 test_with_fresh_db(con_admin, "writer may not delete old vintages", {
   expect_error(
-    db_trim_history(con_writer, "vts1", as.Date("2020-01-10"), "tsdb_test"),
+    db_ts_trim_history(con_writer, "vts1", as.Date("2020-01-10"), "tsdb_test"),
     "sufficient privileges"
   )
 })
 
-test_with_fresh_db(con_admin, "db_trim_history returns status", {
-  out <- db_trim_history(con_admin, "vts1", as.Date("2020-01-10"), "tsdb_test")
+test_with_fresh_db(con_admin, "db_ts_trim_history returns status", {
+  out <- db_ts_trim_history(con_admin, "vts1", as.Date("2020-01-10"), "tsdb_test")
 
   expect_equal(out, list(status = "ok"))
 })
 
-test_with_fresh_db(con_admin, "db_trim_history", {
-  db_trim_history(con_admin, c("vts1", "vts2"), as.Date("2020-01-10"), "tsdb_test")
+test_with_fresh_db(con_admin, "db_ts_trim_history", {
+  db_ts_trim_history(con_admin, c("vts1", "vts2"), as.Date("2020-01-10"), "tsdb_test")
 
   main <- dbGetQuery(con_admin, "SELECT * FROM tsdb_test.timeseries_main")
 
@@ -140,15 +140,15 @@ test_with_fresh_db(con_admin, "db_trim_history", {
   expect_true(all(ids_kept %in% main$id))
 })
 
-test_with_fresh_db(con_admin, "db_trim_history with character date", {
-  out <- db_trim_history(con_admin, "vts1", "2020-01-12", "tsdb_test")
+test_with_fresh_db(con_admin, "db_ts_trim_history with character date", {
+  out <- db_ts_trim_history(con_admin, "vts1", "2020-01-12", "tsdb_test")
 
   expect_equal(out, list(status = "ok"))
 })
 
-test_with_fresh_db(con_admin, "db_trim_history with garbage date", {
+test_with_fresh_db(con_admin, "db_ts_trim_history with garbage date", {
   expect_error(
-    db_trim_history(con_admin, "vts1", "bananas", "tsdb_test"),
+    db_ts_trim_history(con_admin, "vts1", "bananas", "tsdb_test"),
     "of the form"
   )
 })

@@ -7,7 +7,7 @@
 #' @param schema character name of the schema. Defaults to 'timeseries'.
 #' @importFrom jsonlite fromJSON
 #' @export
-db_collection_add <- function(con,
+db_ts_add_to_collection <- function(con,
                               collection_name,
                               keys,
                               description = NA,
@@ -52,7 +52,7 @@ db_collection_add <- function(con,
 #' @param schema character name of the schema. Defaults to 'timeseries'.
 #' @importFrom jsonlite fromJSON
 #' @export
-db_collection_remove <- function(con,
+db_ts_remove_from_collection <- function(con,
                                  collection_name,
                                  keys,
                                  user = Sys.info()['user'],

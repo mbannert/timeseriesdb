@@ -9,7 +9,7 @@
 #'
 #' @export
 #' @importFrom jsonlite fromJSON
-db_change_access_level <- function(con,
+db_ts_change_access <- function(con,
                                    ts_keys,
                                    new_access_level,
                                    validity = NA,
@@ -43,7 +43,7 @@ db_change_access_level <- function(con,
 
 #' Change the Access Level for Time Series Dataset
 #'
-#' TODO: put this in the same doc as db_change_access_level? yes
+#' TODO: put this in the same doc as db_ts_change_access? yes
 #'
 #' @param con
 #' @param dataset
@@ -54,7 +54,7 @@ db_change_access_level <- function(con,
 #' @return
 #' @export
 #' @importFrom jsonlite fromJSON
-db_change_access_level_dataset <- function(con,
+db_ts_change_access_dataset <- function(con,
                                            dataset,
                                            new_access_level,
                                            validity = NA,
@@ -85,7 +85,7 @@ db_change_access_level_dataset <- function(con,
 #'
 #' @return access levels data.frame with columns `role` and `description` and `is_default`
 #' @export
-db_list_access_levels <- function(con,
+db_access_list_levels <- function(con,
                                   schema = "timeseries") {
 
   db_call_function(con,
@@ -102,7 +102,7 @@ db_list_access_levels <- function(con,
 #'
 #' @importFrom jsonlite fromJSON
 #' @export
-db_delete_access_levels <- function(con,
+db_access_delete_level <- function(con,
                                     access_level_name,
                            schema = "timeseries") {
 
@@ -139,7 +139,7 @@ db_delete_access_levels <- function(con,
 #'
 #' @importFrom jsonlite fromJSON
 #' @export
-db_insert_access_levels <- function(con,
+db_access_create_level <- function(con,
                                     access_level_name,
                                     access_level_description = NA,
                                     access_level_default = NA,
@@ -174,7 +174,7 @@ db_insert_access_levels <- function(con,
 #'
 #' @export
 #' @importFrom jsonlite fromJSON
-db_set_default_access_level <- function(con,
+db_access_set_default <- function(con,
                                         access_level,
                                         schema = "timeseries") {
   out <- db_call_function(con,

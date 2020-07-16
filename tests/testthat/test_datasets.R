@@ -9,13 +9,13 @@ if(is_test_db_reachable()) {
 }
 
 
-# test db_create_dataset --------------------------------------------------
+# test db_dataset_create --------------------------------------------------
 
 test_with_fresh_db(con_admin, "creating dataset returns id of set", hard_reset = TRUE, {
-  out <- db_create_dataset(con_admin,
+  out <- db_dataset_create(con_admin,
                            "testset",
                            "a set for testing",
-                           meta(field = "value"),
+                           create_meta(field = "value"),
                            schema = "tsdb_test")
 
   expect_equal(out, "testset")
@@ -23,29 +23,29 @@ test_with_fresh_db(con_admin, "creating dataset returns id of set", hard_reset =
 
 test_with_fresh_db(con_admin, "writer may not create sets", hard_reset = TRUE, {
   expect_error(
-    db_create_dataset(con_writer,
+    db_dataset_create(con_writer,
                       "testset",
                       "a set for testing",
-                      meta(field = "value"),
+                      create_meta(field = "value"),
                       schema = "tsdb_test"),
     "sufficient privileges")
 })
 
 test_with_fresh_db(con_admin, "writer may not create sets", hard_reset = TRUE, {
   expect_error(
-    db_create_dataset(con_reader,
+    db_dataset_create(con_reader,
                       "testset",
                       "a set for testing",
-                      meta(field = "value"),
+                      create_meta(field = "value"),
                       schema = "tsdb_test"),
     "sufficient privileges")
 })
 
 test_with_fresh_db(con_admin, "creating dataset", hard_reset = TRUE, {
-  db_create_dataset(con_admin,
+  db_dataset_create(con_admin,
                     "testset",
                     "a set for testing",
-                    meta(field = "value"),
+                    create_meta(field = "value"),
                     schema = "tsdb_test")
   result <- dbGetQuery(con_admin, "SELECT * FROM tsdb_test.datasets ORDER BY set_id")
 
@@ -66,22 +66,22 @@ test_with_fresh_db(con_admin, "creating dataset", hard_reset = TRUE, {
 })
 
 test_with_fresh_db(con_admin, "no duplicated set ids", hard_reset = TRUE, {
-  db_create_dataset(con_admin,
+  db_dataset_create(con_admin,
                     "testset",
                     "a set for testing",
-                    meta(field = "value"),
+                    create_meta(field = "value"),
                     schema = "tsdb_test")
   expect_error(
-    db_create_dataset(con_admin,
+    db_dataset_create(con_admin,
                       "testset",
                       "a set for testing",
-                      meta(field = "value"),
+                      create_meta(field = "value"),
                       schema = "tsdb_test"),
     "name already exists")
 })
 
 test_with_fresh_db(con_admin, "defaults for description and md", hard_reset = TRUE, {
-  db_create_dataset(con_admin,
+  db_dataset_create(con_admin,
                     "defaulttestset",
                     schema = "tsdb_test")
 
@@ -104,19 +104,19 @@ test_with_fresh_db(con_admin, "defaults for description and md", hard_reset = TR
                ))
 })
 
-# test db_get_dataset_keys ------------------------------------------------
+# test db_dataset_get_keys ------------------------------------------------
 
-test_with_fresh_db(con_admin, "db_get_dataset_keys", {
+test_with_fresh_db(con_admin, "db_dataset_get_keys", {
   expect_equal(
-    db_get_dataset_keys(con_reader, "set1", schema = "tsdb_test"),
+    db_dataset_get_keys(con_reader, "set1", schema = "tsdb_test"),
     c("ts1", "ts2")
   )
 })
 
-# test db_get_dataset_id --------------------------------------------------
+# test db_ts_get_dataset --------------------------------------------------
 
-test_with_fresh_db(con_admin, "db_get_dataset_id gets the correct set", {
-  out <- db_get_dataset_id(con_reader, "ts1", schema = "tsdb_test")
+test_with_fresh_db(con_admin, "db_ts_get_dataset gets the correct set", {
+  out <- db_ts_get_dataset(con_reader, "ts1", schema = "tsdb_test")
   expected <- data.frame(
     ts_key = "ts1",
     set_id = "set1",
@@ -126,8 +126,8 @@ test_with_fresh_db(con_admin, "db_get_dataset_id gets the correct set", {
   expect_equal(out, expected)
 })
 
-test_with_fresh_db(con_admin, "db_get_dataset_id spanning multiple sets", {
-  out <- db_get_dataset_id(con_reader, c("ts1", "ts3"), schema = "tsdb_test")
+test_with_fresh_db(con_admin, "db_ts_get_dataset spanning multiple sets", {
+  out <- db_ts_get_dataset(con_reader, c("ts1", "ts3"), schema = "tsdb_test")
   expected <- data.frame(
     ts_key = c("ts1", "ts3"),
     set_id = c("set1", "set2"),
@@ -137,8 +137,8 @@ test_with_fresh_db(con_admin, "db_get_dataset_id spanning multiple sets", {
   expect_equal(out, expected)
 })
 
-test_with_fresh_db(con_admin, "db_get_dataset_id with missing key", {
-  out <- db_get_dataset_id(con_reader, "notatskey", schema = "tsdb_test")
+test_with_fresh_db(con_admin, "db_ts_get_dataset with missing key", {
+  out <- db_ts_get_dataset(con_reader, "notatskey", schema = "tsdb_test")
   expected <- data.frame(
     ts_key = "notatskey",
     set_id = NA_character_,
@@ -148,51 +148,51 @@ test_with_fresh_db(con_admin, "db_get_dataset_id with missing key", {
   expect_equal(out, expected)
 })
 
-# test db_assign_dataset --------------------------------------------------
+# test db_ts_assign_dataset --------------------------------------------------
 test_with_fresh_db(con_admin, "reader may not assign dataset", {
   expect_error(
-    db_assign_dataset(con_reader, c("ts3", "ts4"), "set1", schema = "tsdb_test"),
+    db_ts_assign_dataset(con_reader, c("ts3", "ts4"), "set1", schema = "tsdb_test"),
     "sufficient privileges")
 })
 
-test_with_fresh_db(con_admin, "db_assign_dataset returns status object", {
-  out <- db_assign_dataset(con_writer, c("ts3", "ts4"), "set1", schema = "tsdb_test")
+test_with_fresh_db(con_admin, "db_ts_assign_dataset returns status object", {
+  out <- db_ts_assign_dataset(con_writer, c("ts3", "ts4"), "set1", schema = "tsdb_test")
 
   expect_is(out, "list")
   expect_true("status" %in% names(out))
 })
 
-test_with_fresh_db(con_admin, "db_assign_dataset works", {
-  db_assign_dataset(con_writer, c("ts3", "ts4"), "set1", schema = "tsdb_test")
+test_with_fresh_db(con_admin, "db_ts_assign_dataset works", {
+  db_ts_assign_dataset(con_writer, c("ts3", "ts4"), "set1", schema = "tsdb_test")
 
   result <- dbGetQuery(con_admin, "SELECT set_id FROM tsdb_test.catalog WHERE ts_key ~ '[34]'")$set_id
 
   expect_equal(result, c("set1", "set1"))
 })
 
-test_with_fresh_db(con_admin, "db_assign_dataset warns if some keys don't exist", {
+test_with_fresh_db(con_admin, "db_ts_assign_dataset warns if some keys don't exist", {
   expect_warning(
-    db_assign_dataset(con_writer, c("ts1", "tsx"), "set2", schema = "tsdb_test"),
+    db_ts_assign_dataset(con_writer, c("ts1", "tsx"), "set2", schema = "tsdb_test"),
     "tsx")
 })
 
-test_with_fresh_db(con_admin, "db_assign_dataset returns list of offending keys", {
-  suppressWarnings(out <- db_assign_dataset(con_writer, c("ts1", "tsx"), "set2", schema = "tsdb_test"))
+test_with_fresh_db(con_admin, "db_ts_assign_dataset returns list of offending keys", {
+  suppressWarnings(out <- db_ts_assign_dataset(con_writer, c("ts1", "tsx"), "set2", schema = "tsdb_test"))
 
   expect_equal(out$offending_keys, "tsx")
 })
 
-test_with_fresh_db(con_admin, "db_assign_dataset errors if set does not exist", {
+test_with_fresh_db(con_admin, "db_ts_assign_dataset errors if set does not exist", {
   expect_error(
-    db_assign_dataset(con_writer, "ts1", "notaset", schema = "tsdb_test"),
+    db_ts_assign_dataset(con_writer, "ts1", "notaset", schema = "tsdb_test"),
     "notaset does not exist"
   )
 })
 
 
 # test db_get_list_datasets --------------------------------------------------
-test_with_fresh_db(con_admin, "db_list_datasets returns data frame with correct names", {
-  out <- db_list_datasets(con_reader, schema = "tsdb_test")
+test_with_fresh_db(con_admin, "db_dataset_list returns data frame with correct names", {
+  out <- db_dataset_list(con_reader, schema = "tsdb_test")
 
   expected <- data.frame(
     set_id = c("default",
@@ -216,14 +216,14 @@ test_with_fresh_db(con_admin, "db_list_datasets returns data frame with correct 
 
 test_with_fresh_db(con_admin, "writer may not update datasets", {
   expect_error(
-    db_update_dataset(con_writer, "set1", "you've been haxx0rd", schema = "tsdb_test"),
+    db_dataset_update(con_writer, "set1", "you've been haxx0rd", schema = "tsdb_test"),
     "sufficient privileges"
   )
 })
 
 test_with_fresh_db(con_admin, "mode must be one of overwrite or update", {
   expect_error(
-    db_update_dataset(con_admin,
+    db_dataset_update(con_admin,
                       "set1",
                       "blabla",
                       metadata_update_mode = "super mode",
@@ -233,7 +233,7 @@ test_with_fresh_db(con_admin, "mode must be one of overwrite or update", {
 })
 
 test_with_fresh_db(con_admin, "updating set description returns status", {
-  out <- db_update_dataset(con_admin, "set1", "right proper", schema = "tsdb_test")
+  out <- db_dataset_update(con_admin, "set1", "right proper", schema = "tsdb_test")
 
   expect_equal(
     out,
@@ -244,7 +244,7 @@ test_with_fresh_db(con_admin, "updating set description returns status", {
 })
 
 test_with_fresh_db(con_admin, "updating set description", {
-  db_update_dataset(con_admin, "set1", "right proper, mate", schema = "tsdb_test")
+  db_dataset_update(con_admin, "set1", "right proper, mate", schema = "tsdb_test")
 
   res <- dbGetQuery(con_admin, "SELECT * FROM tsdb_test.datasets WHERE set_id = 'set1'")
 
@@ -260,7 +260,7 @@ test_with_fresh_db(con_admin, "updating set description", {
 })
 
 test_with_fresh_db(con_admin, "updating set metadata, update", {
-  db_update_dataset(con_admin,
+  db_dataset_update(con_admin,
                     "set1",
                     metadata = list(another_field = "hello"),
                     schema = "tsdb_test")
@@ -286,7 +286,7 @@ test_with_fresh_db(con_admin, "updating set metadata, update", {
 })
 
 test_with_fresh_db(con_admin, "updating set metadata, overwrite", {
-  db_update_dataset(con_admin,
+  db_dataset_update(con_admin,
                     "set1",
                     metadata = list(another_field = "hello"),
                     metadata_update_mode = "overwrite",
@@ -400,13 +400,13 @@ test_with_fresh_db(con_admin, "db_delete_dataset with default", {
 
 test_with_fresh_db(con_admin, "writer may not trim dataset", {
   expect_error(
-    db_trim_dataset_history(con_writer, "default", as.Date("2020-01-30"), schema = "tsdb_test"),
+    db_dataset_trim_history(con_writer, "default", as.Date("2020-01-30"), schema = "tsdb_test"),
     "sufficient privileges"
   )
 })
 
 test_with_fresh_db(con_admin, "trimming datasets returns ok", {
-  out <- db_trim_dataset_history(con_admin, "default", as.Date("2020-01-30"), schema = "tsdb_test")
+  out <- db_dataset_trim_history(con_admin, "default", as.Date("2020-01-30"), schema = "tsdb_test")
 
   expect_equal(
     out,
@@ -417,7 +417,7 @@ test_with_fresh_db(con_admin, "trimming datasets returns ok", {
 })
 
 test_with_fresh_db(con_admin, "trimming datasets db state", {
-  db_trim_dataset_history(con_admin, "default", as.Date("2020-01-30"), schema = "tsdb_test")
+  db_dataset_trim_history(con_admin, "default", as.Date("2020-01-30"), schema = "tsdb_test")
 
   mn <- dbGetQuery(con_admin, "SELECT ts_key, validity FROM tsdb_test.timeseries_main where ts_key ~ 'vts' ORDER BY ts_key")
 
