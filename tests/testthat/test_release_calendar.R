@@ -1,3 +1,5 @@
+context("release calendar")
+
 if(is_test_db_reachable()) {
   con_admin <- connect_to_test_db()
   con_reader <- connect_to_test_db("dev_reader_public")
@@ -329,11 +331,10 @@ test_with_fresh_db(con_admin, "db_get_next_release", {
 
   expect_equal(
     out,
-    data.frame(
+    data.table(
       set_id = c("set1", "set2"),
       release_id = c("future_release", "combo_release"),
-      release_date = c(Sys.Date() + 1, Sys.Date() + 4),
-      stringsAsFactors = FALSE
+      release_date = c(as.POSIXct(Sys.Date() + 1), as.POSIXct(Sys.Date() + 4))
     )
   )
 })
@@ -343,11 +344,10 @@ test_with_fresh_db(con_admin, "db_get_next_release with missing set", {
 
   expect_equal(
     out,
-    data.frame(
+    data.table(
       set_id = c("bananas", "set1"),
       release_id = c(NA, "future_release"),
-      release_date = c(as.POSIXct(NA), as.POSIXct(Sys.Date() + 1, origin = "1970-01-01")),
-      stringsAsFactors = FALSE
+      release_date = c(as.POSIXct(NA), as.POSIXct(Sys.Date() + 1, origin = "1970-01-01"))
     )
   )
 })
@@ -366,11 +366,10 @@ test_with_fresh_db(con_admin, "db_release_get_latest return", {
 
   expect_equal(
     out,
-    data.frame(
+    data.table(
       set_id = "set1",
       release_id = "last_release",
-      release_date = Sys.Date() - 1,
-      stringsAsFactors = FALSE
+      release_date = as.POSIXct(Sys.Date() - 1)
     )
   )
 })
@@ -380,11 +379,10 @@ test_with_fresh_db(con_admin, "db_get_latest_release with missing set", {
 
   expect_equal(
     out,
-    data.frame(
+    data.table(
       set_id = c("bananas", "set1"),
       release_id = c(NA, "last_release"),
-      release_date = c(as.POSIXct(NA), as.POSIXct(Sys.Date() - 1, origin = "1970-01-01")),
-      stringsAsFactors = FALSE
+      release_date = c(as.POSIXct(NA), as.POSIXct(Sys.Date() - 1, origin = "1970-01-01"))
     )
   )
 })
