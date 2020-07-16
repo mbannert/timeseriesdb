@@ -101,6 +101,26 @@ test_with_fresh_db(con_admin, "reading an xts", {
   expect_equal(tsl_read, tslx)
 })
 
+# yeh yeh we said we weren't going to test pure sql stuff...
+test_with_fresh_db(con_admin, "SQL-only test for array version", {
+  out <- dbGetQuery(con_reader_main, "SELECT * FROM tsdb_test.read_ts_raw('{rts1,rtsp}'::TEXT[])")
+
+  expect_equal(
+    out$ts_key,
+    c("rts1", "rtsp")
+  )
+
+  # lazy test is lazy
+  expect_match(
+    out$ts_data[[1]],
+    "2.1"
+  )
+
+  expect_match(
+    out$ts_data[[2]],
+    "3"
+  )
+})
 
 # reading datasets --------------------------------------------------------
 context("reading datasets")
@@ -157,6 +177,28 @@ test_with_fresh_db(con_admin, "reading multiple sets", {
                                           c("set_read", "default"),
                                           schema = "tsdb_test")
   expect_setequal(names(tsl_read), c("rts1", "rtsp", "rtsx", "vts1", "vts2"))
+})
+
+test_with_fresh_db(con_admin, "SQL-only test for array version of read dataset", {
+  out <- dbGetQuery(con_reader_main, "SELECT * FROM tsdb_test.read_ts_dataset_raw('{set_read}'::TEXT[])")
+
+  expect_equal(
+    out$ts_key,
+    c(
+      "rts1",
+      "rtsp"
+      )
+  )
+
+  expect_match(
+    out$ts_data[[1]],
+    "2.1"
+  )
+
+  expect_match(
+    out$ts_data[[2]],
+    "3"
+  )
 })
 
 # reading collections --------------------------------------------------------
