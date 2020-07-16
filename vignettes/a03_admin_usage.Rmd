@@ -1,0 +1,73 @@
+---
+title: "Admin Usage"
+subtitle: "Administrator Documentation"
+author: "Matthias Bannert and Severin Thöni"
+date: "`r Sys.Date()`"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{Getting Started}
+  %\VignetteEngine{knitr::rmarkdown}
+  \usepackage[utf8]{inputenc}
+---
+
+## Starting Point
+
+This guide assumes you have installed the {timeseriesdb} R package and a local PostgreSQL client library successfully. We also assume that you have a PostgreSQL database running somewhere that you can connect to. (*For the remainder of this guide we assume PostgreSQL runs on a local docker container accessible via port 1111.*)
+
+## General Note
+
+With {timeseriesdb}, access rights can be customized quite a bit, so roles will 
+be quite specific to the institution that uses it. Still though, {timeseriesdb}
+ships with a basic idea of access levels and roles. This document focuses on 
+administrator usage as opposed to users, i.e., researchers that want to work
+with the time series in the database. 
+
+
+## Datasets
+
+In {timeseriesdb}, all time series have to be part of a dataset. If the user 
+stores a time series w/o specifying a dataset that series is assigned to the 'default'
+dataset. Datasets allow to group data and store data descriptions at the 
+dataset level. Also, datasets come in handy for admin operations like 
+deletion of an entire dataset. 
+
+### Registering a New Dataset
+
+```{r, eval=FALSE}
+library(kofdata)
+arr <- get_time_series("ch.zrh_airport.arrival.total")
+dep <- get_time_series("ch.zrh_airport.departure.total")
+
+store_time_series(con, c(arr,dep), schema = "tsdb_test")
+
+db_create_dataset(con, "ch.zrh_airport",
+                  set_description = "Arrivals and Departures ZH Airport",
+                  schema = "tsdb_test")
+
+# see, the new dataset is there... 
+db_list_datasets(con, schema = "tsdb_test")
+
+```
+Apparently, the dataset is empty. We need to assign some time series first.
+Make sure the time series you want to register to a set are actually around.
+Unlike `store_time_series` assigning series to a dataset is *not* a
+vintage level operation, it applies to all versions of a series. This is why time series are assigned to the 'default' schema at first when they are stored and can be moved later on. 
+
+```{r, eval=FALSE}
+db_assign_dataset(con,
+                  ts_keys = c("ch.zrh_airport.arrival.total",
+                              "ch.zrh_airport.departure.total"),
+                  set_name = "ch.zrh_airport",
+                  schema = "tsdb_test")
+
+```
+
+**Note** that there is no such thing as remove time series from dataset. Either
+you delete a time series entirely or you assign it to another dataset.
+Think of a registry similar to a software registry. 
+
+### DANGER ZONE: Deleting Datasets
+
+
+
+## Adding New Access Levels
