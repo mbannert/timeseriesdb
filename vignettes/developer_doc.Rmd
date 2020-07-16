@@ -1,5 +1,5 @@
 ---
-title: "timeseriesdb Developer Documentation"
+title: "Developer Documentation"
 author: "Matthias Bannert and Severin Thöni"
 date: "`r Sys.Date()`"
 output: rmarkdown::html_vignette

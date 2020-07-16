@@ -55,30 +55,6 @@ With [db_read_time_series_dataset()]() you can read all time series from a given
 
 ## Release Management
 
-A new feature introduced with {timeseriesdb} 1.0 is its support for release management. 
-In official and economic statistics, data are usually updated periodically. Often 
-data are released on release date known in advance. Data may be available inside an institution but 
-only be released later on. In order to facilitate the publication process. 
-
-```{r, eval=FALSE}
-db_create_release(con,
-                  id = "jul_2020_air",
-                  datasets = "ch.zrh_airport",
-                  title = "Airport Data from Zurich Airport",
-                  release_date = "2020-07-08",
-                  target_year = 2020,
-                  target_period = 7,
-                  target_frequency = 12,
-                  note = "Just a test release",
-                  schema = "tsdb_test"
-                  )
-```
-
-In {timeseriesdb}, releases have an id which uniquely identifies the release.
-We recommend to choose a short human readable text identifier. Releases relate to a dataset and therefore are assigned at the dataset level. This is a good reason to make use of the datasets features as opposed to storing all series in the default set. There is a target year and target period because the release date itself may not safely identify the period it relates to (assume there July data get released at the beginning of August). 
-
-To list all releases, simply run the below code. The default is not to show releases in the past.
-
 ```{r, eval=FALSE}
 db_list_releases(con, include_past = T, schema = "tsdb_test")
 ```
@@ -93,8 +69,6 @@ db_get_latest_release_for_set(con, "ch.zrh_airport",schema = "tsdb_test")
 
 Similarily use [db_get_next_release_for_set()]() to get the next upcoming
 release. 
-
-
 
 
 ## Collections
@@ -205,21 +179,6 @@ db_get_metadata_validity(con, "ch.zrh_airport.arrival.total",
 helps to get and overview find out since when meta information is valid. 
 Note that dataset level meta information can currently only be assigned when the dataset
 is created and is not versioned. 
-
-
-
-
-
-
-
-
-
-
-
-## Access Levels and Rights Management
-
-
-## Hygenie and Maintenance
 
 
 
