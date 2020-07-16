@@ -14,7 +14,7 @@ test_that("defaults", {
     db_call_function = fake_db_call_function,
     dbWriteTable = mock(),
     {
-      db_create_release("con",
+      db_release_create("con",
                         "a_release",
                         "Super Data",
                         as.Date("2020-06-16"),
@@ -41,7 +41,7 @@ test_that("defaults", {
 
 test_with_fresh_db(con_admin, "writer may not create releases", {
   expect_error(
-    db_create_release(con_writer,
+    db_release_create(con_writer,
                       "icanhaz",
                       "probably not",
                       Sys.time(),
@@ -52,7 +52,7 @@ test_with_fresh_db(con_admin, "writer may not create releases", {
 })
 
 test_with_fresh_db(con_admin, "create_release returns 'ok'", {
-  out <- db_create_release(con_admin,
+  out <- db_release_create(con_admin,
                            "another",
                            "Thor reference",
                            Sys.time(),
@@ -64,7 +64,7 @@ test_with_fresh_db(con_admin, "create_release returns 'ok'", {
 
 test_with_fresh_db(con_admin, "creating releases with duplicate id is an error", {
   expect_error(
-    db_create_release(con_admin,
+    db_release_create(con_admin,
                       "ancient_release",
                       "",
                       Sys.time(),
@@ -76,7 +76,7 @@ test_with_fresh_db(con_admin, "creating releases with duplicate id is an error",
 
 test_with_fresh_db(con_admin, "creating with nonexistent dataset", {
   expect_error(
-    db_create_release(con_admin,
+    db_release_create(con_admin,
                     "new_release",
                     "",
                     Sys.time(),
@@ -86,7 +86,7 @@ test_with_fresh_db(con_admin, "creating with nonexistent dataset", {
 })
 
 test_with_fresh_db(con_admin, "create_release db state", {
-  db_create_release(con_admin,
+  db_release_create(con_admin,
                     "new_release",
                     "Best Data Ever",
                     as.POSIXct("2020-06-15 13:09"),
@@ -114,7 +114,7 @@ test_with_fresh_db(con_admin, "create_release db state", {
 # updating releases -------------------------------------------------------
 
 test_with_fresh_db(con_admin, "update release returns ok", {
-  out <- db_update_release(con_admin,
+  out <- db_release_update(con_admin,
                            "future_release",
                            "some other title",
                            schema = "tsdb_test")
@@ -127,7 +127,7 @@ test_with_fresh_db(con_admin, "update release returns ok", {
 })
 
 test_with_fresh_db(con_admin, "updating release with nonexistent set", {
-  expect_error(db_update_release(con_admin,
+  expect_error(db_release_update(con_admin,
                            "future_release",
                            datasets = c("notaset"),
                            schema = "tsdb_test"),
@@ -135,7 +135,7 @@ test_with_fresh_db(con_admin, "updating release with nonexistent set", {
 })
 
 test_with_fresh_db(con_admin, "updating a release", {
-  db_update_release(con_admin,
+  db_release_update(con_admin,
                     id = "future_release",
                     title = "A new title",
                     note = "Note",
@@ -174,7 +174,7 @@ test_with_fresh_db(con_admin, "updating a release", {
 })
 
 test_with_fresh_db(con_admin, "partially updating a release", {
-  db_update_release(con_admin,
+  db_release_update(con_admin,
                     id = "future_release",
                     title = "A new title",
                     release_date = as.Date("2031-04-01"),
@@ -210,7 +210,7 @@ test_with_fresh_db(con_admin, "partially updating a release", {
 
 test_with_fresh_db(con_admin, "updating a nonexistent release", {
   expect_error(
-    db_update_release(con_admin,
+    db_release_update(con_admin,
                       id = "phishing_blindly",
                       title = "A new title",
                       release_date = as.Date("2031-04-01"),
@@ -225,13 +225,13 @@ test_with_fresh_db(con_admin, "updating a nonexistent release", {
 
 test_with_fresh_db(con_admin, "writer may not cancel releases", {
   expect_error(
-    db_cancel_release(con_writer, "future_release", schema = "tsdb_test"),
+    db_release_cancel(con_writer, "future_release", schema = "tsdb_test"),
     "sufficient privileges"
   )
 })
 
 test_with_fresh_db(con_admin, "release cancel returns status", {
-  out <- db_cancel_release(con_admin, "future_release", schema = "tsdb_test")
+  out <- db_release_cancel(con_admin, "future_release", schema = "tsdb_test")
 
   expect_equal(
     out,
@@ -242,7 +242,7 @@ test_with_fresh_db(con_admin, "release cancel returns status", {
 })
 
 test_with_fresh_db(con_admin, "release cancel db state", {
-  db_cancel_release(con_admin, "future_release", schema = "tsdb_test")
+  db_release_cancel(con_admin, "future_release", schema = "tsdb_test")
 
   state_calendar <- dbGetQuery(con_admin, "SELECT id
                                            FROM tsdb_test.release_calendar
@@ -259,7 +259,7 @@ test_with_fresh_db(con_admin, "release cancel db state", {
 })
 
 test_with_fresh_db(con_admin, "cancelling a nonexistent release is a-OK", {
-  out <- db_cancel_release(con_admin, "life_the_universe_and_everything", schema = "tsdb_test")
+  out <- db_release_cancel(con_admin, "life_the_universe_and_everything", schema = "tsdb_test")
 
   expect_equal(
     out,
@@ -271,15 +271,15 @@ test_with_fresh_db(con_admin, "cancelling a nonexistent release is a-OK", {
 
 test_with_fresh_db(con_admin, "cancelling a past release is against the auditors' wishes", {
   expect_error(
-    db_cancel_release(con_admin, "ancient_release", schema = "tsdb_test"),
+    db_release_cancel(con_admin, "ancient_release", schema = "tsdb_test"),
     "has already passed"
   )
 })
 
 # list_releases -----------------------------------------------------------
 
-test_with_fresh_db(con_admin, "db_list_releases return shape", {
-  out <- db_list_releases(con_reader, schema = "tsdb_test")
+test_with_fresh_db(con_admin, "db_release_list return shape", {
+  out <- db_release_list(con_reader, schema = "tsdb_test")
 
   expect_is(out, "data.frame")
   expect_equal(
@@ -291,8 +291,8 @@ test_with_fresh_db(con_admin, "db_list_releases return shape", {
   )
 })
 
-test_with_fresh_db(con_admin, "db_list_releases return value (approx)", {
-  out <- db_list_releases(con_reader, schema = "tsdb_test")
+test_with_fresh_db(con_admin, "db_release_list return value (approx)", {
+  out <- db_release_list(con_reader, schema = "tsdb_test")
 
   expect_equal(
     out$id,
@@ -300,8 +300,8 @@ test_with_fresh_db(con_admin, "db_list_releases return value (approx)", {
   )
 })
 
-test_with_fresh_db(con_admin, "db_list_releases with past return value (approx)", {
-  out <- db_list_releases(con_reader, include_past = TRUE, schema = "tsdb_test")
+test_with_fresh_db(con_admin, "db_release_list with past return value (approx)", {
+  out <- db_release_list(con_reader, include_past = TRUE, schema = "tsdb_test")
 
   expect_equal(
     out$id,
@@ -318,14 +318,14 @@ test_with_fresh_db(con_admin, "db_list_releases with past return value (approx)"
 # get next release --------------------------------------------------------
 
 test_with_fresh_db(con_admin, "db_get_next_release_for return shape", {
-  out <- db_get_next_release_for_set(con_reader, "set1", schema = "tsdb_test")
+  out <- db_release_get_next(con_reader, "set1", schema = "tsdb_test")
 
   expect_is(out, "data.frame")
   expect_equal(names(out), c("set_id", "release_id", "release_date"))
 })
 
 test_with_fresh_db(con_admin, "db_get_next_release", {
-  out <- db_get_next_release_for_set(con_reader, c("set1", "set2"), schema = "tsdb_test")
+  out <- db_release_get_next(con_reader, c("set1", "set2"), schema = "tsdb_test")
 
   expect_equal(
     out,
@@ -339,7 +339,7 @@ test_with_fresh_db(con_admin, "db_get_next_release", {
 })
 
 test_with_fresh_db(con_admin, "db_get_next_release with missing set", {
-  out <- db_get_next_release_for_set(con_reader, c("set1", "bananas"), schema = "tsdb_test")
+  out <- db_release_get_next(con_reader, c("set1", "bananas"), schema = "tsdb_test")
 
   expect_equal(
     out,
@@ -354,15 +354,15 @@ test_with_fresh_db(con_admin, "db_get_next_release with missing set", {
 
 # get latest release ------------------------------------------------------
 
-test_with_fresh_db(con_admin, "db_get_latest_release_for_set return shape", {
-  out <- db_get_latest_release_for_set(con_reader, "set1", schema = "tsdb_test")
+test_with_fresh_db(con_admin, "db_release_get_latest return shape", {
+  out <- db_release_get_latest(con_reader, "set1", schema = "tsdb_test")
 
   expect_is(out, "data.frame")
   expect_equal(names(out), c("set_id", "release_id", "release_date"))
 })
 
-test_with_fresh_db(con_admin, "db_get_latest_release_for_set return", {
-  out <- db_get_latest_release_for_set(con_reader, "set1", schema = "tsdb_test")
+test_with_fresh_db(con_admin, "db_release_get_latest return", {
+  out <- db_release_get_latest(con_reader, "set1", schema = "tsdb_test")
 
   expect_equal(
     out,
@@ -376,7 +376,7 @@ test_with_fresh_db(con_admin, "db_get_latest_release_for_set return", {
 })
 
 test_with_fresh_db(con_admin, "db_get_latest_release with missing set", {
-  out <- db_get_latest_release_for_set(con_reader, c("set1", "bananas"), schema = "tsdb_test")
+  out <- db_release_get_latest(con_reader, c("set1", "bananas"), schema = "tsdb_test")
 
   expect_equal(
     out,

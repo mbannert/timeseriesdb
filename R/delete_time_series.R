@@ -13,7 +13,7 @@
 #' @export
 #'
 #' @importFrom jsonlite fromJSON
-db_delete_time_series <- function(con,
+db_ts_delete <- function(con,
                                   ts_keys,
                                   schema = "timeseries") {
   message("This operation will PERMANENTLY delete the specified time series, including their histories and metadata. If this is what you intend to do, please type yes below.")
@@ -55,7 +55,7 @@ db_delete_time_series <- function(con,
 #' @export
 #'
 #' @importFrom jsonlite fromJSON
-db_delete_latest_vintage <- function(con,
+db_ts_delete_latest_version <- function(con,
                                      ts_keys,
                                      schema = "timeseries") {
   out <- db_with_temp_table(con,
@@ -95,7 +95,7 @@ db_delete_latest_vintage <- function(con,
 #'
 #' @export
 #' @importFrom jsonlite fromJSON
-db_trim_history <- function(con,
+db_ts_trim_history <- function(con,
                             ts_keys,
                             older_than,
                             schema = "timeseries") {

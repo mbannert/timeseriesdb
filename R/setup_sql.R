@@ -46,7 +46,7 @@ install_timeseriesdb <- function(username,
   setup_sql_tables(con, schema, prnt)
   setup_sql_functions(con, schema, prnt)
   setup_sql_triggers(con, schema, prnt)
-  grant_sql_rights(con, schema, prnt)
+  setup_sql_grant_rights(con, schema, prnt)
 }
 
 
@@ -190,7 +190,7 @@ setup_sql_triggers <- function(con, schema = "timeseries", prnt = identity){
 #' @param schema character schema name, defaults to 'timeseries'
 #'
 #' @return
-grant_sql_rights <- function(con, schema = "timeseries", prnt = identity) {
+setup_sql_grant_rights <- function(con, schema = "timeseries", prnt = identity) {
   prnt("Setting up function rights")
   sql <- readLines(system.file("sql/grant_rights.sql",
                                package = "timeseriesdb"))

@@ -86,7 +86,7 @@ read_time_series_history <- function(con,
 #' @param chunksize
 #'
 #' @export
-db_read_time_series_dataset <- function(con,
+db_dataset_read_ts <- function(con,
                                         datasets,
                                         valid_on = NA,
                                         respect_release_date = FALSE,
@@ -131,7 +131,7 @@ db_read_time_series_dataset <- function(con,
 #' in order to uniquely identify a collection.
 #'
 #' @export
-db_read_time_series_collection <- function(con,
+db_collection_read_ts <- function(con,
                                            collection_name,
                                            collection_owner,
                                            valid_on = NA,

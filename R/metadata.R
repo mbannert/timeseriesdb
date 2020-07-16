@@ -2,12 +2,12 @@
 # meta --------------------------------------------------------------------
 
 #' @export
-meta <- function(...) {
-  UseMethod("meta")
+create_meta <- function(...) {
+  UseMethod("create_meta")
 }
 
 #' @export
-meta.list <- function(metadata) {
+create_meta.list <- function(metadata) {
   if(is.null(names(metadata)) || any(nchar(names(metadata)) == 0)) {
     stop("All fields of metadata objects must be named!")
   }
@@ -16,8 +16,8 @@ meta.list <- function(metadata) {
 }
 
 #' @export
-meta.default <- function(...) {
-  meta.list(list(...))
+create_meta.default <- function(...) {
+  create_meta.list(list(...))
 }
 
 #' @export
@@ -27,7 +27,7 @@ as.meta <- function(x) {
   } else if(!is.list(x)) {
     stop("Only lists can be converted to meta objects!")
   } else {
-    meta(x)
+    create_meta(x)
   }
 }
 
@@ -131,7 +131,7 @@ print.tsmeta <- function(x, ...) {
 #' @export
 #'
 #' @examples
-db_store_ts_metadata <- function(con,
+db_meta_store <- function(con,
                                  metadata,
                                  valid_from,
                                  locale = NULL,
@@ -213,7 +213,7 @@ db_store_ts_metadata <- function(con,
 #' @return list of tsmeta objects.
 #' @importFrom jsonlite fromJSON
 #' @export
-db_read_ts_metadata <- function(con,
+db_meta_read <- function(con,
                                 ts_keys,
                                 valid_on = NA,
                                 regex = FALSE,
@@ -265,7 +265,7 @@ db_read_ts_metadata <- function(con,
 #' @export
 #'
 #' @examples
-db_get_metadata_validity <- function(con,
+db_meta_get_last_update <- function(con,
                                  ts_keys,
                                  regex = FALSE,
                                  locale = NULL,

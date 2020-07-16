@@ -1,6 +1,6 @@
 #' Create a New Dataset
 #'
-#' A dataset is a family of time series that belong to the same topic. By default all series stored with `db_store_ts` belong to a default set. In order to assign them a different set, it must first be created with `db_create_dataset` after which the series may be moved with `tbd`
+#' A dataset is a family of time series that belong to the same topic. By default all series stored with `db_store_ts` belong to a default set. In order to assign them a different set, it must first be created with `db_dataset_create` after which the series may be moved with `tbd`
 #'
 #' For arbitrary collections of time series see [how do you reference a doc topic?]
 #'
@@ -14,7 +14,7 @@
 #'
 #' @return character name of the created set
 #' @export
-db_create_dataset <- function(con,
+db_dataset_create <- function(con,
                               set_name,
                               set_description = NA,
                               set_md = NA,
@@ -55,7 +55,7 @@ db_create_dataset <- function(con,
 #'
 #' @return character A vector of ts keys contained in the set
 #' @export
-db_get_dataset_keys <- function(con,
+db_dataset_get_keys <- function(con,
                                set_name = 'default',
                                schema = "timeseries") {
   db_call_function(con,
@@ -76,7 +76,7 @@ db_get_dataset_keys <- function(con,
 #'
 #' @return data.frame with columns `ts_key` and `set_id`
 #' @export
-db_get_dataset_id <- function(con,
+db_ts_get_dataset <- function(con,
                                ts_keys,
                                schema = "timeseries") {
 
@@ -94,7 +94,7 @@ db_get_dataset_id <- function(con,
 
 #' Assign Time Series Identifiers to a Dataset
 #'
-#' `db_assign_dataset` returns a list with status information.
+#' `db_ts_assign_dataset` returns a list with status information.
 #' status `"ok"` means all went well.
 #' status `"warning"` means some keys are not in the catalog. The vector of
 #' those keys is in the `offending_keys` field.
@@ -108,7 +108,7 @@ db_get_dataset_id <- function(con,
 #'
 #' @return list A status list
 #' @export
-db_assign_dataset <- function(con,
+db_ts_assign_dataset <- function(con,
                               ts_keys,
                               set_name,
                               schema = "timeseries") {
@@ -154,7 +154,7 @@ db_assign_dataset <- function(con,
 #'
 #' @importFrom jsonlite toJSON fromJSON
 #' @export
-db_update_dataset <- function(con,
+db_dataset_update <- function(con,
                               set_name,
                               description = NA,
                               metadata = NA,
@@ -190,7 +190,7 @@ db_update_dataset <- function(con,
 #'
 #' @return data.frame with columns `set_id` and `set_description`
 #' @export
-db_list_datasets <- function(con,
+db_dataset_list <- function(con,
                                  schema = "timeseries") {
 
   db_call_function(con,
@@ -271,7 +271,7 @@ db_dataset_delete_ <- function(con,
 #'
 #' @export
 #' @importFrom jsonlite fromJSON
-db_trim_dataset_history <- function(con,
+db_dataset_trim_history <- function(con,
                             set_id,
                             older_than,
                             schema = "timeseries") {
