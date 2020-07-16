@@ -6,8 +6,6 @@
 #' @param x numeric A vector of time series time indices (e.g. from stats::time)
 #' @param as.string logical If as.string is TRUE the string representation of the
 #' Date is returned, otherwise a Date object.
-#'
-#' @export
 index_to_date <- function (x, as.string = FALSE)
 {
   if(inherits(x, "Date")) {
@@ -40,7 +38,6 @@ index_to_date <- function (x, as.string = FALSE)
 #' @param x The Date or Y-m-d string to convert
 #'
 #' @return The numeric representation of the date that can be used with ts
-#' @export
 date_to_index <- function(x) {
   x <- as.character(x)
   components <- as.numeric(unlist(strsplit(x, "-")))
@@ -64,7 +61,6 @@ date_to_index <- function(x) {
 #' @param this an object of class list
 #' @details Hat tip to flodel at stackoverflow for suggesting this light weight way analyze depth of a nested list. Further complexity needs to be added to cover the fact that data.frame are lists, too. A more sophisticated recursive function can be found in the gatveys2 package.
 #' @references http://stackoverflow.com/questions/13432863/determine-level-of-nesting-in-r
-#' @export
 get_list_depth <- function(this) {
   ifelse(
     is.list(this),
@@ -208,8 +204,6 @@ db_call_function <- function(con,
 #' @param schema name of the timeseries schema being worked with
 #'
 #' @importFrom DBI dbExecute dbQuoteIdentifier
-#'
-#' @export
 db_grant_to_admin <- function(con,
                               table,
                               schema = "timeseries") {

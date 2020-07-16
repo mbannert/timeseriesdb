@@ -166,6 +166,7 @@ db_update_release <- function(con,
 #' @param release_id character ID of the release to cancel
 #' @param schema character Timeseries schema name
 #'
+#' @export
 #' @importFrom jsonlite fromJSON
 db_cancel_release <- function(con,
                               release_id,
