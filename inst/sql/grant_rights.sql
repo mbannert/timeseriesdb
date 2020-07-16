@@ -51,6 +51,7 @@ GRANT EXECUTE ON FUNCTION timeseries.fill_read_tmp_regex TO timeseries_reader;
 GRANT EXECUTE ON FUNCTION timeseries.list_datasets TO timeseries_reader;
 GRANT EXECUTE ON FUNCTION timeseries.list_releases TO timeseries_reader;
 GRANT EXECUTE ON FUNCTION timeseries.list_access_levels TO timeseries_reader;
+GRANT EXECUTE ON FUNCTION timeseries.read_ts_history_raw TO timeseries_reader;
 
 GRANT EXECUTE ON FUNCTION timeseries.assign_dataset TO timeseries_writer;
 GRANT EXECUTE ON FUNCTION timeseries.md_unlocal_upsert TO timeseries_writer;

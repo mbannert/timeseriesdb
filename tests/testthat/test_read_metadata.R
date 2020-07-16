@@ -17,7 +17,7 @@ test_that("is passes correct args to db_call_function unlocalized", {
     db_call_function = fake_db_call_function,
     db_with_tmp_read = fake_db_with_tmp_read,
     {
-      db_read_ts_metadata("con", "vts1", valid_on = "2020-01-01", schema = "schema")
+      db_meta_read("con", "vts1", valid_on = "2020-01-01", schema = "schema")
 
       expect_args(fake_db_call_function,
                   1,
@@ -41,7 +41,7 @@ test_that("is passes correct args to db_call_function localized", {
     db_with_tmp_read = fake_db_with_tmp_read,
     db_call_function = fake_db_call_function,
     {
-      db_read_ts_metadata("con", "vts1", valid_on = "2020-01-01", schema = "schema", locale = "de")
+      db_meta_read("con", "vts1", valid_on = "2020-01-01", schema = "schema", locale = "de")
 
       expect_args(fake_db_call_function,
                   1,
@@ -54,7 +54,7 @@ test_that("is passes correct args to db_call_function localized", {
 })
 
 test_with_fresh_db(con_admin, "by default it reads the most recent valid vintage", {
-  result <- db_read_ts_metadata(con_reader, "vts1", schema = "tsdb_test")
+  result <- db_meta_read(con_reader, "vts1", schema = "tsdb_test")
   expect_equal(result,
                as.tsmeta.list(
                  list(
@@ -66,7 +66,7 @@ test_with_fresh_db(con_admin, "by default it reads the most recent valid vintage
 })
 
 test_with_fresh_db(con_admin, "reading desired vintages works", {
-  result <- db_read_ts_metadata(con_reader, "vts1", valid_on = Sys.Date() - 1, schema = "tsdb_test")
+  result <- db_meta_read(con_reader, "vts1", valid_on = Sys.Date() - 1, schema = "tsdb_test")
   expect_equal(result,
                as.tsmeta.list(
                  list(
@@ -78,7 +78,7 @@ test_with_fresh_db(con_admin, "reading desired vintages works", {
 })
 
 test_with_fresh_db(con_admin, "reading via regex works", {
-  result <- db_read_ts_metadata(con_reader, "vts", regex = TRUE, schema = "tsdb_test")
+  result <- db_meta_read(con_reader, "vts", regex = TRUE, schema = "tsdb_test")
   expect_equal(result,
                as.tsmeta.list(
                  list(
@@ -96,7 +96,7 @@ test_with_fresh_db(con_admin, "reading via regex works", {
 context("read localized metadata")
 
 test_with_fresh_db(con_admin, "by default it reads the most recent valid vintage", {
-  result <- db_read_ts_metadata(con_reader, "vts1", locale = "de", schema = "tsdb_test")
+  result <- db_meta_read(con_reader, "vts1", locale = "de", schema = "tsdb_test")
   expect_equal(result,
                as.tsmeta.list(
                  list(
@@ -109,7 +109,7 @@ test_with_fresh_db(con_admin, "by default it reads the most recent valid vintage
 })
 
 test_with_fresh_db(con_admin, "reading desired vintages works", {
-  result <- db_read_ts_metadata(con_reader,
+  result <- db_meta_read(con_reader,
                                 "vts1",
                                 valid_on = Sys.Date() - 1,
                                 locale = "de",
@@ -126,7 +126,7 @@ test_with_fresh_db(con_admin, "reading desired vintages works", {
 })
 
 test_with_fresh_db(con_admin, "reading via regex works", {
-  result <- db_read_ts_metadata(con_reader,
+  result <- db_meta_read(con_reader,
                                 "vts",
                                 regex = TRUE,
                                 locale = "en",
@@ -149,7 +149,7 @@ test_with_fresh_db(con_admin, "reading via regex works", {
 # reading current edge ----------------------------------------------------
 
 test_with_fresh_db(con_admin, "reading unlocalized edge", {
-  result <- db_get_metadata_validity(con_reader, c("vts1"), schema = "tsdb_test")
+  result <- db_meta_get_last_update(con_reader, c("vts1"), schema = "tsdb_test")
   expect_equal(result,
                data.table(
                  ts_key = "vts1",
@@ -158,7 +158,7 @@ test_with_fresh_db(con_admin, "reading unlocalized edge", {
 })
 
 test_with_fresh_db(con_admin, "reading unlocalized edge via regex", {
-  result <- db_get_metadata_validity(con_reader,
+  result <- db_meta_get_last_update(con_reader,
                                      c("vts"),
                                      regex = TRUE,
                                      schema = "tsdb_test")
@@ -170,7 +170,7 @@ test_with_fresh_db(con_admin, "reading unlocalized edge via regex", {
 })
 
 test_with_fresh_db(con_admin, "reading localized edge", {
-  result <- db_get_metadata_validity(con_reader,
+  result <- db_meta_get_last_update(con_reader,
                                      c("vts1"),
                                      locale = "de",
                                      schema = "tsdb_test")
@@ -182,7 +182,7 @@ test_with_fresh_db(con_admin, "reading localized edge", {
 })
 
 test_with_fresh_db(con_admin, "reading localized edge via regex", {
-  result <- db_get_metadata_validity(con_reader,
+  result <- db_meta_get_last_update(con_reader,
                                      c("vts"),
                                      regex = TRUE,
                                      locale = "de",

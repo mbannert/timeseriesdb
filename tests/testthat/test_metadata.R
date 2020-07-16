@@ -31,7 +31,7 @@ meta_list <- function() {
 
 test_that("meta.list constructs meta", {
   mt <- meta_object()
-  outv <- meta(list(
+  outv <- create_meta(list(
     key1 = "value1",
     key2 = "value2"
   ))
@@ -41,26 +41,26 @@ test_that("meta.list constructs meta", {
 
 test_that("meta.default constructs meta", {
   mt <- meta_object()
-  outv <- meta(key1 = "value1",
+  outv <- create_meta(key1 = "value1",
                key2 = "value2")
 
   expect_equal(outv, mt)
 })
 
 test_that("meta.list errors when not all fields are named", {
-  expect_error(meta(list(a = 1, 2)), "named")
+  expect_error(create_meta(list(a = 1, 2)), "named")
 })
 
 test_that("meta.list errors when no fields are named", {
-  expect_error(meta(list(1, 2)), "named")
+  expect_error(create_meta(list(1, 2)), "named")
 })
 
 test_that("meta.default errors when not all fields are named", {
-  expect_error(meta(a = 1, 2), "named")
+  expect_error(create_meta(a = 1, 2), "named")
 })
 
 test_that("meta.default errors when no fields are named", {
-  expect_error(meta(1, 2), "named")
+  expect_error(create_meta(1, 2), "named")
 })
 
 # converting to meta object -----------------------------------------------

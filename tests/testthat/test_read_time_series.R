@@ -102,51 +102,11 @@ test_with_fresh_db(con_admin, "reading an xts", {
 })
 
 
-# read all vintages -------------------------------------------------------
-
-test_with_fresh_db(con_admin, "reading all vintages of a ts", {
-  tsl_read <- read_time_series_history(con_reader_main, "rts1", schema = "tsdb_test")
-
-  expect_equal(
-    tsl_read,
-    structure(
-      c(tsl_state_0, tsl_state_1, tsl_state_2, tsl_state_2_v2),
-      names = format(c(Sys.Date() - 4, Sys.Date() - 3, Sys.Date() - 1, Sys.Date() + 1), "%Y%m%d"),
-      class = c("tslist", "list")
-    )
-  )
-})
-
-test_with_fresh_db(con_admin, "reading all vintages, respecting release date", {
-  tsl_read <- read_time_series_history(con_reader_main, "rts1", TRUE, schema = "tsdb_test")
-
-  expect_equal(
-    tsl_read,
-    structure(
-      c(tsl_state_0, tsl_state_1),
-      names = format(c(Sys.Date() - 4, Sys.Date() - 3), "%Y%m%d"),
-      class = c("tslist", "list")
-    )
-  )
-})
-
-test_with_fresh_db(con_admin, "reading all vintages respects access rights", {
-  tsl_read <- read_time_series_history(con_reader_public, "rts1", schema = "tsdb_test")
-
-  expect_equal(
-    tsl_read,
-    structure(
-      list(),
-      class = c("tslist", "list")
-    )
-  )
-})
-
 # reading datasets --------------------------------------------------------
 context("reading datasets")
 
 test_with_fresh_db(con_admin, "reading a whole dataset works", {
-  tsl_read <- db_read_time_series_dataset(con_reader_main,
+  tsl_read <- db_dataset_read_ts(con_reader_main,
                                           "set_read",
                                           schema = "tsdb_test")
 
@@ -156,7 +116,7 @@ test_with_fresh_db(con_admin, "reading a whole dataset works", {
 })
 
 test_with_fresh_db(con_admin, "reading whole dataset, reapecting release date",  {
-  tsl_read <- db_read_time_series_dataset(con_reader_main,
+  tsl_read <- db_dataset_read_ts(con_reader_main,
                                           "set_read",
                                           respect_release_date = TRUE,
                                           schema = "tsdb_test")
@@ -167,7 +127,7 @@ test_with_fresh_db(con_admin, "reading whole dataset, reapecting release date", 
 })
 
 test_with_fresh_db(con_admin, "reading whole dataset, leaving out prohibited series", {
-  tsl_read <- db_read_time_series_dataset(con_reader_public,
+  tsl_read <- db_dataset_read_ts(con_reader_public,
                                           "set_read",
                                           schema = "tsdb_test")
 
@@ -175,7 +135,7 @@ test_with_fresh_db(con_admin, "reading whole dataset, leaving out prohibited ser
 })
 
 test_with_fresh_db(con_admin, "reading older vintages of dataset", {
-  tsl_read <- db_read_time_series_dataset(con_reader_main,
+  tsl_read <- db_dataset_read_ts(con_reader_main,
                                           "set_read",
                                           valid_on = Sys.Date() - 4,
                                           schema = "tsdb_test")
@@ -184,7 +144,7 @@ test_with_fresh_db(con_admin, "reading older vintages of dataset", {
 })
 
 test_with_fresh_db(con_admin, "reading nonexistend set", {
-  tsl_read <- db_read_time_series_dataset(con_reader_main,
+  tsl_read <- db_dataset_read_ts(con_reader_main,
                                           "notaset",
                                           schema = "tsdb_test")
 
@@ -193,7 +153,7 @@ test_with_fresh_db(con_admin, "reading nonexistend set", {
 })
 
 test_with_fresh_db(con_admin, "reading multiple sets", {
-  tsl_read <- db_read_time_series_dataset(con_reader_main,
+  tsl_read <- db_dataset_read_ts(con_reader_main,
                                           c("set_read", "default"),
                                           schema = "tsdb_test")
   expect_setequal(names(tsl_read), c("rts1", "rtsp", "rtsx", "vts1", "vts2"))
@@ -203,7 +163,7 @@ test_with_fresh_db(con_admin, "reading multiple sets", {
 context("reading collections")
 
 test_with_fresh_db(con_admin, "reading a collection works", {
-  tsl_read <- db_read_time_series_collection(con_reader_main,
+  tsl_read <- db_collection_read_ts(con_reader_main,
                                              "readtest",
                                              "test",
                                              schema = "tsdb_test")
@@ -214,7 +174,7 @@ test_with_fresh_db(con_admin, "reading a collection works", {
 })
 
 test_with_fresh_db(con_admin, "reading collection, respecting release date",  {
-  tsl_read <- db_read_time_series_collection(con_reader_main,
+  tsl_read <- db_collection_read_ts(con_reader_main,
                                           "readtest",
                                           "test",
                                           respect_release_date = TRUE,
@@ -226,7 +186,7 @@ test_with_fresh_db(con_admin, "reading collection, respecting release date",  {
 })
 
 test_with_fresh_db(con_admin, "reading collection, leaving out prohibited series", {
-  tsl_read <- db_read_time_series_collection(con_reader_public,
+  tsl_read <- db_collection_read_ts(con_reader_public,
                                           "readtest",
                                           "test",
                                           schema = "tsdb_test")
@@ -235,7 +195,7 @@ test_with_fresh_db(con_admin, "reading collection, leaving out prohibited series
 })
 
 test_with_fresh_db(con_admin, "reading older vintages of collection", {
-  tsl_read <- db_read_time_series_collection(con_reader_main,
+  tsl_read <- db_collection_read_ts(con_reader_main,
                                           "readtest",
                                           "test",
                                           valid_on = Sys.Date() - 4,
@@ -245,7 +205,7 @@ test_with_fresh_db(con_admin, "reading older vintages of collection", {
 })
 
 test_with_fresh_db(con_admin, "reading nonexistend collection", {
-  tsl_read <- db_read_time_series_collection(con_reader_main,
+  tsl_read <- db_collection_read_ts(con_reader_main,
                                           "readtest",
                                           "mineallmine",
                                           schema = "tsdb_test")

@@ -26,7 +26,7 @@
 #' @importFrom RPostgres dbWriteTable
 #' @importFrom jsonlite fromJSON
 #' @export
-db_create_release <- function(con,
+db_release_create <- function(con,
                            id,
                            title,
                            release_date,
@@ -86,7 +86,7 @@ db_create_release <- function(con,
 #' Any parameters provided to this function will overwrite the corresponding
 #' fields in the database. Parameters set to NA (default) will leave the
 #' corresponding fields untouched.
-#' For details see db_create_release
+#' For details see db_release_create
 #'
 #' @param con RPostgres connection
 #' @param id Identifier for the release e.g. 'gdb_may_2020'
@@ -100,7 +100,7 @@ db_create_release <- function(con,
 #'
 #' @return a status list
 #' @export
-db_update_release <- function(con,
+db_release_update <- function(con,
                               id,
                               title = NA,
                               release_date = NA,
@@ -166,8 +166,9 @@ db_update_release <- function(con,
 #' @param release_id character ID of the release to cancel
 #' @param schema character Timeseries schema name
 #'
+#' @export
 #' @importFrom jsonlite fromJSON
-db_cancel_release <- function(con,
+db_release_cancel <- function(con,
                               release_id,
                               schema = "timeseries") {
   # TODO: We shoulda try-caught all failures in db_call_function
@@ -193,7 +194,7 @@ db_cancel_release <- function(con,
 #'
 #' @return data.frame with columns `id`, `title`, `note`, `release_date`, `reference_year`, `reference_period`, `reference_frequency`
 #' @export
-db_list_releases <- function(con,
+db_release_list <- function(con,
                              include_past = FALSE,
                              schema = "timeseries") {
   db_call_function(con,
@@ -212,7 +213,7 @@ db_list_releases <- function(con,
 #'
 #' @return data.frame with columns `set_id`, `release_id`, `release_date`
 #' @export
-db_get_next_release_for_set <- function(con,
+db_release_get_next <- function(con,
                                         set_ids,
                                         schema = "timeseries") {
   dbWriteTable(con,
@@ -241,7 +242,7 @@ db_get_next_release_for_set <- function(con,
 #'
 #' @return data.frame with columns `set_id`, `release_id`, `release_date`
 #' @export
-db_get_latest_release_for_set <- function(con,
+db_release_get_latest <- function(con,
                                           set_ids,
                                           schema = "timeseries") {
   dbWriteTable(con,
