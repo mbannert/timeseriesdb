@@ -179,7 +179,7 @@ db_cancel_release <- function(con,
                                    ),
                                    schema = schema))
 
-  if(out$status == "failure") {
+  if(out$status == "error") {
     stop(out$message)
   }
 

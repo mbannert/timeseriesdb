@@ -131,7 +131,7 @@ db_assign_dataset <- function(con,
 
   out_parsed <- jsonlite::fromJSON(out)
 
-  if(out_parsed$status == "failure") {
+  if(out_parsed$status == "error") {
     stop(out_parsed$reason)
   } else if(out_parsed$status == "warning") {
     warning(sprintf("%s\n%s", out_parsed$reason, paste(out_parsed$offending_keys, collapse = ",\n")))
@@ -176,7 +176,7 @@ db_update_dataset <- function(con,
 
   out_parsed <- fromJSON(out)
 
-  if(out_parsed$status == "failure") {
+  if(out_parsed$status == "error") {
     stop(out_parsed$message)
   }
 
@@ -250,7 +250,7 @@ db_dataset_delete_ <- function(con,
 
   if(out$status == "warning") {
     warning(out$reason)
-  } else if (out$status == "failure") {
+  } else if (out$status == "error") {
     stop(out$message)
   }
 

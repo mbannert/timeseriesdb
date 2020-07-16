@@ -28,7 +28,7 @@ BEGIN
     FROM timeseries.access_levels
     WHERE is_default
   ) THEN
-    RETURN json_build_object('status', 'failure',
+    RETURN json_build_object('status', 'error',
                              'message', 'No access level supplied and no default configured on the database.');
   END IF;
 
