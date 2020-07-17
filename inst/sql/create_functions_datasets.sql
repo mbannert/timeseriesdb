@@ -104,7 +104,7 @@ DECLARE
 BEGIN
   IF NOT EXISTS(SELECT 1 FROM timeseries.datasets WHERE set_id = id) THEN
     -- TODO: this should be status "error" and throw in the corresponding R function
-    RETURN ('{"status": "failure", "reason": "Dataset ' || id || ' does not exist!"}')::JSON;
+    RETURN ('{"status": "error", "reason": "Dataset ' || id || ' does not exist!"}')::JSON;
   END IF; -- Welcome to the bronze age of programming
 
   UPDATE timeseries.catalog AS cat
@@ -164,11 +164,11 @@ RETURNS JSON
 AS $$
 BEGIN
   IF NOT (p_update_mode = 'update' OR p_update_mode = 'overwrite') THEN
-    RETURN json_build_object('status', 'failure', 'message', 'Update mode must be one of "update" or "overwrite".');
+    RETURN json_build_object('status', 'error', 'message', 'Update mode must be one of "update" or "overwrite".');
   END IF;
 
   IF NOT (SELECT * FROM timeseries.dataset_exists(p_dataset_id)) THEN
-    RETURN json_build_object('status', 'failure', 'message', 'Dataset ' || p_dataset_id || ' does not exist.');
+    RETURN json_build_object('status', 'error', 'message', 'Dataset ' || p_dataset_id || ' does not exist.');
   END IF;
 
   UPDATE timeseries.datasets
@@ -209,7 +209,7 @@ BEGIN
   RETURN json_build_object('status', 'ok');
 EXCEPTION
   WHEN triggered_action_exception THEN
-    RETURN json_build_object('status', 'failure', 'message', p_dataset_name || ' is the default dataset and may not be deleted.');
+    RETURN json_build_object('status', 'error', 'message', p_dataset_name || ' is the default dataset and may not be deleted.');
 END;
 $$ LANGUAGE PLPGSQL
 SECURITY DEFINER
@@ -265,6 +265,30 @@ BEGIN
     FROM timeseries.catalog AS cat
     JOIN tmp_datasets_read
     USING(set_id)
+  );
+
+  RETURN QUERY
+  SELECT * FROM timeseries.read_ts_raw(p_valid_on, p_respect_release_date);
+END;
+$$ LANGUAGE PLPGSQL
+SECURITY DEFINER
+SET search_path = timeseries, pg_temp;
+
+
+CREATE OR REPLACE FUNCTION timeseries.read_ts_dataset_raw(p_datasets TEXT[],
+                                                          p_valid_on DATE DEFAULT CURRENT_DATE,
+                                                          p_respect_release_date BOOLEAN DEFAULT FALSE)
+RETURNS TABLE(ts_key TEXT, ts_data JSON)
+AS $$
+BEGIN
+  -- TODO: check for existence of set here? If so: need to RAISE an error as returning
+  --       JSON is not an option
+  CREATE TEMPORARY TABLE tmp_ts_read_keys
+  ON COMMIT DROP
+  AS (
+    SELECT cat.ts_key
+    FROM timeseries.catalog AS cat
+    WHERE set_id = ANY(p_datasets)
   );
 
   RETURN QUERY

@@ -124,7 +124,7 @@ test_with_fresh_db(con_admin, "setting dataset access level for specific vintage
 test_with_fresh_db(con_admin, "db_access_list_levels returns data frame with correct names", {
   out <- db_access_list_levels(con_reader, schema = "tsdb_test")
 
-  expected <- data.frame(
+  expected <- data.table(
     role = c("tsdb_test_access_main",
              "tsdb_test_access_public",
              "tsdb_test_access_restricted"
@@ -136,8 +136,7 @@ test_with_fresh_db(con_admin, "db_access_list_levels returns data frame with cor
     is_default = c(TRUE,
                    NA,
                    NA
-    ),
-    stringsAsFactors = FALSE
+    )
   )
 
   expect_equal(out, expected)
@@ -167,27 +166,27 @@ test_with_fresh_db(con_admin, "deleting not existing access level", {
 })
 
 test_with_fresh_db(con_admin, "db deleting access level works returns ok", {
-  out <- db_access_delete_level(con_admin, 
+  out <- db_access_delete_level(con_admin,
                                  "tsdb_test_access_restricted",
                                  schema = "tsdb_test")
   expected <- list(status ="ok")
-  
+
   expect_equal(out, expected)
 })
 
 
 test_with_fresh_db(con_admin, "db deleting access level works", {
-  db_access_delete_level(con_admin, 
+  db_access_delete_level(con_admin,
                                  "tsdb_test_access_restricted",
                                  schema = "tsdb_test")
-  
+
   out <- dbGetQuery(con_admin, 'select * from tsdb_test.access_levels
                     order by role')
-  
+
   expected <- data.frame(
     role = c("tsdb_test_access_main",
              "tsdb_test_access_public"
-             
+
     ),
     description = c("Non-public time series without license restrictions",
                     "Publicly available time series"
@@ -211,8 +210,8 @@ test_with_fresh_db(con_admin, "db rights to delete access level", {
 # test db_access_create_level --------------------------------------------------
 test_with_fresh_db(con_admin, "db inserting access level that doesn't exist", {
   expect_error(
-    db_access_create_level(con_admin, 
-                            "tsdb_test_access_public2", 
+    db_access_create_level(con_admin,
+                            "tsdb_test_access_public2",
                             schema = "tsdb_test"),
     "it can not be an access level"
   )
@@ -220,8 +219,8 @@ test_with_fresh_db(con_admin, "db inserting access level that doesn't exist", {
 
 test_with_fresh_db(con_admin, "db inserting access level that already exists", {
   expect_warning(
-    db_access_create_level(con_admin, 
-                            "tsdb_test_access_main", 
+    db_access_create_level(con_admin,
+                            "tsdb_test_access_main",
                             schema = "tsdb_test"),
     "already exists"
   )
@@ -232,16 +231,16 @@ test_with_fresh_db(con_admin, "db inserting access level works default NA", {
                           "tsdb_test_admin",
                           access_level_description = "admin description",
                           schema = "tsdb_test")
-  
+
   out <- dbGetQuery(con_admin, 'select * from tsdb_test.access_levels
                     order by role')
-  
+
   expected <- data.frame(
     role = c("tsdb_test_access_main",
              "tsdb_test_access_public",
              "tsdb_test_access_restricted",
              "tsdb_test_admin"
-             
+
     ),
     description = c("Non-public time series without license restrictions",
                     "Publicly available time series",
@@ -250,7 +249,7 @@ test_with_fresh_db(con_admin, "db inserting access level works default NA", {
     ),
     is_default = c(TRUE,
                    NA,
-                   NA, 
+                   NA,
                    NA
     ),
     stringsAsFactors = FALSE
@@ -264,9 +263,9 @@ test_with_fresh_db(con_admin, "db inserting access level works stastus ok defaul
                           "tsdb_test_admin",
                           access_level_description = "admin description",
                           schema = "tsdb_test")
-  
+
   expected <- list(status ="ok")
-  
+
   expect_equal(out, expected)
 })
 
@@ -277,16 +276,16 @@ test_with_fresh_db(con_admin, "db inserting access level works default TRUE", {
                           access_level_description = "admin description",
                           access_level_default = TRUE,
                           schema = "tsdb_test")
-  
+
   out <- dbGetQuery(con_admin, 'select * from tsdb_test.access_levels
                     order by role')
-  
+
   expected <- data.frame(
     role = c("tsdb_test_access_main",
              "tsdb_test_access_public",
              "tsdb_test_access_restricted",
              "tsdb_test_admin"
-             
+
     ),
     description = c("Non-public time series without license restrictions",
                     "Publicly available time series",
@@ -295,14 +294,14 @@ test_with_fresh_db(con_admin, "db inserting access level works default TRUE", {
     ),
     is_default = c(NA,
                    NA,
-                   NA, 
+                   NA,
                    TRUE
     ),
     stringsAsFactors = FALSE
   )
-  
+
   expect_equal(out, expected)
-  
+
 })
 
 test_with_fresh_db(con_admin, "db inserting access level works stastus ok default TRUE", {
@@ -311,9 +310,9 @@ test_with_fresh_db(con_admin, "db inserting access level works stastus ok defaul
                                  access_level_description = "admin description",
                                  access_level_default = TRUE,
                                  schema = "tsdb_test")
-  
+
   expected <- list(status ="ok")
-  
+
   expect_equal(out, expected)
 })
 

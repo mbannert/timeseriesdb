@@ -117,10 +117,9 @@ test_with_fresh_db(con_admin, "db_dataset_get_keys", {
 
 test_with_fresh_db(con_admin, "db_ts_get_dataset gets the correct set", {
   out <- db_ts_get_dataset(con_reader, "ts1", schema = "tsdb_test")
-  expected <- data.frame(
+  expected <- data.table(
     ts_key = "ts1",
-    set_id = "set1",
-    stringsAsFactors = FALSE
+    set_id = "set1"
   )
 
   expect_equal(out, expected)
@@ -128,10 +127,9 @@ test_with_fresh_db(con_admin, "db_ts_get_dataset gets the correct set", {
 
 test_with_fresh_db(con_admin, "db_ts_get_dataset spanning multiple sets", {
   out <- db_ts_get_dataset(con_reader, c("ts1", "ts3"), schema = "tsdb_test")
-  expected <- data.frame(
+  expected <- data.table(
     ts_key = c("ts1", "ts3"),
-    set_id = c("set1", "set2"),
-    stringsAsFactors = FALSE
+    set_id = c("set1", "set2")
   )
 
   expect_equal(out, expected)
@@ -139,10 +137,9 @@ test_with_fresh_db(con_admin, "db_ts_get_dataset spanning multiple sets", {
 
 test_with_fresh_db(con_admin, "db_ts_get_dataset with missing key", {
   out <- db_ts_get_dataset(con_reader, "notatskey", schema = "tsdb_test")
-  expected <- data.frame(
+  expected <- data.table(
     ts_key = "notatskey",
-    set_id = NA_character_,
-    stringsAsFactors = FALSE
+    set_id = NA_character_
   )
 
   expect_equal(out, expected)
@@ -194,7 +191,7 @@ test_with_fresh_db(con_admin, "db_ts_assign_dataset errors if set does not exist
 test_with_fresh_db(con_admin, "db_dataset_list returns data frame with correct names", {
   out <- db_dataset_list(con_reader, schema = "tsdb_test")
 
-  expected <- data.frame(
+  expected <- data.table(
     set_id = c("default",
       "set1",
       "set2",
@@ -204,8 +201,7 @@ test_with_fresh_db(con_admin, "db_dataset_list returns data frame with correct n
       "test set 1",
       "test set 2",
       "where the series for read tests live"
-    ),
-    stringsAsFactors = FALSE
+    )
   )
 
   expect_equal(out, expected)
