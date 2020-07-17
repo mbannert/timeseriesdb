@@ -11,18 +11,65 @@ vignette: >
 
 ## Starting Point
 
-Unix shell, basic SQL, basic R. 
-Postgres with dedicated schema running. 
+This guides assumes you are familiar with your operating system and the 
+R environment. In another words we assume you have basic R, basic PostgreSQL as well 
+as basic unix shell know-how in case you work on Linux / OSX. 
 
-## Docker Dev Environment
+Also, {timeseriesdb}'s works well inside a docker container which is probably
+the most convenient setup for testing purposes if you're familiar with docker. 
+However, docker know-how is not a prerequisite for running and installing 
+{timeseriesdb} by any means. 
 
-fire up .sh in inst/
+
+## PostgreSQL 
+
+{timseriesdb} uses the PostgreSQL RDMBS as a database backend. 
+You can either use {timeseriesdb} with a remote database running on, e.g., 
+[Google Cloud](https://cloud.google.com/sql/docs/postgres#:~:text=Cloud%20SQL%20for%20PostgreSQL%20is,databases%20on%20Google%20Cloud%20Platform.), [AWS](https://aws.amazon.com/rds/postgresql/), [Heruko](https://www.heroku.com/postgres) and many more, or you can simply install PostgreSQL 
+locally. In both cases the [PostgreSQL docker images](https://hub.docker.com/_/postgres)
+are a hassle-free solution, in particular if you want to try out timeseriesdb.
+Alternatively, just install [PostgreSQL on your local machine](https://www.postgresql.org/download/). 
+To verify that your installation worked make sure the database is running and create 
+a basic connection. 
+
+
+### Dedicated Schema and Extensions
+
+Create a SCHEMA that is dedicated to your {timeseriesdb} instance. 
+The PostgreSQL hierarchy looks like this database cluster > database > schema > relation (table). 
+
+Creating a schema is simply a matter of 
+
+```sql
+
+CREATE SCHEMA IF NOT EXISTS timeseries;
+CREATE EXTENSION IF NOT EXISTS "uuid-ossp";
+CREATE EXTENSION IF NOT EXISTS btree_gist;
+
+```
+
+as long as you have the rights to do so. Also, don't forget to install 
+to install the uid and btree extension which are needed for the unique identifiers
+and the enforcement of constraints {timeseriesdb} makes use of. 
+
+###
+
+
+
+
+
+
+
+
+
+
+
 
 ## run R setup scripts
 
 
 
-
+install_timeseriesdb
 
 
 
