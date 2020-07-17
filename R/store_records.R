@@ -53,7 +53,7 @@ store_records <- function(con,
       }
   })
 
-  if(out$status == "failure") {
+  if(out$status == "error") {
     stop(out$message)
   }
 

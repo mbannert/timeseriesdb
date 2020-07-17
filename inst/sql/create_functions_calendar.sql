@@ -35,7 +35,7 @@ BEGIN
 
   IF array_length(v_nonexistent_datasets, 1) != 0 THEN
   -- TODO: use json_build_object for consistency
-    RETURN json_build_object('status', 'failure',
+    RETURN json_build_object('status', 'error',
                              'reason', 'Some datasets do not exist.',
                              'missing_datasets', v_nonexistent_datasets);
   END IF;
@@ -84,7 +84,7 @@ BEGIN
     SELECT FROM timeseries.release_calendar
     WHERE id = p_id
   ) THEN
-    RETURN json_build_object('status', 'failure',
+    RETURN json_build_object('status', 'error',
                              'message', 'Release ' || p_id || ' does not exist.');
   END IF;
 
@@ -98,7 +98,7 @@ BEGIN
     INTO v_nonexistent_datasets;
 
     IF array_length(v_nonexistent_datasets, 1) != 0 THEN
-      RETURN json_build_object('status', 'failure',
+      RETURN json_build_object('status', 'error',
                                -- TODO: change ALL OF THESE to 'message', not 'reason' (except maybe the rainbow one)
                                'reason', 'Some datasets do not exist.',
                                'missing_datasets', v_nonexistent_datasets);
@@ -155,7 +155,7 @@ BEGIN
     IF v_deleted_id IS NOT NULL THEN
       RETURN json_build_object('status', 'ok');
     ELSE
-      RETURN json_build_object('status', 'failure',
+      RETURN json_build_object('status', 'error',
                                'message', 'Release ' || p_id || ' has already passed.');
     END IF;
   END IF;

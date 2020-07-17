@@ -104,7 +104,7 @@ DECLARE
 BEGIN
   IF NOT EXISTS(SELECT 1 FROM timeseries.datasets WHERE set_id = id) THEN
     -- TODO: this should be status "error" and throw in the corresponding R function
-    RETURN ('{"status": "failure", "reason": "Dataset ' || id || ' does not exist!"}')::JSON;
+    RETURN ('{"status": "error", "reason": "Dataset ' || id || ' does not exist!"}')::JSON;
   END IF; -- Welcome to the bronze age of programming
 
   UPDATE timeseries.catalog AS cat
@@ -164,11 +164,11 @@ RETURNS JSON
 AS $$
 BEGIN
   IF NOT (p_update_mode = 'update' OR p_update_mode = 'overwrite') THEN
-    RETURN json_build_object('status', 'failure', 'message', 'Update mode must be one of "update" or "overwrite".');
+    RETURN json_build_object('status', 'error', 'message', 'Update mode must be one of "update" or "overwrite".');
   END IF;
 
   IF NOT (SELECT * FROM timeseries.dataset_exists(p_dataset_id)) THEN
-    RETURN json_build_object('status', 'failure', 'message', 'Dataset ' || p_dataset_id || ' does not exist.');
+    RETURN json_build_object('status', 'error', 'message', 'Dataset ' || p_dataset_id || ' does not exist.');
   END IF;
 
   UPDATE timeseries.datasets
@@ -209,7 +209,7 @@ BEGIN
   RETURN json_build_object('status', 'ok');
 EXCEPTION
   WHEN triggered_action_exception THEN
-    RETURN json_build_object('status', 'failure', 'message', p_dataset_name || ' is the default dataset and may not be deleted.');
+    RETURN json_build_object('status', 'error', 'message', p_dataset_name || ' is the default dataset and may not be deleted.');
 END;
 $$ LANGUAGE PLPGSQL
 SECURITY DEFINER
