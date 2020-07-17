@@ -158,7 +158,6 @@ SECURITY DEFINER
 SET search_path = timeseries, pg_temp;
 
 
-
 -- Read time series data in raw (i.e. JSON) form
 --
 --
@@ -197,6 +196,33 @@ END;
 $$ LANGUAGE PLPGSQL
 SECURITY DEFINER
 SET search_path = timeseries, pg_temp;
+
+
+-- Read time series data in raw (i.e. JSON) form
+--
+-- see timeseries.read_ts_raw(date, boolean)
+--
+-- This version handles all the temp tableing on the databas by accepting an array of keys to read
+-- Wherever possible, prefer this.
+CREATE OR REPLACE FUNCTION timeseries.read_ts_raw(p_keys TEXT[],
+                                                  p_valid_on DATE DEFAULT CURRENT_DATE,
+                                                  p_respect_release_date BOOLEAN DEFAULT false)
+RETURNS TABLE(ts_key TEXT, ts_data JSON)
+AS $$
+BEGIN
+  CREATE TEMPORARY TABLE tmp_ts_read_keys
+  ON COMMIT DROP
+  AS (
+    SELECT * FROM unnest(p_keys) AS ts_key
+  );
+
+  RETURN QUERY
+  SELECT * FROM timeseries.read_ts_raw(p_valid_on::DATE, p_respect_release_date::BOOLEAN);
+END;
+$$ LANGUAGE PLPGSQL
+SECURITY DEFINER
+SET search_path = timeseries, pg_temp;
+
 
 -- Read all vintages of a given time series
 --

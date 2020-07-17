@@ -273,3 +273,27 @@ END;
 $$ LANGUAGE PLPGSQL
 SECURITY DEFINER
 SET search_path = timeseries, pg_temp;
+
+
+CREATE OR REPLACE FUNCTION timeseries.read_ts_dataset_raw(p_datasets TEXT[],
+                                                          p_valid_on DATE DEFAULT CURRENT_DATE,
+                                                          p_respect_release_date BOOLEAN DEFAULT FALSE)
+RETURNS TABLE(ts_key TEXT, ts_data JSON)
+AS $$
+BEGIN
+  -- TODO: check for existence of set here? If so: need to RAISE an error as returning
+  --       JSON is not an option
+  CREATE TEMPORARY TABLE tmp_ts_read_keys
+  ON COMMIT DROP
+  AS (
+    SELECT cat.ts_key
+    FROM timeseries.catalog AS cat
+    WHERE set_id = ANY(p_datasets)
+  );
+
+  RETURN QUERY
+  SELECT * FROM timeseries.read_ts_raw(p_valid_on, p_respect_release_date);
+END;
+$$ LANGUAGE PLPGSQL
+SECURITY DEFINER
+SET search_path = timeseries, pg_temp;
