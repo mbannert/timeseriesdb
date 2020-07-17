@@ -209,7 +209,7 @@ db_list_datasets <- function(con,
 #' @param set_name character Name of the set to delete
 #' @param schema character Name of timeseries schema
 #'
-#' @return character Name of the deleted set, NA on failure
+#' @return character name of the deleted set, NA in case of an error.
 #' @export
 #'
 db_dataset_delete <- function(con,
