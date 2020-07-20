@@ -8,10 +8,6 @@ if(is_test_db_reachable()) {
 
 
 # db_ts_add_to_collection -------------------------------------------------------
-
-
-# TODO: Tests for db_call_function args
-
 test_with_fresh_db(con_admin, "db_ts_add_to_collection returns OK", {
   result <- db_ts_add_to_collection(con_writer,
                               "tests first",

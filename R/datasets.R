@@ -19,7 +19,7 @@ db_dataset_create <- function(con,
                               set_description = NA,
                               set_md = NA,
                               schema = "timeseries") {
-  # TODO: catch as.metas error and throw a more informative one?
+  
   set_md <- as.meta(set_md)
 
   # we want to keep NAs as pure NAs, not JSON nulls that would override the DEFAULT

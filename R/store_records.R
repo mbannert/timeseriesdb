@@ -15,13 +15,6 @@ store_records <- function(con,
     release_date <- format(as.POSIXct(release_date), "%Y-%m-%d %T %z")
   }
 
-  # TODO: add mechanism for setting column names (for e.g. metadata)
-  # Note, it's important to create the coverage column here because of an
-  # rights issue: The tmp_ts_updates table will belong to the user logged in.
-  # Because in PostgreSQL tables can only be altered by the OWNER and therefore
-  # the insert function which runs as SECURITY DEFINER (the rights of the user
-  # who created them) can't AlTER the temp table it needs to
-  # contain the coverage column from the start.
   dt <- data.table(
     ts_key = names(records),
     ts_data = unlist(records),

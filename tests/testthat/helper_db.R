@@ -1,9 +1,12 @@
 connect_to_test_db <- function(username = "dev_admin", password = username) {
-  dbConnect(Postgres(), "postgres", "localhost", 1111, username, password, bigint = "integer")
+  dbConnect(Postgres(), "postgres", "localhost", 1111,
+            username, password, bigint = "integer")
 }
 
-# TODO: see ?dbCanConnect
 is_test_db_reachable <- function(){
+  # note that there is dbCanConnect, 
+  # which is more part of DBI, but it would 
+  # require to pass on all parameters all the time... 
   tryCatch({
     con <- connect_to_test_db()
     dbDisconnect(con)
@@ -31,9 +34,8 @@ reset_db <- function(con) {
 }
 
 prepare_db <- function(con,
-                       init_datasets = FALSE,
-                       init_catalog = FALSE) {
-
+                       populate = FALSE) {
+  
   datasets <- data.frame(
     set_id = c(
       "set1",
@@ -51,7 +53,7 @@ prepare_db <- function(con,
       NA
     )
   )
-
+  
   default_dataset <- data.frame(
     set_id = c(
       "default"
@@ -63,7 +65,7 @@ prepare_db <- function(con,
       NA
     )
   )
-
+  
   catalog <- data.frame(
     ts_key = c(
       "rtsp",
@@ -90,14 +92,14 @@ prepare_db <- function(con,
       "default"
     )
   )
-
+  
   vintages <- data.frame(
     id = c(
       "f6aa69c8-41ae-11ea-b77f-2e728ce88125",
       "f6aa6c70-41ae-11ea-b77f-2e728ce88125",
       "f6aa6dba-41ae-11ea-b77f-2e728ce88125",
       "f6aa6ee6-41ae-11ea-b77f-2e728ce88125",
-
+      
       "23d724bf-2e41-40f4-99d5-355f6bcabfea",
       "14f173be-501b-4e9c-9011-1864fbe11e04",
       "028115d2-b7de-4566-b337-6db09b54bae0",
@@ -110,7 +112,7 @@ prepare_db <- function(con,
       "vts1",
       "vts2",
       "vts2",
-
+      
       "rts1",
       "rts1",
       "rts1",
@@ -135,7 +137,7 @@ prepare_db <- function(con,
       "['2020-01-01', '2020-02-01')",
       "['2020-01-01', '2020-01-01')",
       "['2020-01-01', '2020-02-01')",
-
+      
       "['2019-01-01', '2021-04-01')",
       "['2019-01-01', '2021-04-01')",
       "['2019-01-01', '2021-04-01')",
@@ -148,7 +150,7 @@ prepare_db <- function(con,
       "2020-02-01 00:00:00",
       "2020-01-01 00:00:00",
       "2020-02-01 00:00:00",
-
+      
       format(Sys.Date() - 4, "%Y-%m-%d 00:00:00"),
       format(Sys.Date() - 1, "%Y-%m-%d 00:00:00"),
       format(Sys.Date() + 2, "%Y-%m-%d 00:00:00"),
@@ -185,28 +187,28 @@ prepare_db <- function(con,
       '{"frequency": 12, "time": ["2020-01-01", "2020-02-01"], "value": [1, 2]}',
       '{"frequency": 12, "time": ["2020-01-01"], "value": [1]}',
       '{"frequency": 12, "time": ["2020-01-01", "2020-02-01"], "value": [1, 2]}',
-
+      
       '{"frequency": 4, "time": ["2019-01-01", "2019-04-01", "2019-07-01", "2019-10-01",
                                  "2020-01-01", "2020-04-01", "2020-07-01", "2020-10-01",
                                  "2021-01-01", "2021-04-01"],
         "value": [1.9,1.9,1.9,1.9,1.9,1.9,1.9,1.9,1.9,1.9]}',
-
+      
       '{"frequency": 4, "time": ["2019-01-01", "2019-04-01", "2019-07-01", "2019-10-01",
                                  "2020-01-01", "2020-04-01", "2020-07-01", "2020-10-01",
                                  "2021-01-01", "2021-04-01"],
         "value": [2, 2, 2, 2, 2, 2, 2, 2, 2, 2]}',
-
+      
       '{"frequency": 4, "time": ["2019-01-01", "2019-04-01", "2019-07-01", "2019-10-01",
                                  "2020-01-01", "2020-04-01", "2020-07-01", "2020-10-01",
                                  "2021-01-01", "2021-04-01"],
         "value": [2.1,2.1,2.1,2.1,2.1,2.1,2.1,2.1,2.1,2.1]}',
-
+      
       '{"frequency": 4, "time": ["2019-01-01", "2019-04-01", "2019-07-01", "2019-10-01",
                                  "2020-01-01", "2020-04-01", "2020-07-01", "2020-10-01",
                                  "2021-01-01", "2021-04-01"],
         "value": [2.1415926,2.1415926,2.1415926,2.1415926,2.1415926,
                   2.1415926,2.1415926,2.1415926,2.1415926,2.1415926]}',
-
+      
       '{"frequency": 4, "time": ["2019-01-01", "2019-04-01", "2019-07-01", "2019-10-01",
                                  "2020-01-01", "2020-04-01", "2020-07-01", "2020-10-01",
                                  "2021-01-01", "2021-04-01"],
@@ -219,7 +221,7 @@ prepare_db <- function(con,
       "tsdb_test_access_public",
       "tsdb_test_access_main",
       "tsdb_test_access_main",
-
+      
       "tsdb_test_access_main",
       "tsdb_test_access_main",
       "tsdb_test_access_main",
@@ -228,7 +230,7 @@ prepare_db <- function(con,
       "tsdb_test_access_public"
     )
   )
-
+  
   mdul <- data.frame(
     id = c(
       "1b6277fe-4378-11ea-b77f-2e728ce88125",
@@ -280,7 +282,7 @@ prepare_db <- function(con,
       '{"field": "value", "other_field": 27}'
     )
   )
-
+  
   mdl <- data.frame(
     id = c(
       "1b627e48-4378-11ea-b77f-2e728ce88125",
@@ -339,7 +341,7 @@ prepare_db <- function(con,
       '{"label": "versionierte zeitreihe 2, version 2"}'
     )
   )
-
+  
   collections <- data.table(
     id = c(
       "bc4ad148-516a-11ea-8d77-2e728ce88125",
@@ -366,20 +368,20 @@ prepare_db <- function(con,
       "time series for testing readers"
     )
   )
-
+  
   collect_catalog <- data.table(
     id = c(
       "bc4ad148-516a-11ea-8d77-2e728ce88125",
       "bc4ad148-516a-11ea-8d77-2e728ce88125",
       "bc4ad148-516a-11ea-8d77-2e728ce88125",
-
+      
       "bc4ad40e-516a-11ea-8d77-2e728ce88125",
       "bc4ad40e-516a-11ea-8d77-2e728ce88125",
-
+      
       "bc4ad558-516a-11ea-8d77-2e728ce88125",
       "bc4ad558-516a-11ea-8d77-2e728ce88125",
       "bc4ad558-516a-11ea-8d77-2e728ce88125",
-
+      
       "09bb7ef8-127a-4fcd-8122-399debb9ed60",
       "09bb7ef8-127a-4fcd-8122-399debb9ed60"
     ),
@@ -387,19 +389,19 @@ prepare_db <- function(con,
       "ts1",
       "ts2",
       "ts3",
-
+      
       "ts4",
       "ts5",
-
+      
       "ts1",
       "ts4",
       "vts1",
-
+      
       "rts1",
       "rtsp"
     )
   )
-
+  
   access_levels <- data.table(
     role = c(
       "tsdb_test_access_public",
@@ -417,65 +419,65 @@ prepare_db <- function(con,
       NA
     )
   )
-
+  
   release_calendar <- data.table(
     id = c(
       "ancient_release",
       "last_release",
       "future_release",
-
+      
       "combo_release"
     ),
     title = c(
       "Rock count",
       "Microchip count",
       "Crystal count",
-
+      
       "Best Data ever"
     ),
     note = c(
       "It's rock science!",
       "Bow down to Elon",
       "Apophis is coming",
-
+      
       "With two datasets!"
     ),
     release_date = c(
       Sys.Date() - 1000,
       Sys.Date() - 1,
       Sys.Date() + 1,
-
+      
       Sys.Date() + 4
     ),
     target_year = c(
       year(Sys.Date()),
       year(Sys.Date()),
       year(Sys.Date()),
-
+      
       2020
     ),
     target_period = c(
       month(Sys.Date()),
       month(Sys.Date()),
       month(Sys.Date()),
-
+      
       2
     ),
     target_frequency = c(
       12,
       12,
       12,
-
+      
       4
     )
   )
-
+  
   release_dataset <- data.table(
     release_id = c(
       "ancient_release",
       "last_release",
       "future_release",
-
+      
       "combo_release",
       "combo_release"
     ),
@@ -483,80 +485,78 @@ prepare_db <- function(con,
       "set1",
       "set1",
       "set1",
-
+      
       "set1",
       "set2"
     )
   )
-
+  
   reset_db(con)
-
+  
   dbWriteTable(con,
                DBI::Id(schema = "tsdb_test", table = "access_levels"),
                access_levels,
                append = TRUE)
-
+  
   dbWriteTable(con,
                DBI::Id(schema = "tsdb_test", table = "datasets"),
                default_dataset,
                append = TRUE)
-
-  if(init_datasets) {
+  
+  if(populate) {
     dbWriteTable(con,
                  DBI::Id(schema = "tsdb_test", table = "datasets"),
                  datasets,
                  append = TRUE)
-
-    # TODO: probably rename init_catalog
-    if(init_catalog) {
-      dbWriteTable(con,
-                   DBI::Id(schema = "tsdb_test", table = "catalog"),
-                   catalog,
-                   append = TRUE)
-
-      dbWriteTable(con,
-                   DBI::Id(schema = "tsdb_test", table = "timeseries_main"),
-                   vintages,
-                   append = TRUE)
-
-      dbWriteTable(con,
-                   DBI::Id(schema = "tsdb_test", table  = "metadata"),
-                   mdul,
-                   append = TRUE)
-
-      dbWriteTable(con,
-                   DBI::Id(schema = "tsdb_test", table = "metadata_localized"),
-                   mdl,
-                   append = TRUE)
-
-      dbWriteTable(con,
-                   DBI::Id(schema = "tsdb_test", table = "collections"),
-                   collections,
-                   append = TRUE)
-
-      dbWriteTable(con,
-                   DBI::Id(schema = "tsdb_test", table = "collect_catalog"),
-                   collect_catalog,
-                   append = TRUE)
-
-      dbWriteTable(con,
-                   DBI::Id(schema = "tsdb_test", table = "release_calendar"),
-                   release_calendar,
-                   append = TRUE)
-
-      dbWriteTable(con,
-                   DBI::Id(schema = "tsdb_test", table = "release_dataset"),
-                   release_dataset,
-                   append = TRUE)
-    }
+    
+    dbWriteTable(con,
+                 DBI::Id(schema = "tsdb_test", table = "catalog"),
+                 catalog,
+                 append = TRUE)
+    
+    dbWriteTable(con,
+                 DBI::Id(schema = "tsdb_test", table = "timeseries_main"),
+                 vintages,
+                 append = TRUE)
+    
+    dbWriteTable(con,
+                 DBI::Id(schema = "tsdb_test", table  = "metadata"),
+                 mdul,
+                 append = TRUE)
+    
+    dbWriteTable(con,
+                 DBI::Id(schema = "tsdb_test", table = "metadata_localized"),
+                 mdl,
+                 append = TRUE)
+    
+    dbWriteTable(con,
+                 DBI::Id(schema = "tsdb_test", table = "collections"),
+                 collections,
+                 append = TRUE)
+    
+    dbWriteTable(con,
+                 DBI::Id(schema = "tsdb_test", table = "collect_catalog"),
+                 collect_catalog,
+                 append = TRUE)
+    
+    dbWriteTable(con,
+                 DBI::Id(schema = "tsdb_test", table = "release_calendar"),
+                 release_calendar,
+                 append = TRUE)
+    
+    dbWriteTable(con,
+                 DBI::Id(schema = "tsdb_test", table = "release_dataset"),
+                 release_dataset,
+                 append = TRUE)
   }
 }
+
 
 test_with_fresh_db <- function(con, description, code, hard_reset = FALSE) {
   skip_on_cran()
   skip_if_not(is_test_db_reachable())
-
-  prepare_db(con, !hard_reset, !hard_reset)
-
+  
+  prepare_db(con, !hard_reset)
+  
   test_that(description, code)
 }

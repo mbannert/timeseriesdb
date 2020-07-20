@@ -103,8 +103,6 @@ db_collection_delete <- function(con,
                                 list(collection_name, user),
                                 schema = schema))
 
-  # TODO: Discuss warning vs error esp wrt remove. remove treats this as error
-  # since the expected change CAN NOT be achieved while here it PROBABLY ALREADY IS achieved.
   if(db_return$status == "warning") {
     warning(db_return$message)
   }

@@ -5,7 +5,6 @@ to_ts_json <- function(x, ...){
 }
 
 to_ts_json.tslist <- function(x, ...){
-  # TODO: xts ordered by Date class cause an error here
   l <- lapply(x, function(xx) {
     toJSON(
       list(

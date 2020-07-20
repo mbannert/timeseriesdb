@@ -35,9 +35,13 @@ as.meta <- function(x) {
 
 
 #' @export
-# TODO: check ... (must be named, maybe cover list case)
 create_tsmeta <- function(...) {
-  as.tsmeta(list(...))
+  l <- list(...)
+  n <- names(l)
+  is.null(n) | any(nchar(n) == 0){
+    stop("All arguments must be named.")
+  }
+  as.tsmeta(l)
 }
 
 #' @export
@@ -46,7 +50,6 @@ as.tsmeta <- function(meta) {
 }
 
 #' @export
-# TODO: DO these need to be exported or not? still confused...
 as.tsmeta.data.table <- function(meta) {
   if(nrow(meta) > 0) {
     out <- meta[, .(md = list(as.list(.SD))), by = ts_key][, md]
