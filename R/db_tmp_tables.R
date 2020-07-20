@@ -17,8 +17,8 @@ db_with_temp_table <- function(con,
   on.exit(tryCatch(
     dbRemoveTable(con, name),
     warning = function(w) {
+      suppressWarnings(dbRemoveTable(con, name, fail_if_missing = FALSE))
       if(grepl("Closing open result set", w)) {
-        suppressWarnings(dbRemoveTable(con, name))
         NULL
       } else {
         warning(w)
@@ -56,8 +56,8 @@ db_with_tmp_read <- function(con,
   on.exit(tryCatch(
     dbRemoveTable(con, "tmp_ts_read_keys"),
     warning = function(w) {
+      suppressWarnings(dbRemoveTable(con, "tmp_ts_read_keys", fail_if_missing = FALSE))
       if(grepl("Closing open result set", w)) {
-        suppressWarnings(dbRemoveTable(con, "tmp_ts_read_keys"))
         NULL
       } else {
         warning(w)
