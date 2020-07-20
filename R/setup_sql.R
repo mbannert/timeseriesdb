@@ -1,31 +1,15 @@
 # w/o root admin (for now)
 #' Title
 #'
-#' @param user database user name
-#' @param password database user password
-#' @param database database name
-#' @param host database host (default 'localhost')
-#' @param port database port (default 5432)
-#' @param schema timeseries schema name (default 'timeseries')
+#' @param con RPostgres connection object.
+#' @param schema character schema name. Defaults to 'timeseries'.
 #'
 #' @importFrom RPostgres dbConnect Postgres dbGetQuery dbIsValid
 #'
 #' @export
-install_timeseriesdb <- function(username,
-                                 password,
-                                 database,
-                                 host = "localhost",
-                                 port = 5432,
+install_timeseriesdb <- function(con,
                                  schema = "timeseries",
                                  verbose = FALSE) {
-  # TODO: Should this not take a connection as parameter?
-  con <- dbConnect(Postgres(),
-                   dbname = database,
-                   host = host,
-                   port = port,
-                   user = username,
-                   password = password)
-
   schema_exists <- dbGetQuery(con,
                               "SELECT true
                               FROM information_schema.schemata
@@ -33,8 +17,7 @@ install_timeseriesdb <- function(username,
                               list(schema))$bool
 
   if(length(schema_exists) == 0) {
-    # TODO: ya know...
-    stop(sprintf("Schema %s does not exist. blabla admin bla documentation"))
+    stop(sprintf("Schema %s does not exist. Please read the Installation Guide vignette."))
   }
 
   prnt <- function(x) {
