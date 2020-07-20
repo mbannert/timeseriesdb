@@ -14,7 +14,7 @@ vignette: >
 
 ![](timeseriesdb_1_0.png)
 
-The *vintages* table is the main table that keeps all the different versions of a time series. The *catalog* table holds the stem of a time series identified by *ts_key*. These stems do not hold any observational values but provide a link to *datasets* time series specific descriptions as well as time series specific meta information as opposed to versioned meta data. This avoids redundancy and fosters searching keys by regular expressions in case the *vintages* table is hash partitioned. *Collections* allow users to sets of time series identifiers (keys), in similar fashion as playlists in music apps. Tables with an *md_* prefix store meta information different levels. But having multiple tables the user can choose whether meta information needs to be versioned, too. 
+The *vintages* table is the main table that keeps all the different versions of a time series. The *catalog* table holds the stem of a time series identified by *ts_key*. These stems do not hold any observational values but provide links to *datasets* specific descriptions as well as time series specific meta information. This avoids redundancy and fosters searching keys by regular expressions in case the *vintages* table is hash partitioned. *Collections* allow users to create sets of time series identifiers (keys) in similar fashion as playlists in music apps. Tables with an *md_* prefix store meta information at different levels. By having multiple tables the user can choose whether meta information needs to be versioned, too. 
 
 The following sections describe the actions behind standard write and read processes. Due to the fact that not only a time series itself is stored but versions of it as well as comprehensive data descriptions, multiple tables are affected. 
 
@@ -27,35 +27,17 @@ Once a *ts_key* is created a first version is inserted into the *timeseries_main
 
 ## Adding a New Vintage (Version) to an Existing Time Series
 
-In case a *ts_key* already exists in the time series catalog it is **NOT** updated. This is major change compared to previous versions of {timeseriesdb} as versions were not kept by default. With {timeseriesdb} > 1.0 the stem will not be modified. Instead a new version of the time series will be added to the *timeseries_main* table. 
-
-In the process the validity of the previous versions of that time series will be closed (updated) at ```Sys.Date()``` unless another, future date is specified. The new version of the series is inserted into the *timeseries_main* table and its validity is set to start at ```Sys.Date()``` (or the specified future date) enforcing a non-overlapping constraint for time series versions (vintages).
-
-## Launch a Docker Based Dev Environment
-
-{timeseriesdb} ships with a routine to start up a development environment running 
-PostgreSQL 11. Simply run the *start_dev_docker.sh* located in the /inst folder of the {timeseriesdb} package. Make sure the shell script is executable by your user (type ```chmod +x start_dev_docker.sh``` if it's not). 
-
-```
-./start_dev_docker.sh
-```
-
-Given you have a docker environment such as docker Desktop up an running, the above
-shell script will fire up a docker container running PostgreSQL 11 which contains a fully working {timeseriesdb} schema. Once your container is up and running you can reach out on port 1111 using R. 
-
-```{r,eval = FALSE}
-library(RPostgres)
-
-con <- dbConnect(RPostgres::Postgres(),
-                 dbname = "postgres",
-                 user = "dev_admin",
-                 host = "localhost",
-                 password = "",
-                 port = 1111)
-```
+In case a *ts_key* already exists in the time series catalog it is **NOT** updated. This is major change compared to previous versions of {timeseriesdb} in which versions were not kept by default. With {timeseriesdb} > 1.0 the stem will not be modified. Instead a new version of the time series will be added to the *timeseries_main* table. 
 
 
+## Access Management
 
+{timeseriesdb}'s access management relies on the idea that users cannot 
+directly issue SQL queries to the database. {timeseriesdb} uses SECURITY DEFINER
+functions which are executed as the owner of the function. The owner of the function
+is a privileged user that is allowed to do advanced stuff, but only within the scope
+of the function. This way access to the time series data can be managed at a very
+fine grained level. 
 
 
 

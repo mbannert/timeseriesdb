@@ -63,7 +63,7 @@
       <a href="../articles/a03_admin_usage.html">Admin Usage</a>
     </li>
     <li>
-      <a href="../articles/developer_doc.html">timeseriesdb Developer Documentation</a>
+      <a href="../articles/developer_doc.html">Developer Documentation</a>
     </li>
     <li>
       <a href="../articles/installation_guide.html">Installation Guide</a>
@@ -97,7 +97,7 @@
       <h1>Installation Guide</h1>
                         <h4 class="author">Matthias Bannert and Severin Thöni</h4>
             
-            <h4 class="date">2020-07-16</h4>
+            <h4 class="date">2020-07-20</h4>
       
       <small class="dont-index">Source: <a href="https://github.com/mbannert/timeseriesdb/blob/master/vignettes/installation_guide.Rmd"><code>vignettes/installation_guide.Rmd</code></a></small>
       <div class="hidden name"><code>installation_guide.Rmd</code></div>
@@ -109,16 +109,86 @@
 <div id="starting-point" class="section level2">
 <h2 class="hasAnchor">
 <a href="#starting-point" class="anchor"></a>Starting Point</h2>
-<p>Unix shell, basic SQL, basic R. Postgres with dedicated schema running.</p>
+<p>This guides assumes you are familiar with your operating system and the R environment. In another words we assume you have basic R, basic PostgreSQL as well as basic unix shell know-how in case you work on Linux / OSX.</p>
+<p>Also, {timeseriesdb}’s works well inside a docker container which is probably the most convenient setup for testing purposes if you’re familiar with docker. However, docker know-how is not a prerequisite for running and installing {timeseriesdb} by any means.</p>
 </div>
-<div id="docker-dev-environment" class="section level2">
+<div id="installation-of-the-r-packge" class="section level2">
 <h2 class="hasAnchor">
-<a href="#docker-dev-environment" class="anchor"></a>Docker Dev Environment</h2>
-<p>fire up .sh in inst/</p>
+<a href="#installation-of-the-r-packge" class="anchor"></a>Installation of the R Packge</h2>
+<p>Installation of the {timeseriesdb} R package is as straight forward as for any other R package</p>
+<p>from CRAN:</p>
+<div class="sourceCode" id="cb1"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb1-1" data-line-number="1"><span class="kw"><a href="https://rdrr.io/r/utils/install.packages.html">install.packages</a></span>(<span class="st">"timeseriesdb"</span>)</a></code></pre></div>
+<p>or for the latest developer version from github (assuming you have the {remotes} package installed):</p>
+<div class="sourceCode" id="cb2"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb2-1" data-line-number="1">remotes<span class="op">::</span><span class="kw"><a href="https://remotes.r-lib.org/reference/install_github.html">install_github</a></span>(<span class="st">"mbannert/timeseriesdb"</span>)</a></code></pre></div>
+<p>{timeseriesdb} ships we installation routines to help you set up the database relations. Still, the database itself obviously needs to be there first and you need proper access rights before you can install the {timeseriesdb} database backend.</p>
 </div>
-<div id="run-r-setup-scripts" class="section level2">
+<div id="postgresql" class="section level2">
 <h2 class="hasAnchor">
-<a href="#run-r-setup-scripts" class="anchor"></a>run R setup scripts</h2>
+<a href="#postgresql" class="anchor"></a>PostgreSQL</h2>
+<p>{timseriesdb} uses the PostgreSQL RDMBS as a database backend. You can either use {timeseriesdb} with a remote database running on, e.g., <a href="https://cloud.google.com/sql/docs/postgres#:~:text=Cloud%20SQL%20for%20PostgreSQL%20is,databases%20on%20Google%20Cloud%20Platform.">Google Cloud</a>, <a href="https://aws.amazon.com/rds/postgresql/">AWS</a>, <a href="https://www.heroku.com/postgres">Heruko</a> and many more, or you can simply install PostgreSQL locally. In both cases the <a href="https://hub.docker.com/_/postgres">PostgreSQL docker images</a> are a hassle-free solution, in particular if you want to try out timeseriesdb. Alternatively, just install <a href="https://www.postgresql.org/download/">PostgreSQL on your local machine</a>. To verify that your installation worked make sure the database is running and create a basic connection.</p>
+<div id="dedicated-schema-and-extensions" class="section level3">
+<h3 class="hasAnchor">
+<a href="#dedicated-schema-and-extensions" class="anchor"></a>Dedicated Schema and Extensions</h3>
+<p>Create a SCHEMA that is dedicated to your {timeseriesdb} instance. The PostgreSQL hierarchy looks like this database cluster &gt; database &gt; schema &gt; relation (table).</p>
+<p>Creating a schema is simply a matter of</p>
+<div class="sourceCode" id="cb3"><pre class="sourceCode sql"><code class="sourceCode sql"><a class="sourceLine" id="cb3-1" data-line-number="1"></a>
+<a class="sourceLine" id="cb3-2" data-line-number="2"><span class="kw">CREATE</span> <span class="kw">SCHEMA</span> <span class="kw">IF</span> <span class="kw">NOT</span> <span class="kw">EXISTS</span> timeseries;</a>
+<a class="sourceLine" id="cb3-3" data-line-number="3"><span class="kw">CREATE</span> EXTENSION <span class="kw">IF</span> <span class="kw">NOT</span> <span class="kw">EXISTS</span> <span class="ot">"uuid-ossp"</span>;</a>
+<a class="sourceLine" id="cb3-4" data-line-number="4"><span class="kw">CREATE</span> EXTENSION <span class="kw">IF</span> <span class="kw">NOT</span> <span class="kw">EXISTS</span> btree_gist;</a></code></pre></div>
+<p>as long as you have the rights to do so. Also, don’t forget to install the <em>uid</em> and <em>btree</em> extension which are needed for the unique identifiers and the enforcement of constraints {timeseriesdb} makes use of.</p>
+</div>
+<div id="admin-and-roles" class="section level3">
+<h3 class="hasAnchor">
+<a href="#admin-and-roles" class="anchor"></a>Admin and Roles</h3>
+<p>To create a basic set of roles run the following SQL code. The below code will create a <em>reader</em> and <em>writer</em> role as well as an admin role and three levels of access: <em>public</em>, <em>main</em> and <em>restricted</em>.</p>
+<div class="sourceCode" id="cb4"><pre class="sourceCode sql"><code class="sourceCode sql"><a class="sourceLine" id="cb4-1" data-line-number="1"><span class="kw">CREATE</span> <span class="kw">ROLE</span> timeseries_reader NOLOGIN;</a>
+<a class="sourceLine" id="cb4-2" data-line-number="2"><span class="kw">CREATE</span> <span class="kw">ROLE</span> timeseries_writer NOLOGIN;</a>
+<a class="sourceLine" id="cb4-3" data-line-number="3"><span class="kw">GRANT</span> timeseries_reader <span class="kw">TO</span> timeseries_writer;</a>
+<a class="sourceLine" id="cb4-4" data-line-number="4"></a>
+<a class="sourceLine" id="cb4-5" data-line-number="5"><span class="kw">CREATE</span> <span class="kw">ROLE</span> timeseries_access_public;</a>
+<a class="sourceLine" id="cb4-6" data-line-number="6"><span class="kw">CREATE</span> <span class="kw">ROLE</span> timeseries_access_main;</a>
+<a class="sourceLine" id="cb4-7" data-line-number="7"><span class="kw">CREATE</span> <span class="kw">ROLE</span> timeseries_access_restricted;</a>
+<a class="sourceLine" id="cb4-8" data-line-number="8"><span class="kw">GRANT</span> timeseries_access_public <span class="kw">TO</span> timeseries_access_main;</a>
+<a class="sourceLine" id="cb4-9" data-line-number="9"><span class="kw">GRANT</span> timeseries_access_main <span class="kw">to</span> timeseries_access_restricted;</a>
+<a class="sourceLine" id="cb4-10" data-line-number="10"></a>
+<a class="sourceLine" id="cb4-11" data-line-number="11"><span class="kw">CREATE</span> <span class="kw">ROLE</span> timeseries_admin NOLOGIN;</a>
+<a class="sourceLine" id="cb4-12" data-line-number="12"><span class="kw">GRANT</span> timeseries_writer <span class="kw">TO</span> timeseries_admin;</a>
+<a class="sourceLine" id="cb4-13" data-line-number="13"><span class="kw">GRANT</span> timeseries_access_restricted <span class="kw">TO</span> timeseries_admin;</a></code></pre></div>
+<p>In order to setup all the relations you will need using R, create an admin user in advance who gets assigned the admin role created above:</p>
+<div class="sourceCode" id="cb5"><pre class="sourceCode sql"><code class="sourceCode sql"><a class="sourceLine" id="cb5-1" data-line-number="1"><span class="co">-- public/private distinction does not really make sense for admins</span></a>
+<a class="sourceLine" id="cb5-2" data-line-number="2"><span class="kw">CREATE</span> <span class="kw">ROLE</span> tsdb_admin <span class="kw">WITH</span> LOGIN <span class="kw">PASSWORD</span> <span class="st">'tsdb_admin'</span>; </a>
+<a class="sourceLine" id="cb5-3" data-line-number="3"><span class="kw">GRANT</span> timeseries_admin <span class="kw">TO</span> tsdb_admin;</a>
+<a class="sourceLine" id="cb5-4" data-line-number="4"><span class="kw">GRANT</span> <span class="kw">CREATE</span>, <span class="kw">USAGE</span> <span class="kw">ON</span> <span class="kw">SCHEMA</span> timeseries <span class="kw">TO</span> tsdb_admin;</a></code></pre></div>
+</div>
+</div>
+<div id="finalize-setup-create-tables-using-r" class="section level2">
+<h2 class="hasAnchor">
+<a href="#finalize-setup-create-tables-using-r" class="anchor"></a>Finalize Setup: Create Tables using R</h2>
+<p>Given proper access rights and a proper connection, installation of the database backend from R is just a matter of:</p>
+<div class="sourceCode" id="cb6"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb6-1" data-line-number="1"><span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span>(timeseriesdb)</a>
+<a class="sourceLine" id="cb6-2" data-line-number="2">con &lt;-<span class="st"> </span><span class="kw"><a href="../reference/db_create_connection.html">db_create_connection</a></span>(<span class="st">"yourdbname"</span>,</a>
+<a class="sourceLine" id="cb6-3" data-line-number="3">                            <span class="dt">user =</span> <span class="st">"tsdb_admin"</span>,</a>
+<a class="sourceLine" id="cb6-4" data-line-number="4">                            <span class="dt">host =</span> <span class="st">"localhost"</span>)</a>
+<a class="sourceLine" id="cb6-5" data-line-number="5"><span class="kw"><a href="../reference/install_timeseriesdb.html">install_timeseriesdb</a></span>(con)</a></code></pre></div>
+<p>YAY! You’re all set up. Store a time series to your fresh new database.</p>
+<div class="sourceCode" id="cb7"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb7-1" data-line-number="1">tsl &lt;-<span class="st"> </span><span class="kw"><a href="https://rdrr.io/r/base/list.html">list</a></span>(<span class="dt">AirPassengers =</span> AirPassengers)</a>
+<a class="sourceLine" id="cb7-2" data-line-number="2"><span class="kw"><a href="../reference/store_time_series.html">store_time_series</a></span>(con, tsl)</a></code></pre></div>
+</div>
+<div id="docker-development-setup" class="section level2">
+<h2 class="hasAnchor">
+<a href="#docker-development-setup" class="anchor"></a>Docker Development Setup</h2>
+<p>If you’re familiar with docker, the easiest way to play around with {timeseriesdb} is to run the bash script that ship with {timeseriesdb}’s source code. (Note: depending on your OS and configuration, e.g., on some Ubuntu systems you’ll need use sudo to run docker.)</p>
+<pre><code>./start_docker_dev.sh</code></pre>
+<p>If you don’t know where R package installation directory is, simply find out by running</p>
+<div class="sourceCode" id="cb9"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb9-1" data-line-number="1"><span class="kw"><a href="https://rdrr.io/r/base/system.file.html">system.file</a></span>(<span class="dt">package =</span> <span class="st">"timeseriesdb"</span>)</a></code></pre></div>
+<p>or download the {timeseriesdb} package source from CRAN or GitHub. This will fire up a docker container based on a postgresql:latest docker image and set up {timeseriesdb} so you could connect to the database running inside the container like this:</p>
+<div class="sourceCode" id="cb10"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb10-1" data-line-number="1">con &lt;-<span class="st"> </span><span class="kw"><a href="../reference/db_create_connection.html">db_create_connection</a></span>(</a>
+<a class="sourceLine" id="cb10-2" data-line-number="2">  <span class="dt">dbname =</span> <span class="st">"postgres"</span>,</a>
+<a class="sourceLine" id="cb10-3" data-line-number="3">  <span class="dt">user =</span> <span class="st">"dev_admin"</span>,</a>
+<a class="sourceLine" id="cb10-4" data-line-number="4">  <span class="dt">host =</span> <span class="st">"localhost"</span>,</a>
+<a class="sourceLine" id="cb10-5" data-line-number="5">  <span class="dt">passwd =</span> <span class="st">"dev_admin"</span>,</a>
+<a class="sourceLine" id="cb10-6" data-line-number="6">  <span class="dt">port =</span> <span class="dv">1111</span></a>
+<a class="sourceLine" id="cb10-7" data-line-number="7">)</a></code></pre></div>
 </div>
   </div>
 
@@ -129,8 +199,10 @@
 <a href="#tocnav" class="anchor"></a>Contents</h2>
       <ul class="nav nav-pills nav-stacked">
 <li><a href="#starting-point">Starting Point</a></li>
-      <li><a href="#docker-dev-environment">Docker Dev Environment</a></li>
-      <li><a href="#run-r-setup-scripts">run R setup scripts</a></li>
+      <li><a href="#installation-of-the-r-packge">Installation of the R Packge</a></li>
+      <li><a href="#postgresql">PostgreSQL</a></li>
+      <li><a href="#finalize-setup-create-tables-using-r">Finalize Setup: Create Tables using R</a></li>
+      <li><a href="#docker-development-setup">Docker Development Setup</a></li>
       </ul>
 </div>
       </div>

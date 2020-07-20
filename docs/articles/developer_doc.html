@@ -5,12 +5,12 @@
 <meta charset="utf-8">
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>timeseriesdb Developer Documentation • timeseriesdb</title>
+<title>Developer Documentation • timeseriesdb</title>
 <!-- jquery --><script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js" integrity="sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8=" crossorigin="anonymous"></script><!-- Bootstrap --><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha256-916EbMg70RQy9LHiGkXzG8hSg9EdNy97GazNG/aiY1w=" crossorigin="anonymous">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha256-U5ZEeKfGNOja007MMD3YBI0A3OSZOQbeG6z2f2Y0hu8=" crossorigin="anonymous"></script><!-- Font Awesome icons --><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.7.1/css/all.min.css" integrity="sha256-nAmazAk6vS34Xqo0BSrTb+abbtFlgsFK7NKSi6o7Y78=" crossorigin="anonymous">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.7.1/css/v4-shims.min.css" integrity="sha256-6qHlizsOWFskGlwVOKuns+D1nB6ssZrHQrNj1wGplHc=" crossorigin="anonymous">
 <!-- clipboard.js --><script src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/2.0.4/clipboard.min.js" integrity="sha256-FiZwavyI2V6+EXO1U+xzLG3IKldpiTFf3153ea9zikQ=" crossorigin="anonymous"></script><!-- headroom.js --><script src="https://cdnjs.cloudflare.com/ajax/libs/headroom/0.9.4/headroom.min.js" integrity="sha256-DJFC1kqIhelURkuza0AvYal5RxMtpzLjFhsnVIeuk+U=" crossorigin="anonymous"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/headroom/0.9.4/jQuery.headroom.min.js" integrity="sha256-ZX/yNShbjqsohH1k95liqY9Gd8uOiE1S4vZc+9KQ1K4=" crossorigin="anonymous"></script><!-- pkgdown --><link href="../pkgdown.css" rel="stylesheet">
-<script src="../pkgdown.js"></script><meta property="og:title" content="timeseriesdb Developer Documentation">
+<script src="../pkgdown.js"></script><meta property="og:title" content="Developer Documentation">
 <meta property="og:description" content="">
 <meta name="twitter:card" content="summary">
 <!-- mathjax --><script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/MathJax.js" integrity="sha256-nvJJv9wWKEm88qvoQl9ekL2J+k/RWIsaSScxxlsrv8k=" crossorigin="anonymous"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/config/TeX-AMS-MML_HTMLorMML.js" integrity="sha256-84DKXVJXs0/F8OTMzX4UR909+jtl4G7SPypPavF+GfA=" crossorigin="anonymous"></script><!--[if lt IE 9]>
@@ -63,7 +63,7 @@
       <a href="../articles/a03_admin_usage.html">Admin Usage</a>
     </li>
     <li>
-      <a href="../articles/developer_doc.html">timeseriesdb Developer Documentation</a>
+      <a href="../articles/developer_doc.html">Developer Documentation</a>
     </li>
     <li>
       <a href="../articles/installation_guide.html">Installation Guide</a>
@@ -94,10 +94,10 @@
       </header><div class="row">
   <div class="col-md-9 contents">
     <div class="page-header toc-ignore">
-      <h1>timeseriesdb Developer Documentation</h1>
+      <h1>Developer Documentation</h1>
                         <h4 class="author">Matthias Bannert and Severin Thöni</h4>
             
-            <h4 class="date">2020-07-16</h4>
+            <h4 class="date">2020-07-20</h4>
       
       <small class="dont-index">Source: <a href="https://github.com/mbannert/timeseriesdb/blob/master/vignettes/developer_doc.Rmd"><code>vignettes/developer_doc.Rmd</code></a></small>
       <div class="hidden name"><code>developer_doc.Rmd</code></div>
@@ -110,7 +110,7 @@
 <h2 class="hasAnchor">
 <a href="#general-overview" class="anchor"></a>General Overview</h2>
 <p><img src="timeseriesdb_1_0.png"></p>
-<p>The <em>vintages</em> table is the main table that keeps all the different versions of a time series. The <em>catalog</em> table holds the stem of a time series identified by <em>ts_key</em>. These stems do not hold any observational values but provide a link to <em>datasets</em> time series specific descriptions as well as time series specific meta information as opposed to versioned meta data. This avoids redundancy and fosters searching keys by regular expressions in case the <em>vintages</em> table is hash partitioned. <em>Collections</em> allow users to sets of time series identifiers (keys), in similar fashion as playlists in music apps. Tables with an <em>md_</em> prefix store meta information different levels. But having multiple tables the user can choose whether meta information needs to be versioned, too.</p>
+<p>The <em>vintages</em> table is the main table that keeps all the different versions of a time series. The <em>catalog</em> table holds the stem of a time series identified by <em>ts_key</em>. These stems do not hold any observational values but provide links to <em>datasets</em> specific descriptions as well as time series specific meta information. This avoids redundancy and fosters searching keys by regular expressions in case the <em>vintages</em> table is hash partitioned. <em>Collections</em> allow users to create sets of time series identifiers (keys) in similar fashion as playlists in music apps. Tables with an <em>md_</em> prefix store meta information at different levels. By having multiple tables the user can choose whether meta information needs to be versioned, too.</p>
 <p>The following sections describe the actions behind standard write and read processes. Due to the fact that not only a time series itself is stored but versions of it as well as comprehensive data descriptions, multiple tables are affected.</p>
 </div>
 <div id="storing-new-time-series" class="section level2">
@@ -122,23 +122,12 @@
 <div id="adding-a-new-vintage-version-to-an-existing-time-series" class="section level2">
 <h2 class="hasAnchor">
 <a href="#adding-a-new-vintage-version-to-an-existing-time-series" class="anchor"></a>Adding a New Vintage (Version) to an Existing Time Series</h2>
-<p>In case a <em>ts_key</em> already exists in the time series catalog it is <strong>NOT</strong> updated. This is major change compared to previous versions of {timeseriesdb} as versions were not kept by default. With {timeseriesdb} &gt; 1.0 the stem will not be modified. Instead a new version of the time series will be added to the <em>timeseries_main</em> table.</p>
-<p>In the process the validity of the previous versions of that time series will be closed (updated) at <code><a href="https://rdrr.io/r/base/Sys.time.html">Sys.Date()</a></code> unless another, future date is specified. The new version of the series is inserted into the <em>timeseries_main</em> table and its validity is set to start at <code><a href="https://rdrr.io/r/base/Sys.time.html">Sys.Date()</a></code> (or the specified future date) enforcing a non-overlapping constraint for time series versions (vintages).</p>
+<p>In case a <em>ts_key</em> already exists in the time series catalog it is <strong>NOT</strong> updated. This is major change compared to previous versions of {timeseriesdb} in which versions were not kept by default. With {timeseriesdb} &gt; 1.0 the stem will not be modified. Instead a new version of the time series will be added to the <em>timeseries_main</em> table.</p>
 </div>
-<div id="launch-a-docker-based-dev-environment" class="section level2">
+<div id="access-management" class="section level2">
 <h2 class="hasAnchor">
-<a href="#launch-a-docker-based-dev-environment" class="anchor"></a>Launch a Docker Based Dev Environment</h2>
-<p>{timeseriesdb} ships with a routine to start up a development environment running PostgreSQL 11. Simply run the <em>start_dev_docker.sh</em> located in the /inst folder of the {timeseriesdb} package. Make sure the shell script is executable by your user (type <code>chmod +x start_dev_docker.sh</code> if it’s not).</p>
-<pre><code>./start_dev_docker.sh</code></pre>
-<p>Given you have a docker environment such as docker Desktop up an running, the above shell script will fire up a docker container running PostgreSQL 11 which contains a fully working {timeseriesdb} schema. Once your container is up and running you can reach out on port 1111 using R.</p>
-<div class="sourceCode" id="cb2"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb2-1" data-line-number="1"><span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span>(RPostgres)</a>
-<a class="sourceLine" id="cb2-2" data-line-number="2"></a>
-<a class="sourceLine" id="cb2-3" data-line-number="3">con &lt;-<span class="st"> </span><span class="kw">dbConnect</span>(RPostgres<span class="op">::</span><span class="kw"><a href="https://rdrr.io/pkg/RPostgres/man/Postgres.html">Postgres</a></span>(),</a>
-<a class="sourceLine" id="cb2-4" data-line-number="4">                 <span class="dt">dbname =</span> <span class="st">"postgres"</span>,</a>
-<a class="sourceLine" id="cb2-5" data-line-number="5">                 <span class="dt">user =</span> <span class="st">"dev_admin"</span>,</a>
-<a class="sourceLine" id="cb2-6" data-line-number="6">                 <span class="dt">host =</span> <span class="st">"localhost"</span>,</a>
-<a class="sourceLine" id="cb2-7" data-line-number="7">                 <span class="dt">password =</span> <span class="st">""</span>,</a>
-<a class="sourceLine" id="cb2-8" data-line-number="8">                 <span class="dt">port =</span> <span class="dv">1111</span>)</a></code></pre></div>
+<a href="#access-management" class="anchor"></a>Access Management</h2>
+<p>{timeseriesdb}’s access management relies on the idea that users cannot directly issue SQL queries to the database. {timeseriesdb} uses SECURITY DEFINER functions which are executed as the owner of the function. The owner of the function is a privileged user that is allowed to do advanced stuff, but only within the scope of the function. This way access to the time series data can be managed at a very fine grained level.</p>
 </div>
   </div>
 
@@ -151,7 +140,7 @@
 <li><a href="#general-overview">General Overview</a></li>
       <li><a href="#storing-new-time-series">Storing New Time Series</a></li>
       <li><a href="#adding-a-new-vintage-version-to-an-existing-time-series">Adding a New Vintage (Version) to an Existing Time Series</a></li>
-      <li><a href="#launch-a-docker-based-dev-environment">Launch a Docker Based Dev Environment</a></li>
+      <li><a href="#access-management">Access Management</a></li>
       </ul>
 </div>
       </div>
