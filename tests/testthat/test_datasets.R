@@ -11,14 +11,20 @@ if(is_test_db_reachable()) {
 
 # test db_dataset_create --------------------------------------------------
 
-test_with_fresh_db(con_admin, "creating dataset returns id of set", hard_reset = TRUE, {
+test_with_fresh_db(con_admin, "creating dataset returns status with id of set", hard_reset = TRUE, {
   out <- db_dataset_create(con_admin,
                            "testset",
                            "a set for testing",
                            create_meta(field = "value"),
                            schema = "tsdb_test")
 
-  expect_equal(out, "testset")
+  expect_equal(
+    out,
+    list(
+      status = "ok",
+      id = "testset"
+    )
+  )
 })
 
 test_with_fresh_db(con_admin, "writer may not create sets", hard_reset = TRUE, {

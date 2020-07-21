@@ -26,12 +26,22 @@ SET search_path = timeseries, pg_temp;
 CREATE OR REPLACE FUNCTION timeseries.create_dataset(dataset_name TEXT,
                                           dataset_description TEXT DEFAULT NULL,
                                           dataset_md JSON DEFAULT NULL)
-RETURNS TEXT
+RETURNS JSON
 AS $$
+DECLARE
+  v_id TEXT;
+BEGIN
   INSERT INTO timeseries.datasets(set_id, set_description, set_md)
   VALUES(dataset_name, dataset_description, dataset_md)
   RETURNING set_id
-$$ LANGUAGE SQL
+  INTO v_id;
+
+  RETURN json_build_object('status', 'ok', 'id', v_id);
+EXCEPTION
+  WHEN unique_violation THEN
+    RETURN json_build_object('status', 'error', 'message', 'A dataset with that name already exists.');
+END;
+$$ LANGUAGE PLPGSQL
 SECURITY DEFINER
 SET search_path = timeseries, pg_temp;
 

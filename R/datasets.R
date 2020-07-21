@@ -11,6 +11,7 @@
 #'
 #' @importFrom RPostgres dbGetQuery dbQuoteIdentifier
 #' @importFrom DBI Id
+#' @importFrom jsonlite fromJSON
 #'
 #' @return character name of the created set
 #' @export
@@ -27,23 +28,23 @@ db_dataset_create <- function(con,
                    set_md,
                    jsonlite::toJSON(set_md, auto_unbox = TRUE, null = "null"))
 
-  # TODO: use JSON return
-  tryCatch(
-    db_call_function(con,
-                   "create_dataset",
-                   list(
-                     set_name,
-                     set_description,
-                     set_md
-                   ),
-                   schema),
-    error = function(e) {
-      if(grepl("violates unique constraint \"datasets_pkey\"", e)) {
-        stop("A dataset by that name already exists.")
-      } else {
-        stop(e)
-      }
-    })
+
+  out <- db_call_function(con,
+                         "create_dataset",
+                         list(
+                           set_name,
+                           set_description,
+                           set_md
+                         ),
+                         schema)
+
+  out_parsed <- fromJSON(out)
+
+  if(out_parsed$status == "error") {
+    stop(out_parsed$message)
+  }
+
+  out_parsed
 }
 
 
