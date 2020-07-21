@@ -49,6 +49,35 @@ test_that("it calls through to store_records", {
   )
 })
 
+
+test_that("defaults are passed on correctly", {
+  store_recs <- mock()
+  with_mock(
+    "timeseriesdb:::store_records" = store_recs,
+    "timeseriesdb:::to_ts_json" = mock("ts_json"), # Oh how I love isolating units under test. You are going to die all alone, little function...
+    {
+      store_time_series(
+        "con",
+        tsl
+      )
+      
+      expect_called(store_recs, 1)
+      
+      expect_args(
+        store_recs,
+        1,
+        "con",
+        "ts_json",
+        NA,
+        "timeseries_main",
+        NA,
+        NA,
+        "timeseries"
+      )
+    }
+  )
+})
+
 test_that("it handles empty lists", {
   tsl <- list()
   class(tsl) <- c("tslist", "list")
@@ -114,6 +143,39 @@ test_that("it calls through to store_records", {
     }
   )
 })
+
+
+test_that("defaults are passed on correctly", {
+  store_recs <- mock()
+  with_mock(
+    "timeseriesdb:::store_records" = store_recs,
+    "timeseriesdb:::to_ts_json" = mock("ts_json"),
+    {
+      store_time_series(
+        "con",
+        dt
+      )
+      
+      expect_called(store_recs, 1)
+      
+      expect_args(
+        store_recs,
+        1,
+        "con",
+        "ts_json",
+        NA,
+        "timeseries_main",
+        NA,
+        NA,
+        "timeseries"
+      )
+    }
+  )
+})
+
+
+
+
 
 test_that("it handles empty lists", {
   dt <- data.table(id = numeric(), time = numeric(), value = numeric())

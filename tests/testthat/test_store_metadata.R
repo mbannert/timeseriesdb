@@ -417,7 +417,6 @@ test_with_fresh_db(con_admin, "db_meta_store unlocalized missing key warning con
   )
 })
 
-# TODO: Should this not be an error?
 test_with_fresh_db(con_admin, "storing older vintages is a nono", {
   db_meta_store(con_writer,
                        create_tsmeta(ts1 = list(field = "value")),

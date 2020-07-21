@@ -17,9 +17,9 @@
 store_time_series <- function(con,
                               x,
                               access = NA,
-                              valid_from,
-                              release_date,
-                              schema){
+                              valid_from = NA,
+                              release_date = NA,
+                              schema = "timeseries"){
   UseMethod("store_time_series", object = x)
 }
 
@@ -82,6 +82,8 @@ store_time_series.tslist <- function(con,
                 schema)
 }
 
+#' @import data.table
+#' @export
 store_time_series.data.table <- function(con,
                                          dt,
                                          access = NA,
