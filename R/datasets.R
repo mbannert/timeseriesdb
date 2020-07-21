@@ -11,6 +11,7 @@
 #'
 #' @importFrom RPostgres dbGetQuery dbQuoteIdentifier
 #' @importFrom DBI Id
+#' @importFrom jsonlite fromJSON
 #'
 #' @return character name of the created set
 #' @export
@@ -27,23 +28,23 @@ db_dataset_create <- function(con,
                    set_md,
                    jsonlite::toJSON(set_md, auto_unbox = TRUE, null = "null"))
 
-  # TODO: use JSON return
-  tryCatch(
-    db_call_function(con,
-                   "create_dataset",
-                   list(
-                     set_name,
-                     set_description,
-                     set_md
-                   ),
-                   schema),
-    error = function(e) {
-      if(grepl("violates unique constraint \"datasets_pkey\"", e)) {
-        stop("A dataset by that name already exists.")
-      } else {
-        stop(e)
-      }
-    })
+
+  out <- db_call_function(con,
+                         "create_dataset",
+                         list(
+                           set_name,
+                           set_description,
+                           set_md
+                         ),
+                         schema)
+
+  out_parsed <- fromJSON(out)
+
+  if(out_parsed$status == "error") {
+    stop(out_parsed$message)
+  }
+
+  out_parsed
 }
 
 
@@ -217,34 +218,16 @@ db_dataset_delete <- function(con,
                               schema = "timeseries") {
   message("This will permanently delete ALL time series associated with that set,\n**including their histories**.")
   confirmation <- readline("Retype dataset name to confirm: ")
-  db_dataset_delete_(con, set_name, confirmation, schema)
-}
 
-# TODO: with_mock solves the need for this extra layer.
-
-# This is the unexported counterpart of db_dataset_delete
-# The idea is to have it in this form for testing, though the benefit
-# may be marginal.
-# To prevent users from directly calling this function via `:::`
-# it will throw an error unless called from inside `db_dataset_delete`
-#' @importFrom jsonlite fromJSON
-db_dataset_delete_ <- function(con,
-                               set_name,
-                               set_name_confirm,
-                               schema = "timeseries") {
-  if(set_name_confirm != set_name) {
+  if(confirmation != set_name) {
     stop("Confirmation failed!")
-  }
-
-  if(is.null(sys.call(-1)) || as.character(as.list(sys.call(-1))[[1]]) != "db_dataset_delete") {
-    stop("This function is not to be called directly!")
   }
 
   out <- fromJSON(db_call_function(con,
                                    "dataset_delete",
                                    list(
                                      set_name,
-                                     set_name_confirm
+                                     confirmation
                                    ),
                                    schema = schema))
 

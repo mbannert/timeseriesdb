@@ -314,7 +314,8 @@ test_with_fresh_db(con_admin, "db_meta_store localized can hold different langua
 
   result <-  dbGetQuery(con_admin, "SELECT ts_key, validity, locale, metadata
                         FROM tsdb_test.metadata_localized
-                        WHERE ts_key = 'ts1'")
+                        WHERE ts_key = 'ts1'
+                        ORDER BY locale")
   expect_equal(
     result,
     meta_fixture_df(c("ts1", "ts1"),
