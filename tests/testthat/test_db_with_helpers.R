@@ -133,3 +133,25 @@ test_that("It removes the temp table in error case", {
     }
   )
 })
+
+
+
+if(is_test_db_reachable()) {
+  con_admin <- connect_to_test_db()
+}
+
+test_with_fresh_db(con_admin, "temp_ts_read gets cleaned up in failure case", {
+  boom_bot <- mock(stop("Kablammy!"))
+
+  with_mock(
+    get_tsl_from_res = boom_bot,
+    {
+      e <- capture_error(read_time_series(con_admin, "rts1", schema = "tsdb_test"))
+
+      expect_equal(
+        dbListTables(con_admin),
+        character(0)
+      )
+    }
+  )
+})
