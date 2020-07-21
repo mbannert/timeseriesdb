@@ -383,10 +383,6 @@ test_with_fresh_db(con_admin, "db_delete_dataset with wrong confirm", {
   )
 })
 
-test_that("db_dataset_delete_ errors when called directly", {
-  expect_error(db_dataset_delete_("", "a", "a"), "directly")
-})
-
 test_with_fresh_db(con_admin, "db_delete_dataset with default", {
   with_mock(
     readline = mock("default"),
