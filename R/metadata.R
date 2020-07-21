@@ -38,7 +38,7 @@ as.meta <- function(x) {
 create_tsmeta <- function(...) {
   l <- list(...)
   n <- names(l)
-  is.null(n) | any(nchar(n) == 0){
+  if(is.null(n) | any(nchar(n) == 0)){
     stop("All arguments must be named.")
   }
   as.tsmeta(l)
