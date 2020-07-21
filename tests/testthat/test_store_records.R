@@ -152,6 +152,28 @@ test_with_fresh_db(con_admin, hard_reset = TRUE, "Inserts produce valid state", 
   )
 })
 
+test_with_fresh_db(con_admin, hard_reset = TRUE, "Inserts with plain list", {
+  l <- unclass(tsl)
+
+  store_time_series(con_writer,
+                    l,
+                    "tsdb_test_access_public",
+                    valid_from = "2019-01-01",
+                    release_date = "2019-01-02",
+                    schema = "tsdb_test")
+  expect_equal(
+    dbGetQuery(con_admin, "SELECT * FROM tsdb_test.catalog ORDER BY ts_key"),
+    catalog_after_insert_1
+  )
+  main_names <- c("id", "ts_key", "validity", "coverage", "release_date", "created_by",
+                  "created_at", "ts_data", "access")
+  names_to_test <- setdiff(main_names, c("id", "created_by", "created_at"))
+  expect_equal(
+    dbGetQuery(con_admin, "SELECT * FROM tsdb_test.timeseries_main ORDER BY ts_key, validity")[, names_to_test],
+    main_after_insert_1[, names_to_test]
+  )
+})
+
 test_with_fresh_db(con_admin, hard_reset = TRUE, "storing series with invalid vintages is an error", {
   store_time_series(con_writer,
                     tsl,
