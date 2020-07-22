@@ -22,7 +22,6 @@ SET search_path = timeseries, pg_temp;
 -- before any time series can be assigned to it.
 --
 -- returns: name of the set
--- TODO: Check for conflict and change return type to json
 CREATE OR REPLACE FUNCTION timeseries.create_dataset(dataset_name TEXT,
                                           dataset_description TEXT DEFAULT NULL,
                                           dataset_md JSON DEFAULT NULL)
@@ -113,7 +112,6 @@ DECLARE
   v_keys_not_in_catalog TEXT[];
 BEGIN
   IF NOT EXISTS(SELECT 1 FROM timeseries.datasets WHERE set_id = id) THEN
-    -- TODO: this should be status "error" and throw in the corresponding R function
     RETURN ('{"status": "error", "reason": "Dataset ' || id || ' does not exist!"}')::JSON;
   END IF; -- Welcome to the bronze age of programming
 

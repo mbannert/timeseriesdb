@@ -36,7 +36,6 @@ BEGIN
     RETURN json_build_object('status', 'warning',
                          'message', 'access level does not exist.');
 
-  -- TODO: is this faster with limit 1?
   ELSIF EXISTS (SELECT 1 FROM timeseries.timeseries_main
     WHERE access = access_level) THEN
     RETURN json_build_object('status', 'error',

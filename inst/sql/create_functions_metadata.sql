@@ -235,7 +235,6 @@ SET search_path = timeseries, pg_temp;
 -- param: valid_on the date for which to get the metadata
 --
 -- returns: table(ts_key TEXT, metadata JSONB)
--- TODO: loc does not necessarily need a default but then it needs to move to the front of the list
 CREATE OR REPLACE FUNCTION timeseries.read_metadata_localized_raw(valid_on DATE DEFAULT CURRENT_DATE, loc TEXT DEFAULT 'en')
 RETURNS TABLE(ts_key TEXT, metadata JSONB)
 AS $$

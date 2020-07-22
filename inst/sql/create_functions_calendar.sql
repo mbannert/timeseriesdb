@@ -24,7 +24,7 @@ AS $$
 DECLARE
   v_nonexistent_datasets TEXT[];
 BEGIN
-  -- TODO: As we're using JSON after all, set up a "set already exists" case
+  -- TODO: As we're using JSON after all, set up a "release already exists" case
   SELECT array_agg(tmp.set_id)
   FROM tmp_release_insert AS tmp
   LEFT JOIN
@@ -34,7 +34,7 @@ BEGIN
   INTO v_nonexistent_datasets;
 
   IF array_length(v_nonexistent_datasets, 1) != 0 THEN
-  -- TODO: use json_build_object for consistency
+  
     RETURN json_build_object('status', 'error',
                              'reason', 'Some datasets do not exist.',
                              'missing_datasets', v_nonexistent_datasets);
@@ -47,7 +47,7 @@ BEGIN
 
   INSERT INTO timeseries.release_dataset(release_id, set_id)
   SELECT p_id, set_id FROM tmp_release_insert;
-
+  -- TODO: use json_build_object for consistency
   RETURN '{"status": "ok"}'::JSON;
 END;
 $$ LANGUAGE PLPGSQL

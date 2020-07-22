@@ -3,7 +3,6 @@
 -- Transfer time series data from a temporary table to the main table.
 -- Updating the latest vintage is allowed while attempts to update an outdated
 -- one is an error.
--- TODO: make it a warning
 --
 -- tmp_ts_updates has columns (ts_key TEXT,
 --                             ts_data JSON,
@@ -12,8 +11,6 @@
 --                             access TEXT)
 --
 -- returns: json {"status": "", "message": "", ["offending_keys": ""]}
--- TODO: validity, release_date, access could be params for this function
---       -> saves storing 10s of 1000s of copies into tmp table
 CREATE OR REPLACE FUNCTION timeseries.insert_from_tmp(p_validity DATE,
                                            p_release_date TIMESTAMPTZ,
                                            p_access TEXT)

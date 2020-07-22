@@ -51,22 +51,7 @@ db_dataset_list(con, schema = "tsdb_test")
 ```
 
 Apparently, the dataset is empty. We need to assign some time series first.
-Make sure the time series you want to register to a set are actually around.
-Unlike `store_time_series` assigning series to a dataset is *not* a
-vintage level operation, it applies to all versions of a series. This is why time series are assigned to the 'default' schema at first when they are stored and can be moved later on. 
 
-```{r, eval=FALSE}
-db_ts_assign_dataset(con,
-                  ts_keys = c("ch.zrh_airport.arrival.total",
-                              "ch.zrh_airport.departure.total"),
-                  set_name = "ch.zrh_airport",
-                  schema = "tsdb_test")
-
-```
-
-**Note** that there is no such thing as remove time series from dataset. Either
-you delete a time series entirely or you assign it to another dataset.
-Think of a registry similar to a software registry. 
 
 
 ### DANGER ZONE: Deleting Datasets

@@ -41,7 +41,6 @@ db_store_ts <- function(con, series,
     } 
   }
   
-  # TODO: describe concept of *ts_json* in the dev docu
   ts_json <- to_ts_json(series)
   # store records to a temp table in order to use dbWriteTable
   # which is fast because of STDIN usage as opposed to simple inserts
