@@ -1,18 +1,19 @@
 #' Change the Access Level for Time Series
 #'
-#' @name change_access_level
-
-#' @rdname change_access_level
-#' @inheritParams param_defs
-#' @family access levels
-#' 
+#' @param con RPostgres connection
+#' @param ts_keys Time Series Keys for which to change access
+#' @param new_access_level Access level to set to
+#' @param validity If provided only change the access level for vintages with the given validity.
+#'                 By default the access level for all vintages is updated.
+#' @param schema Time Series schema name
+#'
 #' @export
 #' @importFrom jsonlite fromJSON
 db_ts_change_access <- function(con,
-                                ts_keys,
-                                access_level,
-                                valid_on = NA,
-                                schema = "timeseries") {
+                                   ts_keys,
+                                   new_access_level,
+                                   validity = NA,
+                                   schema = "timeseries") {
   out <- db_with_temp_table(con,
                             "tmp_ts_access_keys",
                             data.frame(
@@ -40,17 +41,23 @@ db_ts_change_access <- function(con,
   parsed
 }
 
-#' @rdname change_access_level
-#' @inheritParams param_defs
-#' @family access levels
+#' Change the Access Level for Time Series Dataset
+#'
+#' TODO: put this in the same doc as db_ts_change_access? yes
+#'
+#' @param con
+#' @param dataset
+#' @param new_access_level
+#' @param validity
+#' @param schema
 #'
 #' @return
 #' @export
 #' @importFrom jsonlite fromJSON
 db_ts_change_access_dataset <- function(con,
                                            dataset,
-                                           access_level,
-                                           valid_on = NA,
+                                           new_access_level,
+                                           validity = NA,
                                            schema = "timeseries") {
   out <- db_call_function(con,
                           "change_access_level_dataset",
@@ -73,8 +80,8 @@ db_ts_change_access_dataset <- function(con,
 
 #' Get All access levels and their description
 #'
-#' @inheritParams param_defs
-#' @family access levels
+#' @param con RPostgres connection object
+#' @param schema character Name of timeseries schema
 #'
 #' @return access levels data.frame with columns `role` and `description` and `is_default`
 #' @export
@@ -89,13 +96,14 @@ db_access_list_levels <- function(con,
 
 #' Delete a role in access levels table
 #'
-#' @inheritParams param_defs
-#' @family access levels
+#' @param con RPostgres connection object
+#' @param access_level_name character name of the access level
+#' @param schema character name of the schema. Defaults to 'timeseries'.
 #'
 #' @importFrom jsonlite fromJSON
 #' @export
 db_access_delete_level <- function(con,
-                                    access_level,
+                                    access_level_name,
                            schema = "timeseries") {
 
   out <- db_call_function(con,
