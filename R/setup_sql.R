@@ -26,10 +26,17 @@ install_timeseriesdb <- function(con,
     }
   }
 
+  current_user <- dbGetQuery(con, "SELECT CURRENT_USER as cu")$cu
+
+  # Switch role so the objects belong to timeseries_admin as they should
+  dbExecute(con, sprintf("SET ROLE %s_admin", schema))
+
   setup_sql_tables(con, schema, prnt)
   setup_sql_functions(con, schema, prnt)
   setup_sql_triggers(con, schema, prnt)
   setup_sql_grant_rights(con, schema, prnt)
+
+  dbExecute(con, sprintf("SET ROLE %s", schema))
 }
 
 
