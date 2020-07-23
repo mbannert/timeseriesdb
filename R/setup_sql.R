@@ -36,7 +36,7 @@ install_timeseriesdb <- function(con,
   setup_sql_triggers(con, schema, prnt)
   setup_sql_grant_rights(con, schema, prnt)
 
-  dbExecute(con, sprintf("SET ROLE %s", schema))
+  dbExecute(con, sprintf("SET ROLE %s", current_user))
 }
 
 
