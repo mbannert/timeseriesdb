@@ -17,7 +17,7 @@ install_timeseriesdb <- function(con,
                               list(schema))$bool
 
   if(length(schema_exists) == 0) {
-    stop(sprintf("Schema %s does not exist. Please read the Installation Guide vignette."))
+    stop(sprintf("Schema %s does not exist. Please read the Installation Guide vignette.", schema))
   }
 
   prnt <- function(x) {
