@@ -12,9 +12,17 @@ if(is_test_db_reachable()) {
 test_that("defaults", {
   fake_db_call_function = mock('{"status": "ok"}')
 
+  fake_db_with_tmp_table <- function(con,
+                                     name,
+                                     content,
+                                     field.types,
+                                     code,
+                                     schema){force(code)}
+
   with_mock(
     db_call_function = fake_db_call_function,
     dbWriteTable = mock(),
+    db_with_temp_table = fake_db_with_tmp_table,
     {
       db_release_create("con",
                         "a_release",

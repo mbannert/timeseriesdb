@@ -36,40 +36,40 @@ db_release_create <- function(con,
                            target_frequency = 12,
                            note = NA,
                            schema = "timeseries") {
-  dbWriteTable(con,
-               "tmp_release_insert",
-               data.table(
-                 set_id = datasets
-               ),
-               temporary = TRUE,
-               overwrite = TRUE,
-               field.types = c(
-                 set_id = "text")
-  )
-
-  out <- tryCatch(
-    db_call_function(con,
-                     "create_release",
-                     list(
-                       id,
-                       title,
-                       note,
-                       release_date,
-                       target_year,
-                       target_period,
-                       target_frequency
-                     ),
-                     schema = schema
-    ),
-    error = function(e) {
-      if(grepl("unique constraint \"release_calendar_pkey\"", e)) {
-        stop("A release with that ID already exists. To update it use update_release.")
-      } else if(grepl("permission denied for function create_release", e)) {
-        stop("Only timeseries admin may create new releases.")
-      } else {
-        stop(e)
-      }
-    })
+  out <- db_with_temp_table(con,
+                            "tmp_release_insert",
+                            data.table(
+                              set_id = datasets
+                            ),
+                            field.types = c(
+                              set_id = "text"
+                            ),
+                            {
+                              tryCatch(
+                                db_call_function(con,
+                                                 "create_release",
+                                                 list(
+                                                   id,
+                                                   title,
+                                                   note,
+                                                   release_date,
+                                                   target_year,
+                                                   target_period,
+                                                   target_frequency
+                                                 ),
+                                                 schema = schema
+                                ),
+                                error = function(e) {
+                                  if(grepl("unique constraint \"release_calendar_pkey\"", e)) {
+                                    stop("A release with that ID already exists. To update it use update_release.")
+                                  } else if(grepl("permission denied for function create_release", e)) {
+                                    stop("Only timeseries admin may create new releases.")
+                                  } else {
+                                    stop(e)
+                                  }
+                                })
+                            },
+                            schema = schema)
 
   parsed <- fromJSON(out)
   if(parsed$status != "ok") {
@@ -111,40 +111,39 @@ db_release_update <- function(con,
                               note = NA,
                               schema = "timeseries") {
 
-  if(!is.na(datasets)) {
-    dbWriteTable(con,
-                 "tmp_release_update",
-                 data.table(
-                   set_id = datasets
-                 ),
-                 temporary = TRUE,
-                 overwrite = TRUE,
-                 field.types = c(
-                   set_id = "text"))
-  }
-
-  out <- tryCatch(
-    db_call_function(con,
-                     "update_release",
-                     list(
-                       id,
-                       title,
-                       note,
-                       release_date,
-                       target_year,
-                       target_period,
-                       target_frequency,
-                       !is.na(datasets)
-                     ),
-                     schema = schema
-    ),
-    error = function(e) {
-      if(grepl("permission denied for function update_release", e)) {
-        stop("Only timeseries admin may update releases.")
-      } else {
-        stop(e)
-      }
-    })
+  out <- db_with_temp_table(con,
+                            "tmp_release_update",
+                            data.table(
+                              set_id = datasets
+                            ),
+                            field.types = c(
+                              set_id = "text"
+                            ),
+                            {
+                              tryCatch(
+                                db_call_function(con,
+                                                 "update_release",
+                                                 list(
+                                                   id,
+                                                   title,
+                                                   note,
+                                                   release_date,
+                                                   target_year,
+                                                   target_period,
+                                                   target_frequency,
+                                                   !is.na(datasets)
+                                                 ),
+                                                 schema = schema
+                                ),
+                                error = function(e) {
+                                  if(grepl("permission denied for function update_release", e)) {
+                                    stop("Only timeseries admin may update releases.")
+                                  } else {
+                                    stop(e)
+                                  }
+                                })
+                            },
+                            schema = schema)
 
   parsed <- fromJSON(out)
   if(parsed$status != "ok") {
@@ -216,22 +215,20 @@ db_release_list <- function(con,
 db_release_get_next <- function(con,
                                         set_ids,
                                         schema = "timeseries") {
-  dbWriteTable(con,
-               "tmp_get_release",
-               data.table(
-                 set_id = set_ids
-               ),
-               temporary = TRUE,
-               overwrite = TRUE,
-               field.types = c(
-                 set_id = "text"
-               ))
-
-  db_grant_to_admin(con, "tmp_get_release", schema)
-
-  db_call_function(con,
-                   "get_next_release_for_sets",
-                   schema = schema)
+  db_with_temp_table(con,
+                     "tmp_get_release",
+                     data.table(
+                       set_id = set_ids
+                     ),
+                     field.types = c(
+                       set_id = "text"
+                     ),
+                     {
+                       db_call_function(con,
+                                        "get_next_release_for_sets",
+                                        schema = schema)
+                     },
+                     schema = schema)
 }
 
 #' Get the latest Release for Given Datasets
@@ -245,20 +242,18 @@ db_release_get_next <- function(con,
 db_release_get_latest <- function(con,
                                           set_ids,
                                           schema = "timeseries") {
-  dbWriteTable(con,
-               "tmp_get_release",
-               data.table(
-                 set_id = set_ids
-               ),
-               temporary = TRUE,
-               overwrite = TRUE,
-               field.types = c(
-                 set_id = "text"
-               ))
-
-  db_grant_to_admin(con, "tmp_get_release", schema)
-
-  db_call_function(con,
-                   "get_latest_release_for_sets",
-                   schema = schema)
+  db_with_temp_table(con,
+                     "tmp_get_release",
+                     data.table(
+                       set_id = set_ids
+                     ),
+                     field.types = c(
+                       set_id = "text"
+                     ),
+                     {
+                       db_call_function(con,
+                                        "get_latest_release_for_sets",
+                                        schema = schema)
+                     },
+                     schema = schema)
 }
