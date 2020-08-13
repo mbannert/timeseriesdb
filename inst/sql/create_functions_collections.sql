@@ -196,3 +196,23 @@ END;
 $$ LANGUAGE PLPGSQL
 SECURITY DEFINER
 SET search_path = timeseries, pg_temp;
+
+
+-- List all collections belonging to p_user
+--
+-- Mainly for use in the API
+--
+-- param p_user: The user for which to get collections
+CREATE OR REPLACE FUNCTION timeseries.list_collections(p_user TEXT)
+RETURNS TABLE(name TEXT, description TEXT)
+AS $$
+BEGIN
+  RETURN QUERY
+  SELECT coll.name, coll.description
+  FROM timeseries.collections AS coll
+  WHERE owner = p_user
+  ORDER BY coll.name;
+END;
+$$ LANGUAGE PLPGSQL
+SECURITY DEFINER
+SET search_path = timeseries, pg_temp;

@@ -111,17 +111,15 @@ db_collection_delete <- function(con,
 }
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+db_collection_list <- function(con,
+                               user = Sys.info()['user'],
+                               schema = "timeseries") {
+  db_call_function(
+    con,
+    "list_collections",
+    list(
+      user
+    ),
+    schema = schema
+  )
+}

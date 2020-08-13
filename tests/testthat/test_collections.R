@@ -287,3 +287,16 @@ test_with_fresh_db(con_admin, "reader may delete collections", {
 
   expect_equal(nrow(result_collect_catalog), 0)
 })
+
+
+# db_collection_list -----------------------------------------------------
+
+test_with_fresh_db(con_admin, "db_collection_list", {
+  out <- db_collection_list(con_reader, "test", schema = "tsdb_test")
+
+  expect_equal(out,
+               data.table(
+                 name = c("readtest", "tests first", "tests second"),
+                 description = c("time series for testing readers", "the first collection ever", NA_character_)
+               ))
+})
