@@ -226,7 +226,23 @@ $$ LANGUAGE PLPGSQL
 SECURITY DEFINER
 SET search_path = timeseries, pg_temp;
 
+CREATE OR REPLACE FUNCTION timeseries.read_metadata_raw(p_keys TEXT[],
+                                                        p_valid_on DATE DEFAULT CURRENT_DATE)
+RETURNS TABLE(ts_key TEXT, metadata JSONB)
+AS $$
+BEGIN
+  CREATE TEMPORARY TABLE tmp_ts_read_keys
+  ON COMMIT DROP
+  AS (
+    SELECT * FROM unnest(p_keys) AS ts_key
+  );
 
+  RETURN QUERY
+  SELECT * FROM timeseries.read_metadata_raw(p_valid_on::DATE);
+END;
+$$ LANGUAGE PLPGSQL
+SECURITY DEFINER
+SET search_path = timeseries, pg_temp;
 
 -- Read localized metadata in raw (i.e. json) form
 --
@@ -259,7 +275,24 @@ SECURITY DEFINER
 SET search_path = timeseries, pg_temp;
 
 
+CREATE OR REPLACE FUNCTION timeseries.read_metadata_localized_raw(p_keys TEXT[],
+                                                        p_valid_on DATE DEFAULT CURRENT_DATE,
+                                                        loc TEXT DEFAULT 'en')
+RETURNS TABLE(ts_key TEXT, metadata JSONB)
+AS $$
+BEGIN
+  CREATE TEMPORARY TABLE tmp_ts_read_keys
+  ON COMMIT DROP
+  AS (
+    SELECT * FROM unnest(p_keys) AS ts_key
+  );
 
+  RETURN QUERY
+  SELECT * FROM timeseries.read_metadata_localized_raw(p_valid_on::DATE, loc::TEXT);
+END;
+$$ LANGUAGE PLPGSQL
+SECURITY DEFINER
+SET search_path = timeseries, pg_temp;
 
 
 

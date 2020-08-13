@@ -158,6 +158,10 @@ db_create_connection <- function(dbname,
 #' Calls function `schema`.`fname` with the given `args`, returning
 #' the result.
 #'
+#' Args may be named to enable postgres to decide which candidate to choose in case
+#' of overloaded functions.
+#' If any args are named, all of them must be.
+#'
 #' @param con RPostgres connection object
 #' @param fname character Name of the function to be called
 #' @param schema character Name of the timeseries schema
@@ -168,15 +172,33 @@ db_call_function <- function(con,
                              fname,
                              args = NULL,
                              schema = "timeseries") {
+  args_names = names(args)
+  if(!is.null(args_names) && any(nchar(args_names) == 0)) {
+    stop("Either all args must be named or none!")
+  }
+
+  args_pattern <- ""
+  if(!is.null(args)) {
+    args_pattern <- sprintf("$%d", 1:length(args))
+
+    if(!is.null(args_names)) {
+      args_pattern <- paste(
+        sprintf("%s :=", args_names),
+        args_pattern
+      )
+    }
+
+    args_pattern <- paste(args_pattern, collapse = ", ")
+
+  }
+
   query <- sprintf("SELECT * FROM %s.%s(%s)",
                    dbQuoteIdentifier(con, schema),
                    dbQuoteIdentifier(con, fname),
-                   ifelse(length(args) > 0,
-                          paste(sprintf("$%d", 1:length(args)), collapse = ", "),
-                          ""))
+                   args_pattern)
 
   res <- tryCatch(
-    dbGetQuery(con, query, args),
+    dbGetQuery(con, query, unname(args)),
     error = function(e) {
       if(grepl("permission denied for function", e)) {
         stop("You do not have sufficient privileges to perform this action.")

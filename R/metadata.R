@@ -229,12 +229,17 @@ db_meta_read <- function(con,
                                   if(is.null(locale)) {
                                     db_call_function(con,
                                                      "read_metadata_raw",
-                                                     list(as.Date(valid_on)),
+                                                     list(
+                                                       valid_on = as.Date(valid_on)
+                                                     ),
                                                      schema = schema)
                                   } else {
                                     db_call_function(con,
                                                      "read_metadata_localized_raw",
-                                                     list(as.Date(valid_on), locale),
+                                                     list(
+                                                       valid_on = as.Date(valid_on),
+                                                       loc = locale
+                                                     ),
                                                      schema = schema)
                                   }
                                 },
