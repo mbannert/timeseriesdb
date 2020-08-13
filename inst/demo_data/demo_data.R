@@ -1,8 +1,8 @@
 library(kofdata)
 
 # example with time series objects until 2019
-kofbarometer <- get_time_series("kofbarometer")$"kofbarometer"
-kofbarometer <- window(kofbarometer, end = c(2019,12))
+ch.kof.barometer <- get_time_series("ch.kof.barometer")$"ch.kof.barometer"
+ch.kof.barometer <- window(ch.kof.barometer, end = c(2019,12))
 
 vintages <- kofdata::get_dataset("baro_vintages_monthly")
 vintages_kofbarometer <- vintages[1:69]
@@ -10,8 +10,8 @@ vintages_kofbarometer <- vintages[1:69]
 ch.kof.ie.retro.ch_total.ind.d11 <- get_time_series("ch.kof.ie.retro.ch_total.ind.d11")$"ch.kof.ie.retro.ch_total.ind.d11"
 ch.kof.ie.retro.ch_total.ind.d11 <- window(ch.kof.ie.retro.ch_total.ind.d11, end = c(2019,4))
 
-kof_ts <- c(list(kofbarometer), vintages_kofbarometer, list(ch.kof.ie.retro.ch_total.ind.d11))
-names(kof_ts) <- c("kofbarometer", names(vintages_kofbarometer), "ch.kof.ie.retro.ch_total.ind.d11")
+kof_ts <- c(list(ch.kof.barometer), vintages_kofbarometer, list(ch.kof.ie.retro.ch_total.ind.d11))
+names(kof_ts) <- c("ch.kof.barometer", names(vintages_kofbarometer), "ch.kof.ie.retro.ch_total.ind.d11")
 
 # example with xts object and metadata
 
