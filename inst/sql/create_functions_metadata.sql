@@ -277,6 +277,31 @@ $$ LANGUAGE PLPGSQL
 SECURITY DEFINER
 SET search_path = timeseries, pg_temp;
 
+
+-- Read metadata for all series in a dataset
+--
+-- param p_dataset: the dataset_id to read
+-- param p_valid_on: see read_metadata_raw
+CREATE OR REPLACE FUNCTION timeseries.read_dataset_metadata_raw(p_dataset TEXT,
+                                                                p_valid_on DATE DEFAULT CURRENT_DATE)
+RETURNS TABLE (ts_key TEXT, metadata JSONB)
+AS $$
+BEGIN
+  CREATE TEMPORARY TABLE tmp_ts_read_keys
+  ON COMMIT DROP
+  AS (
+    SELECT cat.ts_key
+    FROM timeseries.catalog AS cat
+    WHERE set_id = p_dataset
+  );
+
+  RETURN QUERY
+  SELECT * FROM timeseries.read_metadata_raw(p_valid_on::DATE);
+END;
+$$ LANGUAGE PLPGSQL
+SECURITY DEFINER
+SET search_path = timeseries, pg_temp;
+
 -- Read localized metadata in raw (i.e. json) form
 --
 -- tmp_ts_read_keys has columns (ts_key TEXT)
@@ -360,6 +385,32 @@ $$ LANGUAGE PLPGSQL
 SECURITY DEFINER
 SET search_path = timeseries, pg_temp;
 
+
+-- Read localized metadata for all series in a dataset
+--
+-- param p_dataset: the dataset_id to read
+-- param p_valid_on: see read_metadata_raw
+-- param p_log: see read_metadata_raw
+CREATE OR REPLACE FUNCTION timeseries.read_dataset_metadata_localized_raw(p_dataset TEXT,
+                                                                          p_valid_on DATE DEFAULT CURRENT_DATE,
+                                                                          p_loc TEXT DEFAULT 'en')
+RETURNS TABLE (ts_key TEXT, metadata JSONB)
+AS $$
+BEGIN
+  CREATE TEMPORARY TABLE tmp_ts_read_keys
+  ON COMMIT DROP
+  AS (
+    SELECT cat.ts_key
+    FROM timeseries.catalog AS cat
+    WHERE set_id = p_dataset
+  );
+
+  RETURN QUERY
+  SELECT * FROM timeseries.read_metadata_localized_raw(p_valid_on::DATE, p_loc::TEXT);
+END;
+$$ LANGUAGE PLPGSQL
+SECURITY DEFINER
+SET search_path = timeseries, pg_temp;
 
 -- Get the latest unlocalized metadata validities for keys
 --
