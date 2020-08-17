@@ -6,7 +6,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>Install timeseriesdb System Tables — setup_sql_tables • timeseriesdb</title>
+<title>Update Description and/or Metadata of a Dataset — db_dataset_update • timeseriesdb</title>
 
 
 <!-- jquery -->
@@ -39,11 +39,8 @@
 
 
 
-<meta property="og:title" content="Install timeseriesdb System Tables — setup_sql_tables" />
-<meta property="og:description" content="Installs tables needed to operated timeseriesdb in
-a given PostgreSQL schema. The tables use a default SQL file installed
-with the package to generate SQL tables. The default schema 'timeseries'
-can be replaced using the 'schema' parameter." />
+<meta property="og:title" content="Update Description and/or Metadata of a Dataset — db_dataset_update" />
+<meta property="og:description" content="Update Description and/or Metadata of a Dataset" />
 
 
 
@@ -138,30 +135,52 @@ can be replaced using the 'schema' parameter." />
 <div class="row">
   <div class="col-md-9 contents">
     <div class="page-header">
-    <h1>Install timeseriesdb System Tables</h1>
-    <small class="dont-index">Source: <a href='https://github.com/mbannert/timeseriesdb/blob/master/R/setup_sql.R'><code>R/setup_sql.R</code></a></small>
-    <div class="hidden name"><code>setup_sql_tables.Rd</code></div>
+    <h1>Update Description and/or Metadata of a Dataset</h1>
+    <small class="dont-index">Source: <a href='https://github.com/mbannert/timeseriesdb/blob/master/R/datasets.R'><code>R/datasets.R</code></a></small>
+    <div class="hidden name"><code>db_dataset_update.Rd</code></div>
     </div>
 
     <div class="ref-description">
-    <p>Installs tables needed to operated timeseriesdb in
-a given PostgreSQL schema. The tables use a default SQL file installed
-with the package to generate SQL tables. The default schema 'timeseries'
-can be replaced using the 'schema' parameter.</p>
+    <p>Update Description and/or Metadata of a Dataset</p>
     </div>
 
-    <pre class="usage"><span class='fu'>setup_sql_tables</span>(<span class='no'>con</span>, <span class='kw'>schema</span> <span class='kw'>=</span> <span class='st'>"timeseries"</span>, <span class='kw'>prnt</span> <span class='kw'>=</span> <span class='no'>identity</span>)</pre>
+    <pre class="usage"><span class='fu'>db_dataset_update</span>(
+  <span class='no'>con</span>,
+  <span class='no'>set_name</span>,
+  <span class='kw'>description</span> <span class='kw'>=</span> <span class='fl'>NA</span>,
+  <span class='kw'>metadata</span> <span class='kw'>=</span> <span class='fl'>NA</span>,
+  <span class='kw'>metadata_update_mode</span> <span class='kw'>=</span> <span class='st'>"update"</span>,
+  <span class='kw'>schema</span> <span class='kw'>=</span> <span class='st'>"timeseries"</span>
+)</pre>
 
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
     <table class="ref-arguments">
     <colgroup><col class="name" /><col class="desc" /></colgroup>
     <tr>
       <th>con</th>
-      <td><p>PostgreSQL connection object created by the RPostgres package.</p></td>
+      <td><p>RPostgres connection object</p></td>
+    </tr>
+    <tr>
+      <th>set_name</th>
+      <td><p>character Name of the set do update</p></td>
+    </tr>
+    <tr>
+      <th>description</th>
+      <td><p>character New description. If set to NA (default) the description is left untouched</p></td>
+    </tr>
+    <tr>
+      <th>metadata</th>
+      <td><p>list Metadata update (see metadata_update_mode)</p></td>
+    </tr>
+    <tr>
+      <th>metadata_update_mode</th>
+      <td><p>character One of "update" or "overwrite". If set to "update",
+new fields in the list are added to the existing metadata and existing fields overwritten.
+If NA nothing happens in update mode. If set to "overwrite" ALL existing metadata is replaced.</p></td>
     </tr>
     <tr>
       <th>schema</th>
-      <td><p>character schema name, defaults to 'timeseries'.</p></td>
+      <td><p>Timeseries Schema name</p></td>
     </tr>
     </table>
 

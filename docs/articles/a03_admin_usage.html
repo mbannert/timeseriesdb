@@ -6,19 +6,19 @@
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Admin Usage • timeseriesdb</title>
-<!-- jquery --><script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js" integrity="sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8=" crossorigin="anonymous"></script><!-- Bootstrap --><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha256-916EbMg70RQy9LHiGkXzG8hSg9EdNy97GazNG/aiY1w=" crossorigin="anonymous">
-<script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha256-U5ZEeKfGNOja007MMD3YBI0A3OSZOQbeG6z2f2Y0hu8=" crossorigin="anonymous"></script><!-- Font Awesome icons --><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.7.1/css/all.min.css" integrity="sha256-nAmazAk6vS34Xqo0BSrTb+abbtFlgsFK7NKSi6o7Y78=" crossorigin="anonymous">
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.7.1/css/v4-shims.min.css" integrity="sha256-6qHlizsOWFskGlwVOKuns+D1nB6ssZrHQrNj1wGplHc=" crossorigin="anonymous">
-<!-- clipboard.js --><script src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/2.0.4/clipboard.min.js" integrity="sha256-FiZwavyI2V6+EXO1U+xzLG3IKldpiTFf3153ea9zikQ=" crossorigin="anonymous"></script><!-- headroom.js --><script src="https://cdnjs.cloudflare.com/ajax/libs/headroom/0.9.4/headroom.min.js" integrity="sha256-DJFC1kqIhelURkuza0AvYal5RxMtpzLjFhsnVIeuk+U=" crossorigin="anonymous"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/headroom/0.9.4/jQuery.headroom.min.js" integrity="sha256-ZX/yNShbjqsohH1k95liqY9Gd8uOiE1S4vZc+9KQ1K4=" crossorigin="anonymous"></script><!-- pkgdown --><link href="../pkgdown.css" rel="stylesheet">
+<!-- jquery --><script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.4.1/jquery.min.js" integrity="sha256-CSXorXvZcTkaix6Yvo6HppcZGetbYMGWSFlBw8HfCJo=" crossorigin="anonymous"></script><!-- Bootstrap --><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.4.1/css/bootstrap.min.css" integrity="sha256-bZLfwXAP04zRMK2BjiO8iu9pf4FbLqX6zitd+tIvLhE=" crossorigin="anonymous">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.4.1/js/bootstrap.min.js" integrity="sha256-nuL8/2cJ5NDSSwnKD8VqreErSWHtnEP9E7AySL+1ev4=" crossorigin="anonymous"></script><!-- bootstrap-toc --><link rel="stylesheet" href="../bootstrap-toc.css">
+<script src="../bootstrap-toc.js"></script><!-- Font Awesome icons --><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.12.1/css/all.min.css" integrity="sha256-mmgLkCYLUQbXn0B1SRqzHar6dCnv9oZFPEC1g1cwlkk=" crossorigin="anonymous">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.12.1/css/v4-shims.min.css" integrity="sha256-wZjR52fzng1pJHwx4aV2AO3yyTOXrcDW7jBpJtTwVxw=" crossorigin="anonymous">
+<!-- clipboard.js --><script src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/2.0.6/clipboard.min.js" integrity="sha256-inc5kl9MA1hkeYUt+EC3BhlIgyp/2jDIyBLS6k3UxPI=" crossorigin="anonymous"></script><!-- headroom.js --><script src="https://cdnjs.cloudflare.com/ajax/libs/headroom/0.11.0/headroom.min.js" integrity="sha256-AsUX4SJE1+yuDu5+mAVzJbuYNPHj/WroHuZ8Ir/CkE0=" crossorigin="anonymous"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/headroom/0.11.0/jQuery.headroom.min.js" integrity="sha256-ZX/yNShbjqsohH1k95liqY9Gd8uOiE1S4vZc+9KQ1K4=" crossorigin="anonymous"></script><!-- pkgdown --><link href="../pkgdown.css" rel="stylesheet">
 <script src="../pkgdown.js"></script><meta property="og:title" content="Admin Usage">
-<meta property="og:description" content="">
-<meta name="twitter:card" content="summary">
+<meta property="og:description" content="timeseriesdb">
 <!-- mathjax --><script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/MathJax.js" integrity="sha256-nvJJv9wWKEm88qvoQl9ekL2J+k/RWIsaSScxxlsrv8k=" crossorigin="anonymous"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/config/TeX-AMS-MML_HTMLorMML.js" integrity="sha256-84DKXVJXs0/F8OTMzX4UR909+jtl4G7SPypPavF+GfA=" crossorigin="anonymous"></script><!--[if lt IE 9]>
 <script src="https://oss.maxcdn.com/html5shiv/3.7.3/html5shiv.min.js"></script>
 <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
 <![endif]-->
 </head>
-<body>
+<body data-spy="scroll" data-target="#toc">
     <div class="container template-article">
       <header><div class="navbar navbar-default navbar-fixed-top" role="navigation">
   <div class="container">
@@ -76,7 +76,7 @@
       </ul>
 <ul class="nav navbar-nav navbar-right">
 <li>
-  <a href="https://github.com/mbannert/timeseriesdb">
+  <a href="https://github.com/mbannert/timeseriesdb/">
     <span class="fab fa fab fa-github fa-lg"></span>
      
   </a>
@@ -94,11 +94,11 @@
       </header><div class="row">
   <div class="col-md-9 contents">
     <div class="page-header toc-ignore">
-      <h1>Admin Usage</h1>
+      <h1 data-toc-skip>Admin Usage</h1>
             <h3 class="subtitle">Administrator Documentation</h3>
                         <h4 class="author">Matthias Bannert and Severin Thöni</h4>
             
-            <h4 class="date">2020-07-21</h4>
+            <h4 class="date">2020-08-17</h4>
       
       <small class="dont-index">Source: <a href="https://github.com/mbannert/timeseriesdb/blob/master/vignettes/a03_admin_usage.Rmd"><code>vignettes/a03_admin_usage.Rmd</code></a></small>
       <div class="hidden name"><code>a03_admin_usage.Rmd</code></div>
@@ -124,56 +124,50 @@
 <div id="registering-a-new-dataset" class="section level3">
 <h3 class="hasAnchor">
 <a href="#registering-a-new-dataset" class="anchor"></a>Registering a New Dataset</h3>
-<div class="sourceCode" id="cb1"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb1-1" data-line-number="1"><span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span>(kofdata)</a>
-<a class="sourceLine" id="cb1-2" data-line-number="2">arr &lt;-<span class="st"> </span><span class="kw"><a href="https://rdrr.io/pkg/kofdata/man/get_time_series.html">get_time_series</a></span>(<span class="st">"ch.zrh_airport.arrival.total"</span>)</a>
-<a class="sourceLine" id="cb1-3" data-line-number="3">dep &lt;-<span class="st"> </span><span class="kw"><a href="https://rdrr.io/pkg/kofdata/man/get_time_series.html">get_time_series</a></span>(<span class="st">"ch.zrh_airport.departure.total"</span>)</a>
-<a class="sourceLine" id="cb1-4" data-line-number="4"></a>
-<a class="sourceLine" id="cb1-5" data-line-number="5"><span class="kw"><a href="../reference/store_time_series.html">store_time_series</a></span>(con, <span class="kw"><a href="https://rdrr.io/r/base/c.html">c</a></span>(arr,dep), <span class="dt">schema =</span> <span class="st">"tsdb_test"</span>)</a>
-<a class="sourceLine" id="cb1-6" data-line-number="6"></a>
-<a class="sourceLine" id="cb1-7" data-line-number="7"><span class="kw">db_dataset_create</span>(con, <span class="st">"ch.zrh_airport"</span>,</a>
-<a class="sourceLine" id="cb1-8" data-line-number="8">                  <span class="dt">set_description =</span> <span class="st">"Arrivals and Departures ZH Airport"</span>,</a>
-<a class="sourceLine" id="cb1-9" data-line-number="9">                  <span class="dt">schema =</span> <span class="st">"tsdb_test"</span>)</a>
-<a class="sourceLine" id="cb1-10" data-line-number="10"></a>
-<a class="sourceLine" id="cb1-11" data-line-number="11"><span class="co"># see, the new dataset is there... </span></a>
-<a class="sourceLine" id="cb1-12" data-line-number="12"><span class="kw">db_dataset_list</span>(con, <span class="dt">schema =</span> <span class="st">"tsdb_test"</span>)</a></code></pre></div>
-<p>Apparently, the dataset is empty. We need to assign some time series first. Make sure the time series you want to register to a set are actually around. Unlike <code>store_time_series</code> assigning series to a dataset is <em>not</em> a vintage level operation, it applies to all versions of a series. This is why time series are assigned to the ‘default’ schema at first when they are stored and can be moved later on.</p>
-<div class="sourceCode" id="cb2"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb2-1" data-line-number="1"><span class="kw">db_ts_assign_dataset</span>(con,</a>
-<a class="sourceLine" id="cb2-2" data-line-number="2">                  <span class="dt">ts_keys =</span> <span class="kw"><a href="https://rdrr.io/r/base/c.html">c</a></span>(<span class="st">"ch.zrh_airport.arrival.total"</span>,</a>
-<a class="sourceLine" id="cb2-3" data-line-number="3">                              <span class="st">"ch.zrh_airport.departure.total"</span>),</a>
-<a class="sourceLine" id="cb2-4" data-line-number="4">                  <span class="dt">set_name =</span> <span class="st">"ch.zrh_airport"</span>,</a>
-<a class="sourceLine" id="cb2-5" data-line-number="5">                  <span class="dt">schema =</span> <span class="st">"tsdb_test"</span>)</a></code></pre></div>
-<p><strong>Note</strong> that there is no such thing as remove time series from dataset. Either you delete a time series entirely or you assign it to another dataset. Think of a registry similar to a software registry.</p>
+<div class="sourceCode" id="cb1"><html><body><pre class="r"><span class="fu"><a href="https://rdrr.io/r/base/library.html">library</a></span>(<span class="no">kofdata</span>)
+<span class="no">arr</span> <span class="kw">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/kofdata/man/get_time_series.html">get_time_series</a></span>(<span class="st">"ch.zrh_airport.arrival.total"</span>)
+<span class="no">dep</span> <span class="kw">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/kofdata/man/get_time_series.html">get_time_series</a></span>(<span class="st">"ch.zrh_airport.departure.total"</span>)
+
+<span class="fu"><a href="../reference/store_time_series.html">store_time_series</a></span>(<span class="no">con</span>, <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span>(<span class="no">arr</span>,<span class="no">dep</span>), <span class="kw">schema</span> <span class="kw">=</span> <span class="st">"tsdb_test"</span>)
+
+<span class="fu"><a href="../reference/db_dataset_create.html">db_dataset_create</a></span>(<span class="no">con</span>, <span class="st">"ch.zrh_airport"</span>,
+                  <span class="kw">set_description</span> <span class="kw">=</span> <span class="st">"Arrivals and Departures ZH Airport"</span>,
+                  <span class="kw">schema</span> <span class="kw">=</span> <span class="st">"tsdb_test"</span>)
+
+<span class="co"># see, the new dataset is there... </span>
+<span class="fu"><a href="../reference/db_dataset_list.html">db_dataset_list</a></span>(<span class="no">con</span>, <span class="kw">schema</span> <span class="kw">=</span> <span class="st">"tsdb_test"</span>)</pre></body></html></div>
+<p>Apparently, the dataset is empty. We need to assign some time series first.</p>
 </div>
 <div id="danger-zone-deleting-datasets" class="section level3">
 <h3 class="hasAnchor">
 <a href="#danger-zone-deleting-datasets" class="anchor"></a>DANGER ZONE: Deleting Datasets</h3>
 <p>Admin users can delete an entire dataset. The power to do so comes with great responsibility as it will delete not only the dataset registration entry but ALL time series, their versions and all meta information associated to the dataset AND the time series. A deleted dataset CANNOT by restored. The only way to get a deleted dataset back is a PostgreSQL level backup outside of {timeseriesdb}.</p>
-<div class="sourceCode" id="cb3"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb3-1" data-line-number="1"><span class="kw">db_dataset_delete</span>(con, <span class="st">"dataset_name"</span>, <span class="dt">schema =</span> <span class="st">"tsdb_test"</span>)</a></code></pre></div>
+<div class="sourceCode" id="cb2"><html><body><pre class="r"><span class="fu"><a href="../reference/db_dataset_delete.html">db_dataset_delete</a></span>(<span class="no">con</span>, <span class="st">"dataset_name"</span>, <span class="kw">schema</span> <span class="kw">=</span> <span class="st">"tsdb_test"</span>)</pre></body></html></div>
 <p>Note, datasets can only be deleted interactively as you have to confirm the deletion of a dataset by typing its name to the console.</p>
 </div>
 <div id="trimming-history" class="section level3">
 <h3 class="hasAnchor">
 <a href="#trimming-history" class="anchor"></a>Trimming History</h3>
-<p>{timeseriesdb} stores every new update of a registered time series as a new version of this series. That way it keeps track of all changes and revision. For unrevised series and/or series that are updated very frequently, this behavior may be over the top and admins may want to delete versions that are older than a particular threshold. {timeseriesdb} offer <code>db_dataset_trim_history()</code> and <code>db_ts_trim_history()</code> to facilitate this type of maintenance work. In production setups this functions might be used in batch mode / workflow automation.</p>
+<p>{timeseriesdb} stores every new update of a registered time series as a new version of this series. That way it keeps track of all changes and revision. For unrevised series and/or series that are updated very frequently, this behavior may be over the top and admins may want to delete versions that are older than a particular threshold. {timeseriesdb} offer <a href="../reference/db_dataset_trim_history.html">db_dataset_trim_history()</a> and <a href="../reference/db_ts_trim_history.html">db_ts_trim_history()</a> to facilitate this type of maintenance work. In production setups this functions might be used in batch mode / workflow automation.</p>
 </div>
 </div>
 <div id="release-management" class="section level2">
 <h2 class="hasAnchor">
 <a href="#release-management" class="anchor"></a>Release Management</h2>
 <p>A new feature introduced with {timeseriesdb} 1.0 is its support for release management. In official and economic statistics, data are usually updated periodically. Often data are released on release date known in advance. Data may be available inside an institution but only be released later on. In order to facilitate the publication process.</p>
-<div class="sourceCode" id="cb4"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb4-1" data-line-number="1"><span class="kw">db_release_create</span>(con,</a>
-<a class="sourceLine" id="cb4-2" data-line-number="2">                  <span class="dt">id =</span> <span class="st">"jul_2020_air"</span>,</a>
-<a class="sourceLine" id="cb4-3" data-line-number="3">                  <span class="dt">datasets =</span> <span class="st">"ch.zrh_airport"</span>,</a>
-<a class="sourceLine" id="cb4-4" data-line-number="4">                  <span class="dt">title =</span> <span class="st">"Airport Data from Zurich Airport"</span>,</a>
-<a class="sourceLine" id="cb4-5" data-line-number="5">                  <span class="dt">release_date =</span> <span class="st">"2020-07-08"</span>,</a>
-<a class="sourceLine" id="cb4-6" data-line-number="6">                  <span class="dt">target_year =</span> <span class="dv">2020</span>,</a>
-<a class="sourceLine" id="cb4-7" data-line-number="7">                  <span class="dt">target_period =</span> <span class="dv">7</span>,</a>
-<a class="sourceLine" id="cb4-8" data-line-number="8">                  <span class="dt">target_frequency =</span> <span class="dv">12</span>,</a>
-<a class="sourceLine" id="cb4-9" data-line-number="9">                  <span class="dt">note =</span> <span class="st">"Just a test release"</span>,</a>
-<a class="sourceLine" id="cb4-10" data-line-number="10">                  <span class="dt">schema =</span> <span class="st">"tsdb_test"</span></a>
-<a class="sourceLine" id="cb4-11" data-line-number="11">                  )</a></code></pre></div>
+<div class="sourceCode" id="cb3"><html><body><pre class="r"><span class="fu"><a href="../reference/db_release_create.html">db_release_create</a></span>(<span class="no">con</span>,
+                  <span class="kw">id</span> <span class="kw">=</span> <span class="st">"jul_2020_air"</span>,
+                  <span class="kw">datasets</span> <span class="kw">=</span> <span class="st">"ch.zrh_airport"</span>,
+                  <span class="kw">title</span> <span class="kw">=</span> <span class="st">"Airport Data from Zurich Airport"</span>,
+                  <span class="kw">release_date</span> <span class="kw">=</span> <span class="st">"2020-07-08"</span>,
+                  <span class="kw">target_year</span> <span class="kw">=</span> <span class="fl">2020</span>,
+                  <span class="kw">target_period</span> <span class="kw">=</span> <span class="fl">7</span>,
+                  <span class="kw">target_frequency</span> <span class="kw">=</span> <span class="fl">12</span>,
+                  <span class="kw">note</span> <span class="kw">=</span> <span class="st">"Just a test release"</span>,
+                  <span class="kw">schema</span> <span class="kw">=</span> <span class="st">"tsdb_test"</span>
+                  )</pre></body></html></div>
 <p>In {timeseriesdb}, releases have an id which uniquely identifies the release. We recommend to choose a short human readable text identifier. Releases relate to a dataset and therefore are assigned at the dataset level. This is a good reason to make use of the dataset feature as opposed to storing all series in the default set. Releases have a target year and target period because the release date itself may not safely identify the period it relates to (assume July data get released at the beginning of August).</p>
-<p><code>db_release_update()</code> updates a release date and <code>db_release_cancel()</code> lets an admin cancel a release. Past releases cannot be cancelled. Note that, there are several release related functions that are not restricted to admins and are therefore discussed in the function reference and the user vignettes.</p>
+<p><a href="../reference/db_release_update.html">db_release_update()</a> updates a release date and [db_release_cancel(db_release_cancel.html)] lets an admin cancel a release. Past releases cannot be cancelled. Note that, there are several release related functions that are not restricted to admins and are therefore discussed in the function reference and the user vignettes.</p>
 </div>
 <div id="access" class="section level2">
 <h2 class="hasAnchor">
@@ -183,48 +177,39 @@
 <h3 class="hasAnchor">
 <a href="#access-levels" class="anchor"></a>Access Levels</h3>
 <p>{timeseriesdb} can control access at the time series and even at the version level. The basic installation ships with three access levels: public, main and restricted. The idea of the public level is that every users with access to the {timeseriesdb} database schema can read public series. The idea of the ‘main’ level is to give all users inside an organization access to the assigned data. ‘restricted’ is designed to limit access to subgroups within an organization. We guess you see where this is going. By adding further access levels, admins can add more narrow user groups for parts of the data.</p>
-<p><code>db_access_list_levels()</code> lists all access levels available for a schema. New levels are created easily. Note also that new levels can be made the default.</p>
-<div class="sourceCode" id="cb5"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb5-1" data-line-number="1"><span class="kw">db_access_create_level</span>(con, </a>
-<a class="sourceLine" id="cb5-2" data-line-number="2">                       <span class="dt">access_level_name =</span>  <span class="st">"management"</span>,</a>
-<a class="sourceLine" id="cb5-3" data-line-number="3">                       <span class="dt">access_level_description =</span> <span class="st">"series only available"</span>,</a>
-<a class="sourceLine" id="cb5-4" data-line-number="4">                       <span class="dt">access_level_default =</span> <span class="ot">TRUE</span>,</a>
-<a class="sourceLine" id="cb5-5" data-line-number="5">                       <span class="dt">schema =</span> <span class="st">"tsdb_test"</span></a>
-<a class="sourceLine" id="cb5-6" data-line-number="6">                       )</a></code></pre></div>
-<p>Obviously only one access level can be ‘default’ at a time. Defaults can be set post creation as well using <code>db_access_set_default()</code>. To delete levels, run <code>db_access_delete_level()</code></p>
+<p><a href="../reference/db_access_list_levels.html">db_access_list_levels()</a> lists all access levels available for a schema. New levels are created easily. Note also that new levels can be made the default.</p>
+<div class="sourceCode" id="cb4"><html><body><pre class="r"><span class="fu"><a href="../reference/db_access_create_level.html">db_access_create_level</a></span>(<span class="no">con</span>,
+                       <span class="kw">access_level_name</span> <span class="kw">=</span>  <span class="st">"management"</span>,
+                       <span class="kw">access_level_description</span> <span class="kw">=</span> <span class="st">"series only available"</span>,
+                       <span class="kw">access_level_default</span> <span class="kw">=</span> <span class="fl">TRUE</span>,
+                       <span class="kw">schema</span> <span class="kw">=</span> <span class="st">"tsdb_test"</span>
+                       )</pre></body></html></div>
+<p>Obviously only one access level can be ‘default’ at a time. Defaults can be set post creation as well using <a href="../reference/db_access_set_default.html">db_access_set_default()</a>. To delete levels, run <a href="../reference/db_access_delete_level.html">db_access_delete_level()</a>.</p>
 </div>
 <div id="assigning-access" class="section level3">
 <h3 class="hasAnchor">
 <a href="#assigning-access" class="anchor"></a>Assigning Access</h3>
-<p>To assign an access level to a single time series use <code>db_ts_change_access()</code>, to assign an access level to an entire dataset, i.e., to all series in a set, use <code>db_ts_change_access_dataset()</code>.</p>
+<p>To assign an access level to a single time series use <a href="../reference/db_ts_change_access.html">db_ts_change_access()</a>, to assign an access level to an entire dataset, i.e., to all series in a set, use <a href="../reference/db_ts_change_access_dataset.html">db_ts_change_access_dataset()</a>.</p>
 </div>
 </div>
   </div>
 
-  <div class="col-md-3 hidden-xs hidden-sm" id="sidebar">
+  <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">
 
-        <div id="tocnav">
-      <h2 class="hasAnchor">
-<a href="#tocnav" class="anchor"></a>Contents</h2>
-      <ul class="nav nav-pills nav-stacked">
-<li><a href="#starting-point">Starting Point</a></li>
-      <li><a href="#general-note">General Note</a></li>
-      <li><a href="#datasets">Datasets</a></li>
-      <li><a href="#release-management">Release Management</a></li>
-      <li><a href="#access">Access</a></li>
-      </ul>
+        <nav id="toc" data-toggle="toc"><h2 data-toc-skip>Contents</h2>
+    </nav>
 </div>
-      </div>
 
 </div>
 
 
 
       <footer><div class="copyright">
-  <p>Developed by 'Matthias Bannert'.</p>
+  <p>Developed by Matthias Bannert, Severin Thöni.</p>
 </div>
 
 <div class="pkgdown">
-  <p>Site built with <a href="https://pkgdown.r-lib.org/">pkgdown</a> 1.4.1.</p>
+  <p>Site built with <a href="https://pkgdown.r-lib.org/">pkgdown</a> 1.5.1.</p>
 </div>
 
       </footer>

@@ -6,7 +6,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>Install timeseriesdb System Tables — setup_sql_tables • timeseriesdb</title>
+<title>Irrevocably delete all time series in a set and the set itself — db_dataset_delete • timeseriesdb</title>
 
 
 <!-- jquery -->
@@ -39,11 +39,10 @@
 
 
 
-<meta property="og:title" content="Install timeseriesdb System Tables — setup_sql_tables" />
-<meta property="og:description" content="Installs tables needed to operated timeseriesdb in
-a given PostgreSQL schema. The tables use a default SQL file installed
-with the package to generate SQL tables. The default schema 'timeseries'
-can be replaced using the 'schema' parameter." />
+<meta property="og:title" content="Irrevocably delete all time series in a set and the set itself — db_dataset_delete" />
+<meta property="og:description" content="This function can only be used manually.
+It asks the user to manually input confirmation to prevent accidental
+unintentional deletion of datasets." />
 
 
 
@@ -138,33 +137,39 @@ can be replaced using the 'schema' parameter." />
 <div class="row">
   <div class="col-md-9 contents">
     <div class="page-header">
-    <h1>Install timeseriesdb System Tables</h1>
-    <small class="dont-index">Source: <a href='https://github.com/mbannert/timeseriesdb/blob/master/R/setup_sql.R'><code>R/setup_sql.R</code></a></small>
-    <div class="hidden name"><code>setup_sql_tables.Rd</code></div>
+    <h1>Irrevocably delete all time series in a set and the set itself</h1>
+    <small class="dont-index">Source: <a href='https://github.com/mbannert/timeseriesdb/blob/master/R/datasets.R'><code>R/datasets.R</code></a></small>
+    <div class="hidden name"><code>db_dataset_delete.Rd</code></div>
     </div>
 
     <div class="ref-description">
-    <p>Installs tables needed to operated timeseriesdb in
-a given PostgreSQL schema. The tables use a default SQL file installed
-with the package to generate SQL tables. The default schema 'timeseries'
-can be replaced using the 'schema' parameter.</p>
+    <p>This function can only be used manually.
+It asks the user to manually input confirmation to prevent accidental
+unintentional deletion of datasets.</p>
     </div>
 
-    <pre class="usage"><span class='fu'>setup_sql_tables</span>(<span class='no'>con</span>, <span class='kw'>schema</span> <span class='kw'>=</span> <span class='st'>"timeseries"</span>, <span class='kw'>prnt</span> <span class='kw'>=</span> <span class='no'>identity</span>)</pre>
+    <pre class="usage"><span class='fu'>db_dataset_delete</span>(<span class='no'>con</span>, <span class='no'>set_name</span>, <span class='kw'>schema</span> <span class='kw'>=</span> <span class='st'>"timeseries"</span>)</pre>
 
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
     <table class="ref-arguments">
     <colgroup><col class="name" /><col class="desc" /></colgroup>
     <tr>
       <th>con</th>
-      <td><p>PostgreSQL connection object created by the RPostgres package.</p></td>
+      <td><p>PostgreSQL connection</p></td>
+    </tr>
+    <tr>
+      <th>set_name</th>
+      <td><p>character Name of the set to delete</p></td>
     </tr>
     <tr>
       <th>schema</th>
-      <td><p>character schema name, defaults to 'timeseries'.</p></td>
+      <td><p>character Name of timeseries schema</p></td>
     </tr>
     </table>
 
+    <h2 class="hasAnchor" id="value"><a class="anchor" href="#value"></a>Value</h2>
+
+    <p>character name of the deleted set, NA in case of an error.</p>
 
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">
