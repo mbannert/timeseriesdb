@@ -8,7 +8,7 @@
 
 -- Fill le catalog
 -- These will all have the default dataset
-INSERT INTO newschema.catalog ts_key (
+INSERT INTO newschema.catalog (
   SELECT ts_key
   FROM oldschema.timeseries_main
   LIMIT 1000

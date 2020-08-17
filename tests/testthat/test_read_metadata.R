@@ -23,7 +23,7 @@ test_that("is passes correct args to db_call_function unlocalized", {
                   1,
                   "con",
                   "read_metadata_raw",
-                  list(as.Date("2020-01-01")),
+                  list(valid_on = as.Date("2020-01-01")),
                   "schema")
     }
   )
@@ -47,7 +47,7 @@ test_that("is passes correct args to db_call_function localized", {
                   1,
                   "con",
                   "read_metadata_localized_raw",
-                  list(as.Date("2020-01-01"), "de"),
+                  list(valid_on = as.Date("2020-01-01"), loc = "de"),
                   "schema")
     }
   )
@@ -192,4 +192,26 @@ test_with_fresh_db(con_admin, "reading localized edge via regex", {
                  ts_key = c("vts1", "vts2"),
                  validity = Sys.Date()
                ))
+})
+
+test_with_fresh_db(con_admin, "SQL-only test for array version of read localized metadata", {
+  out <- dbGetQuery(con_reader, "SELECT * FROM tsdb_test.read_metadata_localized_raw('{vts1, vts2}'::TEXT[], NULL, 'en')")
+
+  expect_equal(
+    out$ts_key,
+    c(
+      "vts1",
+      "vts2"
+    )
+  )
+
+  expect_match(
+    out$metadata[[1]],
+    '"label": "vintage time series 1"'
+  )
+
+  expect_match(
+    out$metadata[[2]],
+    '"label": "vintage time series 2"'
+  )
 })

@@ -11,3 +11,4 @@ GRANT timeseries_access_main to timeseries_access_restricted;
 CREATE ROLE timeseries_admin NOLOGIN;
 GRANT timeseries_writer TO timeseries_admin;
 GRANT timeseries_access_restricted TO timeseries_admin;
+GRANT ALL ON SCHEMA timeseries TO timeseries_admin;

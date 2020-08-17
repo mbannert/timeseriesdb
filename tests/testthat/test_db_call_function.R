@@ -30,8 +30,8 @@ test_that("db_call_function with args", {
     dbGetQuery = fake_dbGetQuery,
     {
       args <- list(
-        a = 1,
-        b = "banana"
+        1,
+        "banana"
       )
 
       db_call_function("con", "my_function", args)
@@ -41,6 +41,49 @@ test_that("db_call_function with args", {
                   "con",
                   "SELECT * FROM \"timeseries\".\"my_function\"($1, $2)",
                   args)
+    }
+  )
+})
+
+test_that("db_call_function with named args", {
+  fake_dbGetQuery = mock(list(my_function = "a result"))
+
+  with_mock(
+    dbQuoteIdentifier = fake_dbQuoteIdentifier,
+    dbGetQuery = fake_dbGetQuery,
+    {
+      args <- list(
+        arga = 1,
+        argb = "banana"
+      )
+
+      db_call_function("con", "my_function", args)
+
+      expect_args(fake_dbGetQuery,
+                  1,
+                  "con",
+                  "SELECT * FROM \"timeseries\".\"my_function\"(arga := $1, argb := $2)",
+                  unname(args))
+    }
+  )
+})
+
+test_that("db_call_function throws if only some args are named", {
+  fake_dbGetQuery = mock()
+
+  with_mock(
+    dbQuoteIdentifier = fake_dbQuoteIdentifier,
+    dbGetQuery = fake_dbGetQuery,
+    {
+      args <- list(
+        hans = 1,
+        "banana"
+      )
+
+      expect_error(
+        db_call_function("con", "my_function", args),
+        "Either all"
+      )
     }
   )
 })
