@@ -341,6 +341,7 @@ BEGIN
     LEFT JOIN timeseries.metadata_localized AS md
     USING (ts_key)
     WHERE locale = locale_in
+    OR locale IS NULL
     ORDER BY rd.ts_key, md.validity DESC;
 END;
 $$ LANGUAGE PLPGSQL
