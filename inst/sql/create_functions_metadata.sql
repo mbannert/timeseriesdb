@@ -310,7 +310,7 @@ AS $$
 BEGIN
   RETURN QUERY SELECT DISTINCT ON (rd.ts_key) rd.ts_key, md.validity
     FROM tmp_ts_read_keys AS rd
-    JOIN timeseries.metadata AS md
+    LEFT JOIN timeseries.metadata AS md
     USING (ts_key)
     ORDER BY ts_key, validity DESC;
 END;
@@ -338,7 +338,7 @@ AS $$
 BEGIN
   RETURN QUERY SELECT DISTINCT ON (rd.ts_key) rd.ts_key, md.validity
     FROM tmp_ts_read_keys AS rd
-    JOIN timeseries.metadata_localized AS md
+    LEFT JOIN timeseries.metadata_localized AS md
     USING (ts_key)
     WHERE locale = locale_in
     ORDER BY rd.ts_key, md.validity DESC;

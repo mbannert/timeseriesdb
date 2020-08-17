@@ -157,6 +157,18 @@ test_with_fresh_db(con_admin, "reading unlocalized edge", {
                ))
 })
 
+test_with_fresh_db(con_admin, "reading unlocalized edge with missing key", {
+  result <- db_meta_get_last_update(
+    con_reader,
+    c("vts1", "blananagram"),
+    schema = "tsdb_test")
+  expect_equal(result,
+               data.table(
+                 ts_key = c("blananagram", "vts1"),
+                 validity = c(as.Date(NA), Sys.Date() + 1)
+               ))
+})
+
 test_with_fresh_db(con_admin, "reading unlocalized edge via regex", {
   result <- db_meta_get_last_update(con_reader,
                                      c("vts"),
@@ -178,6 +190,18 @@ test_with_fresh_db(con_admin, "reading localized edge", {
                data.table(
                  ts_key = "vts1",
                  validity = Sys.Date()
+               ))
+})
+
+test_with_fresh_db(con_admin, "reading localized edge with missing key", {
+  result <- db_meta_get_last_update(con_reader,
+                                    c("vts1", "blananagram"),
+                                    locale = "de",
+                                    schema = "tsdb_test")
+  expect_equal(result,
+               data.table(
+                 ts_key = c("blananagram", "vts1"),
+                 validity = c(as.Date(NA), Sys.Date())
                ))
 })
 
