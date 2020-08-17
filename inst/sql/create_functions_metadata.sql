@@ -226,6 +226,10 @@ $$ LANGUAGE PLPGSQL
 SECURITY DEFINER
 SET search_path = timeseries, pg_temp;
 
+
+-- Vectorized Version for frontends that support passing an array of keys
+--
+--
 CREATE OR REPLACE FUNCTION timeseries.read_metadata_raw(p_keys TEXT[],
                                                         p_valid_on DATE DEFAULT CURRENT_DATE)
 RETURNS TABLE(ts_key TEXT, metadata JSONB)
@@ -235,6 +239,35 @@ BEGIN
   ON COMMIT DROP
   AS (
     SELECT * FROM unnest(p_keys) AS ts_key
+  );
+
+  RETURN QUERY
+  SELECT * FROM timeseries.read_metadata_raw(p_valid_on::DATE);
+END;
+$$ LANGUAGE PLPGSQL
+SECURITY DEFINER
+SET search_path = timeseries, pg_temp;
+
+-- Read metadata for all time series of a collection
+--
+-- param p_collection_name: Name of the collection to read
+-- param p_owner: owner of the collection to read
+-- param p_valid_on: see read_metadata_raw
+CREATE OR REPLACE FUNCTION timeseries.read_collection_metadata_raw(p_collection_name TEXT,
+                                                                   p_owner TEXT,
+                                                                   p_valid_on DATE DEFAULT CURRENT_DATE)
+RETURNS TABLE (ts_key TEXT, metadata JSONB)
+AS $$
+BEGIN
+  CREATE TEMPORARY TABLE tmp_ts_read_keys
+  ON COMMIT DROP
+  AS (
+    SELECT cc.ts_key
+    FROM timeseries.collections AS coll
+    JOIN timeseries.collect_catalog AS cc
+    USING(id)
+    WHERE coll.name = p_collection_name
+    AND coll.owner = p_owner
   );
 
   RETURN QUERY
@@ -274,7 +307,9 @@ $$ LANGUAGE PLPGSQL
 SECURITY DEFINER
 SET search_path = timeseries, pg_temp;
 
-
+-- Vectorized version for frontends that can supply arrays of ts keys
+--
+--
 CREATE OR REPLACE FUNCTION timeseries.read_metadata_localized_raw(p_keys TEXT[],
                                                         p_valid_on DATE DEFAULT CURRENT_DATE,
                                                         loc TEXT DEFAULT 'en')
@@ -294,6 +329,36 @@ $$ LANGUAGE PLPGSQL
 SECURITY DEFINER
 SET search_path = timeseries, pg_temp;
 
+-- Read metadata for all time series of a collection
+--
+-- param p_collection_name: Name of the collection to read
+-- param p_owner: owner of the collection to read
+-- param p_valid_on: see read_metadata_localized_raw_raw
+-- oaran p_loc: see read_metadata_localized_raw
+CREATE OR REPLACE FUNCTION timeseries.read_collection_metadata_localized_raw(p_collection_name TEXT,
+                                                                   p_owner TEXT,
+                                                                   p_valid_on DATE DEFAULT CURRENT_DATE,
+                                                                   p_loc TEXT DEFAULT 'en')
+RETURNS TABLE (ts_key TEXT, metadata JSONB)
+AS $$
+BEGIN
+  CREATE TEMPORARY TABLE tmp_ts_read_keys
+  ON COMMIT DROP
+  AS (
+    SELECT cc.ts_key
+    FROM timeseries.collections AS coll
+    JOIN timeseries.collect_catalog AS cc
+    USING(id)
+    WHERE coll.name = p_collection_name
+    AND coll.owner = p_owner
+  );
+
+  RETURN QUERY
+  SELECT * FROM timeseries.read_metadata_localized_raw(p_valid_on::DATE, p_loc::TEXT);
+END;
+$$ LANGUAGE PLPGSQL
+SECURITY DEFINER
+SET search_path = timeseries, pg_temp;
 
 
 -- Get the latest unlocalized metadata validities for keys

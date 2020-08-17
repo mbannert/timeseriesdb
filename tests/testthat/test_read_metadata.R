@@ -146,6 +146,10 @@ test_with_fresh_db(con_admin, "reading via regex works", {
 })
 
 
+
+
+
+
 # reading current edge ----------------------------------------------------
 
 test_with_fresh_db(con_admin, "reading unlocalized edge", {
@@ -238,4 +242,103 @@ test_with_fresh_db(con_admin, "SQL-only test for array version of read localized
     out$metadata[[2]],
     '"label": "vintage time series 2"'
   )
+})
+
+# reading for collection --------------------------------------------------
+
+context("reading md for collection")
+
+test_with_fresh_db(con_admin, "by default it reads the most recent valid vintage", {
+  result <- db_collection_read_meta(con_reader, "mdtest", "test", schema = "tsdb_test")
+
+  expect_equal(result,
+               as.tsmeta.list(
+                 list(
+                   vts1 = list(
+                     field = "value"
+                   ),
+                   vts2 = list(
+                     field = "value",
+                     other_field = 3
+                   )
+                 )
+               ))
+})
+
+test_with_fresh_db(con_admin, "reading desired vintages works", {
+  result <- db_collection_read_meta(con_reader,
+                         "mdtest",
+                         "test",
+                         valid_on = Sys.Date() - 1,
+                         schema = "tsdb_test")
+  expect_equal(result,
+               as.tsmeta.list(
+                 list(
+                   vts1 = list(
+                     field = "old value"
+                   ),
+                   vts2 = list(
+                     field = "value",
+                     other_field = -3
+                   )
+                 )
+               ))
+})
+
+test_with_fresh_db(con_admin, "localized, by default it reads the most recent valid vintage", {
+  result <- db_collection_read_meta(con_reader, "mdtest", "test", locale = "de", schema = "tsdb_test")
+
+  expect_equal(result,
+               as.tsmeta.list(
+                 list(
+                   vts1 = list(
+                     label = "versionierte zeitreihe 1, version 2"
+                   ),
+                   vts2 = list(
+                     label = "versionierte zeitreihe 2, version 2"
+                   )
+                 )
+               ),
+               check.attributes = FALSE)
+})
+
+
+test_with_fresh_db(con_admin, "localized, by default it reads the most recent english valid vintage", {
+  result <- db_collection_read_meta(con_reader, "mdtest", "test", locale = "en", schema = "tsdb_test")
+
+  expect_equal(result,
+               as.tsmeta.list(
+                 list(
+                   vts1 = list(
+                     label = "vintage time series 1"
+                   ),
+                   vts2 = list(
+                     label = "vintage time series 2"
+                   )
+                 )
+               ),
+               check.attributes = FALSE)
+})
+
+
+test_with_fresh_db(con_admin, "localized, reading older vintage works", {
+  result <- db_collection_read_meta(con_reader,
+                                    "mdtest",
+                                    "test",
+                                    locale = "de",
+                                    valid_on = Sys.Date() - 1,
+                                    schema = "tsdb_test")
+
+  expect_equal(result,
+               as.tsmeta.list(
+                 list(
+                   vts1 = list(
+                     label = "versionierte zeitreihe 1"
+                   ),
+                   vts2 = list(
+                     label = "versionierte zeitreihe 2"
+                   )
+                 )
+               ),
+               check.attributes = FALSE)
 })

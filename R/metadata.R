@@ -255,6 +255,56 @@ db_meta_read <- function(con,
   out
 }
 
+#' Title
+#'
+#' @param con
+#' @param collection_name
+#' @param owner
+#' @param valid_on
+#' @param locale
+#' @param schema
+#'
+#' @return
+#' @export
+#'
+#' @examples
+db_collection_read_meta <- function(con,
+                                    collection_name,
+                                    owner,
+                                    valid_on = NA,
+                                    locale = NULL,
+                                    schema = "timeseries") {
+  db_return <- if(is.null(locale)) {
+    db_call_function(con,
+                     "read_collection_metadata_raw",
+                     list(
+                       p_collection_name = collection_name,
+                       p_owner = owner,
+                       p_valid_on = as.Date(valid_on)
+                     ),
+                     schema = schema)
+  } else {
+    db_call_function(con,
+                     "read_collection_metadata_localized_raw",
+                     list(
+                       p_collection_name = collection_name,
+                       p_owner = owner,
+                       p_valid_on = as.Date(valid_on),
+                       p_loc = locale
+                     ),
+                     schema = schema)
+  }
+
+  out <- fromJSON(paste0("[",
+                         paste(db_return$metadata, collapse = ","),
+                         "]"),
+                  simplifyDataFrame = FALSE)
+  names(out) <- db_return$ts_key
+  out <- as.tsmeta.list(out)
+
+  out
+}
+
 #' Get Latest Validity for Metadata of a Given Time Series
 #'
 #' Because metadata are only loosely coupled with their respective time series
