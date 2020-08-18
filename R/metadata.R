@@ -45,7 +45,7 @@ create_tsmeta <- function(...) {
 }
 
 #' @export
-as.tsmeta <- function(meta) {
+as.tsmeta <- function(meta, ...) {
   UseMethod("as.tsmeta")
 }
 
@@ -56,15 +56,15 @@ as.tsmeta.data.table <- function(meta) {
     names(out) <- meta$ts_key
     # Remove NA elements from list
     out <- lapply(out, function(x){x[!is.na(x)]})
-    as.tsmeta.list(out)
+    as.tsmeta.list(out, check_depth = FALSE)
   } else {
     create_tsmeta()
   }
 }
 
 #' @export
-as.tsmeta.list <- function(meta) {
-  if(get_list_depth(meta) != 2 && length(meta) > 0) {
+as.tsmeta.list <- function(meta, check_depth = TRUE) {
+  if(check_depth && get_list_depth(meta) != 2 && length(meta) > 0) {
     stop("A meta list must have exactly depth 2!")
   }
   meta <- lapply(meta, function(x) {
