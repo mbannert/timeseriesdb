@@ -52,7 +52,7 @@ as.tsmeta <- function(meta, ...) {
 #' @export
 as.tsmeta.data.table <- function(meta) {
   if(nrow(meta) > 0) {
-    out <- apply(meta, 1, as.list)
+    out <- apply(meta[, -"ts_key", with = FALSE], 1, as.list)
     names(out) <- meta$ts_key
     # Remove NA elements from list
     out <- lapply(out, function(x){x[!is.na(x)]})
