@@ -1,19 +1,25 @@
 #' Store a set of time series to database
 #'
-#' @param con RPostgres database connection
-#'
 #' @param x Object containing time series to store
 #' @param release Title for the release
 #' @param access Access level for all ts to be stored. If set to NA (default) the database set it to 'main' access.
 #' @param subset Ts keys of the subset of x to store
-#' @param release_desc Description for the release
-#' @param valid_from Start of vintage validity for all ts in x
 #' @param release_date Release date of all ts in x
-#' @param overwrite Not currently used
-#' @param schema
-#' @param chunk_size
+#' 
+#' @inheritParams param_defs
+#' @family time series functions
 #'
 #' @export
+#' 
+#' @examples 
+#' 
+#' \dontrun{
+#' # zrh_airport is a list with two xts objects.
+#' store_time_series(con = connection, x = zrh_airport, schema = "schema")
+#' 
+#' # using valid_from to start a new version
+#' store_time_series(con = connection, x = zrh_airport, access = "access_name",valid_from = "2020-01-01", release_date = "2020-01-31", schema = "schema")
+#' }
 store_time_series <- function(con,
                               x,
                               access = NA,

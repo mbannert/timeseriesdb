@@ -2,12 +2,13 @@
 #'
 #' A dataset is a family of time series that belong to the same topic. By default all series stored with `db_store_ts` belong to a default set. In order to assign them a different set, it must first be created with `db_dataset_create` after which the series may be moved with `tbd`
 #'
-#' For arbitrary collections of time series see [how do you reference a doc topic?]
+#' For arbitrary collections of time series see \code{\link{db_ts_add_to_collection}}.
 #'
-#' @param con RPostgres connection object
-#' @param set_name character The name of the set to be created
-#' @param set_md meta information data about the set.
-#' @param schema character Name of timeseries schema
+#' @param set_description \code{character} description about the set
+#' @param set_md meta information data about the set
+#'
+#' @inheritParams param_defs
+#' @family datasets functions
 #'
 #' @importFrom RPostgres dbGetQuery dbQuoteIdentifier
 #' @importFrom DBI Id
@@ -50,9 +51,9 @@ db_dataset_create <- function(con,
 
 #' Get All Time Series Keys in a Given Set
 #'
-#' @param con RPostgres connection object
-#' @param set_name character Name of the set to get keys for
-#' @param schema character Name of timeseries schema
+#'
+#' @inheritParams param_defs
+#' @family datasets functions
 #'
 #' @return character A vector of ts keys contained in the set
 #' @export
@@ -71,9 +72,8 @@ db_dataset_get_keys <- function(con,
 #'
 #' Return set identifiers associated with a vector of keys. If a ts key does not exist in the catalog, set_id will be NA.
 #'
-#' @param con PostgreSQL connection
-#' @param ts_keys character
-#' @param schema character Name of timeseries schema
+#' @inheritParams param_defs
+#' @family datasets functions
 #'
 #' @return data.frame with columns `ts_key` and `set_id`
 #' @export
@@ -102,10 +102,8 @@ db_ts_get_dataset <- function(con,
 #'
 #' Trying to assign keys to a nonexistent dataset is an error.
 #'
-#' @param con RPostgres connection object
-#' @param ts_keys character Vector of ts keys to assign to dataset
-#' @param set_name character Id of the set to assign `ts_keys` to
-#' @param schema character Name of timeseries schema
+#' @inheritParams param_defs
+#' @family datasets functions
 #'
 #' @return list A status list
 #' @export
@@ -144,14 +142,14 @@ db_ts_assign_dataset <- function(con,
 
 #' Update Description and/or Metadata of a Dataset
 #'
-#' @param con RPostgres connection object
-#' @param set_name character Name of the set do update
 #' @param description character New description. If set to NA (default) the description is left untouched
-#' @param metadata list Metadata update (see metadata_update_mode)
+#' @param metadata \strong{list} Metadata update (see metadata_update_mode)
 #' @param metadata_update_mode character One of "update" or "overwrite". If set to "update",
 #'  new fields in the list are added to the existing metadata and existing fields overwritten.
 #'  If NA nothing happens in update mode. If set to "overwrite" ALL existing metadata is replaced.
-#' @param schema Timeseries Schema name
+#'  
+#' @inheritParams param_defs
+#' @family datasets functions
 #'
 #' @importFrom jsonlite toJSON fromJSON
 #' @export
@@ -186,8 +184,8 @@ db_dataset_update <- function(con,
 
 #' Get All available datasets and their description
 #'
-#' @param con RPostgres connection object
-#' @param schema character Name of timeseries schema
+#' @inheritParams param_defs
+#' @family datasets functions
 #'
 #' @return data.frame with columns `set_id` and `set_description`
 #' @export
@@ -206,9 +204,8 @@ db_dataset_list <- function(con,
 #' It asks the user to manually input confirmation to prevent accidental
 #' unintentional deletion of datasets.
 #'
-#' @param con PostgreSQL connection
-#' @param set_name character Name of the set to delete
-#' @param schema character Name of timeseries schema
+#' @inheritParams param_defs
+#' @family datasets functions
 #'
 #' @return character name of the deleted set, NA in case of an error.
 #' @export
@@ -247,11 +244,12 @@ db_dataset_delete <- function(con,
 #' In some cases only the last few versions of time series are of interest. This
 #' function can be used to trim off old vintages that are no longer relevant.
 #'
-#' @param con RPostgres connection object
 #' @param set_id character Name of the set to trim
 #' @param older_than Date cut off point
-#' @param schema character Time series schema name
 #'
+#' @inheritParams param_defs
+#' @family datasets functions
+#' 
 #' @export
 #' @importFrom jsonlite fromJSON
 db_dataset_trim_history <- function(con,

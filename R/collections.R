@@ -1,19 +1,21 @@
 #' Bundles Keys into an Existing Collection or Adds a New Collection
-#' @param  con PostgreSQL connection object created with RPostgres.
-#' @param collection_name character name of the collection
-#' @param keys character vector of time series keys.
-#' @param description character description of the collection
-#' @param user character name of the User. Defaults to current system user.
-#' @param schema character name of the schema. Defaults to 'timeseries'.
+#' 
+#' @param description \strong{character} description of the collection.
+#' 
+#' @inheritParams param_defs
+#' @family collections functions
+#' 
 #' @importFrom jsonlite fromJSON
 #' @export
+#' 
+#' @example 
 db_ts_add_to_collection <- function(con,
                               collection_name,
-                              keys,
+                              ts_keys,
                               description = NA,
                               user = Sys.info()['user'],
                               schema = "timeseries"){
-  keys <- unique(keys)
+  keys <- unique(ts_keys)
 
   # let's add keys: fill a temp table, anti-join the keys
   # INSERT non existing ones.
@@ -44,20 +46,18 @@ db_ts_add_to_collection <- function(con,
 #'
 #' Removes a vector of time series keys from an a set of
 #' keys defined for that user.
-#'
-#' @param  con PostgreSQL connection object created with RPostgres.
-#' @param collection_name character name of the collection
-#' @param keys character vector of time series keys.
-#' @param user character name of the User. Defaults to current system user.
-#' @param schema character name of the schema. Defaults to 'timeseries'.
+#' 
+#' @inheritParams param_defs
+#' @family collections functions
+#' 
 #' @importFrom jsonlite fromJSON
 #' @export
 db_ts_remove_from_collection <- function(con,
                                  collection_name,
-                                 keys,
+                                 ts_keys,
                                  user = Sys.info()['user'],
                                  schema = "timeseries"){
-  keys <- unique(keys)
+  keys <- unique(ts_keys)
 
   # write temp table
   dt <- data.table(ts_key = keys)
@@ -84,10 +84,8 @@ db_ts_remove_from_collection <- function(con,
 
 #' Remove an Entire Time Series Key Collection
 #'
-#' @param con PostgreSQL connection object created with RPostgres.
-#' @param collection_name character name of the collection
-#' @param user character name of the User. Defaults to current system user.
-#' @param schema character name of the schema. Defaults to 'timeseries'.
+#' @inheritParams param_defs
+#' @family collections functions
 #'
 #' @return
 #'
@@ -110,7 +108,13 @@ db_collection_delete <- function(con,
   db_return
 }
 
-
+#' list all collection
+#'
+#' @inheritParams param_defs
+#' @family collections functions
+#'
+#' @importFrom jsonlite fromJSON
+#' @export
 db_collection_list <- function(con,
                                user = Sys.info()['user'],
                                schema = "timeseries") {
@@ -123,3 +127,4 @@ db_collection_list <- function(con,
     schema = schema
   )
 }
+

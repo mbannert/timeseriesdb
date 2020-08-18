@@ -6,9 +6,8 @@
 #' Due to the potentially severe consequences of such a deletion only timeseries
 #' admins may perform this action and should do so very dilligently.
 #'
-#' @param con RPostgres connection object
-#' @param ts_keys character Vector of ts keys to delete
-#' @param schema character Time series schema name
+#' @inheritParams param_defs
+#' @family time series functions
 #'
 #' @export
 #'
@@ -48,9 +47,8 @@ db_ts_delete <- function(con,
 
 #' Delete the Latest Vintage of a Time Series
 #'
-#' @param con RPostgres connection object
-#' @param ts_keys character Vector of ts keys for which to remove the latest vintage
-#' @param schema Time series schema name
+#' @inheritParams param_defs
+#' @family time series functions
 #'
 #' @export
 #'
@@ -88,10 +86,10 @@ db_ts_delete_latest_version <- function(con,
 #' In some cases only the last few versions of time series are of interest. This
 #' function can be used to trim off old vintages that are no longer relevant.
 #'
-#' @param con RPostgres connection object
-#' @param ts_keys character Vector of time series keys
 #' @param older_than Date cut off point
-#' @param schema character Time series schema name
+#' 
+#' @inheritParams param_defs
+#' @family time series functions
 #'
 #' @export
 #' @importFrom jsonlite fromJSON

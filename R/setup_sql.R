@@ -1,8 +1,8 @@
 # w/o root admin (for now)
 #' Title
 #'
-#' @param con RPostgres connection object.
-#' @param schema character schema name. Defaults to 'timeseries'.
+#' @inheritParams param_defs
+#' @family setup SQL functions
 #'
 #' @importFrom RPostgres dbConnect Postgres dbGetQuery dbIsValid
 #'

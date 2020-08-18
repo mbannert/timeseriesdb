@@ -162,10 +162,10 @@ db_create_connection <- function(dbname,
 #' of overloaded functions.
 #' If any args are named, all of them must be.
 #'
-#' @param con RPostgres connection object
 #' @param fname character Name of the function to be called
-#' @param schema character Name of the timeseries schema
 #' @param args list of function arguments. A single, unnested list.
+#' 
+#' @inheritParams param_defs
 #'
 #' @return value of `dbGetQuery(con, "SELECT * FROM schema.fname($args)")$fname`
 db_call_function <- function(con,
@@ -225,9 +225,9 @@ db_call_function <- function(con,
 #' are stored via dbWriteTable. Usage rights on these tables must
 #' be granted for them to be usable inside the db functions
 #'
-#' @param con RPostgres connection
 #' @param table which table to grant rights on
-#' @param schema name of the timeseries schema being worked with
+#'
+#' @inheritParams param_defs
 #'
 #' @importFrom DBI dbExecute dbQuoteIdentifier
 db_grant_to_admin <- function(con,
