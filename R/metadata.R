@@ -77,7 +77,7 @@ as.tsmeta.list <- function(meta, check_depth = TRUE) {
 
 #' @export
 as.tsmeta.data.frame <- function(meta) {
-  as.tsmeta.list(as.data.table(meta))
+  as.tsmeta(as.data.table(meta))
 }
 
 
