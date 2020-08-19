@@ -218,10 +218,16 @@ db_meta_store <- function(con,
 #' @export
 db_meta_read <- function(con,
                                 ts_keys,
-                                valid_on = NA,
+                                valid_on = NULL,
                                 regex = FALSE,
                                 locale = NULL,
                                 schema = "timeseries") {
+
+  # To obtain a proper NA Date thingy
+  if(is.null(valid_on)) {
+    valid_on <- NA
+  }
+
   db_return <- db_with_tmp_read(con,
                                 ts_keys,
                                 regex,
@@ -271,9 +277,15 @@ db_meta_read <- function(con,
 db_collection_read_meta <- function(con,
                                     collection_name,
                                     owner,
-                                    valid_on = NA,
+                                    valid_on = NULL,
                                     locale = NULL,
                                     schema = "timeseries") {
+
+  # To obtain a proper NA Date thingy
+  if(is.null(valid_on)) {
+    valid_on <- NA
+  }
+
   db_return <- if(is.null(locale)) {
     db_call_function(con,
                      "read_collection_metadata_raw",
@@ -321,9 +333,14 @@ db_collection_read_meta <- function(con,
 #' @examples
 db_dataset_read_meta <- function(con,
                                  dataset_id,
-                                 valid_on = NA,
+                                 valid_on = NULL,
                                  locale = NULL,
                                  schema = "timeseries") {
+  # To obtain a proper NA Date thingy
+  if(is.null(valid_on)) {
+    valid_on <- NA
+  }
+
   db_return <- if(is.null(locale)) {
     db_call_function(con,
                      "read_dataset_metadata_raw",

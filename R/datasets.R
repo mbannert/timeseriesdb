@@ -17,15 +17,15 @@
 #' @export
 db_dataset_create <- function(con,
                               set_name,
-                              set_description = NA,
-                              set_md = NA,
+                              set_description = NULL,
+                              set_md = NULL,
                               schema = "timeseries") {
-  
+
   set_md <- as.meta(set_md)
 
   # we want to keep NAs as pure NAs, not JSON nulls that would override the DEFAULT
-  set_md <- ifelse(is.na(set_md),
-                   set_md,
+  set_md <- ifelse(is.null(set_md),
+                   NA,
                    jsonlite::toJSON(set_md, auto_unbox = TRUE, null = "null"))
 
 
@@ -157,11 +157,11 @@ db_ts_assign_dataset <- function(con,
 #' @export
 db_dataset_update <- function(con,
                               set_name,
-                              description = NA,
-                              metadata = NA,
+                              description = NULL,
+                              metadata = NULL,
                               metadata_update_mode = "update",
                               schema = "timeseries") {
-  if(!is.na(metadata)) {
+  if(!is.null(metadata)) {
     metadata <- toJSON(metadata, auto_unbox = TRUE, digits = NA)
   }
 

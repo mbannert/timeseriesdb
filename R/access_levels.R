@@ -12,7 +12,7 @@
 db_ts_change_access <- function(con,
                                    ts_keys,
                                    new_access_level,
-                                   validity = NA,
+                                   validity = NULL,
                                    schema = "timeseries") {
   out <- db_with_temp_table(con,
                             "tmp_ts_access_keys",
@@ -57,7 +57,7 @@ db_ts_change_access <- function(con,
 db_ts_change_access_dataset <- function(con,
                                            dataset,
                                            new_access_level,
-                                           validity = NA,
+                                           validity = NULL,
                                            schema = "timeseries") {
   out <- db_call_function(con,
                           "change_access_level_dataset",
@@ -113,7 +113,7 @@ db_access_delete_level <- function(con,
                    ),
                    schema = schema)
 
-  
+
   out_parsed <- fromJSON(out)
 
   if(out_parsed$status == "warning") {
@@ -141,8 +141,8 @@ db_access_delete_level <- function(con,
 #' @export
 db_access_create_level <- function(con,
                                     access_level_name,
-                                    access_level_description = NA,
-                                    access_level_default = NA,
+                                    access_level_description = NULL,
+                                    access_level_default = NULL,
                                     schema = "timeseries") {
 
   out <- db_call_function(con,
@@ -153,9 +153,9 @@ db_access_create_level <- function(con,
                             access_level_default
                           ),
                           schema = schema)
-  
+
   out_parsed <- fromJSON(out)
-  
+
   if(out_parsed$status == "warning") {
     warning(out_parsed$message)
   } else if(out_parsed$status == "error") {

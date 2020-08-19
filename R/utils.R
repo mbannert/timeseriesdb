@@ -168,6 +168,10 @@ db_call_function <- function(con,
 
   args_pattern <- ""
   if(!is.null(args)) {
+    # dbGetQuery does not like parameters to be NULL so we substitute NA here
+    # which the db will treat as null anyway
+    args[sapply(args, is.null)] <- NA
+
     args_pattern <- sprintf("$%d", 1:length(args))
 
     if(!is.null(args_names)) {

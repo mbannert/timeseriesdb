@@ -34,7 +34,7 @@ db_release_create <- function(con,
                            target_year = year(release_date),
                            target_period = month(release_date),
                            target_frequency = 12,
-                           note = NA,
+                           note = NULL,
                            schema = "timeseries") {
   out <- db_with_temp_table(con,
                             "tmp_release_insert",
@@ -102,14 +102,18 @@ db_release_create <- function(con,
 #' @export
 db_release_update <- function(con,
                               id,
-                              title = NA,
-                              release_date = NA,
-                              datasets = NA,
-                              target_year = NA,
-                              target_period = NA,
-                              target_frequency = NA,
-                              note = NA,
+                              title = NULL,
+                              release_date = NULL,
+                              datasets = NULL,
+                              target_year = NULL,
+                              target_period = NULL,
+                              target_frequency = NULL,
+                              note = NULL,
                               schema = "timeseries") {
+  # so data.table contains something
+  if(is.null(datasets)) {
+    datasets <- NA
+  }
 
   out <- db_with_temp_table(con,
                             "tmp_release_update",

@@ -10,7 +10,7 @@
 db_ts_add_to_collection <- function(con,
                               collection_name,
                               keys,
-                              description = NA,
+                              description = NULL,
                               user = Sys.info()['user'],
                               schema = "timeseries"){
   keys <- unique(keys)
