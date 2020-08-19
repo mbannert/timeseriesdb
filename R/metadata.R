@@ -64,7 +64,7 @@ as.tsmeta.data.table <- function(meta) {
 
 #' @export
 as.tsmeta.list <- function(meta, check_depth = TRUE) {
-  if(check_depth && get_list_depth(meta) != 2 && length(meta) > 0) {
+  if(check_depth && !has_depth_2(meta) && length(meta) > 0) {
     stop("A meta list must have exactly depth 2!")
   }
   meta <- lapply(meta, function(x) {
