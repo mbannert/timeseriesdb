@@ -80,7 +80,7 @@ BEGIN
                              'offending_keys', to_json(v_invalid_keys));
   ELSE
     -- All went well
-    RETURN '{"status": "ok", "reason": "the world is full of rainbows"}'::JSON;
+    RETURN '{"status": "ok"}'::JSON;
   END IF;
 END;
 $$ LANGUAGE PLPGSQL
