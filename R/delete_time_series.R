@@ -12,9 +12,19 @@
 #' @export
 #'
 #' @importFrom jsonlite fromJSON
+#' 
+#' @examples 
+#' 
+#' \dontrun{
+#' # storing zrh_airport data that is a list with two xts objects.
+#' store_time_series(con = connection, x = zrh_airport, schema = "schema")
+#' 
+#' # using parameter valid_from to start a new version
+#' db_ts_delete(con = connection, x = zrh_airport, access = "access_name",valid_from = "2020-01-01", release_date = "2020-01-31", schema = "schema")
+#' }
 db_ts_delete <- function(con,
-                                  ts_keys,
-                                  schema = "timeseries") {
+                         ts_keys,
+                         schema = "timeseries") {
   message("This operation will PERMANENTLY delete the specified time series, including their histories and metadata. If this is what you intend to do, please type yes below.")
 
   ans <- readline("answer: ")

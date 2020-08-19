@@ -1,6 +1,6 @@
 #' Store a set of time series to database
 #'
-#' @param x Object containing time series to store
+#' @param x Object containing time series to store. Lists, tslist, and data tables are allowed.
 #' @param release Title for the release
 #' @param access Access level for all ts to be stored. If set to NA (default) the database set it to 'main' access.
 #' @param subset Ts keys of the subset of x to store
@@ -14,11 +14,25 @@
 #' @examples 
 #' 
 #' \dontrun{
-#' # zrh_airport is a list with two xts objects.
-#' store_time_series(con = connection, x = zrh_airport, schema = "schema")
+#' # storing zrh_airport data that is a list with two xts objects.
+#' store_time_series(con = connection, zrh_airport, schema = "schema")
 #' 
-#' # using valid_from to start a new version
-#' store_time_series(con = connection, x = zrh_airport, access = "access_name",valid_from = "2020-01-01", release_date = "2020-01-31", schema = "schema")
+#' # to store different versions of the data, use parameter valid_from 
+#' # different versions are stored with the same key
+#' ch.kof.barometer <- kof_ts["baro_2019m11"]
+#' names(ch.kof.barometer) <- c("ch.kof.barometer")
+#' store_time_series(con = connection,
+#'                   ch.kof.barometer,
+#'                   valid_from = "2019-12-01",
+#'                   schema = "schema")
+#' 
+#' ch.kof.barometer <- kof_ts["baro_2019m12"]
+#' names(ch.kof.barometer) <- c("ch.kof.barometer")
+#' store_time_series(con = connection,
+#'                   ch.kof.barometer,
+#'                   valid_from = "2020-01-01",
+#'                   schema = "schema")
+#' 
 #' }
 store_time_series <- function(con,
                               x,

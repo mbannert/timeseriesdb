@@ -60,12 +60,27 @@ read_time_series <- function(con,
 #' @examples 
 #' 
 #' \dontrun{
-#' # Storing main version of zrh_airport
-#' store_time_series(con = connection, x = zrh_airport, schema = "schema")
-#' # zrh_airport new version
-#' store_time_series(con = connection, x = zrh_airport, access = "access_name",valid_from = "2020-01-01", release_date = "2020-01-31", schema = "schema")
-#' # Reading both versions
-#' read_time_series_history(con = connection, ts_keys = "ch.zrh_airport.departure.total", schema = "schema") 
+#' 
+#' # Storing different versions of the data, use parameter valid_from 
+#' # different versions are stored with the same key
+#' ch.kof.barometer <- kof_ts["baro_2019m11"]
+#' names(ch.kof.barometer) <- c("ch.kof.barometer")
+#' store_time_series(con = connection,
+#'                   ch.kof.barometer,
+#'                   valid_from = "2019-12-01",
+#'                   schema = "schema")
+#' 
+#' ch.kof.barometer <- kof_ts["baro_2019m12"]
+#' names(ch.kof.barometer) <- c("ch.kof.barometer")
+#' store_time_series(con = connection,
+#'                   ch.kof.barometer,
+#'                   valid_from = "2020-01-01",
+#'                   schema = "schema")
+#'
+#' # Reading all versions
+#' read_time_series_history(con = connection,
+#'                          ts_key = "ch.kof.barometer",
+#'                          schema = "schema")
 #' }
 read_time_series_history <- function(con,
                                      ts_key,
@@ -90,6 +105,27 @@ read_time_series_history <- function(con,
 #' @family time series functions
 #'
 #' @export
+#' 
+#' #' @examples 
+#' 
+#' \dontrun{
+#' db_dataset_create(con = connection,
+#'                   set_name = "zrh_airport_data",
+#'                   set_description = "Zurich airport arrivals and departures ",
+#'                   schema = "schema")
+#'
+#' db_ts_assign_dataset(con = connection,
+#'                      ts_keys = c("ch.zrh_airport.departure.total",
+#'                                  "ch.zrh_airport.arrival.total"),
+#'                      set_name = "zrh_airport_data",
+#'                      schema = "schema")
+#'                      
+#' db_dataset_read_ts(con = connection,
+#'                    datasets = "zrh_airport_data",
+#'                    schema = "schema")
+
+
+#' }
 db_dataset_read_ts <- function(con,
                                datasets,
                                valid_on = NA,
