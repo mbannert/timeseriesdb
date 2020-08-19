@@ -106,7 +106,7 @@ read_time_series_history <- function(con,
 #'
 #' @export
 #' 
-#' #' @examples 
+#' @examples 
 #' 
 #' \dontrun{
 #' db_dataset_create(con = connection,

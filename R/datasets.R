@@ -348,7 +348,7 @@ db_dataset_delete <- function(con,
 #' @export
 #' @importFrom jsonlite fromJSON
 #' 
-#' #' @examples 
+#' @examples 
 #' 
 #' \dontrun{
 #' 
