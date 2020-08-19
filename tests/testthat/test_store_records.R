@@ -1,4 +1,3 @@
-
 context("store_records")
 
 if(is_test_db_reachable()) {
@@ -18,12 +17,16 @@ tsl_update <- list(
 )
 class(tsl_update) <- c("tslist", "list")
 
+ts_single <- ts(100:110, start = 2000, frequency = 4)
+
+xts_single <- xts(1000:1010, order.by = seq(as.Date("2020-01-01"), length.out = 11, by = "1 days"))
+
 main_names <- c("id", "ts_key", "validity", "coverage", "release_date", "created_by",
                 "created_at", "ts_data", "access")
 names_to_test <- setdiff(main_names, c("id", "created_by", "created_at"))
 
 # Test data generated with following code:
-# con <- connect_to_test_db()
+# con_writer <- connect_to_test_db("dev_writer")
 #
 # dbExecute(con_admin, "DELETE FROM tsdb_test.timeseries_main")
 # dbExecute(con_admin, "DELETE FROM tsdb_test.catalog")
@@ -59,6 +62,26 @@ names_to_test <- setdiff(main_names, c("id", "created_by", "created_at"))
 # main_after_insert_3 <- dbGetQuery(con_admin, "SELECT * FROM tsdb_test.timeseries_main ORDER BY ts_key, validity")
 #
 # store_time_series(con_writer,
+#                   ts_single,
+#                   "tsdb_test_access_public",
+#                   valid_from = "2020-01-01",
+#                   release_date = "2020-04-01",
+#                   schema = "tsdb_test")
+#
+# catalog_after_insert_single <- dbGetQuery(con_admin, "SELECT * FROM tsdb_test.catalog ORDER BY ts_key")
+# main_after_insert_single <- dbGetQuery(con_admin, "SELECT * FROM tsdb_test.timeseries_main ORDER BY ts_key, validity")
+#
+# store_time_series(con_writer,
+#                   xts_single,
+#                   "tsdb_test_access_public",
+#                   valid_from = "2020-01-01",
+#                   release_date = "2020-04-01",
+#                   schema = "tsdb_test")
+#
+# catalog_after_insert_single_xts <- dbGetQuery(con_admin, "SELECT * FROM tsdb_test.catalog ORDER BY ts_key")
+# main_after_insert_single_xts <- dbGetQuery(con_admin, "SELECT * FROM tsdb_test.timeseries_main ORDER BY ts_key, validity")
+#
+# store_time_series(con_writer,
 #                   tsl_update,
 #                   "tsdb_test_access_public",
 #                   valid_from = "2019-03-01",
@@ -67,6 +90,7 @@ names_to_test <- setdiff(main_names, c("id", "created_by", "created_at"))
 #
 # main_after_update <- dbGetQuery(con_admin, "SELECT * FROM tsdb_test.timeseries_main ORDER BY ts_key, validity")
 #
+#
 # save(
 #   catalog_after_insert_1,
 #   main_after_insert_1,
@@ -74,6 +98,8 @@ names_to_test <- setdiff(main_names, c("id", "created_by", "created_at"))
 #   main_after_insert_2,
 #   catalog_after_insert_3,
 #   main_after_insert_3,
+#   catalog_after_insert_single,
+#   main_after_insert_single,
 #   main_after_update,
 #   file = "tests/testdata/store_records_data.RData"
 # )
@@ -149,6 +175,30 @@ test_with_fresh_db(con_admin, hard_reset = TRUE, "Inserts produce valid state", 
   expect_equal(
     dbGetQuery(con_admin, "SELECT * FROM tsdb_test.timeseries_main ORDER BY ts_key, validity")[, names_to_test],
     main_after_insert_3[, names_to_test]
+  )
+
+  store_time_series(con_writer,
+                    ts_single,
+                    "tsdb_test_access_public",
+                    valid_from = "2020-01-01",
+                    release_date = "2020-04-01",
+                    schema = "tsdb_test")
+
+  expect_equal(
+    dbGetQuery(con_admin, "SELECT * FROM tsdb_test.timeseries_main ORDER BY ts_key, validity")[, names_to_test],
+    main_after_insert_single[, names_to_test]
+  )
+
+  store_time_series(con_writer,
+                    xts_single,
+                    "tsdb_test_access_public",
+                    valid_from = "2020-01-01",
+                    release_date = "2020-04-01",
+                    schema = "tsdb_test")
+
+  expect_equal(
+    dbGetQuery(con_admin, "SELECT * FROM tsdb_test.timeseries_main ORDER BY ts_key, validity")[, names_to_test],
+    main_after_insert_single_xts[, names_to_test]
   )
 })
 
@@ -231,6 +281,21 @@ test_with_fresh_db(con_admin, hard_reset = TRUE, "storing with edge vintage caus
                     "tsdb_test_access_public",
                     valid_from = "2019-03-01",
                     release_date = "2019-03-02",
+                    schema = "tsdb_test")
+
+  # TODO: disentangle these tests
+  store_time_series(con_writer,
+                    ts_single,
+                    "tsdb_test_access_public",
+                    valid_from = "2020-01-01",
+                    release_date = "2020-04-01",
+                    schema = "tsdb_test")
+
+  store_time_series(con_writer,
+                    xts_single,
+                    "tsdb_test_access_public",
+                    valid_from = "2020-01-01",
+                    release_date = "2020-04-01",
                     schema = "tsdb_test")
 
   expect_equal(

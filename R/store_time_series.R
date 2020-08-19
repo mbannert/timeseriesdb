@@ -115,3 +115,39 @@ store_time_series.data.table <- function(con,
                 release_date,
                 schema)
 }
+
+#' @export
+store_time_series.ts <- function(con,
+                              x,
+                              access = NA,
+                              valid_from = NA,
+                              release_date = NA,
+                              schema = "timeseries"){
+  store_time_series(con,
+                    structure(
+                      list(x),
+                      names = deparse(substitute(x))
+                    ),
+                    access,
+                    valid_from,
+                    release_date,
+                    schema)
+}
+
+#' @export
+store_time_series.xts <- function(con,
+                                 x,
+                                 access = NA,
+                                 valid_from = NA,
+                                 release_date = NA,
+                                 schema = "timeseries"){
+  store_time_series(con,
+                    structure(
+                      list(x),
+                      names = deparse(substitute(x))
+                    ),
+                    access,
+                    valid_from,
+                    release_date,
+                    schema)
+}
