@@ -47,7 +47,7 @@ BEGIN
   END IF;
 
   -- All went well
-  RETURN '{"status": "ok", "message": "All keys have been successfully added to the collection."}'::JSON;
+  RETURN '{"status": "ok"}'::JSON;
 END;
 $$ LANGUAGE PLPGSQL
 SECURITY DEFINER
@@ -117,8 +117,7 @@ BEGIN
                              'message', 'The collection was also removed because became empty.',
                              'removed_collection', to_json(v_id));
   ELSE
-    RETURN json_build_object('status', 'ok',
-                             'message', 'Keys successfully removed from the collection.');
+    RETURN json_build_object('status', 'ok');
   END IF;
 END;
 $$ LANGUAGE PLPGSQL
@@ -159,7 +158,6 @@ BEGIN
     INTO deleted_id;
 
     RETURN json_build_object('status', 'ok',
-                             'message', 'Collection successfully deleted',
                              'id', deleted_id);
   END IF;
 END;
