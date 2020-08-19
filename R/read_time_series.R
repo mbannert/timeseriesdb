@@ -9,12 +9,12 @@
 #' @import data.table
 #' @importFrom RPostgres dbSendQuery dbClearResult dbQuoteLiteral dbQuoteIdentifier Id
 #' @export
-#' 
-#' @examples 
-#' 
+#'
+#' @examples
+#'
 #' \dontrun{
 #' store_time_series(con = connection, zrh_airport, schema = "schema")
-#' read_time_series(con = connection, ts_keys = "ch.zrh_airport.departure.total", schema = "schema") 
+#' read_time_series(con = connection, ts_keys = "ch.zrh_airport.departure.total", schema = "schema")
 #' }
 read_time_series <- function(con,
                              ts_keys,
@@ -56,12 +56,12 @@ read_time_series <- function(con,
 #'
 #' @export
 #' @importFrom RPostgres dbSendQuery dbQuoteIdentifier dbQuoteLiteral Id
-#' 
-#' @examples 
-#' 
+#'
+#' @examples
+#'
 #' \dontrun{
-#' 
-#' # Storing different versions of the data, use parameter valid_from 
+#'
+#' # Storing different versions of the data, use parameter valid_from
 #' # different versions are stored with the same key
 #' ch.kof.barometer <- kof_ts["baro_2019m11"]
 #' names(ch.kof.barometer) <- c("ch.kof.barometer")
@@ -69,7 +69,7 @@ read_time_series <- function(con,
 #'                   ch.kof.barometer,
 #'                   valid_from = "2019-12-01",
 #'                   schema = "schema")
-#' 
+#'
 #' ch.kof.barometer <- kof_ts["baro_2019m12"]
 #' names(ch.kof.barometer) <- c("ch.kof.barometer")
 #' store_time_series(con = connection,
@@ -105,9 +105,9 @@ read_time_series_history <- function(con,
 #' @family time series functions
 #'
 #' @export
-#' 
-#' @examples 
-#' 
+#'
+#' @examples
+#'
 #' \dontrun{
 #' db_dataset_create(con = connection,
 #'                   set_name = "zrh_airport_data",
@@ -119,12 +119,10 @@ read_time_series_history <- function(con,
 #'                                  "ch.zrh_airport.arrival.total"),
 #'                      set_name = "zrh_airport_data",
 #'                      schema = "schema")
-#'                      
+#'
 #' db_dataset_read_ts(con = connection,
 #'                    datasets = "zrh_airport_data",
 #'                    schema = "schema")
-
-
 #' }
 db_dataset_read_ts <- function(con,
                                datasets,

@@ -6,6 +6,9 @@
 #' @param x numeric A vector of time series time indices (e.g. from stats::time)
 #' @param as.string logical If as.string is TRUE the string representation of the
 #' Date is returned, otherwise a Date object.
+#' @export
+#' @examples
+#' index_to_date(2020.25)
 index_to_date <- function (x, as.string = FALSE)
 {
   if(inherits(x, "Date")) {
@@ -38,6 +41,9 @@ index_to_date <- function (x, as.string = FALSE)
 #' @param x The Date or Y-m-d string to convert
 #'
 #' @return The numeric representation of the date that can be used with ts
+#' @export
+#' @examples
+#' date_to_index("2020-07-01")
 date_to_index <- function(x) {
   x <- as.character(x)
   components <- as.numeric(unlist(strsplit(x, "-")))
@@ -164,7 +170,7 @@ db_create_connection <- function(dbname,
 #'
 #' @param fname character Name of the function to be called
 #' @param args list of function arguments. A single, unnested list.
-#' 
+#'
 #' @inheritParams param_defs
 #'
 #' @return value of `dbGetQuery(con, "SELECT * FROM schema.fname($args)")$fname`
