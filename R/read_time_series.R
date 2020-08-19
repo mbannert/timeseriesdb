@@ -10,10 +10,10 @@
 #' @importFrom RPostgres dbSendQuery dbClearResult dbQuoteLiteral dbQuoteIdentifier Id
 #' @export
 #' 
-#' #' @examples 
+#' @examples 
 #' 
 #' \dontrun{
-#' store_time_series(con = connection, x = zrh_airport, schema = "schema")
+#' store_time_series(con = connection, zrh_airport, schema = "schema")
 #' read_time_series(con = connection, ts_keys = "ch.zrh_airport.departure.total", schema = "schema") 
 #' }
 read_time_series <- function(con,
