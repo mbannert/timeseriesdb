@@ -52,25 +52,14 @@ date_to_index <- function(x) {
   out
 }
 
-# recursive function to check depth of list. hat tip flodel
-# at stackoverflow: http://stackoverflow.com/questions/13432863/determine-level-of-nesting-in-r
-#' Determine depth of a list
+#' Test if a list has exactly depth 2
 #'
-#' This function recursively checks the depth of a list and returns an integer value of depth
-#'
-#' @param this an object of class list
-#' @details Hat tip to flodel at stackoverflow for suggesting this light weight way analyze depth of a nested list. Further complexity needs to be added to cover the fact that data.frame are lists, too. A more sophisticated recursive function can be found in the gatveys2 package.
-#' @references http://stackoverflow.com/questions/13432863/determine-level-of-nesting-in-r
-get_list_depth <- function(this) {
-  ifelse(
-    is.list(this),
-    ifelse(
-      length(this) > 0,
-      1L + max(sapply(this, get_list_depth)),
-      1L
-    ),
-    0L
-  )
+#' @param x The list to check
+has_depth_2 <- function(x) {
+  xx <- unlist(x, recursive = FALSE)
+  xxx <- unlist(xx, recursive = FALSE)
+
+  is.list(x) && is.list(xx) && !is.list(xxx)
 }
 
 
