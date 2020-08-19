@@ -16,11 +16,19 @@
 #' @examples 
 #' 
 #' \dontrun{
-#' # storing zrh_airport data that is a list with two xts objects.
-#' store_time_series(con = connection, x = zrh_airport, schema = "schema")
+#' # Store zrh_airport data
+#' store_time_series(con = connection, zrh_airport, schema = "schema")
 #' 
-#' # using parameter valid_from to start a new version
-#' db_ts_delete(con = connection, x = zrh_airport, access = "access_name",valid_from = "2020-01-01", release_date = "2020-01-31", schema = "schema")
+#' # Deleting one key
+#' db_ts_delete(con = connection,
+#'              ts_keys = "ch.zrh_airport.departure.total",
+#'              schema = "schema")
+#' 
+#' # Deleting multiple keys
+#' db_ts_delete(con = connection,
+#'              ts_keys = c("ch.zrh_airport.departure.total",
+#'                          "ch.zrh_airport.arrival.total"),
+#'              schema = "schema")
 #' }
 db_ts_delete <- function(con,
                          ts_keys,
@@ -63,6 +71,31 @@ db_ts_delete <- function(con,
 #' @export
 #'
 #' @importFrom jsonlite fromJSON
+#' 
+#' @examples 
+#' 
+#' \dontrun{
+#' 
+#' # Store different versions of the time series data
+#' ch.kof.barometer <- kof_ts["baro_2019m11"]
+#' names(ch.kof.barometer) <- c("ch.kof.barometer")
+#' store_time_series(con = connection,
+#'                   ch.kof.barometer,
+#'                   valid_from = "2019-12-01",
+#'                   schema = "schema")
+#' 
+#' ch.kof.barometer <- kof_ts["baro_2019m12"]
+#' names(ch.kof.barometer) <- c("ch.kof.barometer")
+#' store_time_series(con = connection,
+#'                   ch.kof.barometer,
+#'                   valid_from = "2020-01-01",
+#'                   schema = "schema")
+#'                   
+#' db_ts_delete_latest_version(con = connection,
+#'                             ts_keys = "ch.kof.barometer",
+#'                             schema = "schema")
+#' 
+#' }
 db_ts_delete_latest_version <- function(con,
                                      ts_keys,
                                      schema = "timeseries") {
@@ -103,6 +136,32 @@ db_ts_delete_latest_version <- function(con,
 #'
 #' @export
 #' @importFrom jsonlite fromJSON
+#' 
+#' @examples 
+#' 
+#' \dontrun{
+#' 
+#' # Store different versions of the time series data
+#' ch.kof.barometer <- kof_ts["baro_2019m11"]
+#' names(ch.kof.barometer) <- c("ch.kof.barometer")
+#' store_time_series(con = connection,
+#'                   ch.kof.barometer,
+#'                   valid_from = "2019-12-01",
+#'                   schema = "schema")
+#' 
+#' ch.kof.barometer <- kof_ts["baro_2019m12"]
+#' names(ch.kof.barometer) <- c("ch.kof.barometer")
+#' store_time_series(con = connection,
+#'                   ch.kof.barometer,
+#'                   valid_from = "2020-01-01",
+#'                   schema = "schema")
+#'                   
+#' db_ts_trim_history(con = connection,
+#'                    ts_keys = "ch.kof.barometer",
+#'                    older_than = "2019-12-31",
+#'                    schema = "schema")
+#' 
+#' }
 db_ts_trim_history <- function(con,
                             ts_keys,
                             older_than,
