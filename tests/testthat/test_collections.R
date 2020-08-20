@@ -15,7 +15,7 @@ test_with_fresh_db(con_admin, "db_ts_add_to_collection returns OK", {
                               schema = "tsdb_test")
 
   expect_is(result, "list")
-  expect_named(result, c("status", "message"))
+  expect_named(result, c("status"))
   expect_equal(result$status, "ok")
 })
 
@@ -126,7 +126,7 @@ test_with_fresh_db(con_admin, "db_ts_remove_from_collection removing some keys r
                                  user = "test",
                                  schema = "tsdb_test")
   expect_is(result, "list")
-  expect_named(result, c("status", "message"))
+  expect_named(result, c("status"))
   expect_equal(result$status, "ok")
 })
 
@@ -223,7 +223,7 @@ test_with_fresh_db(con_admin, "db_collection_delete returns ok", {
                                  schema = "tsdb_test")
 
   expect_is(result, "list")
-  expect_named(result, c("status", "message", "id"))
+  expect_named(result, c("status", "id"))
   expect_equal(result$status, "ok")
 })
 
