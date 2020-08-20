@@ -10,7 +10,7 @@
 db_ts_change_access <- function(con,
                                 ts_keys,
                                 new_access_level,
-                                validity = NULL,
+                                valid_from = NULL,
                                 schema = "timeseries") {
   out <- db_with_temp_table(con,
                             "tmp_ts_access_keys",
@@ -48,7 +48,7 @@ db_ts_change_access <- function(con,
 db_ts_change_access_dataset <- function(con,
                                         dataset,
                                         new_access_level,
-                                        validity = NULL,
+                                        valid_from = NULL,
                                         schema = "timeseries") {
 
   out <- db_call_function(con,

@@ -43,7 +43,7 @@ test_with_fresh_db(con_admin, "setting access level for specific vintages", {
   db_ts_change_access(con_writer,
                          c("vts1", "vts2"),
                          "tsdb_test_access_restricted",
-                         validity = "2020-01-01",
+                         valid_from = "2020-01-01",
                          schema = "tsdb_test")
 
   res <- dbGetQuery(con_admin, "SELECT * FROM tsdb_test.timeseries_main WHERE ts_key ~ 'vts' ORDER BY ts_key, validity")
@@ -104,7 +104,7 @@ test_with_fresh_db(con_admin, "setting dataset access level for specific vintage
   db_ts_change_access_dataset(con_writer,
                          "set_read",
                          "tsdb_test_access_restricted",
-                         validity = Sys.Date() - 1,
+                         valid_from = Sys.Date() - 1,
                          schema = "tsdb_test")
 
   res <- dbGetQuery(con_admin, "SELECT * FROM tsdb_test.timeseries_main WHERE ts_key = 'rts1' ORDER BY ts_key, validity")
