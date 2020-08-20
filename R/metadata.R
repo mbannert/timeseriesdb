@@ -291,7 +291,6 @@ db_collection_read_meta <- function(con,
                      list(
                        p_collection_name = collection_name,
                        p_owner = collection_owner,
-                       p_owner = owner,
                        p_valid_on = as.Date(valid_on)
                      ),
                      schema = schema)
@@ -301,7 +300,6 @@ db_collection_read_meta <- function(con,
                      list(
                        p_collection_name = collection_name,
                        p_owner = collection_owner,
-                       p_owner = owner,
                        p_valid_on = as.Date(valid_on),
                        p_loc = locale
                      ),

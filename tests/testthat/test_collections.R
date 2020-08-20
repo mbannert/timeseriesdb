@@ -122,7 +122,7 @@ context("collections - remove")
 test_with_fresh_db(con_admin, "db_ts_remove_from_collection removing some keys returns ok", {
   result <- db_ts_remove_from_collection(con_writer,
                                  collection_name = "tests first",
-                                 keys = "ts1",
+                                 ts_keys = "ts1",
                                  user = "test",
                                  schema = "tsdb_test")
   expect_is(result, "list")
@@ -135,7 +135,7 @@ test_with_fresh_db(con_admin, "db_ts_remove_from_collection warns if combo not f
 
   expect_error(db_ts_remove_from_collection(con_writer,
                                     collection_name = "not a collection",
-                                    keys = c("does", "it", "matter?"),
+                                    ts_keys = c("does", "it", "matter?"),
                                     user = "alexandra_maine",
                                     schema = "tsdb_test"), "not exist")
 })
@@ -143,7 +143,7 @@ test_with_fresh_db(con_admin, "db_ts_remove_from_collection warns if combo not f
 test_with_fresh_db(con_admin, "db_ts_remove_from_collection also removing collection", {
   result <- db_ts_remove_from_collection(con_writer,
                                  collection_name = "tests second",
-                                 keys = c("ts4", "ts5"),
+                                 ts_keys = c("ts4", "ts5"),
                                  user = "test",
                                  schema = "tsdb_test")
 
@@ -155,7 +155,7 @@ test_with_fresh_db(con_admin, "db_ts_remove_from_collection also removing collec
 test_with_fresh_db(con_admin, "db_ts_remove_from_collection state", {
   db_ts_remove_from_collection(con_writer,
                        collection_name = "tests first",
-                       keys = c("ts1"),
+                       ts_keys = c("ts1"),
                        user = "test",
                        schema = "tsdb_test")
 
@@ -175,7 +175,7 @@ test_with_fresh_db(con_admin, "db_ts_remove_from_collection state", {
 test_with_fresh_db(con_admin, "db_ts_remove_from_collection with remove collection state", {
   db_ts_remove_from_collection(con_writer,
                        collection_name = "tests first",
-                       keys = c("ts1", "ts2", "ts3"),
+                       ts_keys = c("ts1", "ts2", "ts3"),
                        user = "test",
                        schema = "tsdb_test")
 
@@ -195,7 +195,7 @@ test_with_fresh_db(con_admin, "db_ts_remove_from_collection with remove collecti
 test_with_fresh_db(con_admin, "reader may remove from collections", {
   db_ts_remove_from_collection(con_reader,
                        collection_name = "tests first",
-                       keys = c("ts1"),
+                       ts_keys = c("ts1"),
                        user = "test",
                        schema = "tsdb_test")
 

@@ -105,14 +105,14 @@ db_access_delete_level <- function(con,
   out <- db_call_function(con,
                           "access_levels_delete",
                           list(
-                            access_level_name
+                            access_level
                           ),
                           schema = schema)
 
   out_parsed <- fromJSON(out)
 
   if(out_parsed$status == "warning") {
-    warning(access_level_name,
+    warning(access_level,
             " ",
             out_parsed$message)
   } else if(out_parsed$status == "error") {
