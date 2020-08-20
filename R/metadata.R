@@ -378,11 +378,11 @@ db_dataset_read_meta <- function(con,
 #'
 #' @return
 #' @export
-db_meta_get_last_update <- function(con,
-                                 ts_keys,
-                                 regex = FALSE,
-                                 locale = NULL,
-                                 schema = "timeseries") {
+db_meta_get_latest_validity <- function(con,
+                                        ts_keys,
+                                        regex = FALSE,
+                                        locale = NULL,
+                                        schema = "timeseries") {
   out <- db_with_tmp_read(con,
                           ts_keys,
                           regex,
