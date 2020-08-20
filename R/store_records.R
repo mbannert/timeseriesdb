@@ -1,3 +1,5 @@
+
+# Not exported, internal helper.
 #' @importFrom RPostgres dbGetQuery dbWithTransaction dbExecute
 #' @importFrom jsonlite fromJSON
 store_records <- function(con,

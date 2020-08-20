@@ -1,5 +1,7 @@
 #' Convert JSON Representation of a Time Series into R Time Series Objects
 #'
+#' This function is not exported.
+#'
 #' @param jsn JSON string to convert
 #' @param as.dt boolean Should the result be returned as a data.table?
 #'

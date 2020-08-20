@@ -1,6 +1,6 @@
 ---
 title: "Basic Usage"
-subtitle: "Getting Started}"
+subtitle: "Getting Started"
 author: "Matthias Bannert and Severin Thöni"
 date: "`r Sys.Date()`"
 output: rmarkdown::html_vignette
@@ -18,12 +18,13 @@ This guide assumes you have installed the {timeseriesdb} R package and a local P
 
 In {timeseriesdb}, functions to interact with the database use the `db_` prefix. 
 Basic read and store functions are an exception to this rule as they should be easy to find
-front and center. As opposed to that more complex, less common operations rather ask organization in a group functions... 
+front and center. As opposed to that more complex, less common operations rather 
+ask for organization in a group functions.
 
 ## Create a Database Connection
 
 No matter whether you want to read or write, you'll need a database connection. {timeseriesdb}
-offers a simple wrapper function around to {DBI}'s more universal `dbConnect`:
+offers a simple wrapper function around {DBI}'s more universal `dbConnect`:
 
 ```{r, eval=FALSE}
 con <- db_create_connection(
@@ -56,7 +57,7 @@ store_time_series(con, tsl, "main",
 Now let's read the series we have just stored to the database into R again. 
 Note that `read_time_series` returns a list of time series whose elements' names
 are the time series keys (unique identifiers) from the database. In this case
-example we use our [{tstools}]() package to visualize both series. 
+example we use our [{tstools}](https://cran.r-project.org/package=tstools) package to visualize both series. 
  
 ```{r, eval=FALSE}
 
@@ -119,7 +120,7 @@ db_store_ts_metadata(con,
 Note that the default locale for the write operation is NULL. 
 This means there is only one language and data descriptions are 
 not translated to different languages. If you want to learn how to add localized meta information
-or meta information at the vintage or dataset level, please read the advanced use vignette. 
+or meta information at the vintage or dataset level, please read the [advanced usage vignette](a02_advanced_usage.html). 
 
 Reading the data from the database is just as easy: 
 
@@ -141,7 +142,7 @@ their descriptions: {timeseriesdb} can keep track of different versions of the
 same time series (vintages), group time series into datasets, store user specific 
 collection of series, manage access on time series level and manage release dates. 
 
-The learn more about these advanced features read the [advanced usage vignette]().
+The learn more about these advanced features read the [advanced usage vignette](a02_advanced_usage.html).
 
 
 

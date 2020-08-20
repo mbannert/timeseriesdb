@@ -10,23 +10,27 @@
 
 
 <!-- jquery -->
-<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js" integrity="sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8=" crossorigin="anonymous"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.4.1/jquery.min.js" integrity="sha256-CSXorXvZcTkaix6Yvo6HppcZGetbYMGWSFlBw8HfCJo=" crossorigin="anonymous"></script>
 <!-- Bootstrap -->
 
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha256-916EbMg70RQy9LHiGkXzG8hSg9EdNy97GazNG/aiY1w=" crossorigin="anonymous" />
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.4.1/css/bootstrap.min.css" integrity="sha256-bZLfwXAP04zRMK2BjiO8iu9pf4FbLqX6zitd+tIvLhE=" crossorigin="anonymous" />
 
-<script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha256-U5ZEeKfGNOja007MMD3YBI0A3OSZOQbeG6z2f2Y0hu8=" crossorigin="anonymous"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.4.1/js/bootstrap.min.js" integrity="sha256-nuL8/2cJ5NDSSwnKD8VqreErSWHtnEP9E7AySL+1ev4=" crossorigin="anonymous"></script>
+
+<!-- bootstrap-toc -->
+<link rel="stylesheet" href="../bootstrap-toc.css">
+<script src="../bootstrap-toc.js"></script>
 
 <!-- Font Awesome icons -->
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.7.1/css/all.min.css" integrity="sha256-nAmazAk6vS34Xqo0BSrTb+abbtFlgsFK7NKSi6o7Y78=" crossorigin="anonymous" />
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.7.1/css/v4-shims.min.css" integrity="sha256-6qHlizsOWFskGlwVOKuns+D1nB6ssZrHQrNj1wGplHc=" crossorigin="anonymous" />
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.12.1/css/all.min.css" integrity="sha256-mmgLkCYLUQbXn0B1SRqzHar6dCnv9oZFPEC1g1cwlkk=" crossorigin="anonymous" />
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.12.1/css/v4-shims.min.css" integrity="sha256-wZjR52fzng1pJHwx4aV2AO3yyTOXrcDW7jBpJtTwVxw=" crossorigin="anonymous" />
 
 <!-- clipboard.js -->
-<script src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/2.0.4/clipboard.min.js" integrity="sha256-FiZwavyI2V6+EXO1U+xzLG3IKldpiTFf3153ea9zikQ=" crossorigin="anonymous"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/2.0.6/clipboard.min.js" integrity="sha256-inc5kl9MA1hkeYUt+EC3BhlIgyp/2jDIyBLS6k3UxPI=" crossorigin="anonymous"></script>
 
 <!-- headroom.js -->
-<script src="https://cdnjs.cloudflare.com/ajax/libs/headroom/0.9.4/headroom.min.js" integrity="sha256-DJFC1kqIhelURkuza0AvYal5RxMtpzLjFhsnVIeuk+U=" crossorigin="anonymous"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/headroom/0.9.4/jQuery.headroom.min.js" integrity="sha256-ZX/yNShbjqsohH1k95liqY9Gd8uOiE1S4vZc+9KQ1K4=" crossorigin="anonymous"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/headroom/0.11.0/headroom.min.js" integrity="sha256-AsUX4SJE1+yuDu5+mAVzJbuYNPHj/WroHuZ8Ir/CkE0=" crossorigin="anonymous"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/headroom/0.11.0/jQuery.headroom.min.js" integrity="sha256-ZX/yNShbjqsohH1k95liqY9Gd8uOiE1S4vZc+9KQ1K4=" crossorigin="anonymous"></script>
 
 <!-- pkgdown -->
 <link href="../pkgdown.css" rel="stylesheet">
@@ -38,9 +42,8 @@
 <meta property="og:title" content="Create Database Connection — db_create_connection" />
 <meta property="og:description" content="Connects to the PostgreSQL database backend of timeseriesdb. This function
 is convenience wrapper around DBI's dbConnect. It's less general than the DBI
-function and only works for PostgreSQL, but it is a little more convenient 
+function and only works for PostgreSQL, but it is a little more convenient
 because of its defaults / assumptions." />
-<meta name="twitter:card" content="summary" />
 
 
 
@@ -58,7 +61,7 @@ because of its defaults / assumptions." />
 
   </head>
 
-  <body>
+  <body data-spy="scroll" data-target="#toc">
     <div class="container template-reference-topic">
       <header>
       <div class="navbar navbar-default navbar-fixed-top" role="navigation">
@@ -117,7 +120,7 @@ because of its defaults / assumptions." />
       </ul>
       <ul class="nav navbar-nav navbar-right">
         <li>
-  <a href="https://github.com/mbannert/timeseriesdb">
+  <a href="https://github.com/mbannert/timeseriesdb/">
     <span class="fab fa fab fa-github fa-lg"></span>
      
   </a>
@@ -143,18 +146,18 @@ because of its defaults / assumptions." />
     <div class="ref-description">
     <p>Connects to the PostgreSQL database backend of timeseriesdb. This function
 is convenience wrapper around DBI's dbConnect. It's less general than the DBI
-function and only works for PostgreSQL, but it is a little more convenient 
+function and only works for PostgreSQL, but it is a little more convenient
 because of its defaults / assumptions.</p>
     </div>
 
     <pre class="usage"><span class='fu'>db_create_connection</span>(
   <span class='no'>dbname</span>,
-  <span class='kw'>user</span> <span class='kw'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/Sys.info.html'>Sys.info</a></span>()[<span class='st'>"user"</span>],
+  <span class='kw'>user</span> <span class='kw'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/Sys.info.html'>Sys.info</a></span>()<span class='kw'>[[</span><span class='st'>"user"</span>]],
   <span class='kw'>host</span> <span class='kw'>=</span> <span class='st'>"localhost"</span>,
   <span class='kw'>passwd</span> <span class='kw'>=</span> <span class='kw'>NULL</span>,
   <span class='kw'>passwd_from_file</span> <span class='kw'>=</span> <span class='fl'>FALSE</span>,
   <span class='kw'>line_no</span> <span class='kw'>=</span> <span class='fl'>1</span>,
-  <span class='kw'>env_pass_name</span> <span class='kw'>=</span> <span class='kw'>NULL</span>,
+  <span class='kw'>passwd_from_env</span> <span class='kw'>=</span> <span class='fl'>FALSE</span>,
   <span class='kw'>connection_description</span> <span class='kw'>=</span> <span class='st'>"timeseriesdb"</span>,
   <span class='kw'>port</span> <span class='kw'>=</span> <span class='fl'>5432</span>
 )</pre>
@@ -168,7 +171,9 @@ because of its defaults / assumptions.</p>
     </tr>
     <tr>
       <th>user</th>
-      <td><p>character name of the database user. Defaults to the user of the R session. this is often the user for the database, too so you do not have to specify your username explicitly if that is the case.</p></td>
+      <td><p>character name of the database user. Defaults to the user of the R session.
+this is often the user for the database, too so you do not have to specify
+your username explicitly if that is the case.</p></td>
     </tr>
     <tr>
       <th>host</th>
@@ -176,24 +181,25 @@ because of its defaults / assumptions.</p>
     </tr>
     <tr>
       <th>passwd</th>
-      <td><p>character password. Defaults to NULL triggering an R Studio function that
-asks for your passwords interactively if you are on R Studio.</p></td>
+      <td><p>character password, file or environment name. Defaults to NULL triggering an R Studio function that
+asks for your passwords interactively if you are on R Studio. Make sure to adapt the boolean params correspondingly.</p></td>
     </tr>
     <tr>
       <th>passwd_from_file</th>
-      <td><p>boolean if set to TRUE the passwd param is interpreted as a file location for a password file such as .pgpass. Make sure to be very restrictive with file permissions if you store a password to a file.</p></td>
+      <td><p>boolean if set to TRUE the passwd param is interpreted as a file
+location for a password file such as .pgpass. Make sure to be very
+restrictive with file permissions if you store a password to a file.</p></td>
     </tr>
     <tr>
       <th>line_no</th>
       <td><p>integer specify line number of password file that holds the actual password.</p></td>
     </tr>
     <tr>
-      <th>env_pass_name</th>
-      <td><p>character name of the environment that holds a password. Defaults to NULL. If set, this way of obtaining the password is preferred over all other ways. Other specification will be ignored if this parameter is set. Storing passwords in environment variables can be very handy when working in a docker environment.</p></td>
-    </tr>
-    <tr>
       <th>connection_description</th>
-      <td><p>character connection description describing the application that connects to the database. This is mainly helpful for DB admins and shows up in the pg_stat_activity table. Defaults to 'timeseriesdb'. Avoid spaces as this is a psql option.</p></td>
+      <td><p>character connection description describing the application
+that connects to the database. This is mainly helpful for
+DB admins and shows up in the pg_stat_activity table.
+Defaults to 'timeseriesdb'. Avoid spaces as this is a psql option.</p></td>
     </tr>
     <tr>
       <th>port</th>
@@ -203,23 +209,21 @@ asks for your passwords interactively if you are on R Studio.</p></td>
 
 
   </div>
-  <div class="col-md-3 hidden-xs hidden-sm" id="sidebar">
-    <h2>Contents</h2>
-    <ul class="nav nav-pills nav-stacked">
-      <li><a href="#arguments">Arguments</a></li>
-    </ul>
-
+  <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">
+    <nav id="toc" data-toggle="toc" class="sticky-top">
+      <h2 data-toc-skip>Contents</h2>
+    </nav>
   </div>
 </div>
 
 
       <footer>
       <div class="copyright">
-  <p>Developed by 'Matthias Bannert'.</p>
+  <p>Developed by Matthias Bannert, Severin Thöni.</p>
 </div>
 
 <div class="pkgdown">
-  <p>Site built with <a href="https://pkgdown.r-lib.org/">pkgdown</a> 1.4.1.</p>
+  <p>Site built with <a href="https://pkgdown.r-lib.org/">pkgdown</a> 1.5.1.</p>
 </div>
 
       </footer>

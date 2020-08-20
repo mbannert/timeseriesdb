@@ -1,12 +1,34 @@
 #' Bundles Keys into an Existing Collection or Adds a New Collection
-#' @param  con PostgreSQL connection object created with RPostgres.
-#' @param collection_name character name of the collection
-#' @param keys character vector of time series keys.
-#' @param description character description of the collection
-#' @param user character name of the User. Defaults to current system user.
-#' @param schema character name of the schema. Defaults to 'timeseries'.
+#'
+#' Collections are user specific compilations of time series keys. Similar to
+#' a playlist in a music app, collections help to come back to a previously stored
+#' selection of time series. This functions adds more time series to existing bundles (collections).
+#'
+#' @param description \strong{character} description of the collection.
+#'
+#' @inheritParams param_defs
+#' @family collections functions
+#'
 #' @importFrom jsonlite fromJSON
 #' @export
+#'
+#' @examples
+#'
+#' \dontrun{
+#' store_time_series(con = connection, zrh_airport, schema = "schema")
+#' store_time_series(con = connection, kof_ts, schema = "schema")
+#'
+#' db_ts_add_to_collection(
+#'   con = connection,
+#'   collection_name = "barometer and departures zurich",
+#'   ts_keys = c(
+#'     "ch.zrh_airport.departure.total",
+#'     "ch.zrh_airport.departure.total",
+#'     "ch.kof.barometer"
+#'   ),
+#'   schema = "schema"
+#' )
+#' }
 db_ts_add_to_collection <- function(con,
                               collection_name,
                               keys,
@@ -18,21 +40,24 @@ db_ts_add_to_collection <- function(con,
   # let's add keys: fill a temp table, anti-join the keys
   # INSERT non existing ones.
   dt <- data.table(
-    ts_key = keys)
+    ts_key = keys
+  )
 
   db_return <- db_with_temp_table(con,
-                                 "tmp_collect_updates",
-                                 dt,
-                                 field.types = c(
-                                   ts_key = "text"
-                                 ),
-                                 fromJSON(db_call_function(con,
-                                                           "insert_collect_from_tmp",
-                                                           list(collection_name, user, description),
-                                                           schema = schema)),
-                                 schema = schema)
+    "tmp_collect_updates",
+    dt,
+    field.types = c(
+      ts_key = "text"
+    ),
+    fromJSON(db_call_function(con,
+      "insert_collect_from_tmp",
+      list(collection_name, user, description),
+      schema = schema
+    )),
+    schema = schema
+  )
 
-  if(db_return$status == "warning") {
+  if (db_return$status == "warning") {
     warning(db_return$message)
   }
 
@@ -42,39 +67,65 @@ db_ts_add_to_collection <- function(con,
 
 #' Remove Keys From a User's Collection
 #'
-#' Removes a vector of time series keys from an a set of
-#' keys defined for that user.
+#' Removes a vector of time series keys from a user specific
+#' compilation.
 #'
-#' @param  con PostgreSQL connection object created with RPostgres.
-#' @param collection_name character name of the collection
-#' @param keys character vector of time series keys.
-#' @param user character name of the User. Defaults to current system user.
-#' @param schema character name of the schema. Defaults to 'timeseries'.
+#' @inheritParams param_defs
+#' @family collections functions
+#'
 #' @importFrom jsonlite fromJSON
 #' @export
+#'
+#' @examples
+#'
+#' \dontrun{
+#' store_time_series(con = connection, zrh_airport, schema = "schema")
+#' store_time_series(con = connection, kof_ts, schema = "schema")
+#'
+#' db_ts_add_to_collection(
+#'   con = connection,
+#'   collection_name = "barometer and departures zurich",
+#'   ts_keys = c(
+#'     "ch.zrh_airport.departure.total",
+#'     "ch.zrh_airport.departure.total",
+#'     "ch.kof.barometer"
+#'   ),
+#'   schema = "schema"
+#' )
+#'
+#' db_ts_remove_from_collection(
+#'   con = connection,
+#'   collection_name = "barometer and departures zurich",
+#'   ts_keys = "ch.zrh_airport.departure.total",
+#'   schema = "schema"
+#' )
+#' }
 db_ts_remove_from_collection <- function(con,
-                                 collection_name,
-                                 keys,
-                                 user = Sys.info()['user'],
-                                 schema = "timeseries"){
-  keys <- unique(keys)
+                                         collection_name,
+                                         ts_keys,
+                                         user = Sys.info()["user"],
+                                         schema = "timeseries") {
+  keys <- unique(ts_keys)
 
   # write temp table
   dt <- data.table(ts_key = keys)
 
   db_return <- db_with_temp_table(con,
-                                  "tmp_collection_remove",
-                                  dt,
-                                  field.types = c(
-                                    ts_key = "text"
-                                  ),
-                                  fromJSON(db_call_function(con,
-                                                            "collection_remove",
-                                                            list(collection_name, user),
-                                                            schema)),
-                                  schema = schema)
+    "tmp_collection_remove",
+    dt,
+    field.types = c(
+      ts_key = "text"
+    ),
+    fromJSON(db_call_function(
+      con,
+      "collection_remove",
+      list(collection_name, user),
+      schema
+    )),
+    schema = schema
+  )
 
-  if(db_return$status == "error") {
+  if (db_return$status == "error") {
     stop(db_return$message)
   }
 
@@ -84,35 +135,99 @@ db_ts_remove_from_collection <- function(con,
 
 #' Remove an Entire Time Series Key Collection
 #'
-#' @param con PostgreSQL connection object created with RPostgres.
-#' @param collection_name character name of the collection
-#' @param user character name of the User. Defaults to current system user.
-#' @param schema character name of the schema. Defaults to 'timeseries'.
+#' @inheritParams param_defs
+#' @family collections functions
 #'
 #' @return
 #'
 #' @importFrom jsonlite fromJSON
 #' @export
+#'
+#' @examples
+#'
+#' \dontrun{
+#' store_time_series(con = connection, zrh_airport, schema = "schema")
+#' store_time_series(con = connection, kof_ts, schema = "schema")
+#'
+#' db_ts_add_to_collection(
+#'   con = connection,
+#'   collection_name = "barometer and departures zurich",
+#'   ts_keys = c(
+#'     "ch.zrh_airport.departure.total",
+#'     "ch.zrh_airport.departure.total",
+#'     "ch.kof.barometer"
+#'   ),
+#'   schema = "schema"
+#' )
+#'
+#' db_collection_delete(
+#'   con = connection,
+#'   collection_name = "barometer and departures zurich",
+#'   schema = "schema"
+#' )
+#' }
 db_collection_delete <- function(con,
                                  collection_name,
-                                 user = Sys.info()['user'],
-                                 schema = "timeseries"
-                                 ){
+                                 user = Sys.info()["user"],
+                                 schema = "timeseries") {
   db_return <- fromJSON(db_call_function(con,
-                                "collection_delete",
-                                list(collection_name, user),
-                                schema = schema))
+    "collection_delete",
+    list(collection_name, user),
+    schema = schema
+  ))
 
-  if(db_return$status == "warning") {
+  if (db_return$status == "warning") {
     warning(db_return$message)
   }
 
   db_return
 }
 
-
+#' List All Available Collections for a Specific User
+#'
+#' @inheritParams param_defs
+#' @family collections functions
+#'
+#' @importFrom jsonlite fromJSON
+#' @export
+#'
+#' @examples
+#'
+#' \dontrun{
+#' ts1 <- list(ts(rnorm(100), start = c(1990, 1), frequency = 4))
+#' names(ts1) <- c("ts1")
+#' store_time_series(con = connection, ts1, schema = "schema")
+#' store_time_series(con = connection, zrh_airport, schema = "schema")
+#' store_time_series(con = connection, kof_ts, schema = "schema")
+#'
+#' db_ts_add_to_collection(
+#'   con = connection,
+#'   collection_name = "barometer and departures zurich",
+#'   ts_keys = c(
+#'     "ch.zrh_airport.departure.total",
+#'     "ch.zrh_airport.departure.total",
+#'     "ch.kof.barometer"
+#'   ),
+#'   schema = "schema"
+#' )
+#'
+#' db_ts_add_to_collection(
+#'   con = connection,
+#'   collection_name = "ts1 and departures zurich",
+#'   ts_keys = c(
+#'     "ch.zrh_airport.departure.total",
+#'     "ts1"
+#'   ),
+#'   schema = "schema"
+#' )
+#'
+#' db_collection_list(
+#'   con = connection,
+#'   schema = "schema"
+#' )
+#' }
 db_collection_list <- function(con,
-                               user = Sys.info()['user'],
+                               user = Sys.info()["user"],
                                schema = "timeseries") {
   db_call_function(
     con,
@@ -123,3 +238,4 @@ db_collection_list <- function(con,
     schema = schema
   )
 }
+
