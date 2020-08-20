@@ -305,3 +305,27 @@ END;
 $$ LANGUAGE PLPGSQL
 SECURITY DEFINER
 SET search_path = timeseries, pg_temp;
+
+-- Get the last time the dataset was updated
+--
+-- Returns the created_at timestamp of the series in the given dataset
+-- that was most recently updated.
+CREATE OR REPLACE FUNCTION timeseries.dataset_get_last_update(p_dataset TEXT)
+RETURNS TABLE(name TEXT, updated TIMESTAMPTZ)
+AS $$
+BEGIN
+  CREATE TEMPORARY TABLE tmp_ts_read_keys
+  ON COMMIT DROP
+  AS (
+    SELECT ts_key
+    FROM timeseries.catalog AS cat
+    WHERE set_id = p_dataset
+  );
+
+  RETURN QUERY
+  SELECT p_dataset AS name, max(ud.updated) AS updated
+  FROM timeseries.ts_get_last_update() AS ud;
+END;
+$$ LANGUAGE PLPGSQL
+SECURITY DEFINER
+SET search_path = timeseries, pg_temp;

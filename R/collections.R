@@ -239,3 +239,15 @@ db_collection_list <- function(con,
   )
 }
 
+db_collection_get_last_update <- function(con,
+                                          collection_name,
+                                          user = Sys.info()["user"],
+                                          schema = "timeseries") {
+  db_call_function(con,
+                   "collection_get_last_update",
+                   list(
+                     collection_name,
+                     user
+                   ),
+                   schema = schema)
+}

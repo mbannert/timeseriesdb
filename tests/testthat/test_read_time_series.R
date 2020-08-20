@@ -255,3 +255,22 @@ test_with_fresh_db(con_admin, "reading nonexistend collection", {
   expect_is(tsl_read, "tslist")
   expect_length(tsl_read, 0)
 })
+
+
+
+# get latest update -------------------------------------------------------
+
+test_with_fresh_db(con_admin, "getting latest update of ts", {
+  out <- db_ts_get_last_update(con_reader, c("vts1", "vts2"), schema = "tsdb_test")
+
+  expect_equal(
+    out,
+    data.table(
+      ts_key = c("vts1", "vts2"),
+      updated = c(
+        as.POSIXct("2020-01-02 01:00:00"),
+        as.POSIXct("2020-01-02 01:00:00")
+      )
+    )
+  )
+})

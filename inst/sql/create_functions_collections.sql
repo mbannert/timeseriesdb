@@ -214,3 +214,31 @@ END;
 $$ LANGUAGE PLPGSQL
 SECURITY DEFINER
 SET search_path = timeseries, pg_temp;
+
+-- Get the last time the collection was updated
+--
+-- Returns the created_at timestamp of the series in the given collection
+-- that was most recently updated.
+CREATE OR REPLACE FUNCTION timeseries.collection_get_last_update(p_collection TEXT,
+                                                                 p_owner TEXT)
+RETURNS TABLE(name TEXT, updated TIMESTAMPTZ)
+AS $$
+BEGIN
+  CREATE TEMPORARY TABLE tmp_ts_read_keys
+  ON COMMIT DROP
+  AS (
+    SELECT ts_key
+    FROM timeseries.collect_catalog AS cat
+    JOIN timeseries.collections AS coll
+    USING(id)
+    WHERE coll.name = p_collection
+    AND coll.owner = p_owner
+  );
+
+  RETURN QUERY
+  SELECT p_collection AS name, max(ud.updated) AS updated
+  FROM timeseries.ts_get_last_update() AS ud;
+END;
+$$ LANGUAGE PLPGSQL
+SECURITY DEFINER
+SET search_path = timeseries, pg_temp;

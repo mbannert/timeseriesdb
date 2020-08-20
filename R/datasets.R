@@ -435,3 +435,14 @@ db_dataset_trim_history <- function(con,
     schema = schema
   ))
 }
+
+db_dataset_get_last_update <- function(con,
+                                  set_id,
+                                  schema = "timeseries") {
+  db_call_function(con,
+                  "dataset_get_last_update",
+                  list(
+                    set_id
+                  ),
+                  schema = schema)
+}

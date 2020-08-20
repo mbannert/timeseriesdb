@@ -315,3 +315,42 @@ END;
 $$ LANGUAGE PLPGSQL
 SECURITY DEFINER
 SET search_path = timeseries, pg_temp;
+
+-- Get the last time time series were updated
+--
+-- Returns the created_at of the given time series
+CREATE OR REPLACE FUNCTION timeseries.ts_get_last_update()
+RETURNS TABLE(ts_key TEXT, updated TIMESTAMPTZ)
+AS $$
+BEGIN
+  RETURN QUERY
+  SELECT
+  DISTINCT ON(mn.ts_key)
+  mn.ts_key, mn.created_at AS updated
+  FROM timeseries.timeseries_main AS mn
+  JOIN tmp_ts_read_keys AS rd
+  USING(ts_key)
+  ORDER BY mn.ts_key, mn.created_at DESC;
+END;
+$$ LANGUAGE PLPGSQL
+SECURITY DEFINER
+SET search_path = timeseries, pg_temp;
+
+-- Vectorized version for frontends that can provide arrays
+--
+CREATE OR REPLACE FUNCTION timeseries.ts_get_last_update(p_keys TEXT[])
+RETURNS TABLE(ts_key TEXT, updated TIMESTAMPTZ)
+AS $$
+BEGIN
+  CREATE TEMPORARY TABLE tmp_ts_read_keys
+  ON COMMIT DROP
+  AS (
+    SELECT * FROM unnest(p_keys) AS ts_key
+  );
+
+  RETURN QUERY
+  SELECT * FROM timeseries.ts_get_last_update();
+END;
+$$ LANGUAGE PLPGSQL
+SECURITY DEFINER
+SET search_path = timeseries, pg_temp;

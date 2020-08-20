@@ -171,11 +171,11 @@ db_dataset_read_ts <- function(con,
 #' in order to uniquely identify a collection.
 #'
 #' @export
-#' 
+#'
 #' @examples
 #'
 #' \dontrun{
-#' 
+#'
 #' store_time_series(con = connection, zrh_airport, schema = "schema")
 #' store_time_series(con = connection, kof_ts, schema = "schema")
 #'
@@ -234,4 +234,17 @@ get_tsl_from_res <- function(res, chunksize = 10000, id.col = "ts_key") {
   }
 
   tsl
+}
+
+db_ts_get_last_update <- function(con,
+                                  ts_keys,
+                                  schema = "timeseries") {
+  db_with_tmp_read(con,
+                   ts_keys,
+                   code = {
+                      db_call_function(con,
+                                       "ts_get_last_update",
+                                       schema = schema)
+                   },
+                   schema = schema)
 }

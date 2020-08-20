@@ -428,3 +428,17 @@ test_with_fresh_db(con_admin, "trimming datasets db state", {
     )
   )
 })
+
+
+# getting last update -----------------------------------------------------
+
+test_with_fresh_db(con_admin, "getting the latest update", {
+  out <- db_dataset_get_last_update(con_reader, "set_read", schema = "tsdb_test")
+
+  expect_equal(out$name, "set_read")
+  # It's hot and I don't feel like wrangling DST issues
+  expect_equal(
+    out$updated,
+    max(dbGetQuery(con_admin, "SELECT created_at FROM tsdb_test.timeseries_main WHERE ts_key = 'rts1'")$created_at)
+  )
+})
