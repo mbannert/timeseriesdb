@@ -161,6 +161,32 @@ db_dataset_read_ts <- function(con,
 #' in order to uniquely identify a collection.
 #'
 #' @export
+#' 
+#' @examples
+#'
+#' \dontrun{
+#' 
+#' store_time_series(con = connection, zrh_airport, schema = "schema")
+#' store_time_series(con = connection, kof_ts, schema = "schema")
+#'
+#' db_ts_add_to_collection(
+#'   con = connection,
+#'   collection_name = "barometer and departures zurich",
+#'   ts_keys = c(
+#'     "ch.zrh_airport.departure.total",
+#'     "ch.zrh_airport.departure.total",
+#'     "ch.kof.barometer"
+#'   ),
+#'   schema = "schema"
+#' )
+#'
+#' db_collection_read_ts(
+#'   con = connection,
+#'   collection_name = "barometer and departures zurich",
+#'   collection_owner = "user_name",
+#'   schema = "schema"
+#' )
+#' }
 db_collection_read_ts <- function(con,
                                   collection_name,
                                   collection_owner,

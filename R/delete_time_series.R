@@ -12,23 +12,29 @@
 #' @export
 #'
 #' @importFrom jsonlite fromJSON
-#' 
-#' @examples 
-#' 
+#'
+#' @examples
+#'
 #' \dontrun{
 #' # Store zrh_airport data
 #' store_time_series(con = connection, zrh_airport, schema = "schema")
-#' 
+#'
 #' # Deleting one key
-#' db_ts_delete(con = connection,
-#'              ts_keys = "ch.zrh_airport.departure.total",
-#'              schema = "schema")
-#' 
+#' db_ts_delete(
+#'   con = connection,
+#'   ts_keys = "ch.zrh_airport.departure.total",
+#'   schema = "schema"
+#' )
+#'
 #' # Deleting multiple keys
-#' db_ts_delete(con = connection,
-#'              ts_keys = c("ch.zrh_airport.departure.total",
-#'                          "ch.zrh_airport.arrival.total"),
-#'              schema = "schema")
+#' db_ts_delete(
+#'   con = connection,
+#'   ts_keys = c(
+#'     "ch.zrh_airport.departure.total",
+#'     "ch.zrh_airport.arrival.total"
+#'   ),
+#'   schema = "schema"
+#' )
 #' }
 db_ts_delete <- function(con,
                          ts_keys,
@@ -37,29 +43,30 @@ db_ts_delete <- function(con,
 
   ans <- readline("answer: ")
 
-  if(ans != "yes") {
+  if (ans != "yes") {
     stop(sprintf("You typed %s, aborting.", ans))
   }
 
   out <- db_with_temp_table(con,
-                            "tmp_ts_delete_keys",
-                            data.frame(
-                              ts_key = ts_keys
-                            ),
-                            field.types = c(ts_key = "text"),
-                            {
-                              tryCatch(
-                                db_call_function(con, "delete_ts", schema = schema),
-                                error = function(e) {
-                                  if(grepl("permission denied for function delete_ts", e)) {
-                                    stop("Only timeseries admins may delete time series.")
-                                  } else {
-                                    stop(e)
-                                  }
-                                }
-                              )
-                            },
-                            schema = schema)
+    "tmp_ts_delete_keys",
+    data.frame(
+      ts_key = ts_keys
+    ),
+    field.types = c(ts_key = "text"),
+    {
+      tryCatch(
+        db_call_function(con, "delete_ts", schema = schema),
+        error = function(e) {
+          if (grepl("permission denied for function delete_ts", e)) {
+            stop("Only timeseries admins may delete time series.")
+          } else {
+            stop(e)
+          }
+        }
+      )
+    },
+    schema = schema
+  )
   fromJSON(out)
 }
 
@@ -71,53 +78,59 @@ db_ts_delete <- function(con,
 #' @export
 #'
 #' @importFrom jsonlite fromJSON
-#' 
-#' @examples 
-#' 
+#'
+#' @examples
+#'
 #' \dontrun{
-#' 
+#'
 #' # Store different versions of the time series data
 #' ch.kof.barometer <- kof_ts["baro_2019m11"]
 #' names(ch.kof.barometer) <- c("ch.kof.barometer")
-#' store_time_series(con = connection,
-#'                   ch.kof.barometer,
-#'                   valid_from = "2019-12-01",
-#'                   schema = "schema")
-#' 
+#' store_time_series(
+#'   con = connection,
+#'   ch.kof.barometer,
+#'   valid_from = "2019-12-01",
+#'   schema = "schema"
+#' )
+#'
 #' ch.kof.barometer <- kof_ts["baro_2019m12"]
 #' names(ch.kof.barometer) <- c("ch.kof.barometer")
-#' store_time_series(con = connection,
-#'                   ch.kof.barometer,
-#'                   valid_from = "2020-01-01",
-#'                   schema = "schema")
-#'                   
-#' db_ts_delete_latest_version(con = connection,
-#'                             ts_keys = "ch.kof.barometer",
-#'                             schema = "schema")
-#' 
+#' store_time_series(
+#'   con = connection,
+#'   ch.kof.barometer,
+#'   valid_from = "2020-01-01",
+#'   schema = "schema"
+#' )
+#'
+#' db_ts_delete_latest_version(
+#'   con = connection,
+#'   ts_keys = "ch.kof.barometer",
+#'   schema = "schema"
+#' )
 #' }
 db_ts_delete_latest_version <- function(con,
-                                     ts_keys,
-                                     schema = "timeseries") {
+                                        ts_keys,
+                                        schema = "timeseries") {
   out <- db_with_temp_table(con,
-                            "tmp_ts_delete_keys",
-                            data.frame(
-                              ts_key = ts_keys
-                            ),
-                            field.types = c(ts_key = "text"),
-                            {
-                              tryCatch(
-                                db_call_function(con, "delete_ts_edge", schema = schema),
-                                error = function(e) {
-                                  if(grepl("permission denied for function delete_ts_edge", e)) {
-                                    stop("Only timeseries admins may delete vintages.")
-                                  } else {
-                                    stop(e)
-                                  }
-                                }
-                              )
-                            },
-                            schema = schema)
+    "tmp_ts_delete_keys",
+    data.frame(
+      ts_key = ts_keys
+    ),
+    field.types = c(ts_key = "text"),
+    {
+      tryCatch(
+        db_call_function(con, "delete_ts_edge", schema = schema),
+        error = function(e) {
+          if (grepl("permission denied for function delete_ts_edge", e)) {
+            stop("Only timeseries admins may delete vintages.")
+          } else {
+            stop(e)
+          }
+        }
+      )
+    },
+    schema = schema
+  )
 
   fromJSON(out)
 }
@@ -130,70 +143,76 @@ db_ts_delete_latest_version <- function(con,
 #' function can be used to trim off old vintages that are no longer relevant.
 #'
 #' @param older_than Date cut off point
-#' 
+#'
 #' @inheritParams param_defs
 #' @family time series functions
 #'
 #' @export
 #' @importFrom jsonlite fromJSON
-#' 
-#' @examples 
-#' 
+#'
+#' @examples
+#'
 #' \dontrun{
-#' 
+#'
 #' # Store different versions of the time series data
 #' ch.kof.barometer <- kof_ts["baro_2019m11"]
 #' names(ch.kof.barometer) <- c("ch.kof.barometer")
-#' store_time_series(con = connection,
-#'                   ch.kof.barometer,
-#'                   valid_from = "2019-12-01",
-#'                   schema = "schema")
-#' 
+#' store_time_series(
+#'   con = connection,
+#'   ch.kof.barometer,
+#'   valid_from = "2019-12-01",
+#'   schema = "schema"
+#' )
+#'
 #' ch.kof.barometer <- kof_ts["baro_2019m12"]
 #' names(ch.kof.barometer) <- c("ch.kof.barometer")
-#' store_time_series(con = connection,
-#'                   ch.kof.barometer,
-#'                   valid_from = "2020-01-01",
-#'                   schema = "schema")
-#'                   
-#' db_ts_trim_history(con = connection,
-#'                    ts_keys = "ch.kof.barometer",
-#'                    older_than = "2019-12-31",
-#'                    schema = "schema")
-#' 
+#' store_time_series(
+#'   con = connection,
+#'   ch.kof.barometer,
+#'   valid_from = "2020-01-01",
+#'   schema = "schema"
+#' )
+#'
+#' db_ts_trim_history(
+#'   con = connection,
+#'   ts_keys = "ch.kof.barometer",
+#'   older_than = "2019-12-31",
+#'   schema = "schema"
+#' )
 #' }
 db_ts_trim_history <- function(con,
-                            ts_keys,
-                            older_than,
-                            schema = "timeseries") {
+                               ts_keys,
+                               older_than,
+                               schema = "timeseries") {
   out <- db_with_temp_table(con,
-                            "tmp_ts_delete_keys",
-                            data.frame(
-                              ts_key = ts_keys
-                            ),
-                            field.types = c(ts_key = "text"),
-                            {
-                              tryCatch(
-                                db_call_function(
-                                  con,
-                                  "delete_ts_old_vintages",
-                                  list(
-                                    older_than
-                                  ),
-                                  schema = schema
-                                ),
-                                error = function(e) {
-                                  if(grepl("permission denied for function delete_ts_old_vintages", e)) {
-                                    stop("Only timeseries admins may delete vintages.")
-                                  } else if(grepl("input syntax for type date", e)) {
-                                    stop("Invalid date supplied. older_than must be a Date or a string of the form YYYY-MM-DD.")
-                                  } else {
-                                    stop(e)
-                                  }
-                                }
-                              )
-                            },
-                            schema = schema)
+    "tmp_ts_delete_keys",
+    data.frame(
+      ts_key = ts_keys
+    ),
+    field.types = c(ts_key = "text"),
+    {
+      tryCatch(
+        db_call_function(
+          con,
+          "delete_ts_old_vintages",
+          list(
+            older_than
+          ),
+          schema = schema
+        ),
+        error = function(e) {
+          if (grepl("permission denied for function delete_ts_old_vintages", e)) {
+            stop("Only timeseries admins may delete vintages.")
+          } else if (grepl("input syntax for type date", e)) {
+            stop("Invalid date supplied. older_than must be a Date or a string of the form YYYY-MM-DD.")
+          } else {
+            stop(e)
+          }
+        }
+      )
+    },
+    schema = schema
+  )
 
   fromJSON(out)
 }

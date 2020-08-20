@@ -16,43 +16,46 @@
 #'
 #' @return character name of the created set
 #' @export
-#' 
-#' @examples 
-#' 
+#'
+#' @examples
+#'
 #' \dontrun{
-#' 
-#' db_dataset_create(con = connection,
-#'                   set_name = "zrh_airport_data",
-#'                   set_description = "Zurich airport arrivals and departures ",
-#'                   schema = "schema")
-#' 
+#'
+#' db_dataset_create(
+#'   con = connection,
+#'   set_name = "zrh_airport_data",
+#'   set_description = "Zurich airport arrivals and departures ",
+#'   schema = "schema"
+#' )
 #' }
 db_dataset_create <- function(con,
                               set_name,
                               set_description = NA,
                               set_md = NA,
                               schema = "timeseries") {
-  
   set_md <- as.meta(set_md)
 
   # we want to keep NAs as pure NAs, not JSON nulls that would override the DEFAULT
   set_md <- ifelse(is.na(set_md),
-                   set_md,
-                   jsonlite::toJSON(set_md, auto_unbox = TRUE, null = "null"))
+    set_md,
+    jsonlite::toJSON(set_md, auto_unbox = TRUE, null = "null")
+  )
 
 
-  out <- db_call_function(con,
-                         "create_dataset",
-                         list(
-                           set_name,
-                           set_description,
-                           set_md
-                         ),
-                         schema)
+  out <- db_call_function(
+    con,
+    "create_dataset",
+    list(
+      set_name,
+      set_description,
+      set_md
+    ),
+    schema
+  )
 
   out_parsed <- fromJSON(out)
 
-  if(out_parsed$status == "error") {
+  if (out_parsed$status == "error") {
     stop(out_parsed$message)
   }
 
@@ -68,26 +71,29 @@ db_dataset_create <- function(con,
 #'
 #' @return character A vector of ts keys contained in the set
 #' @export
-#' 
-#' @examples 
-#' 
+#'
+#' @examples
+#'
 #' \dontrun{
-#' 
-#' db_dataset_get_keys(con = connection,
-#'                     set_name = "zrh_airport_data",
-#'                     set_description = "Zurich airport arrivals and departures ",
-#'                     schema = "schema")
-#' 
+#'
+#' db_dataset_get_keys(
+#'   con = connection,
+#'   set_name = "zrh_airport_data",
+#'   set_description = "Zurich airport arrivals and departures ",
+#'   schema = "schema"
+#' )
 #' }
 db_dataset_get_keys <- function(con,
-                               set_name = 'default',
-                               schema = "timeseries") {
-  db_call_function(con,
-                   "keys_in_dataset",
-                   list(
-                     set_name
-                   ),
-                   schema)$ts_key
+                                set_name = "default",
+                                schema = "timeseries") {
+  db_call_function(
+    con,
+    "keys_in_dataset",
+    list(
+      set_name
+    ),
+    schema
+  )$ts_key
 }
 
 #' Find Datasets Given a Set
@@ -99,37 +105,43 @@ db_dataset_get_keys <- function(con,
 #'
 #' @return data.frame with columns `ts_key` and `set_id`
 #' @export
-#' 
-#' @examples 
-#' 
+#'
+#' @examples
+#'
 #' \dontrun{
-#'  
-#' # one key             
-#' db_ts_get_dataset(con = connection,
-#'                   ts_keys = "ch.zrh_airport.departure.total",
-#'                   schema = "schema")
+#'
+#' # one key
+#' db_ts_get_dataset(
+#'   con = connection,
+#'   ts_keys = "ch.zrh_airport.departure.total",
+#'   schema = "schema"
+#' )
 #'
 #' # multiple keys
-#' db_ts_get_dataset(con = connection,
-#'                   ts_keys = c("ch.zrh_airport.departure.total",
-#'                               "ch.zrh_airport.arrival.total"),
-#'                   schema = "schema")
-#'
+#' db_ts_get_dataset(
+#'   con = connection,
+#'   ts_keys = c(
+#'     "ch.zrh_airport.departure.total",
+#'     "ch.zrh_airport.arrival.total"
+#'   ),
+#'   schema = "schema"
+#' )
 #' }
 db_ts_get_dataset <- function(con,
-                               ts_keys,
-                               schema = "timeseries") {
-
+                              ts_keys,
+                              schema = "timeseries") {
   db_with_temp_table(con,
-                     "tmp_get_set",
-                     data.frame(ts_key = ts_keys),
-                     field.types = c(
-                       ts_key = "text"
-                     ),
-                     db_call_function(con,
-                                      "get_set_of_keys",
-                                      schema = schema),
-                     schema = schema)
+    "tmp_get_set",
+    data.frame(ts_key = ts_keys),
+    field.types = c(
+      ts_key = "text"
+    ),
+    db_call_function(con,
+      "get_set_of_keys",
+      schema = schema
+    ),
+    schema = schema
+  )
 }
 
 #' Assign Time Series Identifiers to a Dataset
@@ -146,49 +158,57 @@ db_ts_get_dataset <- function(con,
 #'
 #' @return list A status list
 #' @export
-#' 
-#' @examples 
-#' 
-#' \dontrun{
-#' 
-#' db_dataset_create(con = connection,
-#'                   set_name = "zrh_airport_data",
-#'                   set_description = "Zurich airport arrivals and departures ",
-#'                   schema = "schema")
 #'
-#' db_ts_assign_dataset(con = connection,
-#'                      ts_keys = c("ch.zrh_airport.departure.total",
-#'                                  "ch.zrh_airport.arrival.total"),
-#'                      set_name = "zrh_airport_data",
-#'                      schema = "schema")
-#' 
+#' @examples
+#'
+#' \dontrun{
+#'
+#' db_dataset_create(
+#'   con = connection,
+#'   set_name = "zrh_airport_data",
+#'   set_description = "Zurich airport arrivals and departures ",
+#'   schema = "schema"
+#' )
+#'
+#' db_ts_assign_dataset(
+#'   con = connection,
+#'   ts_keys = c(
+#'     "ch.zrh_airport.departure.total",
+#'     "ch.zrh_airport.arrival.total"
+#'   ),
+#'   set_name = "zrh_airport_data",
+#'   schema = "schema"
+#' )
 #' }
 db_ts_assign_dataset <- function(con,
-                              ts_keys,
-                              set_name,
-                              schema = "timeseries") {
+                                 ts_keys,
+                                 set_name,
+                                 schema = "timeseries") {
 
   # Error case: Set does not exist
   # Warning case: Only some keys found in catalog
   # Success case: you know what that means...
 
   out <- db_with_temp_table(con,
-                           "tmp_set_assign",
-                           data.frame(ts_key = ts_keys),
-                           field.types = c(ts_key = "text"),
-                           db_call_function(con,
-                            "assign_dataset",
-                            list(
-                              set_name
-                            ),
-                            schema),
-                           schema = schema)
+    "tmp_set_assign",
+    data.frame(ts_key = ts_keys),
+    field.types = c(ts_key = "text"),
+    db_call_function(
+      con,
+      "assign_dataset",
+      list(
+        set_name
+      ),
+      schema
+    ),
+    schema = schema
+  )
 
   out_parsed <- jsonlite::fromJSON(out)
 
-  if(out_parsed$status == "error") {
+  if (out_parsed$status == "error") {
     stop(out_parsed$reason)
-  } else if(out_parsed$status == "warning") {
+  } else if (out_parsed$status == "warning") {
     warning(sprintf("%s\n%s", out_parsed$reason, paste(out_parsed$offending_keys, collapse = ",\n")))
   }
 
@@ -203,22 +223,23 @@ db_ts_assign_dataset <- function(con,
 #' @param metadata_update_mode character one of "update" or "overwrite". If set to "update",
 #'  new fields in the list are added to the existing metadata and existing fields overwritten.
 #'  If NA nothing happens in update mode. If set to "overwrite" ALL existing metadata is replaced.
-#'  
+#'
 #' @inheritParams param_defs
 #' @family datasets functions
 #'
 #' @importFrom jsonlite toJSON fromJSON
 #' @export
-#' 
-#' @examples 
-#' 
+#'
+#' @examples
+#'
 #' \dontrun{
-#' 
-#' db_dataset_update(con = connection,
-#'                   set_name = "zrh_airport_data",
-#'                   description = "updating description Zurich airport arrivals and departures",
-#'                   schema = "schema")
-#' 
+#'
+#' db_dataset_update(
+#'   con = connection,
+#'   set_name = "zrh_airport_data",
+#'   description = "updating description Zurich airport arrivals and departures",
+#'   schema = "schema"
+#' )
 #' }
 db_dataset_update <- function(con,
                               set_name,
@@ -226,23 +247,24 @@ db_dataset_update <- function(con,
                               metadata = NA,
                               metadata_update_mode = "update",
                               schema = "timeseries") {
-  if(!is.na(metadata)) {
+  if (!is.na(metadata)) {
     metadata <- toJSON(metadata, auto_unbox = TRUE, digits = NA)
   }
 
   out <- db_call_function(con,
-                          "dataset_update",
-                          list(
-                            set_name,
-                            description,
-                            metadata,
-                            metadata_update_mode
-                          ),
-                          schema = schema)
+    "dataset_update",
+    list(
+      set_name,
+      description,
+      metadata,
+      metadata_update_mode
+    ),
+    schema = schema
+  )
 
   out_parsed <- fromJSON(out)
 
-  if(out_parsed$status == "error") {
+  if (out_parsed$status == "error") {
     stop(out_parsed$message)
   }
 
@@ -256,26 +278,29 @@ db_dataset_update <- function(con,
 #'
 #' @return data.frame with columns `set_id` and `set_description`
 #' @export
-#' 
-#' @examples 
-#' 
-#' \dontrun{
-#' 
-#' db_dataset_create(con = connection,
-#'                   set_name = "zrh_airport_data",
-#'                   set_description = "Zurich airport arrivals and departures ",
-#'                   schema = "schema")
 #'
-#' db_dataset_list(con = connection,
-#'                 schema = "schema")
-#' 
+#' @examples
+#'
+#' \dontrun{
+#'
+#' db_dataset_create(
+#'   con = connection,
+#'   set_name = "zrh_airport_data",
+#'   set_description = "Zurich airport arrivals and departures ",
+#'   schema = "schema"
+#' )
+#'
+#' db_dataset_list(
+#'   con = connection,
+#'   schema = "schema"
+#' )
 #' }
 db_dataset_list <- function(con,
                             schema = "timeseries") {
-
   db_call_function(con,
-                   "list_datasets",
-                   schema = schema)
+    "list_datasets",
+    schema = schema
+  )
 }
 
 
@@ -291,19 +316,22 @@ db_dataset_list <- function(con,
 #' @return character name of the deleted set, NA in case of an error.
 #' @export
 #'
-#' @examples 
-#' 
-#' \dontrun{
-#' 
-#' db_dataset_create(con = connection,
-#'                   set_name = "zrh_airport_data",
-#'                   set_description = "Zurich airport arrivals and departures ",
-#'                   schema = "schema")
+#' @examples
 #'
-#' db_dataset_delete(con = connection,
-#'                   set_name = "zrh_airport_data",
-#'                   schema = "schema")
-#' 
+#' \dontrun{
+#'
+#' db_dataset_create(
+#'   con = connection,
+#'   set_name = "zrh_airport_data",
+#'   set_description = "Zurich airport arrivals and departures ",
+#'   schema = "schema"
+#' )
+#'
+#' db_dataset_delete(
+#'   con = connection,
+#'   set_name = "zrh_airport_data",
+#'   schema = "schema"
+#' )
 #' }
 db_dataset_delete <- function(con,
                               set_name,
@@ -311,19 +339,20 @@ db_dataset_delete <- function(con,
   message("This will permanently delete ALL time series associated with that set,\n**including their histories**.")
   confirmation <- readline("Retype dataset name to confirm: ")
 
-  if(confirmation != set_name) {
+  if (confirmation != set_name) {
     stop("Confirmation failed!")
   }
 
   out <- fromJSON(db_call_function(con,
-                                   "dataset_delete",
-                                   list(
-                                     set_name,
-                                     confirmation
-                                   ),
-                                   schema = schema))
+    "dataset_delete",
+    list(
+      set_name,
+      confirmation
+    ),
+    schema = schema
+  ))
 
-  if(out$status == "warning") {
+  if (out$status == "warning") {
     warning(out$reason)
   } else if (out$status == "error") {
     stop(out$message)
@@ -344,54 +373,65 @@ db_dataset_delete <- function(con,
 #'
 #' @inheritParams param_defs
 #' @family datasets functions
-#' 
+#'
 #' @export
 #' @importFrom jsonlite fromJSON
-#' 
-#' @examples 
-#' 
+#'
+#' @examples
+#'
 #' \dontrun{
-#' 
-#' # Storing different versions of the data, use parameter valid_from 
+#'
+#' # Storing different versions of the data, use parameter valid_from
 #' # different versions are stored with the same key
 #' ch.kof.barometer <- kof_ts["baro_2019m11"]
 #' names(ch.kof.barometer) <- c("ch.kof.barometer")
-#' store_time_series(con = connection,
-#'                   ch.kof.barometer,
-#'                   valid_from = "2019-12-01",
-#'                   schema = "schema")
-#' 
+#' store_time_series(
+#'   con = connection,
+#'   ch.kof.barometer,
+#'   valid_from = "2019-12-01",
+#'   schema = "schema"
+#' )
+#'
 #' ch.kof.barometer <- kof_ts["baro_2019m12"]
 #' names(ch.kof.barometer) <- c("ch.kof.barometer")
-#' store_time_series(con = connection,
-#'                   ch.kof.barometer,
-#'                   valid_from = "2020-01-01",
-#'                   schema = "schema")
-#'                   
-#' db_dataset_create(con = connection,
-#'                   set_name = "barometer",
-#'                   set_description = "KOF Barometer",
-#'                   schema = "schema")
-#'                   
-#' db_ts_assign_dataset(con = connection,
-#'                      ts_keys = "ch.kof.barometer",
-#'                      set_name = "barometer",
-#'                      schema = "schema")
+#' store_time_series(
+#'   con = connection,
+#'   ch.kof.barometer,
+#'   valid_from = "2020-01-01",
+#'   schema = "schema"
+#' )
 #'
-#' db_dataset_trim_history(con = connection,
-#'                         set_id = "barometer",
-#'                         older_than = "2019-12-31",
-#'                         schema = "schema")
+#' db_dataset_create(
+#'   con = connection,
+#'   set_name = "barometer",
+#'   set_description = "KOF Barometer",
+#'   schema = "schema"
+#' )
+#'
+#' db_ts_assign_dataset(
+#'   con = connection,
+#'   ts_keys = "ch.kof.barometer",
+#'   set_name = "barometer",
+#'   schema = "schema"
+#' )
+#'
+#' db_dataset_trim_history(
+#'   con = connection,
+#'   set_id = "barometer",
+#'   older_than = "2019-12-31",
+#'   schema = "schema"
+#' )
 #' }
 db_dataset_trim_history <- function(con,
-                            set_id,
-                            older_than,
-                            schema = "timeseries") {
+                                    set_id,
+                                    older_than,
+                                    schema = "timeseries") {
   fromJSON(db_call_function(con,
-                            "dataset_trim",
-                            list(
-                              set_id,
-                              older_than
-                            ),
-                            schema = schema))
+    "dataset_trim",
+    list(
+      set_id,
+      older_than
+    ),
+    schema = schema
+  ))
 }
