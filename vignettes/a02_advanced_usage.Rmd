@@ -17,19 +17,44 @@ We assume you are past the basics and R, {timeseriesdb} and PostgreSQL are up an
 ## Versioning of Time Series (Vintages)
 
 A core feature of {timeseriesdb} is the ability to store vintages, i.e., different 
-versions of time series. The package was created with official and economic statistics in mind, so data revisions and the ability to evaluate forecasts plays an important role in the package
+versions of time series. The package was created with official and economic statistics in mind, so data revisions and the ability to evaluate forecasts play an important role in the package
 design. Hence {timeseriesdb} versions every time series it stores by default. 
 
-Let's assume `ts1_may` is a time series published in May 2020 and `ts1_june` is yet 
-another version of the very same time series. 
+Let's assume `baro_2019m10` is a time series published in October 2019 and `baro_2019m11` is yet 
+another version of the very same time series. We can simply store 
 
 
-```{r}
-library(kofdata)
-tsl <- get_time_series("ch.kof.barometer")
+```{r, eval=FALSE}
+data("kof_ts")
+store_time_series(con,
+                  list(ch.kof.barometer = kof_ts$baro_2019m10),
+                  valid_from="2019-10-30",
+                  schema = "tsdb_test")
+
+store_time_series(con,
+                  list(ch.kof.barometer = kof_ts$baro_2019m11),
+                  valid_from="2019-11-30",
+                  schema = "tsdb_test")
 
 ```
 
+and read them under the same key. 
+
+```{r, eval=FALSE}
+read_time_series(con, "ch.kof.barometer",
+                 schema = "tsdb_test")
+
+
+```
+
+Note how the default validity (today per `Sys.Date()`) is used when `valid_on` is not
+specified. You can also get read the entire history which returns a list of time series 
+that contains version of time series. List elements will be named according validity thresholds. 
+
+```{r,eval=FALSE}
+tsl <- read_time_series_history(con,"ch.kof.barometer",
+                                schema = "tsdb_test")
+```
 
 ## Datasets
 
@@ -66,7 +91,7 @@ db_get_dataset_id(con, "ch.zrh_airport.arrival.total",
                   schema = "tsdb_test")
 ```
 
-With [db_read_time_series_dataset()]() you can read all time series from a given dataset.
+With [db_dataset_read_ts()](../reference/db_dataset_read_ts.html) you can read all time series from a given dataset.
 
 ## Release Management
 
@@ -74,27 +99,27 @@ With [db_read_time_series_dataset()]() you can read all time series from a given
 db_list_releases(con, include_past = T, schema = "tsdb_test")
 ```
 
-Cancelling a future release is simply a matter of calling [db_cancel_release()](). 
-Cancellation of past releases is not possible, but release can be updated with [db_update_release()](). Also you can easily query the latest release
+Cancelling a future release is simply a matter of calling [db_release_cancel()](../reference/db_release_cancel.html). 
+Cancellation of past releases is not possible, but release can be updated with [db_release_update()](../reference/db_release_update.html). Also you can easily query the latest release
 
 
 ```{r, eval=FALSE}
 db_get_latest_release_for_set(con, "ch.zrh_airport",schema = "tsdb_test")
 ```
 
-Similarily use [db_get_next_release_for_set()]() to get the next upcoming
+Similarily use [db_release_get_next()](../reference/db_release_get_next.html) to get the next upcoming
 release. 
 
 
 ## Collections
 
-Collections are another concept introduced in v1.0. Collections are user specific compositions of time series identifiers. Users of earlier versions of time series may think of this
+Collections are another concept introduced in v1.0.. Collections are user specific compositions of time series identifiers. Users of earlier versions of time series may think of this
 functionality as 'sets'. To avoid any confusion, let's be clear about the new terminology here: 
 
 - datasets = registration of time series into global datasets. This happens typically
 at the admin level. Time series are unique ACROSS datasets.
 
-- collection = playlist like user specific bookmarks. A time series can part of 
+- collection = playlist are like user specific bookmarks. A time series can part of 
 multiple collections, users can have multiple collections. The purpose of
 collections is to be able to re-visit a selection of time series after updates etc,
 e.g., to update time series visualizations.
@@ -108,8 +133,8 @@ db_collection_add(con,
                   schema = "tsdb_test")
 ```
 
-You can remove keys from a collection using [db_collection_remove()]() and 
-delete an entire collection with [db_collection_delete()]().
+You can remove keys from a collection using [db_ts_remove_from_collection()](../reference/db_ts_remove_from_collection.html) and 
+delete an entire collection with [db_collection_delete()](../reference/db_collection_delete).
 
 
 ## Advanced Meta Information
@@ -123,7 +148,7 @@ be specific to a particular version of a time series.
 ### Multi Language Data Descriptions
 
 Simply create meta information objects for each language, similar to the fashion
-we've seen in the [Basic Usage]() article. Meta information objects can 
+we've seen in the [Basic Usage](a01_basic_usage.html) article. Meta information objects can 
 hold descriptions for one or more time series. Make sure you do NOT change the
 language within one object. 
 

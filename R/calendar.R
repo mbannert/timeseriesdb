@@ -1,8 +1,7 @@
 #' Create an Entry in the Release Calendar
 #'
-#' Only timeseries admins may create and modify releases
+#' The idea of the release calendar is to set a release date for some time series that might be in the database already but should not be publicly available before a specific date, e.g., a press release. Since publishing is simply a matter of changing the access level, an update of the access levels could be triggered based on the release information in a release table. Only timeseries admins may create and modify releases.
 #'
-#' @param con RPostgres connection
 #' @param id Identifier for the release e.g. 'gdb_may_2020'
 #' @param title Display title for the release
 #' @param release_date Timestamp when the release is to occur
@@ -10,17 +9,18 @@
 #' @param target_period Period observed in the data (e.g. month, quarter)
 #' @param target_frequency Frequency of the data (e.g. 4 for quarterly)
 #' @param note Additional remarks about the release.
-#' @param schema timeseries schema name
-#' @param datasets character Names of datasets to include in this release
 #'
 #' @details
-#' target_period changes meaning depending on the frequency of the release.
+#' \code{target_period} changes meaning depending on the frequency of the release.
 #' e.g. period 2 for quarterly data (reference_frequency = 4) means Q2 whereas
 #' period 2 for monthly data (frequency 12) means February
-#' In other words: target_year and target_period mark the end of the time series
+#' In other words: \code{target_year} and \code{target_period} mark the end of the time series
 #' in the release.
 #'
 #' @return a status list
+#'
+#' @inheritParams param_defs
+#' @family calendar functions
 #'
 #' @import data.table
 #' @importFrom RPostgres dbWriteTable
@@ -86,9 +86,8 @@ db_release_create <- function(con,
 #' Any parameters provided to this function will overwrite the corresponding
 #' fields in the database. Parameters set to NA (default) will leave the
 #' corresponding fields untouched.
-#' For details see db_release_create
+#' For details see \code{\link{db_release_create}}.
 #'
-#' @param con RPostgres connection
 #' @param id Identifier for the release e.g. 'gdb_may_2020'
 #' @param title Display title for the release
 #' @param release_date Timestamp when the release is to occur
@@ -96,7 +95,9 @@ db_release_create <- function(con,
 #' @param target_period Period observed in the data (e.g. month, quarter)
 #' @param target_frequency Frequency of the data (e.g. 4 for quarterly)
 #' @param note Additional remarks about the release.
-#' @param schema timeseries schema name
+#'
+#' @inheritParams param_defs
+#' @family calendar functions
 #'
 #' @return a status list
 #' @export
@@ -161,9 +162,10 @@ db_release_update <- function(con,
 #'
 #' Attempts to cancel a release that has already passed will result in an error.
 #'
-#' @param con RPostgres connection object
 #' @param release_id character ID of the release to cancel
-#' @param schema character Timeseries schema name
+#'
+#' @inheritParams param_defs
+#' @family calendar functions
 #'
 #' @export
 #' @importFrom jsonlite fromJSON
@@ -187,9 +189,10 @@ db_release_cancel <- function(con,
 
 #' List Data on Registered Releases
 #'
-#' @param con RPostgres connection
 #' @param include_past Should past releases be included? Defaults to FALSE
-#' @param schema Timeseries schema name
+#'
+#' @inheritParams param_defs
+#' @family calendar functions
 #'
 #' @return data.frame with columns `id`, `title`, `note`, `release_date`, `reference_year`, `reference_period`, `reference_frequency`
 #' @export
@@ -206,11 +209,13 @@ db_release_list <- function(con,
 
 #' Get Next Release Date for Given Datasets
 #'
-#' @param con RPostgres connection
 #' @param set_ids Sets to get release dates for
-#' @param schema Timeseries schema name
+#'
+#' @inheritParams param_defs
+#' @family calendar functions
 #'
 #' @return data.frame with columns `set_id`, `release_id`, `release_date`
+#'
 #' @export
 db_release_get_next <- function(con,
                                         set_ids,
@@ -233,9 +238,10 @@ db_release_get_next <- function(con,
 
 #' Get the latest Release for Given Datasets
 #'
-#' @param con RPostgres connection
 #' @param set_ids Sets to get release dates for
-#' @param schema Timeseries schema name
+#'
+#' @inheritParams param_defs
+#' @family calendar functions
 #'
 #' @return data.frame with columns `set_id`, `release_id`, `release_date`
 #' @export

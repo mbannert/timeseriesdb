@@ -1,8 +1,13 @@
-# w/o root admin (for now)
-#' Title
+#' Install timeseriesdb
 #'
-#' @param con RPostgres connection object.
-#' @param schema character schema name. Defaults to 'timeseries'.
+#' Install timeseriesdb in a given PostgreSQL schema. Make sure the database user
+#' has sufficient rights to perform the necessary operations on the schema. In the process
+#' tables, roles, triggers and functions will be created. Also extensions will be installed and
+#' rights will be granted and revoked from the freshly created roles.
+#' Note also, that the functions created are created as SECURITY DEFINER roles.
+#'
+#' @inheritParams param_defs
+#' @family setup SQL functions
 #'
 #' @importFrom RPostgres dbConnect Postgres dbGetQuery dbIsValid
 #'
