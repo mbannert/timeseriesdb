@@ -153,7 +153,7 @@ test_with_fresh_db(con_admin, "reading via regex works", {
 # reading current edge ----------------------------------------------------
 
 test_with_fresh_db(con_admin, "reading unlocalized edge", {
-  result <- db_meta_get_last_update(con_reader, c("vts1"), schema = "tsdb_test")
+  result <- db_meta_get_latest_validity(con_reader, c("vts1"), schema = "tsdb_test")
   expect_equal(result,
                data.table(
                  ts_key = "vts1",
@@ -162,7 +162,7 @@ test_with_fresh_db(con_admin, "reading unlocalized edge", {
 })
 
 test_with_fresh_db(con_admin, "reading unlocalized edge with missing key", {
-  result <- db_meta_get_last_update(
+  result <- db_meta_get_latest_validity(
     con_reader,
     c("vts1", "blananagram"),
     schema = "tsdb_test")
@@ -174,7 +174,7 @@ test_with_fresh_db(con_admin, "reading unlocalized edge with missing key", {
 })
 
 test_with_fresh_db(con_admin, "reading unlocalized edge via regex", {
-  result <- db_meta_get_last_update(con_reader,
+  result <- db_meta_get_latest_validity(con_reader,
                                      c("vts"),
                                      regex = TRUE,
                                      schema = "tsdb_test")
@@ -186,7 +186,7 @@ test_with_fresh_db(con_admin, "reading unlocalized edge via regex", {
 })
 
 test_with_fresh_db(con_admin, "reading localized edge", {
-  result <- db_meta_get_last_update(con_reader,
+  result <- db_meta_get_latest_validity(con_reader,
                                      c("vts1"),
                                      locale = "de",
                                      schema = "tsdb_test")
@@ -198,7 +198,7 @@ test_with_fresh_db(con_admin, "reading localized edge", {
 })
 
 test_with_fresh_db(con_admin, "reading localized edge with missing key", {
-  result <- db_meta_get_last_update(con_reader,
+  result <- db_meta_get_latest_validity(con_reader,
                                     c("vts1", "blananagram"),
                                     locale = "de",
                                     schema = "tsdb_test")
@@ -210,7 +210,7 @@ test_with_fresh_db(con_admin, "reading localized edge with missing key", {
 })
 
 test_with_fresh_db(con_admin, "reading localized edge via regex", {
-  result <- db_meta_get_last_update(con_reader,
+  result <- db_meta_get_latest_validity(con_reader,
                                      c("vts"),
                                      regex = TRUE,
                                      locale = "de",
