@@ -1,11 +1,17 @@
+#' Helper Function for Date Operations
 #'
+#' This function is not exported.
 #' Helper function to convert time series indices of the form 2005.75
 #' to a date representation like 2005-07-01.
 #' Does not currently support sub-monthly frequencies.
 #'
+#'
+#'
 #' @param x numeric A vector of time series time indices (e.g. from stats::time)
 #' @param as.string logical If as.string is TRUE the string representation of the
 #' Date is returned, otherwise a Date object.
+#' @examples
+#' index_to_date(2020.25)
 index_to_date <- function (x, as.string = FALSE)
 {
   if(inherits(x, "Date")) {
@@ -38,6 +44,8 @@ index_to_date <- function (x, as.string = FALSE)
 #' @param x The Date or Y-m-d string to convert
 #'
 #' @return The numeric representation of the date that can be used with ts
+#' @examples
+#' date_to_index("2020-07-01")
 date_to_index <- function(x) {
   x <- as.character(x)
   components <- as.numeric(unlist(strsplit(x, "-")))
@@ -153,10 +161,10 @@ db_create_connection <- function(dbname,
 #' of overloaded functions.
 #' If any args are named, all of them must be.
 #'
-#' @param con RPostgres connection object
 #' @param fname character Name of the function to be called
-#' @param schema character Name of the timeseries schema
 #' @param args list of function arguments. A single, unnested list.
+#'
+#' @inheritParams param_defs
 #'
 #' @return value of `dbGetQuery(con, "SELECT * FROM schema.fname($args)")$fname`
 db_call_function <- function(con,
@@ -170,6 +178,10 @@ db_call_function <- function(con,
 
   args_pattern <- ""
   if(!is.null(args)) {
+    # dbGetQuery does not like parameters to be NULL so we substitute NA here
+    # which the db will treat as null anyway
+    args[sapply(args, is.null)] <- NA
+
     args_pattern <- sprintf("$%d", 1:length(args))
 
     if(!is.null(args_names)) {
@@ -216,9 +228,9 @@ db_call_function <- function(con,
 #' are stored via dbWriteTable. Usage rights on these tables must
 #' be granted for them to be usable inside the db functions
 #'
-#' @param con RPostgres connection
 #' @param table which table to grant rights on
-#' @param schema name of the timeseries schema being worked with
+#'
+#' @inheritParams param_defs
 #'
 #' @importFrom DBI dbExecute dbQuoteIdentifier
 db_grant_to_admin <- function(con,
