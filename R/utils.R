@@ -139,12 +139,14 @@ db_create_connection <- function(dbname,
 
   options <- sprintf("--application_name=%s", connection_description)
 
+  # Unname the params as names cause issues in dbConnect
+  # e.g. when passing a username obtained from Sys.user
   dbConnect(drv = Postgres(),
-            dbname = dbname,
-            user = user,
-            host = host,
-            password = passwd,
-            port = port,
+            dbname = unname(dbname),
+            user = unname(user),
+            host = unname(host),
+            password = unname(passwd),
+            port = unname(port),
             options = options)
 }
 
