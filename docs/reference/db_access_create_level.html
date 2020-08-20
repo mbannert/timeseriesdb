@@ -6,7 +6,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>Insert a role in access levels table — db_access_create_level • timeseriesdb</title>
+<title>Create a New Role (Access Level) — db_access_create_level • timeseriesdb</title>
 
 
 <!-- jquery -->
@@ -39,8 +39,10 @@
 
 
 
-<meta property="og:title" content="Insert a role in access levels table — db_access_create_level" />
-<meta property="og:description" content="Insert a role in access levels table" />
+<meta property="og:title" content="Create a New Role (Access Level) — db_access_create_level" />
+<meta property="og:description" content="Creates a new role in the database. Roles represent access levels and together
+with the assignment of roles to time series, versions of time series or datasets
+define who is allowed to access a particular series." />
 
 
 
@@ -135,20 +137,22 @@
 <div class="row">
   <div class="col-md-9 contents">
     <div class="page-header">
-    <h1>Insert a role in access levels table</h1>
+    <h1>Create a New Role (Access Level)</h1>
     <small class="dont-index">Source: <a href='https://github.com/mbannert/timeseriesdb/blob/master/R/access_levels.R'><code>R/access_levels.R</code></a></small>
     <div class="hidden name"><code>db_access_create_level.Rd</code></div>
     </div>
 
     <div class="ref-description">
-    <p>Insert a role in access levels table</p>
+    <p>Creates a new role in the database. Roles represent access levels and together
+with the assignment of roles to time series, versions of time series or datasets
+define who is allowed to access a particular series.</p>
     </div>
 
     <pre class="usage"><span class='fu'>db_access_create_level</span>(
   <span class='no'>con</span>,
   <span class='no'>access_level_name</span>,
-  <span class='kw'>access_level_description</span> <span class='kw'>=</span> <span class='fl'>NA</span>,
-  <span class='kw'>access_level_default</span> <span class='kw'>=</span> <span class='fl'>NA</span>,
+  <span class='kw'>access_level_description</span> <span class='kw'>=</span> <span class='kw'>NULL</span>,
+  <span class='kw'>access_level_default</span> <span class='kw'>=</span> <span class='kw'>NULL</span>,
   <span class='kw'>schema</span> <span class='kw'>=</span> <span class='st'>"timeseries"</span>
 )</pre>
 
@@ -157,26 +161,33 @@
     <colgroup><col class="name" /><col class="desc" /></colgroup>
     <tr>
       <th>con</th>
-      <td><p>RPostgres connection object</p></td>
+      <td><p>RPostgres connection object.</p></td>
     </tr>
     <tr>
       <th>access_level_name</th>
-      <td><p>character name of the access level</p></td>
+      <td><p><strong>character</strong> name of the access level to insert.</p></td>
     </tr>
     <tr>
       <th>access_level_description</th>
-      <td><p>character description of the access level. Defaults to NA.</p></td>
+      <td><p><strong>character</strong> description of the access level. Defaults to NA.</p></td>
     </tr>
     <tr>
       <th>access_level_default</th>
-      <td><p>should the new access level be a default. Defaults to NA.</p></td>
+      <td><p>set if the new access level should be the default. Defaults to NA.</p></td>
     </tr>
     <tr>
       <th>schema</th>
-      <td><p>character name of the schema. Defaults to 'timeseries'.</p></td>
+      <td><p><strong>character</strong> name of the database schema. Defaults to 'timeseries'</p></td>
     </tr>
     </table>
 
+    <h2 class="hasAnchor" id="see-also"><a class="anchor" href="#see-also"></a>See also</h2>
+
+    <div class='dont-index'><p>Other access levels functions: 
+<code><a href='change_access_level.html'>change_access_level</a></code>,
+<code><a href='db_access_delete_level.html'>db_access_delete_level</a>()</code>,
+<code><a href='db_access_list_levels.html'>db_access_list_levels</a>()</code>,
+<code><a href='db_access_set_default.html'>db_access_set_default</a>()</code></p></div>
 
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">

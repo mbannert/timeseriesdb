@@ -147,7 +147,7 @@
     <pre class="usage"><span class='fu'>db_meta_read</span>(
   <span class='no'>con</span>,
   <span class='no'>ts_keys</span>,
-  <span class='kw'>valid_on</span> <span class='kw'>=</span> <span class='fl'>NA</span>,
+  <span class='kw'>valid_on</span> <span class='kw'>=</span> <span class='kw'>NULL</span>,
   <span class='kw'>regex</span> <span class='kw'>=</span> <span class='fl'>FALSE</span>,
   <span class='kw'>locale</span> <span class='kw'>=</span> <span class='kw'>NULL</span>,
   <span class='kw'>schema</span> <span class='kw'>=</span> <span class='st'>"timeseries"</span>
@@ -158,33 +158,41 @@
     <colgroup><col class="name" /><col class="desc" /></colgroup>
     <tr>
       <th>con</th>
-      <td><p>RPostgres database connection object.</p></td>
+      <td><p>RPostgres connection object.</p></td>
     </tr>
     <tr>
       <th>ts_keys</th>
-      <td><p>character vector of time series identifiers  to read metadata for. If regex is TRUE, ts_keys is understood as regular expression pattern as opposed to a vector of keys.</p></td>
+      <td><p><strong>character</strong> vector of time series identifiers.</p></td>
     </tr>
     <tr>
       <th>valid_on</th>
-      <td><p>Date for which to read the metadata. Defaults to NA reading the most recent version.</p></td>
+      <td><p><strong>character</strong> representation of a date in the form of 'YYYY-MM-DD'. valid_on selects the
+version of a time series that is valid at the specified time.</p></td>
     </tr>
     <tr>
       <th>regex</th>
-      <td><p>boolean should ts_keys allow be interpreted as a regular expression pattern? Defaults to FALSE.</p></td>
+      <td><p><strong>boolean</strong> indicating if ts_keys should be interpreted as a regular expression pattern. Defaults to FALSE.</p></td>
     </tr>
     <tr>
       <th>locale</th>
-      <td><p>character language identifier of the meta data lookup. If NULL, unlocalized metadata are read.</p></td>
+      <td><p><strong>character</strong> indicating the language of the meta information to be store. We recommend to use ISO country codes to represent languages. Defaults to NULL. When local is set to NULL, metadata are stored without localization. Note that, when localizing meta information by assigning a language, multiple meta information objects can be stored for a single time series.</p></td>
     </tr>
     <tr>
       <th>schema</th>
-      <td><p>character name of the schema. Defaults to 'timeseries'.</p></td>
+      <td><p><strong>character</strong> name of the database schema. Defaults to 'timeseries'</p></td>
     </tr>
     </table>
 
     <h2 class="hasAnchor" id="value"><a class="anchor" href="#value"></a>Value</h2>
 
     <p>list of tsmeta objects.</p>
+    <h2 class="hasAnchor" id="see-also"><a class="anchor" href="#see-also"></a>See also</h2>
+
+    <div class='dont-index'><p>Other metadata functions: 
+<code><a href='db_collection_read_meta.html'>db_collection_read_meta</a>()</code>,
+<code><a href='db_dataset_read_meta.html'>db_dataset_read_meta</a>()</code>,
+<code><a href='db_meta_get_latest_validity.html'>db_meta_get_latest_validity</a>()</code>,
+<code><a href='db_meta_store.html'>db_meta_store</a>()</code></p></div>
 
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">

@@ -6,7 +6,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>Helper to Create and Populate a Temporary Table for Fast Reading — db_with_tmp_read • timeseriesdb</title>
+<title>Get Latest Validity for Metadata of a Given Time Series — db_meta_get_latest_validity • timeseriesdb</title>
 
 
 <!-- jquery -->
@@ -39,10 +39,12 @@
 
 
 
-<meta property="og:title" content="Helper to Create and Populate a Temporary Table for Fast Reading — db_with_tmp_read" />
-<meta property="og:description" content="This function is not exported. It creates a tempory table containing the
-keys that should be read to join them against the time series storage.
-This is much faster for larger selections than simple where clauses." />
+<meta property="og:title" content="Get Latest Validity for Metadata of a Given Time Series — db_meta_get_latest_validity" />
+<meta property="og:description" content="Because metadata are only loosely coupled with their respective time series
+in order to keep metadata records constant over multiple version of
+time series if the data description does not change, it comes in
+handy to find out the last time meta information was updated. This function
+automagickally finds exactly this date." />
 
 
 
@@ -137,18 +139,26 @@ This is much faster for larger selections than simple where clauses." />
 <div class="row">
   <div class="col-md-9 contents">
     <div class="page-header">
-    <h1>Helper to Create and Populate a Temporary Table for Fast Reading</h1>
-    <small class="dont-index">Source: <a href='https://github.com/mbannert/timeseriesdb/blob/master/R/db_tmp_tables.R'><code>R/db_tmp_tables.R</code></a></small>
-    <div class="hidden name"><code>db_with_tmp_read.Rd</code></div>
+    <h1>Get Latest Validity for Metadata of a Given Time Series</h1>
+    <small class="dont-index">Source: <a href='https://github.com/mbannert/timeseriesdb/blob/master/R/metadata.R'><code>R/metadata.R</code></a></small>
+    <div class="hidden name"><code>db_meta_get_latest_validity.Rd</code></div>
     </div>
 
     <div class="ref-description">
-    <p>This function is not exported. It creates a tempory table containing the
-keys that should be read to join them against the time series storage.
-This is much faster for larger selections than simple where clauses.</p>
+    <p>Because metadata are only loosely coupled with their respective time series
+in order to keep metadata records constant over multiple version of
+time series if the data description does not change, it comes in
+handy to find out the last time meta information was updated. This function
+automagickally finds exactly this date.</p>
     </div>
 
-    <pre class="usage"><span class='fu'>db_with_tmp_read</span>(<span class='no'>con</span>, <span class='no'>ts_keys</span>, <span class='kw'>regex</span> <span class='kw'>=</span> <span class='fl'>FALSE</span>, <span class='no'>code</span>, <span class='kw'>schema</span> <span class='kw'>=</span> <span class='st'>"timeseries"</span>)</pre>
+    <pre class="usage"><span class='fu'>db_meta_get_latest_validity</span>(
+  <span class='no'>con</span>,
+  <span class='no'>ts_keys</span>,
+  <span class='kw'>regex</span> <span class='kw'>=</span> <span class='fl'>FALSE</span>,
+  <span class='kw'>locale</span> <span class='kw'>=</span> <span class='kw'>NULL</span>,
+  <span class='kw'>schema</span> <span class='kw'>=</span> <span class='st'>"timeseries"</span>
+)</pre>
 
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
     <table class="ref-arguments">
@@ -163,12 +173,11 @@ This is much faster for larger selections than simple where clauses.</p>
     </tr>
     <tr>
       <th>regex</th>
-      <td><p>logical if set to TRUE, the ts_keys parameter is interpreted as a regular expression pattern.</p></td>
+      <td><p><strong>boolean</strong> indicating if ts_keys should be interpreted as a regular expression pattern. Defaults to FALSE.</p></td>
     </tr>
     <tr>
-      <th>code</th>
-      <td><p>expression Code to be evaluated after populating the temporary table on the database
-of a time series that is valid from the specified date.</p></td>
+      <th>locale</th>
+      <td><p><strong>character</strong> indicating the language of the meta information to be store. We recommend to use ISO country codes to represent languages. Defaults to NULL. When local is set to NULL, metadata are stored without localization. Note that, when localizing meta information by assigning a language, multiple meta information objects can be stored for a single time series.</p></td>
     </tr>
     <tr>
       <th>schema</th>
@@ -176,6 +185,18 @@ of a time series that is valid from the specified date.</p></td>
     </tr>
     </table>
 
+    <h2 class="hasAnchor" id="value"><a class="anchor" href="#value"></a>Value</h2>
+
+    
+
+
+    <h2 class="hasAnchor" id="see-also"><a class="anchor" href="#see-also"></a>See also</h2>
+
+    <div class='dont-index'><p>Other metadata functions: 
+<code><a href='db_collection_read_meta.html'>db_collection_read_meta</a>()</code>,
+<code><a href='db_dataset_read_meta.html'>db_dataset_read_meta</a>()</code>,
+<code><a href='db_meta_read.html'>db_meta_read</a>()</code>,
+<code><a href='db_meta_store.html'>db_meta_store</a>()</code></p></div>
 
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">

@@ -6,7 +6,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>Helper to Create and Populate a Temporary Table for Fast Reading — db_with_tmp_read • timeseriesdb</title>
+<title>Test if a list has exactly depth 2 — has_depth_2 • timeseriesdb</title>
 
 
 <!-- jquery -->
@@ -39,10 +39,8 @@
 
 
 
-<meta property="og:title" content="Helper to Create and Populate a Temporary Table for Fast Reading — db_with_tmp_read" />
-<meta property="og:description" content="This function is not exported. It creates a tempory table containing the
-keys that should be read to join them against the time series storage.
-This is much faster for larger selections than simple where clauses." />
+<meta property="og:title" content="Test if a list has exactly depth 2 — has_depth_2" />
+<meta property="og:description" content="Test if a list has exactly depth 2" />
 
 
 
@@ -137,42 +135,23 @@ This is much faster for larger selections than simple where clauses." />
 <div class="row">
   <div class="col-md-9 contents">
     <div class="page-header">
-    <h1>Helper to Create and Populate a Temporary Table for Fast Reading</h1>
-    <small class="dont-index">Source: <a href='https://github.com/mbannert/timeseriesdb/blob/master/R/db_tmp_tables.R'><code>R/db_tmp_tables.R</code></a></small>
-    <div class="hidden name"><code>db_with_tmp_read.Rd</code></div>
+    <h1>Test if a list has exactly depth 2</h1>
+    <small class="dont-index">Source: <a href='https://github.com/mbannert/timeseriesdb/blob/master/R/utils.R'><code>R/utils.R</code></a></small>
+    <div class="hidden name"><code>has_depth_2.Rd</code></div>
     </div>
 
     <div class="ref-description">
-    <p>This function is not exported. It creates a tempory table containing the
-keys that should be read to join them against the time series storage.
-This is much faster for larger selections than simple where clauses.</p>
+    <p>Test if a list has exactly depth 2</p>
     </div>
 
-    <pre class="usage"><span class='fu'>db_with_tmp_read</span>(<span class='no'>con</span>, <span class='no'>ts_keys</span>, <span class='kw'>regex</span> <span class='kw'>=</span> <span class='fl'>FALSE</span>, <span class='no'>code</span>, <span class='kw'>schema</span> <span class='kw'>=</span> <span class='st'>"timeseries"</span>)</pre>
+    <pre class="usage"><span class='fu'>has_depth_2</span>(<span class='no'>x</span>)</pre>
 
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
     <table class="ref-arguments">
     <colgroup><col class="name" /><col class="desc" /></colgroup>
     <tr>
-      <th>con</th>
-      <td><p>RPostgres connection object.</p></td>
-    </tr>
-    <tr>
-      <th>ts_keys</th>
-      <td><p><strong>character</strong> vector of time series identifiers.</p></td>
-    </tr>
-    <tr>
-      <th>regex</th>
-      <td><p>logical if set to TRUE, the ts_keys parameter is interpreted as a regular expression pattern.</p></td>
-    </tr>
-    <tr>
-      <th>code</th>
-      <td><p>expression Code to be evaluated after populating the temporary table on the database
-of a time series that is valid from the specified date.</p></td>
-    </tr>
-    <tr>
-      <th>schema</th>
-      <td><p><strong>character</strong> name of the database schema. Defaults to 'timeseries'</p></td>
+      <th>x</th>
+      <td><p>The list to check</p></td>
     </tr>
     </table>
 

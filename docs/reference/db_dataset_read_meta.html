@@ -6,7 +6,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>Helper to Create and Populate a Temporary Table for Fast Reading — db_with_tmp_read • timeseriesdb</title>
+<title>Read Dataset Meta Information — db_dataset_read_meta • timeseriesdb</title>
 
 
 <!-- jquery -->
@@ -39,10 +39,8 @@
 
 
 
-<meta property="og:title" content="Helper to Create and Populate a Temporary Table for Fast Reading — db_with_tmp_read" />
-<meta property="og:description" content="This function is not exported. It creates a tempory table containing the
-keys that should be read to join them against the time series storage.
-This is much faster for larger selections than simple where clauses." />
+<meta property="og:title" content="Read Dataset Meta Information — db_dataset_read_meta" />
+<meta property="og:description" content="Read Dataset Meta Information" />
 
 
 
@@ -137,18 +135,22 @@ This is much faster for larger selections than simple where clauses." />
 <div class="row">
   <div class="col-md-9 contents">
     <div class="page-header">
-    <h1>Helper to Create and Populate a Temporary Table for Fast Reading</h1>
-    <small class="dont-index">Source: <a href='https://github.com/mbannert/timeseriesdb/blob/master/R/db_tmp_tables.R'><code>R/db_tmp_tables.R</code></a></small>
-    <div class="hidden name"><code>db_with_tmp_read.Rd</code></div>
+    <h1>Read Dataset Meta Information</h1>
+    <small class="dont-index">Source: <a href='https://github.com/mbannert/timeseriesdb/blob/master/R/metadata.R'><code>R/metadata.R</code></a></small>
+    <div class="hidden name"><code>db_dataset_read_meta.Rd</code></div>
     </div>
 
     <div class="ref-description">
-    <p>This function is not exported. It creates a tempory table containing the
-keys that should be read to join them against the time series storage.
-This is much faster for larger selections than simple where clauses.</p>
+    <p>Read Dataset Meta Information</p>
     </div>
 
-    <pre class="usage"><span class='fu'>db_with_tmp_read</span>(<span class='no'>con</span>, <span class='no'>ts_keys</span>, <span class='kw'>regex</span> <span class='kw'>=</span> <span class='fl'>FALSE</span>, <span class='no'>code</span>, <span class='kw'>schema</span> <span class='kw'>=</span> <span class='st'>"timeseries"</span>)</pre>
+    <pre class="usage"><span class='fu'>db_dataset_read_meta</span>(
+  <span class='no'>con</span>,
+  <span class='no'>dataset_id</span>,
+  <span class='kw'>valid_on</span> <span class='kw'>=</span> <span class='kw'>NULL</span>,
+  <span class='kw'>locale</span> <span class='kw'>=</span> <span class='kw'>NULL</span>,
+  <span class='kw'>schema</span> <span class='kw'>=</span> <span class='st'>"timeseries"</span>
+)</pre>
 
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
     <table class="ref-arguments">
@@ -158,17 +160,17 @@ This is much faster for larger selections than simple where clauses.</p>
       <td><p>RPostgres connection object.</p></td>
     </tr>
     <tr>
-      <th>ts_keys</th>
-      <td><p><strong>character</strong> vector of time series identifiers.</p></td>
+      <th>dataset_id</th>
+      <td><p>character name of the dataset.</p></td>
     </tr>
     <tr>
-      <th>regex</th>
-      <td><p>logical if set to TRUE, the ts_keys parameter is interpreted as a regular expression pattern.</p></td>
+      <th>valid_on</th>
+      <td><p><strong>character</strong> representation of a date in the form of 'YYYY-MM-DD'. valid_on selects the
+version of a time series that is valid at the specified time.</p></td>
     </tr>
     <tr>
-      <th>code</th>
-      <td><p>expression Code to be evaluated after populating the temporary table on the database
-of a time series that is valid from the specified date.</p></td>
+      <th>locale</th>
+      <td><p>character ISO-2 country locale.</p></td>
     </tr>
     <tr>
       <th>schema</th>
@@ -176,6 +178,18 @@ of a time series that is valid from the specified date.</p></td>
     </tr>
     </table>
 
+    <h2 class="hasAnchor" id="value"><a class="anchor" href="#value"></a>Value</h2>
+
+    
+
+
+    <h2 class="hasAnchor" id="see-also"><a class="anchor" href="#see-also"></a>See also</h2>
+
+    <div class='dont-index'><p>Other metadata functions: 
+<code><a href='db_collection_read_meta.html'>db_collection_read_meta</a>()</code>,
+<code><a href='db_meta_get_latest_validity.html'>db_meta_get_latest_validity</a>()</code>,
+<code><a href='db_meta_read.html'>db_meta_read</a>()</code>,
+<code><a href='db_meta_store.html'>db_meta_store</a>()</code></p></div>
 
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">

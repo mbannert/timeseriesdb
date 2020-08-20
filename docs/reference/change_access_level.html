@@ -6,7 +6,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>Change the Access Level for Time Series — change_access_level • timeseriesdb</title>
+<title>Change the Access Level of a Time Series — change_access_level • timeseriesdb</title>
 
 
 <!-- jquery -->
@@ -39,8 +39,8 @@
 
 
 
-<meta property="og:title" content="Change the Access Level for Time Series — change_access_level" />
-<meta property="og:description" content="Change the Access Level for Time Series" />
+<meta property="og:title" content="Change the Access Level of a Time Series — change_access_level" />
+<meta property="og:description" content="Change the Access Level of a Time Series" />
 
 
 
@@ -135,31 +135,55 @@
 <div class="row">
   <div class="col-md-9 contents">
     <div class="page-header">
-    <h1>Change the Access Level for Time Series</h1>
+    <h1>Change the Access Level of a Time Series</h1>
     <small class="dont-index">Source: <a href='https://github.com/mbannert/timeseriesdb/blob/master/R/access_levels.R'><code>R/access_levels.R</code></a></small>
     <div class="hidden name"><code>change_access_level.Rd</code></div>
     </div>
 
     <div class="ref-description">
-    <p>Change the Access Level for Time Series</p>
+    <p>Change the Access Level of a Time Series</p>
     </div>
 
     <pre class="usage"><span class='fu'>db_ts_change_access</span>(
   <span class='no'>con</span>,
   <span class='no'>ts_keys</span>,
-  <span class='no'>access_level</span>,
-  <span class='kw'>valid_on</span> <span class='kw'>=</span> <span class='fl'>NA</span>,
+  <span class='no'>new_access_level</span>,
+  <span class='kw'>valid_from</span> <span class='kw'>=</span> <span class='kw'>NULL</span>,
   <span class='kw'>schema</span> <span class='kw'>=</span> <span class='st'>"timeseries"</span>
 )
 
 <span class='fu'>db_ts_change_access_dataset</span>(
   <span class='no'>con</span>,
   <span class='no'>dataset</span>,
-  <span class='no'>access_level</span>,
-  <span class='kw'>valid_on</span> <span class='kw'>=</span> <span class='fl'>NA</span>,
+  <span class='no'>new_access_level</span>,
+  <span class='kw'>valid_from</span> <span class='kw'>=</span> <span class='kw'>NULL</span>,
   <span class='kw'>schema</span> <span class='kw'>=</span> <span class='st'>"timeseries"</span>
 )</pre>
 
+    <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
+    <table class="ref-arguments">
+    <colgroup><col class="name" /><col class="desc" /></colgroup>
+    <tr>
+      <th>con</th>
+      <td><p>RPostgres connection object.</p></td>
+    </tr>
+    <tr>
+      <th>ts_keys</th>
+      <td><p><strong>character</strong> vector of time series identifiers.</p></td>
+    </tr>
+    <tr>
+      <th>valid_from</th>
+      <td><p>character representation of a date in the form of 'YYYY-MM-DD'. valid_from starts a new version</p></td>
+    </tr>
+    <tr>
+      <th>schema</th>
+      <td><p><strong>character</strong> name of the database schema. Defaults to 'timeseries'</p></td>
+    </tr>
+    <tr>
+      <th>dataset</th>
+      <td><p><strong>character</strong> name of the dataset. Datasets are group of time series.</p></td>
+    </tr>
+    </table>
 
     <h2 class="hasAnchor" id="value"><a class="anchor" href="#value"></a>Value</h2>
 
@@ -168,12 +192,11 @@
 
     <h2 class="hasAnchor" id="see-also"><a class="anchor" href="#see-also"></a>See also</h2>
 
-    <div class='dont-index'><p>Other access levels: 
+    <div class='dont-index'><p>Other access levels functions: 
+<code><a href='db_access_create_level.html'>db_access_create_level</a>()</code>,
 <code><a href='db_access_delete_level.html'>db_access_delete_level</a>()</code>,
-<code><a href='db_access_list_levels.html'>db_access_list_levels</a>()</code></p>
-<p>Other access levels: 
-<code><a href='db_access_delete_level.html'>db_access_delete_level</a>()</code>,
-<code><a href='db_access_list_levels.html'>db_access_list_levels</a>()</code></p></div>
+<code><a href='db_access_list_levels.html'>db_access_list_levels</a>()</code>,
+<code><a href='db_access_set_default.html'>db_access_set_default</a>()</code></p></div>
 
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">

@@ -6,7 +6,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>Title — install_timeseriesdb • timeseriesdb</title>
+<title>Install timeseriesdb — install_timeseriesdb • timeseriesdb</title>
 
 
 <!-- jquery -->
@@ -39,8 +39,12 @@
 
 
 
-<meta property="og:title" content="Title — install_timeseriesdb" />
-<meta property="og:description" content="Title" />
+<meta property="og:title" content="Install timeseriesdb — install_timeseriesdb" />
+<meta property="og:description" content="Install timeseriesdb in a given PostgreSQL schema. Make sure the database user
+has sufficient rights to perform the necessary operations on the schema. In the process
+tables, roles, triggers and functions will be created. Also extensions will be installed and
+rights will be granted and revoked from the freshly created roles.
+Note also, that the functions created are created as SECURITY DEFINER roles." />
 
 
 
@@ -135,13 +139,17 @@
 <div class="row">
   <div class="col-md-9 contents">
     <div class="page-header">
-    <h1>Title</h1>
+    <h1>Install timeseriesdb</h1>
     <small class="dont-index">Source: <a href='https://github.com/mbannert/timeseriesdb/blob/master/R/setup_sql.R'><code>R/setup_sql.R</code></a></small>
     <div class="hidden name"><code>install_timeseriesdb.Rd</code></div>
     </div>
 
     <div class="ref-description">
-    <p>Title</p>
+    <p>Install timeseriesdb in a given PostgreSQL schema. Make sure the database user
+has sufficient rights to perform the necessary operations on the schema. In the process
+tables, roles, triggers and functions will be created. Also extensions will be installed and
+rights will be granted and revoked from the freshly created roles.
+Note also, that the functions created are created as SECURITY DEFINER roles.</p>
     </div>
 
     <pre class="usage"><span class='fu'>install_timeseriesdb</span>(<span class='no'>con</span>, <span class='kw'>schema</span> <span class='kw'>=</span> <span class='st'>"timeseries"</span>, <span class='kw'>verbose</span> <span class='kw'>=</span> <span class='fl'>FALSE</span>)</pre>
@@ -155,7 +163,7 @@
     </tr>
     <tr>
       <th>schema</th>
-      <td><p>character schema name. Defaults to 'timeseries'.</p></td>
+      <td><p><strong>character</strong> name of the database schema. Defaults to 'timeseries'</p></td>
     </tr>
     </table>
 

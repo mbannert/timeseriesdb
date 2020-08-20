@@ -40,7 +40,7 @@
 
 
 <meta property="og:title" content="Create an Entry in the Release Calendar — db_release_create" />
-<meta property="og:description" content="Only timeseries admins may create and modify releases" />
+<meta property="og:description" content="The idea of the release calendar is to set a release date for some time series that might be in the database already but should not be publicly available before a specific date, e.g., a press release. Since publishing is simply a matter of changing the access level, an update of the access levels could be triggered based on the release information in a release table. Only timeseries admins may create and modify releases." />
 
 
 
@@ -141,7 +141,7 @@
     </div>
 
     <div class="ref-description">
-    <p>Only timeseries admins may create and modify releases</p>
+    <p>The idea of the release calendar is to set a release date for some time series that might be in the database already but should not be publicly available before a specific date, e.g., a press release. Since publishing is simply a matter of changing the access level, an update of the access levels could be triggered based on the release information in a release table. Only timeseries admins may create and modify releases.</p>
     </div>
 
     <pre class="usage"><span class='fu'>db_release_create</span>(
@@ -153,7 +153,7 @@
   <span class='kw'>target_year</span> <span class='kw'>=</span> <span class='fu'>year</span>(<span class='no'>release_date</span>),
   <span class='kw'>target_period</span> <span class='kw'>=</span> <span class='fu'>month</span>(<span class='no'>release_date</span>),
   <span class='kw'>target_frequency</span> <span class='kw'>=</span> <span class='fl'>12</span>,
-  <span class='kw'>note</span> <span class='kw'>=</span> <span class='fl'>NA</span>,
+  <span class='kw'>note</span> <span class='kw'>=</span> <span class='kw'>NULL</span>,
   <span class='kw'>schema</span> <span class='kw'>=</span> <span class='st'>"timeseries"</span>
 )</pre>
 
@@ -162,7 +162,7 @@
     <colgroup><col class="name" /><col class="desc" /></colgroup>
     <tr>
       <th>con</th>
-      <td><p>RPostgres connection</p></td>
+      <td><p>RPostgres connection object.</p></td>
     </tr>
     <tr>
       <th>id</th>
@@ -178,7 +178,7 @@
     </tr>
     <tr>
       <th>datasets</th>
-      <td><p>character Names of datasets to include in this release</p></td>
+      <td><p><strong>character</strong> vector of the datasets. Dataset is a group of time series.</p></td>
     </tr>
     <tr>
       <th>target_year</th>
@@ -198,7 +198,7 @@
     </tr>
     <tr>
       <th>schema</th>
-      <td><p>timeseries schema name</p></td>
+      <td><p><strong>character</strong> name of the database schema. Defaults to 'timeseries'</p></td>
     </tr>
     </table>
 
@@ -207,11 +207,19 @@
     <p>a status list</p>
     <h2 class="hasAnchor" id="details"><a class="anchor" href="#details"></a>Details</h2>
 
-    <p>target_period changes meaning depending on the frequency of the release.
+    <p><code>target_period</code> changes meaning depending on the frequency of the release.
 e.g. period 2 for quarterly data (reference_frequency = 4) means Q2 whereas
 period 2 for monthly data (frequency 12) means February
-In other words: target_year and target_period mark the end of the time series
+In other words: <code>target_year</code> and <code>target_period</code> mark the end of the time series
 in the release.</p>
+    <h2 class="hasAnchor" id="see-also"><a class="anchor" href="#see-also"></a>See also</h2>
+
+    <div class='dont-index'><p>Other calendar functions: 
+<code><a href='db_release_cancel.html'>db_release_cancel</a>()</code>,
+<code><a href='db_release_get_latest.html'>db_release_get_latest</a>()</code>,
+<code><a href='db_release_get_next.html'>db_release_get_next</a>()</code>,
+<code><a href='db_release_list.html'>db_release_list</a>()</code>,
+<code><a href='db_release_update.html'>db_release_update</a>()</code></p></div>
 
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">

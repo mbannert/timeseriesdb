@@ -43,7 +43,7 @@
 <meta property="og:description" content="Any parameters provided to this function will overwrite the corresponding
 fields in the database. Parameters set to NA (default) will leave the
 corresponding fields untouched.
-For details see db_release_create" />
+For details see db_release_create." />
 
 
 
@@ -147,19 +147,19 @@ For details see db_release_create" />
     <p>Any parameters provided to this function will overwrite the corresponding
 fields in the database. Parameters set to NA (default) will leave the
 corresponding fields untouched.
-For details see db_release_create</p>
+For details see <code><a href='db_release_create.html'>db_release_create</a></code>.</p>
     </div>
 
     <pre class="usage"><span class='fu'>db_release_update</span>(
   <span class='no'>con</span>,
   <span class='no'>id</span>,
-  <span class='kw'>title</span> <span class='kw'>=</span> <span class='fl'>NA</span>,
-  <span class='kw'>release_date</span> <span class='kw'>=</span> <span class='fl'>NA</span>,
-  <span class='kw'>datasets</span> <span class='kw'>=</span> <span class='fl'>NA</span>,
-  <span class='kw'>target_year</span> <span class='kw'>=</span> <span class='fl'>NA</span>,
-  <span class='kw'>target_period</span> <span class='kw'>=</span> <span class='fl'>NA</span>,
-  <span class='kw'>target_frequency</span> <span class='kw'>=</span> <span class='fl'>NA</span>,
-  <span class='kw'>note</span> <span class='kw'>=</span> <span class='fl'>NA</span>,
+  <span class='kw'>title</span> <span class='kw'>=</span> <span class='kw'>NULL</span>,
+  <span class='kw'>release_date</span> <span class='kw'>=</span> <span class='kw'>NULL</span>,
+  <span class='kw'>datasets</span> <span class='kw'>=</span> <span class='kw'>NULL</span>,
+  <span class='kw'>target_year</span> <span class='kw'>=</span> <span class='kw'>NULL</span>,
+  <span class='kw'>target_period</span> <span class='kw'>=</span> <span class='kw'>NULL</span>,
+  <span class='kw'>target_frequency</span> <span class='kw'>=</span> <span class='kw'>NULL</span>,
+  <span class='kw'>note</span> <span class='kw'>=</span> <span class='kw'>NULL</span>,
   <span class='kw'>schema</span> <span class='kw'>=</span> <span class='st'>"timeseries"</span>
 )</pre>
 
@@ -168,7 +168,7 @@ For details see db_release_create</p>
     <colgroup><col class="name" /><col class="desc" /></colgroup>
     <tr>
       <th>con</th>
-      <td><p>RPostgres connection</p></td>
+      <td><p>RPostgres connection object.</p></td>
     </tr>
     <tr>
       <th>id</th>
@@ -181,6 +181,10 @@ For details see db_release_create</p>
     <tr>
       <th>release_date</th>
       <td><p>Timestamp when the release is to occur</p></td>
+    </tr>
+    <tr>
+      <th>datasets</th>
+      <td><p><strong>character</strong> vector of the datasets. Dataset is a group of time series.</p></td>
     </tr>
     <tr>
       <th>target_year</th>
@@ -200,13 +204,21 @@ For details see db_release_create</p>
     </tr>
     <tr>
       <th>schema</th>
-      <td><p>timeseries schema name</p></td>
+      <td><p><strong>character</strong> name of the database schema. Defaults to 'timeseries'</p></td>
     </tr>
     </table>
 
     <h2 class="hasAnchor" id="value"><a class="anchor" href="#value"></a>Value</h2>
 
     <p>a status list</p>
+    <h2 class="hasAnchor" id="see-also"><a class="anchor" href="#see-also"></a>See also</h2>
+
+    <div class='dont-index'><p>Other calendar functions: 
+<code><a href='db_release_cancel.html'>db_release_cancel</a>()</code>,
+<code><a href='db_release_create.html'>db_release_create</a>()</code>,
+<code><a href='db_release_get_latest.html'>db_release_get_latest</a>()</code>,
+<code><a href='db_release_get_next.html'>db_release_get_next</a>()</code>,
+<code><a href='db_release_list.html'>db_release_list</a>()</code></p></div>
 
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">

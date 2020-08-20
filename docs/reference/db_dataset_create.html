@@ -40,7 +40,7 @@
 
 
 <meta property="og:title" content="Create a New Dataset — db_dataset_create" />
-<meta property="og:description" content="A dataset is a family of time series that belong to the same topic. By default all series stored with `db_store_ts` belong to a default set. In order to assign them a different set, it must first be created with `db_dataset_create` after which the series may be moved with `tbd`" />
+<meta property="og:description" content="A dataset is a family of time series that belong to the same topic. By default all series stored with `db_store_ts` belong to a default set. In order to assign them a different set, it must first be created with `db_dataset_create` after which the series may be moved with db_ts_assign_dataset." />
 
 
 
@@ -141,14 +141,14 @@
     </div>
 
     <div class="ref-description">
-    <p>A dataset is a family of time series that belong to the same topic. By default all series stored with `db_store_ts` belong to a default set. In order to assign them a different set, it must first be created with `db_dataset_create` after which the series may be moved with `tbd`</p>
+    <p>A dataset is a family of time series that belong to the same topic. By default all series stored with `db_store_ts` belong to a default set. In order to assign them a different set, it must first be created with `db_dataset_create` after which the series may be moved with <code><a href='db_ts_assign_dataset.html'>db_ts_assign_dataset</a></code>.</p>
     </div>
 
     <pre class="usage"><span class='fu'>db_dataset_create</span>(
   <span class='no'>con</span>,
   <span class='no'>set_name</span>,
-  <span class='kw'>set_description</span> <span class='kw'>=</span> <span class='fl'>NA</span>,
-  <span class='kw'>set_md</span> <span class='kw'>=</span> <span class='fl'>NA</span>,
+  <span class='kw'>set_description</span> <span class='kw'>=</span> <span class='kw'>NULL</span>,
+  <span class='kw'>set_md</span> <span class='kw'>=</span> <span class='kw'>NULL</span>,
   <span class='kw'>schema</span> <span class='kw'>=</span> <span class='st'>"timeseries"</span>
 )</pre>
 
@@ -157,29 +157,51 @@
     <colgroup><col class="name" /><col class="desc" /></colgroup>
     <tr>
       <th>con</th>
-      <td><p>RPostgres connection object</p></td>
+      <td><p>RPostgres connection object.</p></td>
     </tr>
     <tr>
       <th>set_name</th>
-      <td><p>character The name of the set to be created</p></td>
+      <td><p><strong>character</strong> name of a dataset.</p></td>
+    </tr>
+    <tr>
+      <th>set_description</th>
+      <td><p><strong>character</strong> description about the set. Default to NA.</p></td>
     </tr>
     <tr>
       <th>set_md</th>
-      <td><p>meta information data about the set.</p></td>
+      <td><p>meta information data about the set. Default to NA.</p></td>
     </tr>
     <tr>
       <th>schema</th>
-      <td><p>character Name of timeseries schema</p></td>
+      <td><p><strong>character</strong> name of the database schema. Defaults to 'timeseries'</p></td>
     </tr>
     </table>
 
     <h2 class="hasAnchor" id="value"><a class="anchor" href="#value"></a>Value</h2>
 
     <p>character name of the created set</p>
-    <h2 class="hasAnchor" id="details"><a class="anchor" href="#details"></a>Details</h2>
+    <h2 class="hasAnchor" id="see-also"><a class="anchor" href="#see-also"></a>See also</h2>
 
-    <p>For arbitrary collections of time series see [how do you reference a doc topic?]</p>
+    <div class='dont-index'><p>Other datasets functions: 
+<code><a href='db_dataset_delete.html'>db_dataset_delete</a>()</code>,
+<code><a href='db_dataset_get_keys.html'>db_dataset_get_keys</a>()</code>,
+<code><a href='db_dataset_list.html'>db_dataset_list</a>()</code>,
+<code><a href='db_dataset_trim_history.html'>db_dataset_trim_history</a>()</code>,
+<code><a href='db_dataset_update.html'>db_dataset_update</a>()</code>,
+<code><a href='db_ts_assign_dataset.html'>db_ts_assign_dataset</a>()</code>,
+<code><a href='db_ts_get_dataset.html'>db_ts_get_dataset</a>()</code></p></div>
 
+    <h2 class="hasAnchor" id="examples"><a class="anchor" href="#examples"></a>Examples</h2>
+    <pre class="examples"><div class='input'>
+<span class='kw'>if</span> (<span class='fl'>FALSE</span>) {
+
+<span class='fu'>db_dataset_create</span>(
+  <span class='kw'>con</span> <span class='kw'>=</span> <span class='no'>connection</span>,
+  <span class='kw'>set_name</span> <span class='kw'>=</span> <span class='st'>"zrh_airport_data"</span>,
+  <span class='kw'>set_description</span> <span class='kw'>=</span> <span class='st'>"Zurich airport arrivals and departures "</span>,
+  <span class='kw'>schema</span> <span class='kw'>=</span> <span class='st'>"schema"</span>
+)
+}</div></pre>
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">
     <nav id="toc" data-toggle="toc" class="sticky-top">

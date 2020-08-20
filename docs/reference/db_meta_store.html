@@ -40,7 +40,7 @@
 
 
 <meta property="og:title" content="Store Time Series Metadata to PostgreSQL — db_meta_store" />
-<meta property="og:description" content="to be written: explanation of what is metadata, localized vs. unlocalized" />
+<meta property="og:description" content="The most basic way to store meta information is to assign non-translated (unlocalized) descriptions, but it also can be stored in different languages (localized) using the parameter locale. See also basic usage." />
 
 
 
@@ -141,7 +141,7 @@
     </div>
 
     <div class="ref-description">
-    <p>to be written: explanation of what is metadata, localized vs. unlocalized</p>
+    <p>The most basic way to store meta information is to assign non-translated (unlocalized) descriptions, but it also can be stored in different languages (localized) using the parameter <strong>locale</strong>. See also <a href='http://mbannert.github.io/timeseriesdb/articles/a01_basic_usage.html#basic-metadata'>basic usage</a>.</p>
     </div>
 
     <pre class="usage"><span class='fu'>db_meta_store</span>(
@@ -158,30 +158,46 @@
     <colgroup><col class="name" /><col class="desc" /></colgroup>
     <tr>
       <th>con</th>
-      <td><p>RPostgres database connection object.</p></td>
+      <td><p>RPostgres connection object.</p></td>
     </tr>
     <tr>
       <th>metadata</th>
       <td><p>object of class tsmeta that contains the metadata to be stored.</p></td>
     </tr>
     <tr>
+      <th>valid_from</th>
+      <td><p><strong>character</strong> representation of a date in the form of 'YYYY-MM-DD'. It should always be explicitly specified.  The function <code>db_meta_get_last_update</code> checks the last time meta information was updated.</p></td>
+    </tr>
+    <tr>
       <th>locale</th>
-      <td><p>character indicating the language of the meta information to be store. We recommend to use ISO country codes to represent languages. Defaults to NULL. When local is set to NULL, metadata are stored without localization. Note that, when localizing meta information by assigning a language, multiple meta information objects can be stored for a single time series.</p></td>
+      <td><p><strong>character</strong> indicating the language of the meta information to be store. We recommend to use ISO country codes to represent languages. Defaults to NULL. When local is set to NULL, metadata are stored without localization. Note that, when localizing meta information by assigning a language, multiple meta information objects can be stored for a single time series.</p></td>
     </tr>
     <tr>
       <th>on_conflict</th>
-      <td><p>character allows for either 'update': add new fields and update existing ones or "overwrite": completely replace existing record.</p></td>
+      <td><p><strong>character</strong> representing either <code>update</code>: add new fields and update existing ones or "overwrite": completely replace existing record.</p></td>
     </tr>
     <tr>
       <th>schema</th>
-      <td><p>character name of the schema. Defaults to 'timeseries'.</p></td>
+      <td><p><strong>character</strong> name of the database schema. Defaults to 'timeseries'</p></td>
     </tr>
     </table>
 
     <h2 class="hasAnchor" id="value"><a class="anchor" href="#value"></a>Value</h2>
 
     <p>status list created from DB status return JSON.</p>
+    <h2 class="hasAnchor" id="see-also"><a class="anchor" href="#see-also"></a>See also</h2>
 
+    <div class='dont-index'><p>Other metadata functions: 
+<code><a href='db_collection_read_meta.html'>db_collection_read_meta</a>()</code>,
+<code><a href='db_dataset_read_meta.html'>db_dataset_read_meta</a>()</code>,
+<code><a href='db_meta_get_latest_validity.html'>db_meta_get_latest_validity</a>()</code>,
+<code><a href='db_meta_read.html'>db_meta_read</a>()</code></p></div>
+
+    <h2 class="hasAnchor" id="examples"><a class="anchor" href="#examples"></a>Examples</h2>
+    <pre class="examples"><div class='input'>
+<span class='kw'>if</span> (<span class='fl'>FALSE</span>) {
+<span class='fu'><a href='https://rdrr.io/r/base/sum.html'>sum</a></span>(<span class='st'>"a"</span>)
+}</div></pre>
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">
     <nav id="toc" data-toggle="toc" class="sticky-top">

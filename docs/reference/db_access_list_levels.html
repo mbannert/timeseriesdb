@@ -6,7 +6,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>Get All access levels and their description — db_access_list_levels • timeseriesdb</title>
+<title>Get All Access Levels and Their Description — db_access_list_levels • timeseriesdb</title>
 
 
 <!-- jquery -->
@@ -39,8 +39,9 @@
 
 
 
-<meta property="og:title" content="Get All access levels and their description — db_access_list_levels" />
-<meta property="og:description" content="Get All access levels and their description" />
+<meta property="og:title" content="Get All Access Levels and Their Description — db_access_list_levels" />
+<meta property="og:description" content="Gets an overview of roles and shows whether a role (aka access level) is
+the default level for series stored without an explicitly specified access level." />
 
 
 
@@ -135,13 +136,14 @@
 <div class="row">
   <div class="col-md-9 contents">
     <div class="page-header">
-    <h1>Get All access levels and their description</h1>
+    <h1>Get All Access Levels and Their Description</h1>
     <small class="dont-index">Source: <a href='https://github.com/mbannert/timeseriesdb/blob/master/R/access_levels.R'><code>R/access_levels.R</code></a></small>
     <div class="hidden name"><code>db_access_list_levels.Rd</code></div>
     </div>
 
     <div class="ref-description">
-    <p>Get All access levels and their description</p>
+    <p>Gets an overview of roles and shows whether a role (aka access level) is
+the default level for series stored without an explicitly specified access level.</p>
     </div>
 
     <pre class="usage"><span class='fu'>db_access_list_levels</span>(<span class='no'>con</span>, <span class='kw'>schema</span> <span class='kw'>=</span> <span class='st'>"timeseries"</span>)</pre>
@@ -151,17 +153,24 @@
     <colgroup><col class="name" /><col class="desc" /></colgroup>
     <tr>
       <th>con</th>
-      <td><p>RPostgres connection object</p></td>
+      <td><p>RPostgres connection object.</p></td>
     </tr>
     <tr>
       <th>schema</th>
-      <td><p>character Name of timeseries schema</p></td>
+      <td><p><strong>character</strong> name of the database schema. Defaults to 'timeseries'</p></td>
     </tr>
     </table>
 
     <h2 class="hasAnchor" id="value"><a class="anchor" href="#value"></a>Value</h2>
 
     <p>access levels data.frame with columns `role` and `description` and `is_default`</p>
+    <h2 class="hasAnchor" id="see-also"><a class="anchor" href="#see-also"></a>See also</h2>
+
+    <div class='dont-index'><p>Other access levels functions: 
+<code><a href='change_access_level.html'>change_access_level</a></code>,
+<code><a href='db_access_create_level.html'>db_access_create_level</a>()</code>,
+<code><a href='db_access_delete_level.html'>db_access_delete_level</a>()</code>,
+<code><a href='db_access_set_default.html'>db_access_set_default</a>()</code></p></div>
 
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">

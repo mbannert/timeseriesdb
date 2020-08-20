@@ -160,6 +160,12 @@
       <tr>
         
         <td>
+          <p><code><a href="change_access_level.html">db_ts_change_access()</a></code> <code><a href="change_access_level.html">db_ts_change_access_dataset()</a></code> </p>
+        </td>
+        <td><p>Change the Access Level of a Time Series</p></td>
+      </tr><tr>
+        
+        <td>
           <p><code><a href="date_to_index.html">date_to_index()</a></code> </p>
         </td>
         <td><p>Convert date-likes to time index</p></td>
@@ -168,7 +174,7 @@
         <td>
           <p><code><a href="db_access_create_level.html">db_access_create_level()</a></code> </p>
         </td>
-        <td><p>Insert a role in access levels table</p></td>
+        <td><p>Create a New Role (Access Level)</p></td>
       </tr><tr>
         
         <td>
@@ -180,7 +186,7 @@
         <td>
           <p><code><a href="db_access_list_levels.html">db_access_list_levels()</a></code> </p>
         </td>
-        <td><p>Get All access levels and their description</p></td>
+        <td><p>Get All Access Levels and Their Description</p></td>
       </tr><tr>
         
         <td>
@@ -199,6 +205,18 @@
           <p><code><a href="db_collection_delete.html">db_collection_delete()</a></code> </p>
         </td>
         <td><p>Remove an Entire Time Series Key Collection</p></td>
+      </tr><tr>
+        
+        <td>
+          <p><code><a href="db_collection_list.html">db_collection_list()</a></code> </p>
+        </td>
+        <td><p>List All Available Collections for a Specific User</p></td>
+      </tr><tr>
+        
+        <td>
+          <p><code><a href="db_collection_read_meta.html">db_collection_read_meta()</a></code> </p>
+        </td>
+        <td><p>Read Metadata for a Collection</p></td>
       </tr><tr>
         
         <td>
@@ -222,7 +240,7 @@
         <td>
           <p><code><a href="db_dataset_delete.html">db_dataset_delete()</a></code> </p>
         </td>
-        <td><p>Irrevocably delete all time series in a set and the set itself</p></td>
+        <td><p>Irrevocably Delete All Time Series in a Set and the Set Itself</p></td>
       </tr><tr>
         
         <td>
@@ -234,7 +252,13 @@
         <td>
           <p><code><a href="db_dataset_list.html">db_dataset_list()</a></code> </p>
         </td>
-        <td><p>Get All available datasets and their description</p></td>
+        <td><p>Get All Available Datasets and Their Description</p></td>
+      </tr><tr>
+        
+        <td>
+          <p><code><a href="db_dataset_read_meta.html">db_dataset_read_meta()</a></code> </p>
+        </td>
+        <td><p>Read Dataset Meta Information</p></td>
       </tr><tr>
         
         <td>
@@ -262,7 +286,7 @@
       </tr><tr>
         
         <td>
-          <p><code><a href="db_meta_get_last_update.html">db_meta_get_last_update()</a></code> </p>
+          <p><code><a href="db_meta_get_latest_validity.html">db_meta_get_latest_validity()</a></code> </p>
         </td>
         <td><p>Get Latest Validity for Metadata of a Given Time Series</p></td>
       </tr><tr>
@@ -328,18 +352,6 @@
       </tr><tr>
         
         <td>
-          <p><code><a href="db_ts_change_access.html">db_ts_change_access()</a></code> </p>
-        </td>
-        <td><p>Change the Access Level for Time Series</p></td>
-      </tr><tr>
-        
-        <td>
-          <p><code><a href="db_ts_change_access_dataset.html">db_ts_change_access_dataset()</a></code> </p>
-        </td>
-        <td><p>Change the Access Level for Time Series Dataset</p></td>
-      </tr><tr>
-        
-        <td>
           <p><code><a href="db_ts_delete.html">db_ts_delete()</a></code> </p>
         </td>
         <td><p>Remove Time Series from the Database</p></td>
@@ -372,28 +384,25 @@
         <td>
           <p><code><a href="db_with_tmp_read.html">db_with_tmp_read()</a></code> </p>
         </td>
-        <td><p>Create and populate a temporary table ts_read with desired (ts_key, ts_validity) pairs for
-joining against timeseries_main and reading.</p></td>
+        <td><p>Helper to Create and Populate a Temporary Table for Fast Reading</p></td>
       </tr><tr>
         
         <td>
-          <p><code><a href="get_list_depth.html">get_list_depth()</a></code> </p>
+          <p><code><a href="has_depth_2.html">has_depth_2()</a></code> </p>
         </td>
-        <td><p>Determine depth of a list</p></td>
+        <td><p>Test if a list has exactly depth 2</p></td>
       </tr><tr>
         
         <td>
           <p><code><a href="index_to_date.html">index_to_date()</a></code> </p>
         </td>
-        <td><p>Helper function to convert time series indices of the form 2005.75
-to a date representation like 2005-07-01.
-Does not currently support sub-monthly frequencies.</p></td>
+        <td><p>Helper Function for Date Operations</p></td>
       </tr><tr>
         
         <td>
           <p><code><a href="install_timeseriesdb.html">install_timeseriesdb()</a></code> </p>
         </td>
-        <td><p>Title</p></td>
+        <td><p>Install timeseriesdb</p></td>
       </tr><tr>
         
         <td>
@@ -406,6 +415,12 @@ Does not currently support sub-monthly frequencies.</p></td>
           <p><code><a href="kof_ts.html">kof_ts</a></code> </p>
         </td>
         <td><p>KOF indicators</p></td>
+      </tr><tr>
+        
+        <td>
+          <p><code><a href="param_defs.html">param_defs</a></code> </p>
+        </td>
+        <td><p>Common parameters</p></td>
       </tr><tr>
         
         <td>
@@ -459,7 +474,7 @@ Does not currently support sub-monthly frequencies.</p></td>
         <td>
           <p><code><a href="store_time_series.html">store_time_series()</a></code> </p>
         </td>
-        <td><p>Store a set of time series to database</p></td>
+        <td><p>Store a Time Series to the Database</p></td>
       </tr>
     </tbody>
     </table>
