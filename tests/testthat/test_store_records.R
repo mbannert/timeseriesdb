@@ -26,6 +26,7 @@ main_names <- c("id", "ts_key", "validity", "coverage", "release_date", "created
 names_to_test <- setdiff(main_names, c("id", "created_by", "created_at"))
 
 # Test data generated with following code:
+# con_admin <- connect_to_test_db()
 # con_writer <- connect_to_test_db("dev_writer")
 #
 # dbExecute(con_admin, "DELETE FROM tsdb_test.timeseries_main")
@@ -100,6 +101,8 @@ names_to_test <- setdiff(main_names, c("id", "created_by", "created_at"))
 #   main_after_insert_3,
 #   catalog_after_insert_single,
 #   main_after_insert_single,
+#   main_after_insert_single_xts,
+#   catalog_after_insert_single_xts,
 #   main_after_update,
 #   file = "tests/testdata/store_records_data.RData"
 # )
