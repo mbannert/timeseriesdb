@@ -436,9 +436,62 @@ db_dataset_trim_history <- function(con,
   ))
 }
 
+#' Get the dataset last update
+#'
+#' @param set_id \strong{character} name of the set to get the last update
+#'
+#' @inheritParams param_defs
+#' @family datasets functions
+#'
+#' @export
+#'
+#' @examples
+#'
+#' \dontrun{
+#'
+#' # Storing different versions of the data, use parameter valid_from
+#' # different versions are stored with the same key
+#' ch.kof.barometer <- kof_ts["baro_2019m11"]
+#' names(ch.kof.barometer) <- c("ch.kof.barometer")
+#' store_time_series(
+#'   con = connection,
+#'   ch.kof.barometer,
+#'   valid_from = "2019-12-01",
+#'   schema = "schema"
+#' )
+#'
+#' ch.kof.barometer <- kof_ts["baro_2019m12"]
+#' names(ch.kof.barometer) <- c("ch.kof.barometer")
+#' store_time_series(
+#'   con = connection,
+#'   ch.kof.barometer,
+#'   valid_from = "2020-01-01",
+#'   schema = "schema"
+#' )
+#'
+#' db_dataset_create(
+#'   con = connection,
+#'   set_name = "barometer",
+#'   set_description = "KOF Barometer",
+#'   schema = "schema"
+#' )
+#'
+#' db_ts_assign_dataset(
+#'   con = connection,
+#'   ts_keys = "ch.kof.barometer",
+#'   set_name = "barometer",
+#'   schema = "schema"
+#' )
+#'
+#' db_dataset_get_last_update(
+#'   con = connection,
+#'   set_id = "barometer",
+#'   schema = "schema"
+#' )
+#' }
 db_dataset_get_last_update <- function(con,
-                                  set_id,
-                                  schema = "timeseries") {
+                                       set_id,
+                                       schema = "timeseries") {
   db_call_function(con,
                   "dataset_get_last_update",
                   list(

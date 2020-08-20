@@ -261,7 +261,7 @@ test_with_fresh_db(con_admin, "reading nonexistend collection", {
 # get latest update -------------------------------------------------------
 
 test_with_fresh_db(con_admin, "getting latest update of ts", {
-  out <- db_ts_get_last_update(con_reader, c("vts1", "vts2"), schema = "tsdb_test")
+  out <- db_ts_get_last_update(con_reader_public, c("vts1", "vts2"), schema = "tsdb_test")
 
   expect_equal(
     out,

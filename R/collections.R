@@ -31,11 +31,11 @@
 #' }
 db_ts_add_to_collection <- function(con,
                               collection_name,
-                              keys,
+                              ts_keys,
                               description = NULL,
                               user = Sys.info()['user'],
                               schema = "timeseries"){
-  keys <- unique(keys)
+  keys <- unique(ts_keys)
 
   # let's add keys: fill a temp table, anti-join the keys
   # INSERT non existing ones.
@@ -239,6 +239,38 @@ db_collection_list <- function(con,
   )
 }
 
+#' Get the last update of a collection for a specific User
+#'
+#' @inheritParams param_defs
+#' @family collections functions
+#'
+#' @importFrom jsonlite fromJSON
+#' @export
+#'
+#' @examples
+#'
+#' \dontrun{
+#' 
+#' store_time_series(con = connection, zrh_airport, schema = "schema")
+#' store_time_series(con = connection, kof_ts, schema = "schema")
+#'
+#' db_ts_add_to_collection(
+#'   con = connection,
+#'   collection_name = "barometer and departures zurich",
+#'   ts_keys = c(
+#'     "ch.zrh_airport.departure.total",
+#'     "ch.zrh_airport.departure.total",
+#'     "ch.kof.barometer"
+#'   ),
+#'   schema = "schema"
+#' )
+#'
+#' db_collection_get_last_update(
+#'   con = connection,
+#'   collection_name = "barometer and departures zurich",
+#'   schema = "schema"
+#' )
+#' }
 db_collection_get_last_update <- function(con,
                                           collection_name,
                                           user = Sys.info()["user"],
