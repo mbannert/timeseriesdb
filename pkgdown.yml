@@ -1,5 +1,5 @@
 pandoc: 2.3.1
-pkgdown: 1.4.1
+pkgdown: 1.5.1
 pkgdown_sha: ~
 articles:
   a01_basic_usage: a01_basic_usage.html
@@ -7,4 +7,5 @@ articles:
   a03_admin_usage: a03_admin_usage.html
   developer_doc: developer_doc.html
   installation_guide: installation_guide.html
+last_built: 2020-08-20T13:23Z
 
