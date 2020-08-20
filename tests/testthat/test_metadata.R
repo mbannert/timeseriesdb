@@ -26,6 +26,14 @@ meta_list <- function() {
   out
 }
 
+meta_df <- function() {
+  data.frame(
+    ts_key = c("ts_key1", "ts_key2"),
+    key1 = c("value1", "value3"),
+    key2 = c("value2", "value4"),
+    stringsAsFactors = FALSE # Oh how I can't wait for 4.0...
+  )
+}
 
 # test constructing meta --------------------------------------------------
 
@@ -123,6 +131,29 @@ test_that("empty list -> tsmeta", {
 test_that("invalid list -> tsmeta", {
   inv <- list(a = list(b = list(too_deep = TRUE)))
   expect_error(as.tsmeta(inv))
+})
+
+test_that("data.frame -> tsmeta", {
+  outv <- as.tsmeta(meta_df())
+  expect_equal(outv, meta_list())
+})
+
+test_that("data.table -> tsmeta", {
+  outv <- as.tsmeta(as.data.table(meta_df()))
+  expect_equal(outv, meta_list())
+})
+
+test_that("as.tsmeta.data.table skips depth check", {
+  fake_as.tsmeta.list <- mock()
+
+  with_mock(
+    as.tsmeta.list = fake_as.tsmeta.list,
+    {
+      as.tsmeta(as.data.table(meta_df()))
+    }
+  )
+
+  expect_false(mock_args(fake_as.tsmeta.list)[[1]]$check_depth)
 })
 
 # test print methods ------------------------------------------------------

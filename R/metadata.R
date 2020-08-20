@@ -45,26 +45,26 @@ create_tsmeta <- function(...) {
 }
 
 #' @export
-as.tsmeta <- function(meta) {
+as.tsmeta <- function(meta, ...) {
   UseMethod("as.tsmeta")
 }
 
 #' @export
 as.tsmeta.data.table <- function(meta) {
   if(nrow(meta) > 0) {
-    out <- meta[, .(md = list(as.list(.SD))), by = ts_key][, md]
+    out <- apply(meta[, -"ts_key", with = FALSE], 1, as.list)
     names(out) <- meta$ts_key
     # Remove NA elements from list
     out <- lapply(out, function(x){x[!is.na(x)]})
-    as.tsmeta.list(out)
+    as.tsmeta.list(out, check_depth = FALSE)
   } else {
     create_tsmeta()
   }
 }
 
 #' @export
-as.tsmeta.list <- function(meta) {
-  if(get_list_depth(meta) != 2 && length(meta) > 0) {
+as.tsmeta.list <- function(meta, check_depth = TRUE) {
+  if(check_depth && !has_depth_2(meta) && length(meta) > 0) {
     stop("A meta list must have exactly depth 2!")
   }
   meta <- lapply(meta, function(x) {
@@ -77,7 +77,7 @@ as.tsmeta.list <- function(meta) {
 
 #' @export
 as.tsmeta.data.frame <- function(meta) {
-  as.tsmeta.list(as.data.table(meta))
+  as.tsmeta(as.data.table(meta))
 }
 
 
@@ -257,10 +257,12 @@ db_meta_read <- function(con,
   out
 }
 
-
-
-#' Read Collection Metadata
+#' Read Metadata for a Collection
 #'
+#'
+#'
+#' @param character collection_name character name of the collection.
+#' @param character collection_owner character name of the collection owner.
 #' @inheritParams param_defs
 #' @family metadata functions
 #'
@@ -269,7 +271,7 @@ db_meta_read <- function(con,
 db_collection_read_meta <- function(con,
                                     collection_name,
                                     collection_owner,
-                                    valid_on = NA,
+                                    valid_on = NULL,
                                     locale = NULL,
                                     schema = "timeseries") {
   db_return <- if(is.null(locale)) {
@@ -278,6 +280,7 @@ db_collection_read_meta <- function(con,
                      list(
                        p_collection_name = collection_name,
                        p_owner = collection_owner,
+                       p_owner = owner,
                        p_valid_on = as.Date(valid_on)
                      ),
                      schema = schema)
@@ -287,6 +290,7 @@ db_collection_read_meta <- function(con,
                      list(
                        p_collection_name = collection_name,
                        p_owner = collection_owner,
+                       p_owner = owner,
                        p_valid_on = as.Date(valid_on),
                        p_loc = locale
                      ),
@@ -302,17 +306,17 @@ db_collection_read_meta <- function(con,
 }
 
 
-
-
 #' Read Dataset Meta Information
 #'
 #' @param dataset_id character name of the dataset.
+#' @param locale character ISO-2 country locale.
 #'
 #' @inheritParams param_defs
 #' @family metadata functions
 #'
 #' @return
 #' @export
+
 db_dataset_read_meta <- function(con,
                                  dataset_id,
                                  valid_on = NA,

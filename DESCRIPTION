@@ -11,7 +11,7 @@ Authors@R: as.person(c(
 Depends:
     R (>= 3.0.0),
 Imports:
-    RPostgres,
+    RPostgres (>= 1.2.0),
     jsonlite (>= 1.1),
     data.table (>= 1.9.4),
     xts,

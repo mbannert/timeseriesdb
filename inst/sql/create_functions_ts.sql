@@ -80,7 +80,7 @@ BEGIN
                              'offending_keys', to_json(v_invalid_keys));
   ELSE
     -- All went well
-    RETURN '{"status": "ok", "reason": "the world is full of rainbows"}'::JSON;
+    RETURN '{"status": "ok"}'::JSON;
   END IF;
 END;
 $$ LANGUAGE PLPGSQL
@@ -107,6 +107,8 @@ CREATE OR REPLACE FUNCTION timeseries.fill_read_tmp_regex(pattern TEXT)
 RETURNS VOID
 AS $$
 BEGIN
+  DELETE FROM tmp_ts_read_keys;
+
   INSERT INTO tmp_ts_read_keys
   SELECT ts_key FROM timeseries.catalog
   WHERE ts_key ~ pattern;

@@ -111,8 +111,7 @@ test_with_fresh_db(con_admin, "create_release db state", {
       id = "new_release",
       title = "Best Data Ever",
       note = NA_character_,
-      # TODO: see #155
-      release_date = as.POSIXct("2020-06-15 15:09"),
+      release_date = as.POSIXct("2020-06-15 13:09"),
       target_year = 2020,
       target_period = 6,
       target_frequency = 12,
