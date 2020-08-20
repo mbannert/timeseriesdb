@@ -30,12 +30,12 @@
 #' )
 #' }
 db_ts_add_to_collection <- function(con,
-                                    collection_name,
-                                    ts_keys,
-                                    description = NA,
-                                    user = Sys.info()["user"],
-                                    schema = "timeseries") {
-  keys <- unique(ts_keys)
+                              collection_name,
+                              keys,
+                              description = NULL,
+                              user = Sys.info()['user'],
+                              schema = "timeseries"){
+  keys <- unique(keys)
 
   # let's add keys: fill a temp table, anti-join the keys
   # INSERT non existing ones.

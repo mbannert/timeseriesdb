@@ -18,11 +18,16 @@
 #' }
 read_time_series <- function(con,
                              ts_keys,
-                             valid_on = NA,
+                             valid_on = NULL,
                              regex = FALSE,
                              respect_release_date = FALSE,
                              schema = "timeseries",
                              chunksize = 10000) {
+
+  # RPostgres plays nicer with NA than with NULL
+  if(is.null(valid_on)) {
+    valid_on <- NA
+  }
 
   # timeseriesdb makes use of a temporary table that is joined against
   # to get the right data. This is much faster than WHERE clauses.
@@ -125,11 +130,16 @@ read_time_series_history <- function(con,
 #'                    schema = "schema")
 #' }
 db_dataset_read_ts <- function(con,
-                               datasets,
-                               valid_on = NA,
-                               respect_release_date = FALSE,
-                               schema = "timeseries",
-                               chunksize = 10000) {
+                                        datasets,
+                                        valid_on = NULL,
+                                        respect_release_date = FALSE,
+                                        schema = "timeseries",
+                                        chunksize = 10000) {
+  if(is.null(valid_on)) {
+    valid_on <- NA
+  }
+
+
   db_with_temp_table(con,
               "tmp_datasets_read",
               data.frame(
@@ -190,10 +200,16 @@ db_dataset_read_ts <- function(con,
 db_collection_read_ts <- function(con,
                                   collection_name,
                                   collection_owner,
-                                  valid_on = NA,
+                                  valid_on = NULL,
                                   respect_release_date = FALSE,
                                   schema = "timeseries",
                                   chunksize = 10000) {
+
+  if(is.null(valid_on)) {
+    valid_on <- NA
+  }
+
+
   res <- dbSendQuery(con, sprintf("SELECT * FROM %sread_ts_collection_raw(%s, %s, %s, %s)",
                                   dbQuoteIdentifier(con, Id(schema = schema)),
                                   dbQuoteLiteral(con, collection_name),

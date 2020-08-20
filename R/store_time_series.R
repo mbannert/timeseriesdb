@@ -38,21 +38,23 @@
 #' }
 store_time_series <- function(con,
                               x,
-                              access = NA,
-                              valid_from = NA,
-                              release_date = NA,
-                              schema = "timeseries") {
+                              access = NULL,
+                              valid_from = NULL,
+                              release_date = NULL,
+                              schema = "timeseries"){
   UseMethod("store_time_series", object = x)
 }
 
 #' @export
 store_time_series.list <- function(con,
                                    tsl,
-                                   access = NA,
-                                   valid_from = NA,
-                                   release_date = NA,
-                                   schema = "timeseries") {
-  is_tsl <- sapply(tsl, function(x) inherits(x, c("ts", "zoo", "xts")))
+                                   access = NULL,
+                                   valid_from = NULL,
+                                   release_date = NULL,
+                                   schema = "timeseries"){
+
+  is_tsl <- sapply(tsl, function(x) inherits(x,c("ts","zoo","xts")))
+
   tsl <- tsl[is_tsl]
   class(tsl) <- c("tslist", "tsl")
   store_time_series(con, tsl,
@@ -66,11 +68,11 @@ store_time_series.list <- function(con,
 #' @export
 store_time_series.tslist <- function(con,
                                      tsl,
-                                     access = NA,
-                                     valid_from = NA,
-                                     release_date = NA,
-                                     schema = "timeseries") {
-  if (length(tsl) == 0) {
+                                     access = NULL,
+                                     valid_from = NULL,
+                                     release_date = NULL,
+                                     schema = "timeseries"){
+  if(length(tsl) == 0) {
     warning("Ts list is empty. This is a no-op.")
     return(list())
   }
@@ -112,9 +114,9 @@ store_time_series.tslist <- function(con,
 #' @export
 store_time_series.data.table <- function(con,
                                          dt,
-                                         access = NA,
-                                         valid_from = NA,
-                                         release_date = NA,
+                                         access = NULL,
+                                         valid_from = NULL,
+                                         release_date = NULL,
                                          schema = "timeseries") {
   if (!all(c("id", "time", "value") %in% names(dt))) {
     stop("This does not look like a ts data.table. Expected column names id, time and value.")

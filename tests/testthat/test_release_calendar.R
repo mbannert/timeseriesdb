@@ -38,7 +38,7 @@ test_that("defaults", {
                   list(
                     "a_release",
                     "Super Data",
-                    NA,
+                    NULL,
                     as.Date("2020-06-16"),
                     2020,
                     6,

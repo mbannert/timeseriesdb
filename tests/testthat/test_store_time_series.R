@@ -60,18 +60,18 @@ test_that("defaults are passed on correctly", {
         "con",
         tsl
       )
-      
+
       expect_called(store_recs, 1)
-      
+
       expect_args(
         store_recs,
         1,
         "con",
         "ts_json",
-        NA,
+        NULL,
         "timeseries_main",
-        NA,
-        NA,
+        NULL,
+        NULL,
         "timeseries"
       )
     }
@@ -155,18 +155,18 @@ test_that("defaults are passed on correctly", {
         "con",
         dt
       )
-      
+
       expect_called(store_recs, 1)
-      
+
       expect_args(
         store_recs,
         1,
         "con",
         "ts_json",
-        NA,
+        NULL,
         "timeseries_main",
-        NA,
-        NA,
+        NULL,
+        NULL,
         "timeseries"
       )
     }
