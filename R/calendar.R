@@ -1,6 +1,6 @@
 #' Create an Entry in the Release Calendar
 #'
-#' Only timeseries admins may create and modify releases
+#' The idea of the release calendar is to set a release date for some time series that might be in the database already but should not be publicly available before a specific date, e.g., a press release. Since publishing is simply a matter of changing the access level, an update of the access levels could be triggered based on the release information in a release table. Only timeseries admins may create and modify releases.
 #'
 #' @param id Identifier for the release e.g. 'gdb_may_2020'
 #' @param title Display title for the release
@@ -21,7 +21,7 @@
 #'
 #' @inheritParams param_defs
 #' @family calendar functions
-#' 
+#'
 #' @import data.table
 #' @importFrom RPostgres dbWriteTable
 #' @importFrom jsonlite fromJSON
@@ -86,7 +86,7 @@ db_release_create <- function(con,
 #' Any parameters provided to this function will overwrite the corresponding
 #' fields in the database. Parameters set to NA (default) will leave the
 #' corresponding fields untouched.
-#' For details see \code{\link{db_release_create}}
+#' For details see \code{\link{db_release_create}}.
 #'
 #' @param id Identifier for the release e.g. 'gdb_may_2020'
 #' @param title Display title for the release
@@ -215,7 +215,7 @@ db_release_list <- function(con,
 #' @family calendar functions
 #'
 #' @return data.frame with columns `set_id`, `release_id`, `release_date`
-#' 
+#'
 #' @export
 db_release_get_next <- function(con,
                                         set_ids,

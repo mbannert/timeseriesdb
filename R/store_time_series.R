@@ -1,11 +1,10 @@
-#' Store a set of time series to database
+#' Store a Time Series to the Database
 #'
-#' @param x Object containing time series to store. Lists, tslist, and data tables are allowed.
-#' @param release Title for the release
-#' @param access Access level for all ts to be stored. If set to NA (default) the database set it to 'main' access.
-#' @param subset Ts keys of the subset of x to store
-#' @param release_date Release date of all ts in x
+#' Stores one or more time series to the database.
 #'
+#' @param x Object containing time series to store. Single ts or xts objects are allowed as well as objects of type list, tslist, and data.table.
+#' @param release_date character date from which on this version of the time series should be made available when release date is respected. Applies to all time series in x.
+#' @param access character Access level for all ts to be stored. If set to NA (default) the database set it to 'main' access.
 #' @inheritParams param_defs
 #' @family time series functions
 #'

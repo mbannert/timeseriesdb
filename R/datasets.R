@@ -1,8 +1,6 @@
 #' Create a New Dataset
 #'
-#' A dataset is a family of time series that belong to the same topic. By default all series stored with `db_store_ts` belong to a default set. In order to assign them a different set, it must first be created with `db_dataset_create` after which the series may be moved with `tbd`
-#'
-#' For arbitrary collections of time series see \code{\link{db_ts_add_to_collection}}.
+#' A dataset is a family of time series that belong to the same topic. By default all series stored with `db_store_ts` belong to a default set. In order to assign them a different set, it must first be created with `db_dataset_create` after which the series may be moved with \code{\link{db_ts_assign_dataset}}.
 #'
 #' @param set_description \strong{character} description about the set. Default to NA.
 #' @param set_md meta information data about the set. Default to NA.
@@ -151,7 +149,7 @@ db_ts_get_dataset <- function(con,
 #' status `"warning"` means some keys are not in the catalog. The vector of
 #' those keys is in the `offending_keys` field.
 #'
-#' Trying to assign keys to a nonexistent dataset is an error.
+#' Trying to assign keys to a non-existent dataset is an error.
 #'
 #' @inheritParams param_defs
 #' @family datasets functions
@@ -271,7 +269,7 @@ db_dataset_update <- function(con,
   out_parsed
 }
 
-#' Get All available datasets and their description
+#' Get All Available Datasets and Their Description
 #'
 #' @inheritParams param_defs
 #' @family datasets functions
@@ -304,10 +302,10 @@ db_dataset_list <- function(con,
 }
 
 
-#' Irrevocably delete all time series in a set and the set itself
+#' Irrevocably Delete All Time Series in a Set and the Set Itself
 #'
-#' This function can only be used manually.
-#' It asks the user to manually input confirmation to prevent accidental
+#' This function cannot be used in batch mode as it needs user interaction.
+#' It asks the user to manually input confirmation to prevent
 #' unintentional deletion of datasets.
 #'
 #' @inheritParams param_defs
@@ -366,7 +364,9 @@ db_dataset_delete <- function(con,
 #' Removes any vintages of the given dataset that are older than a specified date.
 #'
 #' In some cases only the last few versions of time series are of interest. This
-#' function can be used to trim off old vintages that are no longer relevant.
+#' function can be used to trim off old vintages that are no longer relevant. It may
+#' be helpful to use this function with high frequency data to save disk space
+#' of versions are not needed.
 #'
 #' @param set_id character Name of the set to trim
 #' @param older_than Date cut off point

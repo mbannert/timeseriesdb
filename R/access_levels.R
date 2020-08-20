@@ -1,17 +1,16 @@
-#' Change the Access Level for Time Series
+#' Change the Access Level of a Time Series
 #'
 #' @name change_access_level
 #' @rdname change_access_level
 #' @inheritParams param_defs
 #' @family access levels functions
-#' 
+#'
 #' @export
 #' @importFrom jsonlite fromJSON
-#' 
 db_ts_change_access <- function(con,
                                 ts_keys,
                                 new_access_level,
-                                validity = NA,
+                                valid_from = NA,
                                 schema = "timeseries") {
   out <- db_with_temp_table(con,
                             "tmp_ts_access_keys",
@@ -26,7 +25,7 @@ db_ts_change_access <- function(con,
                                                "change_access_level",
                                                list(
                                                  new_access_level,
-                                                 validity
+                                                 valid_from
                                                ),
                                                schema = schema)
                             },
@@ -49,14 +48,14 @@ db_ts_change_access <- function(con,
 db_ts_change_access_dataset <- function(con,
                                         dataset,
                                         new_access_level,
-                                        validity = NA,
+                                        valid_from = NA,
                                         schema = "timeseries") {
   out <- db_call_function(con,
                           "change_access_level_dataset",
                           list(
                             dataset,
                             new_access_level,
-                            validity
+                            valid_from
                           ),
                           schema = schema)
   parsed <- fromJSON(out)
@@ -70,14 +69,18 @@ db_ts_change_access_dataset <- function(con,
   parsed
 }
 
-#' Get All access levels and their description
+#' Get All Access Levels and Their Description
+#'
+#' Gets an overview of roles and shows whether a role (aka access level) is
+#' the default level for series stored without an explicitly specified access level.
+#'
 #'
 #' @inheritParams param_defs
 #' @family access levels functions
 #'
 #' @return access levels data.frame with columns `role` and `description` and `is_default`
 #' @export
-#' 
+#'
 db_access_list_levels <- function(con,
                                   schema = "timeseries") {
 
@@ -99,13 +102,13 @@ db_access_delete_level <- function(con,
                                    schema = "timeseries") {
 
   out <- db_call_function(con,
-                   "access_levels_delete",
-                   list(
-                     access_level_name
-                   ),
-                   schema = schema)
+                          "access_levels_delete",
+                          list(
+                            access_level_name
+                          ),
+                          schema = schema)
 
-  
+
   out_parsed <- fromJSON(out)
 
   if(out_parsed$status == "warning") {
@@ -121,7 +124,11 @@ db_access_delete_level <- function(con,
 }
 
 
-#' Insert a role in access levels table
+#' Create a New Role (Access Level)
+#'
+#' Creates a new role in the database. Roles represent access levels and together
+#' with the assignment of roles to time series, versions of time series or datasets
+#' define who is allowed to access a particular series.
 #'
 #' @inheritParams param_defs
 #' @param access_level_name \strong{character} name of the access level to insert.
@@ -145,9 +152,9 @@ db_access_create_level <- function(con,
                             access_level_default
                           ),
                           schema = schema)
-  
+
   out_parsed <- fromJSON(out)
-  
+
   if(out_parsed$status == "warning") {
     warning(out_parsed$message)
   } else if(out_parsed$status == "error") {
@@ -159,6 +166,9 @@ db_access_create_level <- function(con,
 }
 
 #' Set the Default Access Level
+#'
+#' Changes the default access level. Apparently only one access level can be
+#' the default level at a time.
 #'
 #' @inheritParams param_defs
 #' @family access levels functions

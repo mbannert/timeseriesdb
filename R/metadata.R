@@ -121,22 +121,22 @@ print.tsmeta <- function(x, ...) {
 #' Store Time Series Metadata to PostgreSQL
 #'
 #' The most basic way to store meta information is to assign non-translated (unlocalized) descriptions, but it also can be stored in different languages (localized) using the parameter \strong{locale}. See also \href{http://mbannert.github.io/timeseriesdb/articles/a01_basic_usage.html#basic-metadata}{basic usage}.
-#' 
+#'
 #'
 #' @param metadata object of class tsmeta that contains the metadata to be stored.
 #' @param valid_from \strong{character} representation of a date in the form of 'YYYY-MM-DD'. It should always be explicitly specified.  The function \code{\link{db_meta_get_last_update}} checks the last time meta information was updated.
 #' @param on_conflict \strong{character} representing either \code{update}: add new fields and update existing ones or "overwrite": completely replace existing record.
-#' 
+#'
 #' @inheritParams param_defs
 #' @family metadata functions
-#'  
+#'
 #' @return status list created from DB status return JSON.
 #'
 #' @importFrom jsonlite fromJSON toJSON
 #' @export
 #'
 #' @examples
-#' 
+#'
 #' \dontrun{
 #' sum("a")
 #' }
@@ -266,8 +266,6 @@ db_meta_read <- function(con,
 #'
 #' @return
 #' @export
-#'
-#' @examples
 db_collection_read_meta <- function(con,
                                     collection_name,
                                     collection_owner,
@@ -306,18 +304,15 @@ db_collection_read_meta <- function(con,
 
 
 
-#' Title
+#' Read Dataset Meta Information
 #'
-#' @param dataset_id
-#' @param valid_on
-#' 
+#' @param dataset_id character name of the dataset.
+#'
 #' @inheritParams param_defs
 #' @family metadata functions
-#' 
+#'
 #' @return
 #' @export
-#'
-#' @examples
 db_dataset_read_meta <- function(con,
                                  dataset_id,
                                  valid_on = NA,
@@ -341,14 +336,14 @@ db_dataset_read_meta <- function(con,
                      ),
                      schema = schema)
   }
-  
+
   out <- fromJSON(paste0("[",
                          paste(db_return$metadata, collapse = ","),
                          "]"),
                   simplifyDataFrame = FALSE)
   names(out) <- db_return$ts_key
   out <- as.tsmeta.list(out)
-  
+
   out
 }
 
@@ -365,8 +360,6 @@ db_dataset_read_meta <- function(con,
 #'
 #' @return
 #' @export
-#'
-#' @examples
 db_meta_get_last_update <- function(con,
                                  ts_keys,
                                  regex = FALSE,

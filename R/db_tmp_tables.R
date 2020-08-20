@@ -29,22 +29,19 @@ db_with_temp_table <- function(con,
   force(code)
 }
 
-#' Create and populate a temporary table ts_read with desired (ts_key, ts_validity) pairs for
-#' joining against timeseries_main and reading.
+#' Helper to Create and Populate a Temporary Table for Fast Reading
 #'
-#' if regex == TRUE the first entry of ts_keys will be used as the pattern
+#' This function is not exported. It creates a tempory table containing the
+#' keys that should be read to join them against the time series storage.
+#' This is much faster for larger selections than simple where clauses.
 #'
-#' @param con
-#' @param ts_keys
-#' @param regex
-#' @param schema
-#' @param table
-#' @param valid_on
-#' @param respect_release_date
+#'
+#' @inheritParams param_defs
+#' @param regex logical if set to TRUE, the ts_keys parameter is interpreted as a regular expression pattern.
 #' @importFrom RPostgres dbExecute dbWriteTable
 db_with_tmp_read <- function(con,
                              ts_keys,
-                             regex,
+                             regex = FALSE,
                              code,
                              schema = "timeseries") {
   if(regex) {

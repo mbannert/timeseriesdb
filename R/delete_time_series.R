@@ -4,7 +4,7 @@
 #' all vintages and metadata.
 #'
 #' Due to the potentially severe consequences of such a deletion only timeseries
-#' admins may perform this action and should do so very dilligently.
+#' admins may perform this action and should do so very diligently.
 #'
 #' @inheritParams param_defs
 #' @family time series functions
@@ -71,6 +71,15 @@ db_ts_delete <- function(con,
 }
 
 #' Delete the Latest Vintage of a Time Series
+#'
+#' Vintages of time series should not be deleted as they are versions and
+#' represent a former status of a time series that may not be stored elsewhere,
+#' even not with their original provider. To benchmark forecasts it is essential
+#' to keep the versions to evaluate real time performance of forecasts. However,
+#' when operating at current edge of a time series, i.e., its last update, mistakes
+#' may happen. Hence timeseriesdb allows to update / delete the last iteration.
+#' Do not loop recursively through iterations to delete an entire time series.
+#' There are admin level functions for that.
 #'
 #' @inheritParams param_defs
 #' @family time series functions

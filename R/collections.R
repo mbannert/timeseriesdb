@@ -1,5 +1,9 @@
 #' Bundles Keys into an Existing Collection or Adds a New Collection
 #'
+#' Collections are user specific compilations of time series keys. Similar to
+#' a playlist in a music app, collections help to come back to a previously stored
+#' selection of time series. This functions adds more time series to existing bundles (collections).
+#'
 #' @param description \strong{character} description of the collection.
 #'
 #' @inheritParams param_defs
@@ -63,8 +67,8 @@ db_ts_add_to_collection <- function(con,
 
 #' Remove Keys From a User's Collection
 #'
-#' Removes a vector of time series keys from an a set of
-#' keys defined for that user.
+#' Removes a vector of time series keys from a user specific
+#' compilation.
 #'
 #' @inheritParams param_defs
 #' @family collections functions
@@ -179,7 +183,7 @@ db_collection_delete <- function(con,
   db_return
 }
 
-#' list all collection
+#' List All Available Collections for a Specific User
 #'
 #' @inheritParams param_defs
 #' @family collections functions

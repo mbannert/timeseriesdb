@@ -5,12 +5,13 @@
 #' @param ts_keys \strong{character} vector of time series identifiers.
 #' @param dataset \strong{character} name of the dataset. Datasets are group of time series.
 #' @param datasets \strong{character} vector of the datasets. Dataset is a group of time series.
-#' @param valid_on \strong{character} representation of a date in the form of 'YYYY-MM-DD'. valid_on selects the 
-#' version of a time series that is valid at the specified time. 
-#' @param valid_from character representation of a date in the form of 'YYYY-MM-DD'. valid_from starts a new version 
+#' @param valid_on \strong{character} representation of a date in the form of 'YYYY-MM-DD'. valid_on selects the
+#' version of a time series that is valid at the specified time.
+#' @param valid_from character representation of a date in the form of 'YYYY-MM-DD'. valid_from starts a new version
+#' @param code expression Code to be evaluated after populating the temporary table on the database
 #' of a time series that is valid from the specified date.
-#' @param collection_name \strong{character} name of a collection to read. Collection are bookmark lists that contain time series keys. 
-#' @param access_level \strong{character} describing the access level of the time series or dataset. 
+#' @param collection_name \strong{character} name of a collection to read. Collection are bookmark lists that contain time series keys.
+#' @param access_level \strong{character} describing the access level of the time series or dataset.
 #' @param set_name \strong{character} name of a dataset.
 #' @param regex \strong{boolean} indicating if ts_keys should be interpreted as a regular expression pattern. Defaults to FALSE.
 #' @param locale \strong{character} indicating the language of the meta information to be store. We recommend to use ISO country codes to represent languages. Defaults to NULL. When local is set to NULL, metadata are stored without localization. Note that, when localizing meta information by assigning a language, multiple meta information objects can be stored for a single time series.
