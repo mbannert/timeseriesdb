@@ -171,11 +171,11 @@ db_dataset_read_ts <- function(con,
 #' in order to uniquely identify a collection.
 #'
 #' @export
-#' 
+#'
 #' @examples
 #'
 #' \dontrun{
-#' 
+#'
 #' store_time_series(con = connection, zrh_airport, schema = "schema")
 #' store_time_series(con = connection, kof_ts, schema = "schema")
 #'
@@ -234,4 +234,46 @@ get_tsl_from_res <- function(res, chunksize = 10000, id.col = "ts_key") {
   }
 
   tsl
+}
+
+
+#' Get the times series last update
+#'
+#' @inheritParams param_defs
+#' @family time series functions
+#'
+#' @export
+#'
+#' @examples
+#'
+#' \dontrun{
+#' store_time_series(con = connection, zrh_airport, schema = "schema")
+#'
+#' # get last update for one key
+#' db_ts_get_last_update(
+#'   con = connection,
+#'   ts_keys = "ch.zrh_airport.departure.total",
+#'   schema = "schema")
+#'
+#' # get last update for multiple keys
+#' db_ts_get_last_update(
+#'   con = connection,
+#'   ts_keys = c(
+#'     "ch.zrh_airport.departure.total",
+#'     "ch.zrh_airport.arrival.total"
+#'   ),
+#'   schema = "schema"
+#' )
+#' }
+db_ts_get_last_update <- function(con,
+                                  ts_keys,
+                                  schema = "timeseries") {
+  db_with_tmp_read(con,
+                   ts_keys,
+                   code = {
+                      db_call_function(con,
+                                       "ts_get_last_update",
+                                       schema = schema)
+                   },
+                   schema = schema)
 }

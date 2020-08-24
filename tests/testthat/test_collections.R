@@ -301,3 +301,16 @@ test_with_fresh_db(con_admin, "db_collection_list", {
                ))
 })
 
+
+# read latest update ------------------------------------------------------
+
+test_with_fresh_db(con_admin, "getting the latest update", {
+  out <- db_collection_get_last_update(con_reader, "some random one", "johnny_public", schema = "tsdb_test")
+
+  expect_equal(out$name, "some random one")
+  # It's hot and I don't feel like wrangling DST issues
+  expect_equal(
+    out$updated,
+    max(dbGetQuery(con_admin, "SELECT created_at FROM tsdb_test.timeseries_main WHERE ts_key = 'vts1'")$created_at)
+  )
+})
