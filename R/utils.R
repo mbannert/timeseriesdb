@@ -101,7 +101,7 @@ readPasswordFile <- readLines
 #' @importFrom RPostgres Postgres
 #' @importFrom DBI dbConnect
 #' @export
-db_create_connection <- function(dbname,
+db_connection_create <- function(dbname,
                           user = Sys.info()[['user']],
                           host = "localhost",
                           passwd = NULL,

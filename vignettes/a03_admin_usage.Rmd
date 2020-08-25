@@ -39,7 +39,7 @@ library(kofdata)
 arr <- get_time_series("ch.zrh_airport.arrival.total")
 dep <- get_time_series("ch.zrh_airport.departure.total")
 
-store_time_series(con, c(arr,dep), schema = "tsdb_test")
+db_ts_store(con, c(arr,dep), schema = "tsdb_test")
 
 db_dataset_create(con, "ch.zrh_airport",
                   set_description = "Arrivals and Departures ZH Airport",
@@ -124,11 +124,11 @@ designed to limit access to subgroups within an organization. We guess you see
 where this is going. By adding further access levels, admins can add more narrow
 user groups for parts of the data.
 
-[db_access_list_levels()](../reference/db_access_list_levels.html) lists all access levels available for a schema. 
+[db_access_level_list()](../reference/db_access_level_list.html) lists all access levels available for a schema. 
 New levels are created easily. Note also that new levels can be made the default.
 
 ```{r,eval=FALSE}
-db_access_create_level(con, 
+db_access_level_create(con, 
                        access_level_name =  "management",
                        access_level_description = "series only available",
                        access_level_default = TRUE,
@@ -137,14 +137,14 @@ db_access_create_level(con,
 ```
 
 Obviously only one access level can be 'default' at a time. Defaults can be
-set post creation as well using [db_access_set_default()](../reference/db_access_set_default.html). To delete levels, 
-run [db_access_delete_level()](../reference/db_access_delete_level.html).
+set post creation as well using [db_access_level_set_default()](../reference/db_access_level_set_default.html). To delete levels, 
+run [db_access_level_delete()](../reference/db_access_level_delete.html).
 
 ### Assigning Access
 
 To assign an access level to a single time series use [db_ts_change_access()](../reference/db_ts_change_access.html), 
 to assign an access level to an entire dataset, i.e., to all series in a set, use
-[db_ts_change_access_dataset()](../reference/db_ts_change_access_dataset.html).
+[db_dataset_change_access()](../reference/db_dataset_change_access.html).
 
 
 

@@ -57,7 +57,7 @@ xx <- to_ts_json(tsl)
 xx$ts1
 
 
-store_time_series(con, tsl, "main")
+db_ts_store(con, tsl, "main")
 
 
 

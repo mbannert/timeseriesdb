@@ -17,7 +17,7 @@ test_that("is passes correct args to db_call_function unlocalized", {
     db_call_function = fake_db_call_function,
     db_with_tmp_read = fake_db_with_tmp_read,
     {
-      db_meta_read("con", "vts1", valid_on = "2020-01-01", schema = "schema")
+      db_metadata_read("con", "vts1", valid_on = "2020-01-01", schema = "schema")
 
       expect_args(fake_db_call_function,
                   1,
@@ -41,7 +41,7 @@ test_that("is passes correct args to db_call_function localized", {
     db_with_tmp_read = fake_db_with_tmp_read,
     db_call_function = fake_db_call_function,
     {
-      db_meta_read("con", "vts1", valid_on = "2020-01-01", schema = "schema", locale = "de")
+      db_metadata_read("con", "vts1", valid_on = "2020-01-01", schema = "schema", locale = "de")
 
       expect_args(fake_db_call_function,
                   1,
@@ -54,7 +54,7 @@ test_that("is passes correct args to db_call_function localized", {
 })
 
 test_with_fresh_db(con_admin, "by default it reads the most recent valid vintage", {
-  result <- db_meta_read(con_reader, "vts1", schema = "tsdb_test")
+  result <- db_metadata_read(con_reader, "vts1", schema = "tsdb_test")
   expect_equal(result,
                as.tsmeta.list(
                  list(
@@ -66,7 +66,7 @@ test_with_fresh_db(con_admin, "by default it reads the most recent valid vintage
 })
 
 test_with_fresh_db(con_admin, "reading desired vintages works", {
-  result <- db_meta_read(con_reader, "vts1", valid_on = Sys.Date() - 1, schema = "tsdb_test")
+  result <- db_metadata_read(con_reader, "vts1", valid_on = Sys.Date() - 1, schema = "tsdb_test")
   expect_equal(result,
                as.tsmeta.list(
                  list(
@@ -78,7 +78,7 @@ test_with_fresh_db(con_admin, "reading desired vintages works", {
 })
 
 test_with_fresh_db(con_admin, "reading via regex works", {
-  result <- db_meta_read(con_reader, "vts", regex = TRUE, schema = "tsdb_test")
+  result <- db_metadata_read(con_reader, "vts", regex = TRUE, schema = "tsdb_test")
   expect_equal(result,
                as.tsmeta.list(
                  list(
@@ -96,7 +96,7 @@ test_with_fresh_db(con_admin, "reading via regex works", {
 context("read localized metadata")
 
 test_with_fresh_db(con_admin, "by default it reads the most recent valid vintage", {
-  result <- db_meta_read(con_reader, "vts1", locale = "de", schema = "tsdb_test")
+  result <- db_metadata_read(con_reader, "vts1", locale = "de", schema = "tsdb_test")
   expect_equal(result,
                as.tsmeta.list(
                  list(
@@ -109,7 +109,7 @@ test_with_fresh_db(con_admin, "by default it reads the most recent valid vintage
 })
 
 test_with_fresh_db(con_admin, "reading desired vintages works", {
-  result <- db_meta_read(con_reader,
+  result <- db_metadata_read(con_reader,
                                 "vts1",
                                 valid_on = Sys.Date() - 1,
                                 locale = "de",
@@ -126,7 +126,7 @@ test_with_fresh_db(con_admin, "reading desired vintages works", {
 })
 
 test_with_fresh_db(con_admin, "reading via regex works", {
-  result <- db_meta_read(con_reader,
+  result <- db_metadata_read(con_reader,
                                 "vts",
                                 regex = TRUE,
                                 locale = "en",
@@ -249,7 +249,7 @@ test_with_fresh_db(con_admin, "SQL-only test for array version of read localized
 context("reading md for collection")
 
 test_with_fresh_db(con_admin, "by default it reads the most recent valid vintage", {
-  result <- db_collection_read_meta(con_reader, "mdtest", "test", schema = "tsdb_test")
+  result <- db_collection_read_metadata(con_reader, "mdtest", "test", schema = "tsdb_test")
 
   expect_equal(result,
                as.tsmeta.list(
@@ -266,7 +266,7 @@ test_with_fresh_db(con_admin, "by default it reads the most recent valid vintage
 })
 
 test_with_fresh_db(con_admin, "reading desired vintages works", {
-  result <- db_collection_read_meta(con_reader,
+  result <- db_collection_read_metadata(con_reader,
                          "mdtest",
                          "test",
                          valid_on = Sys.Date() - 1,
@@ -286,7 +286,7 @@ test_with_fresh_db(con_admin, "reading desired vintages works", {
 })
 
 test_with_fresh_db(con_admin, "localized, by default it reads the most recent valid vintage", {
-  result <- db_collection_read_meta(con_reader, "mdtest", "test", locale = "de", schema = "tsdb_test")
+  result <- db_collection_read_metadata(con_reader, "mdtest", "test", locale = "de", schema = "tsdb_test")
 
   expect_equal(result,
                as.tsmeta.list(
@@ -304,7 +304,7 @@ test_with_fresh_db(con_admin, "localized, by default it reads the most recent va
 
 
 test_with_fresh_db(con_admin, "localized, by default it reads the most recent english valid vintage", {
-  result <- db_collection_read_meta(con_reader, "mdtest", "test", locale = "en", schema = "tsdb_test")
+  result <- db_collection_read_metadata(con_reader, "mdtest", "test", locale = "en", schema = "tsdb_test")
 
   expect_equal(result,
                as.tsmeta.list(
@@ -322,7 +322,7 @@ test_with_fresh_db(con_admin, "localized, by default it reads the most recent en
 
 
 test_with_fresh_db(con_admin, "localized, reading older vintage works", {
-  result <- db_collection_read_meta(con_reader,
+  result <- db_collection_read_metadata(con_reader,
                                     "mdtest",
                                     "test",
                                     locale = "de",
@@ -349,7 +349,7 @@ context("reading md for dataset")
 #       best remove one of them from the collection and fix the tests
 
 test_with_fresh_db(con_admin, "by default it reads the most recent valid vintage", {
-  result <- db_dataset_read_meta(con_reader, "default", schema = "tsdb_test")
+  result <- db_dataset_read_metadata(con_reader, "default", schema = "tsdb_test")
 
   expect_equal(result,
                as.tsmeta.list(
@@ -366,7 +366,7 @@ test_with_fresh_db(con_admin, "by default it reads the most recent valid vintage
 })
 
 test_with_fresh_db(con_admin, "reading desired vintages works", {
-  result <- db_dataset_read_meta(con_reader,
+  result <- db_dataset_read_metadata(con_reader,
                                     "default",
                                     valid_on = Sys.Date() - 1,
                                     schema = "tsdb_test")
@@ -385,7 +385,7 @@ test_with_fresh_db(con_admin, "reading desired vintages works", {
 })
 
 test_with_fresh_db(con_admin, "localized, by default it reads the most recent valid vintage", {
-  result <- db_dataset_read_meta(con_reader, "default", locale = "de", schema = "tsdb_test")
+  result <- db_dataset_read_metadata(con_reader, "default", locale = "de", schema = "tsdb_test")
 
   expect_equal(result,
                as.tsmeta.list(
@@ -403,7 +403,7 @@ test_with_fresh_db(con_admin, "localized, by default it reads the most recent va
 
 
 test_with_fresh_db(con_admin, "localized, by default it reads the most recent english valid vintage", {
-  result <- db_dataset_read_meta(con_reader, "default", locale = "en", schema = "tsdb_test")
+  result <- db_dataset_read_metadata(con_reader, "default", locale = "en", schema = "tsdb_test")
 
   expect_equal(result,
                as.tsmeta.list(
@@ -421,7 +421,7 @@ test_with_fresh_db(con_admin, "localized, by default it reads the most recent en
 
 
 test_with_fresh_db(con_admin, "localized, reading older vintage works", {
-  result <- db_dataset_read_meta(con_reader,
+  result <- db_dataset_read_metadata(con_reader,
                                     "default",
                                     locale = "de",
                                     valid_on = Sys.Date() - 1,

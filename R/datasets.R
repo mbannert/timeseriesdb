@@ -231,14 +231,14 @@ db_ts_assign_dataset <- function(con,
 #'
 #' \dontrun{
 #'
-#' db_dataset_update(
+#' db_dataset_update_metadata(
 #'   con = connection,
 #'   set_name = "zrh_airport_data",
 #'   description = "updating description Zurich airport arrivals and departures",
 #'   schema = "schema"
 #' )
 #' }
-db_dataset_update <- function(con,
+db_dataset_update_metadata <- function(con,
                               set_name,
                               description = NULL,
                               metadata = NULL,
@@ -385,7 +385,7 @@ db_dataset_delete <- function(con,
 #' # different versions are stored with the same key
 #' ch.kof.barometer <- kof_ts["baro_2019m11"]
 #' names(ch.kof.barometer) <- c("ch.kof.barometer")
-#' store_time_series(
+#' db_ts_store(
 #'   con = connection,
 #'   ch.kof.barometer,
 #'   valid_from = "2019-12-01",
@@ -394,7 +394,7 @@ db_dataset_delete <- function(con,
 #'
 #' ch.kof.barometer <- kof_ts["baro_2019m12"]
 #' names(ch.kof.barometer) <- c("ch.kof.barometer")
-#' store_time_series(
+#' db_ts_store(
 #'   con = connection,
 #'   ch.kof.barometer,
 #'   valid_from = "2020-01-01",
@@ -453,7 +453,7 @@ db_dataset_trim_history <- function(con,
 #' # different versions are stored with the same key
 #' ch.kof.barometer <- kof_ts["baro_2019m11"]
 #' names(ch.kof.barometer) <- c("ch.kof.barometer")
-#' store_time_series(
+#' db_ts_store(
 #'   con = connection,
 #'   ch.kof.barometer,
 #'   valid_from = "2019-12-01",
@@ -462,7 +462,7 @@ db_dataset_trim_history <- function(con,
 #'
 #' ch.kof.barometer <- kof_ts["baro_2019m12"]
 #' names(ch.kof.barometer) <- c("ch.kof.barometer")
-#' store_time_series(
+#' db_ts_store(
 #'   con = connection,
 #'   ch.kof.barometer,
 #'   valid_from = "2020-01-01",

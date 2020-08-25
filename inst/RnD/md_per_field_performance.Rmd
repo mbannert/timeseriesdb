@@ -65,7 +65,7 @@ con <- connect_to_test_db()
 
 class(tsl) <- c("tslist", "list")
 
-store_time_series(con, tsl, "public", Sys.Date(), Sys.Date(), "timeseries")
+db_ts_store(con, tsl, "public", Sys.Date(), Sys.Date(), "timeseries")
 ```
 
 ```{r, bench_branch}

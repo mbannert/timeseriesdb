@@ -15,10 +15,10 @@
 #' @examples
 #'
 #' \dontrun{
-#' store_time_series(con = connection, zrh_airport, schema = "schema")
-#' store_time_series(con = connection, kof_ts, schema = "schema")
+#' db_ts_store(con = connection, zrh_airport, schema = "schema")
+#' db_ts_store(con = connection, kof_ts, schema = "schema")
 #'
-#' db_ts_add_to_collection(
+#' db_collection_add_ts(
 #'   con = connection,
 #'   collection_name = "barometer and departures zurich",
 #'   ts_keys = c(
@@ -29,7 +29,7 @@
 #'   schema = "schema"
 #' )
 #' }
-db_ts_add_to_collection <- function(con,
+db_collection_add_ts <- function(con,
                               collection_name,
                               ts_keys,
                               description = NULL,
@@ -79,10 +79,10 @@ db_ts_add_to_collection <- function(con,
 #' @examples
 #'
 #' \dontrun{
-#' store_time_series(con = connection, zrh_airport, schema = "schema")
-#' store_time_series(con = connection, kof_ts, schema = "schema")
+#' db_ts_store(con = connection, zrh_airport, schema = "schema")
+#' db_ts_store(con = connection, kof_ts, schema = "schema")
 #'
-#' db_ts_add_to_collection(
+#' db_collection_add_ts(
 #'   con = connection,
 #'   collection_name = "barometer and departures zurich",
 #'   ts_keys = c(
@@ -93,14 +93,14 @@ db_ts_add_to_collection <- function(con,
 #'   schema = "schema"
 #' )
 #'
-#' db_ts_remove_from_collection(
+#' db_collection_remove_ts(
 #'   con = connection,
 #'   collection_name = "barometer and departures zurich",
 #'   ts_keys = "ch.zrh_airport.departure.total",
 #'   schema = "schema"
 #' )
 #' }
-db_ts_remove_from_collection <- function(con,
+db_collection_remove_ts <- function(con,
                                          collection_name,
                                          ts_keys,
                                          user = Sys.info()["user"],
@@ -146,10 +146,10 @@ db_ts_remove_from_collection <- function(con,
 #' @examples
 #'
 #' \dontrun{
-#' store_time_series(con = connection, zrh_airport, schema = "schema")
-#' store_time_series(con = connection, kof_ts, schema = "schema")
+#' db_ts_store(con = connection, zrh_airport, schema = "schema")
+#' db_ts_store(con = connection, kof_ts, schema = "schema")
 #'
-#' db_ts_add_to_collection(
+#' db_collection_add_ts(
 #'   con = connection,
 #'   collection_name = "barometer and departures zurich",
 #'   ts_keys = c(
@@ -196,11 +196,11 @@ db_collection_delete <- function(con,
 #' \dontrun{
 #' ts1 <- list(ts(rnorm(100), start = c(1990, 1), frequency = 4))
 #' names(ts1) <- c("ts1")
-#' store_time_series(con = connection, ts1, schema = "schema")
-#' store_time_series(con = connection, zrh_airport, schema = "schema")
-#' store_time_series(con = connection, kof_ts, schema = "schema")
+#' db_ts_store(con = connection, ts1, schema = "schema")
+#' db_ts_store(con = connection, zrh_airport, schema = "schema")
+#' db_ts_store(con = connection, kof_ts, schema = "schema")
 #'
-#' db_ts_add_to_collection(
+#' db_collection_add_ts(
 #'   con = connection,
 #'   collection_name = "barometer and departures zurich",
 #'   ts_keys = c(
@@ -211,7 +211,7 @@ db_collection_delete <- function(con,
 #'   schema = "schema"
 #' )
 #'
-#' db_ts_add_to_collection(
+#' db_collection_add_ts(
 #'   con = connection,
 #'   collection_name = "ts1 and departures zurich",
 #'   ts_keys = c(
@@ -251,10 +251,10 @@ db_collection_list <- function(con,
 #'
 #' \dontrun{
 #' 
-#' store_time_series(con = connection, zrh_airport, schema = "schema")
-#' store_time_series(con = connection, kof_ts, schema = "schema")
+#' db_ts_store(con = connection, zrh_airport, schema = "schema")
+#' db_ts_store(con = connection, kof_ts, schema = "schema")
 #'
-#' db_ts_add_to_collection(
+#' db_collection_add_ts(
 #'   con = connection,
 #'   collection_name = "barometer and departures zurich",
 #'   ts_keys = c(

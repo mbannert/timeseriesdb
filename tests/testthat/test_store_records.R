@@ -32,7 +32,7 @@ names_to_test <- setdiff(main_names, c("id", "created_by", "created_at"))
 # dbExecute(con_admin, "DELETE FROM tsdb_test.timeseries_main")
 # dbExecute(con_admin, "DELETE FROM tsdb_test.catalog")
 #
-# store_time_series(con_writer,
+# db_ts_store(con_writer,
 #                   tsl,
 #                   "tsdb_test_access_public",
 #                   valid_from = "2019-01-01",
@@ -42,7 +42,7 @@ names_to_test <- setdiff(main_names, c("id", "created_by", "created_at"))
 # catalog_after_insert_1 <- dbGetQuery(con_admin, "SELECT * FROM tsdb_test.catalog ORDER BY ts_key")
 # main_after_insert_1 <- dbGetQuery(con_admin, "SELECT * FROM tsdb_test.timeseries_main ORDER BY ts_key, validity")
 #
-# store_time_series(con_writer,
+# db_ts_store(con_writer,
 #                   tsl,
 #                   "tsdb_test_access_public",
 #                   valid_from = "2019-02-01",
@@ -52,7 +52,7 @@ names_to_test <- setdiff(main_names, c("id", "created_by", "created_at"))
 # catalog_after_insert_2 <- dbGetQuery(con_admin, "SELECT * FROM tsdb_test.catalog ORDER BY ts_key")
 # main_after_insert_2 <- dbGetQuery(con_admin, "SELECT * FROM tsdb_test.timeseries_main ORDER BY ts_key, validity")
 #
-# store_time_series(con_writer,
+# db_ts_store(con_writer,
 #                   tsl,
 #                   "tsdb_test_access_public",
 #                   valid_from = "2019-03-01",
@@ -62,7 +62,7 @@ names_to_test <- setdiff(main_names, c("id", "created_by", "created_at"))
 # catalog_after_insert_3 <- dbGetQuery(con_admin, "SELECT * FROM tsdb_test.catalog ORDER BY ts_key")
 # main_after_insert_3 <- dbGetQuery(con_admin, "SELECT * FROM tsdb_test.timeseries_main ORDER BY ts_key, validity")
 #
-# store_time_series(con_writer,
+# db_ts_store(con_writer,
 #                   ts_single,
 #                   "tsdb_test_access_public",
 #                   valid_from = "2020-01-01",
@@ -72,7 +72,7 @@ names_to_test <- setdiff(main_names, c("id", "created_by", "created_at"))
 # catalog_after_insert_single <- dbGetQuery(con_admin, "SELECT * FROM tsdb_test.catalog ORDER BY ts_key")
 # main_after_insert_single <- dbGetQuery(con_admin, "SELECT * FROM tsdb_test.timeseries_main ORDER BY ts_key, validity")
 #
-# store_time_series(con_writer,
+# db_ts_store(con_writer,
 #                   xts_single,
 #                   "tsdb_test_access_public",
 #                   valid_from = "2020-01-01",
@@ -82,7 +82,7 @@ names_to_test <- setdiff(main_names, c("id", "created_by", "created_at"))
 # catalog_after_insert_single_xts <- dbGetQuery(con_admin, "SELECT * FROM tsdb_test.catalog ORDER BY ts_key")
 # main_after_insert_single_xts <- dbGetQuery(con_admin, "SELECT * FROM tsdb_test.timeseries_main ORDER BY ts_key, validity")
 #
-# store_time_series(con_writer,
+# db_ts_store(con_writer,
 #                   tsl_update,
 #                   "tsdb_test_access_public",
 #                   valid_from = "2019-03-01",
@@ -111,7 +111,7 @@ names_to_test <- setdiff(main_names, c("id", "created_by", "created_at"))
 load("../testdata/store_records_data.RData")
 
 test_with_fresh_db(con_admin, "reader may not store", {
-  expect_error(store_time_series(con_reader,
+  expect_error(db_ts_store(con_reader,
                                  tsl,
                                  "tsdb_test_access_public",
                                  valid_from = "2019-01-01",
@@ -121,7 +121,7 @@ test_with_fresh_db(con_admin, "reader may not store", {
 })
 
 test_with_fresh_db(con_admin, "It returns a status json", {
-  out <- store_time_series(con_writer,
+  out <- db_ts_store(con_writer,
                            tsl,
                            "tsdb_test_access_public",
                            valid_from = "2019-01-01",
@@ -132,7 +132,7 @@ test_with_fresh_db(con_admin, "It returns a status json", {
 })
 
 test_with_fresh_db(con_admin, hard_reset = TRUE, "Inserts produce valid state", {
-  store_time_series(con_writer,
+  db_ts_store(con_writer,
                     tsl,
                     "tsdb_test_access_public",
                     valid_from = "2019-01-01",
@@ -150,7 +150,7 @@ test_with_fresh_db(con_admin, hard_reset = TRUE, "Inserts produce valid state", 
     main_after_insert_1[, names_to_test]
   )
 
-  store_time_series(con_writer,
+  db_ts_store(con_writer,
                     tsl,
                     "tsdb_test_access_public",
                     valid_from = "2019-02-01",
@@ -165,7 +165,7 @@ test_with_fresh_db(con_admin, hard_reset = TRUE, "Inserts produce valid state", 
     main_after_insert_2[, names_to_test]
   )
 
-  store_time_series(con_writer,
+  db_ts_store(con_writer,
                     tsl,
                     "tsdb_test_access_public",
                     valid_from = "2019-03-01",
@@ -180,7 +180,7 @@ test_with_fresh_db(con_admin, hard_reset = TRUE, "Inserts produce valid state", 
     main_after_insert_3[, names_to_test]
   )
 
-  store_time_series(con_writer,
+  db_ts_store(con_writer,
                     ts_single,
                     "tsdb_test_access_public",
                     valid_from = "2020-01-01",
@@ -192,7 +192,7 @@ test_with_fresh_db(con_admin, hard_reset = TRUE, "Inserts produce valid state", 
     main_after_insert_single[, names_to_test]
   )
 
-  store_time_series(con_writer,
+  db_ts_store(con_writer,
                     xts_single,
                     "tsdb_test_access_public",
                     valid_from = "2020-01-01",
@@ -208,7 +208,7 @@ test_with_fresh_db(con_admin, hard_reset = TRUE, "Inserts produce valid state", 
 test_with_fresh_db(con_admin, hard_reset = TRUE, "Inserts with plain list", {
   l <- unclass(tsl)
 
-  store_time_series(con_writer,
+  db_ts_store(con_writer,
                     l,
                     "tsdb_test_access_public",
                     valid_from = "2019-01-01",
@@ -228,25 +228,25 @@ test_with_fresh_db(con_admin, hard_reset = TRUE, "Inserts with plain list", {
 })
 
 test_with_fresh_db(con_admin, hard_reset = TRUE, "storing series with invalid vintages is an error", {
-  store_time_series(con_writer,
+  db_ts_store(con_writer,
                     tsl,
                     "tsdb_test_access_public",
                     valid_from = "2019-01-01",
                     release_date = "2019-01-02",
                     schema = "tsdb_test")
-  store_time_series(con_writer,
+  db_ts_store(con_writer,
                     tsl,
                     "tsdb_test_access_public",
                     valid_from = "2019-02-01",
                     release_date = "2019-02-02",
                     schema = "tsdb_test")
-  store_time_series(con_writer,
+  db_ts_store(con_writer,
                     tsl,
                     "tsdb_test_access_public",
                     valid_from = "2019-03-01",
                     release_date = "2019-03-02",
                     schema = "tsdb_test")
-  failed <- store_time_series(con_writer,
+  failed <- db_ts_store(con_writer,
                               tsl[1],
                               "public",
                               valid_from = "2019-02-01",
@@ -258,28 +258,28 @@ test_with_fresh_db(con_admin, hard_reset = TRUE, "storing series with invalid vi
 })
 
 test_with_fresh_db(con_admin, hard_reset = TRUE, "storing with edge vintage causes update", {
-  store_time_series(con_writer,
+  db_ts_store(con_writer,
                     tsl,
                     "tsdb_test_access_public",
                     valid_from = "2019-01-01",
                     release_date = "2019-01-02",
                     schema = "tsdb_test")
 
-  store_time_series(con_writer,
+  db_ts_store(con_writer,
                     tsl,
                     "tsdb_test_access_public",
                     valid_from = "2019-02-01",
                     release_date = "2019-02-02",
                     schema = "tsdb_test")
 
-  store_time_series(con_writer,
+  db_ts_store(con_writer,
                     tsl,
                     "tsdb_test_access_public",
                     valid_from = "2019-03-01",
                     release_date = "2019-03-02",
                     schema = "tsdb_test")
 
-  store_time_series(con_writer,
+  db_ts_store(con_writer,
                     tsl_update,
                     "tsdb_test_access_public",
                     valid_from = "2019-03-01",
@@ -287,14 +287,14 @@ test_with_fresh_db(con_admin, hard_reset = TRUE, "storing with edge vintage caus
                     schema = "tsdb_test")
 
   # TODO: disentangle these tests
-  store_time_series(con_writer,
+  db_ts_store(con_writer,
                     ts_single,
                     "tsdb_test_access_public",
                     valid_from = "2020-01-01",
                     release_date = "2020-04-01",
                     schema = "tsdb_test")
 
-  store_time_series(con_writer,
+  db_ts_store(con_writer,
                     xts_single,
                     "tsdb_test_access_public",
                     valid_from = "2020-01-01",
@@ -308,13 +308,13 @@ test_with_fresh_db(con_admin, hard_reset = TRUE, "storing with edge vintage caus
 })
 
 test_with_fresh_db(con_admin, hard_reset = TRUE, "storing with edge vintage causes update of access", {
-  store_time_series(con_writer,
+  db_ts_store(con_writer,
                     tsl,
                     "tsdb_test_access_public",
                     valid_from = "2019-03-01",
                     schema = "tsdb_test")
 
-  store_time_series(con_writer,
+  db_ts_store(con_writer,
                     tsl_update,
                     "tsdb_test_access_main",
                     valid_from = "2019-03-01",
@@ -328,28 +328,28 @@ test_with_fresh_db(con_admin, hard_reset = TRUE, "storing with edge vintage caus
 })
 
 test_with_fresh_db(con_admin, hard_reset = TRUE, "overwriting older vintage is not possible", {
-  store_time_series(con_writer,
+  db_ts_store(con_writer,
                     tsl,
                     "tsdb_test_access_public",
                     valid_from = "2019-01-01",
                     release_date = "2019-01-02",
                     schema = "tsdb_test")
 
-  store_time_series(con_writer,
+  db_ts_store(con_writer,
                     tsl,
                     "tsdb_test_access_public",
                     valid_from = "2019-02-01",
                     release_date = "2019-02-02",
                     schema = "tsdb_test")
 
-  store_time_series(con_writer,
+  db_ts_store(con_writer,
                     tsl,
                     "tsdb_test_access_public",
                     valid_from = "2019-03-01",
                     release_date = "2019-03-02",
                     schema = "tsdb_test")
 
-  store_time_series(con_writer,
+  db_ts_store(con_writer,
                     tsl_update,
                     "tsdb_test_access_public",
                     valid_from = "2019-02-01",
@@ -362,37 +362,37 @@ test_with_fresh_db(con_admin, hard_reset = TRUE, "overwriting older vintage is n
   )
 })
 
-test_with_fresh_db(con_admin, hard_reset = TRUE, "store_time_series uses the default access level", {
-  store_time_series(con_writer, tsl[1], schema = "tsdb_test")
+test_with_fresh_db(con_admin, hard_reset = TRUE, "db_ts_store uses the default access level", {
+  db_ts_store(con_writer, tsl[1], schema = "tsdb_test")
 
   acl <- dbGetQuery(con_admin, "SELECT access FROM tsdb_test.timeseries_main")$access
   dflt <- dbGetQuery(con_admin, "SELECT role FROM tsdb_test.access_levels WHERE is_default")$role
   expect_equal(acl, dflt)
 })
 
-test_with_fresh_db(con_admin, hard_reset = TRUE, "store_time_series without default access level set", {
+test_with_fresh_db(con_admin, hard_reset = TRUE, "db_ts_store without default access level set", {
   dbExecute(con_admin, "UPDATE tsdb_test.access_levels SET is_default = NULL")
 
   expect_error(
-    store_time_series(con_writer, tsl[1], schema = "tsdb_test"),
+    db_ts_store(con_writer, tsl[1], schema = "tsdb_test"),
     "access level supplied"
   )
 })
 
-test_with_fresh_db(con_admin, hard_reset = TRUE, "store_time_series complains about invalid access level", {
-  expect_error(store_time_series(con_writer,
+test_with_fresh_db(con_admin, hard_reset = TRUE, "db_ts_store complains about invalid access level", {
+  expect_error(db_ts_store(con_writer,
                                  tsl,
                                  "my_precious",
                                  schema = "tsdb_test"),
                "a valid access level")
 })
 
-test_with_fresh_db(con_admin, hard_reset = TRUE, "store_time_series with an xts", {
+test_with_fresh_db(con_admin, hard_reset = TRUE, "db_ts_store with an xts", {
   xtsl <- list(
     rtsx = xts(seq(4), order.by = seq(as.Date("2020-01-01"), length.out = 4, by = "1 days"))
   )
 
-  store_time_series(con_writer,
+  db_ts_store(con_writer,
                     xtsl,
                     schema = "tsdb_test")
 

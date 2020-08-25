@@ -45,7 +45,7 @@ db_ts_change_access <- function(con,
 #' @return
 #' @export
 #' @importFrom jsonlite fromJSON
-db_ts_change_access_dataset <- function(con,
+db_dataset_change_access <- function(con,
                                         dataset,
                                         new_access_level,
                                         valid_from = NULL,
@@ -82,7 +82,7 @@ db_ts_change_access_dataset <- function(con,
 #' @return access levels data.frame with columns `role` and `description` and `is_default`
 #' @export
 #'
-db_access_list_levels <- function(con,
+db_access_level_list <- function(con,
                                   schema = "timeseries") {
 
   db_call_function(con,
@@ -98,7 +98,7 @@ db_access_list_levels <- function(con,
 #'
 #' @importFrom jsonlite fromJSON
 #' @export
-db_access_delete_level <- function(con,
+db_access_level_delete <- function(con,
                                    access_level,
                                    schema = "timeseries") {
 
@@ -138,7 +138,7 @@ db_access_delete_level <- function(con,
 #'
 #' @importFrom jsonlite fromJSON
 #' @export
-db_access_create_level <- function(con,
+db_access_level_create <- function(con,
                                    access_level_name,
                                    access_level_description = NULL,
                                    access_level_default = NULL,
@@ -176,7 +176,7 @@ db_access_create_level <- function(con,
 #'
 #' @export
 #' @importFrom jsonlite fromJSON
-db_access_set_default <- function(con,
+db_access_level_set_default <- function(con,
                                   access_level,
                                   schema = "timeseries") {
   out <- db_call_function(con,

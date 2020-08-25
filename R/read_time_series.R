@@ -13,10 +13,10 @@
 #' @examples
 #'
 #' \dontrun{
-#' store_time_series(con = connection, zrh_airport, schema = "schema")
-#' read_time_series(con = connection, ts_keys = "ch.zrh_airport.departure.total", schema = "schema")
+#' db_ts_store(con = connection, zrh_airport, schema = "schema")
+#' db_ts_read(con = connection, ts_keys = "ch.zrh_airport.departure.total", schema = "schema")
 #' }
-read_time_series <- function(con,
+db_ts_read <- function(con,
                              ts_keys,
                              valid_on = NULL,
                              regex = FALSE,
@@ -70,24 +70,24 @@ read_time_series <- function(con,
 #' # different versions are stored with the same key
 #' ch.kof.barometer <- kof_ts["baro_2019m11"]
 #' names(ch.kof.barometer) <- c("ch.kof.barometer")
-#' store_time_series(con = connection,
+#' db_ts_store(con = connection,
 #'                   ch.kof.barometer,
 #'                   valid_from = "2019-12-01",
 #'                   schema = "schema")
 #'
 #' ch.kof.barometer <- kof_ts["baro_2019m12"]
 #' names(ch.kof.barometer) <- c("ch.kof.barometer")
-#' store_time_series(con = connection,
+#' db_ts_store(con = connection,
 #'                   ch.kof.barometer,
 #'                   valid_from = "2020-01-01",
 #'                   schema = "schema")
 #'
 #' # Reading all versions
-#' read_time_series_history(con = connection,
+#' db_ts_read_history(con = connection,
 #'                          ts_key = "ch.kof.barometer",
 #'                          schema = "schema")
 #' }
-read_time_series_history <- function(con,
+db_ts_read_history <- function(con,
                                      ts_key,
                                      respect_release_date = FALSE,
                                      schema = "timeseries") {
@@ -176,10 +176,10 @@ db_dataset_read_ts <- function(con,
 #'
 #' \dontrun{
 #'
-#' store_time_series(con = connection, zrh_airport, schema = "schema")
-#' store_time_series(con = connection, kof_ts, schema = "schema")
+#' db_ts_store(con = connection, zrh_airport, schema = "schema")
+#' db_ts_store(con = connection, kof_ts, schema = "schema")
 #'
-#' db_ts_add_to_collection(
+#' db_collection_add_ts(
 #'   con = connection,
 #'   collection_name = "barometer and departures zurich",
 #'   ts_keys = c(
@@ -247,7 +247,7 @@ get_tsl_from_res <- function(res, chunksize = 10000, id.col = "ts_key") {
 #' @examples
 #'
 #' \dontrun{
-#' store_time_series(con = connection, zrh_airport, schema = "schema")
+#' db_ts_store(con = connection, zrh_airport, schema = "schema")
 #'
 #' # get last update for one key
 #' db_ts_get_last_update(

@@ -26,12 +26,12 @@ another version of the very same time series. We can simply store
 
 ```{r, eval=FALSE}
 data("kof_ts")
-store_time_series(con,
+db_ts_store(con,
                   list(ch.kof.barometer = kof_ts$baro_2019m10),
                   valid_from="2019-10-30",
                   schema = "tsdb_test")
 
-store_time_series(con,
+db_ts_store(con,
                   list(ch.kof.barometer = kof_ts$baro_2019m11),
                   valid_from="2019-11-30",
                   schema = "tsdb_test")
@@ -41,7 +41,7 @@ store_time_series(con,
 and read them under the same key. 
 
 ```{r, eval=FALSE}
-read_time_series(con, "ch.kof.barometer",
+db_ts_read(con, "ch.kof.barometer",
                  schema = "tsdb_test")
 
 
@@ -52,7 +52,7 @@ specified. You can also get read the entire history which returns a list of time
 that contains version of time series. List elements will be named according validity thresholds. 
 
 ```{r,eval=FALSE}
-tsl <- read_time_series_history(con,"ch.kof.barometer",
+tsl <- db_ts_read_history(con,"ch.kof.barometer",
                                 schema = "tsdb_test")
 ```
 
@@ -107,7 +107,7 @@ Cancellation of past releases is not possible, but release can be updated with [
 db_get_latest_release_for_set(con, "ch.zrh_airport",schema = "tsdb_test")
 ```
 
-Similarily use [db_release_get_next()](../reference/db_release_get_next.html) to get the next upcoming
+Similarily use [db_ts_next_release()](../reference/db_ts_next_release.html) to get the next upcoming
 release. 
 
 
@@ -133,7 +133,7 @@ db_collection_add(con,
                   schema = "tsdb_test")
 ```
 
-You can remove keys from a collection using [db_ts_remove_from_collection()](../reference/db_ts_remove_from_collection.html) and 
+You can remove keys from a collection using [db_collection_remove_ts()](../reference/db_collection_remove_ts.html) and 
 delete an entire collection with [db_collection_delete()](../reference/db_collection_delete).
 
 

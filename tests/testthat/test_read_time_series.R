@@ -1,6 +1,6 @@
 # And now for something completely tricky... *liberty bell*
 
-context("read_time_series")
+context("db_ts_read")
 
 tsl_state_0 <- list(
   rts1 = ts(rep(1.9, 10), 2019, frequency = 4)
@@ -41,22 +41,22 @@ if(is_test_db_reachable()) {
 # read ts -----------------------------------------------------------------
 
 test_with_fresh_db(con_admin, "public reader may not read main series", {
-  tsl_read <- read_time_series(con_reader_public, "rts1", schema = "tsdb_test")
+  tsl_read <- db_ts_read(con_reader_public, "rts1", schema = "tsdb_test")
   expect_length(tsl_read, 0)
 })
 
 test_with_fresh_db(con_admin, "series with no access get skipped", {
-  tsl_read <- read_time_series(con_reader_public, c("rts1", "rtsp"), schema = "tsdb_test")
+  tsl_read <- db_ts_read(con_reader_public, c("rts1", "rtsp"), schema = "tsdb_test")
   expect_equal(tsl_read, tsl_pblc)
 })
 
 test_with_fresh_db(con_admin, "by default it reads the most recent valid vintage", {
-  tsl_read <- read_time_series(con_reader_main, "rts1", schema = "tsdb_test")
+  tsl_read <- db_ts_read(con_reader_main, "rts1", schema = "tsdb_test")
   expect_equal(tsl_read, tsl_state_2)
 })
 
 test_with_fresh_db(con_admin, "by default it reads the most recent valid vintage but with respecting rls date", {
-  tsl_read <- read_time_series(con_reader_main,
+  tsl_read <- db_ts_read(con_reader_main,
                                "rts1",
                                respect_release_date = TRUE,
                                schema = "tsdb_test")
@@ -64,13 +64,13 @@ test_with_fresh_db(con_admin, "by default it reads the most recent valid vintage
 })
 
 test_with_fresh_db(con_admin, "reading desired vintages works", {
-  tsl_read_1 <- read_time_series(con_reader_main,
+  tsl_read_1 <- db_ts_read(con_reader_main,
                                  "rts1",
                                  valid_on = Sys.Date() - 4,
                                  schema = "tsdb_test")
   expect_equal(tsl_read_1, tsl_state_0)
 
-  tsl_read_2 <- read_time_series(con_reader_main,
+  tsl_read_2 <- db_ts_read(con_reader_main,
                                  "rts1",
                                  valid_on = Sys.Date() - 2,
                                  schema = "tsdb_test")
@@ -78,7 +78,7 @@ test_with_fresh_db(con_admin, "reading desired vintages works", {
 })
 
 test_with_fresh_db(con_admin, "reading vintages, respecting release date", {
-  tsl_read <- read_time_series(con_reader_main,
+  tsl_read <- db_ts_read(con_reader_main,
                                "rts1",
                                valid_on = Sys.Date() - 2,
                                respect_release_date = TRUE,
@@ -87,7 +87,7 @@ test_with_fresh_db(con_admin, "reading vintages, respecting release date", {
 })
 
 test_with_fresh_db(con_admin, "reading via regex works", {
-  tsl_read <- read_time_series(con_reader_main,
+  tsl_read <- db_ts_read(con_reader_main,
                                "^rts",
                                regex = TRUE,
                                schema = "tsdb_test")
@@ -95,7 +95,7 @@ test_with_fresh_db(con_admin, "reading via regex works", {
 })
 
 test_with_fresh_db(con_admin, "reading an xts", {
-  tsl_read <- read_time_series(con_reader_main,
+  tsl_read <- db_ts_read(con_reader_main,
                                "rtsx",
                                schema = "tsdb_test")
   expect_equal(tsl_read, tslx)

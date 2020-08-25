@@ -8,7 +8,7 @@ test_that("defaults", {
     Sys.info = mock(list(user = "bobby"), cycle = TRUE),
     dbConnect = fake_dbConnect,
     {
-      db_create_connection("mydb", passwd = "password")
+      db_connection_create("mydb", passwd = "password")
 
       expect_args(fake_dbConnect,
                   1,
@@ -32,7 +32,7 @@ test_that("param pass thru", {
     Sys.info = mock(list(user = "bobby")),
     dbConnect = fake_dbConnect,
     {
-      db_create_connection("mydb",
+      db_connection_create("mydb",
                            passwd = "password",
                            user = "Jane",
                            host = "remotehost",
@@ -63,7 +63,7 @@ test_that("password from env", {
     dbConnect = fake_dbConnect,
     Sys.getenv = fake_sys.getenv,
     {
-      db_create_connection("mydb",
+      db_connection_create("mydb",
                            passwd = "PG_TEST_PASSWORD",
                            passwd_from_env = TRUE)
 
@@ -84,7 +84,7 @@ test_that("password from env, missing", {
     Sys.getenv = mock(""),
     {
       expect_error(
-        db_create_connection("mydb",
+        db_connection_create("mydb",
                              passwd = "PG_TEST_PASSWORD",
                              passwd_from_env = TRUE),
         "Could not find password"
@@ -103,7 +103,7 @@ test_that("asking for password", {
     .rs.askForPassword = mock("isleofyou"),
     commandArgs = mock("RStudio"),
     {
-      db_create_connection("mydb")
+      db_connection_create("mydb")
 
       expect_equal(
         mock_args(fake_dbConnect)[[1]]$password,
@@ -124,7 +124,7 @@ test_that("getting password from file", {
     dbConnect = fake_dbConnect,
     readPasswordFile = fake_readlines,
     {
-      db_create_connection("mydb",
+      db_connection_create("mydb",
                            passwd = "my/password/file",
                            passwd_from_file = TRUE,
                            line_no = 2)
@@ -149,7 +149,7 @@ test_that("password from file, line no too big", {
     readPasswordFile = fake_readlines,
     {
       expect_error(
-        db_create_connection("mydb",
+        db_connection_create("mydb",
                               passwd = "pwdfile",
                               passwd_from_file = TRUE,
                               line_no = 10),
@@ -164,7 +164,7 @@ test_that("password from file, nonexistent file", {
     file.exists = mock(FALSE),
     {
       expect_error(
-        db_create_connection("mydb",
+        db_connection_create("mydb",
                              passwd = "bla",
                              passwd_from_file = TRUE),
         "exist"

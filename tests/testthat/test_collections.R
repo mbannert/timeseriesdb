@@ -7,9 +7,9 @@ if(is_test_db_reachable()) {
 }
 
 
-# db_ts_add_to_collection -------------------------------------------------------
-test_with_fresh_db(con_admin, "db_ts_add_to_collection returns OK", {
-  result <- db_ts_add_to_collection(con_writer,
+# db_collection_add_ts -------------------------------------------------------
+test_with_fresh_db(con_admin, "db_collection_add_ts returns OK", {
+  result <- db_collection_add_ts(con_writer,
                               "tests first",
                               "ts4",
                               schema = "tsdb_test")
@@ -19,15 +19,15 @@ test_with_fresh_db(con_admin, "db_ts_add_to_collection returns OK", {
   expect_equal(result$status, "ok")
 })
 
-test_with_fresh_db(con_admin, "db_ts_add_to_collection warns if keys not in catalog", {
-  expect_warning(db_ts_add_to_collection(con_writer,
+test_with_fresh_db(con_admin, "db_collection_add_ts warns if keys not in catalog", {
+  expect_warning(db_collection_add_ts(con_writer,
                                    "tests first",
                                    "tsx",
                                    schema = "tsdb_test"), "specific collection")
 })
 
-test_with_fresh_db(con_admin, "db_ts_add_to_collection returns warning keys not in catalog", {
-  result <- suppressWarnings(db_ts_add_to_collection(con_writer,
+test_with_fresh_db(con_admin, "db_collection_add_ts returns warning keys not in catalog", {
+  result <- suppressWarnings(db_collection_add_ts(con_writer,
                                                "tests first",
                                                "tsx",
                                                schema = "tsdb_test"))
@@ -38,8 +38,8 @@ test_with_fresh_db(con_admin, "db_ts_add_to_collection returns warning keys not 
   expect_equal(result$invalid_keys, "tsx")
 })
 
-test_with_fresh_db(con_admin, "db_ts_add_to_collection add keys to existing", {
-  db_ts_add_to_collection(con_writer, "tests first", "vts1", user = "test",
+test_with_fresh_db(con_admin, "db_collection_add_ts add keys to existing", {
+  db_collection_add_ts(con_writer, "tests first", "vts1", user = "test",
                     schema = "tsdb_test")
 
   result <- dbGetQuery(con_admin, "SELECT * FROM tsdb_test.collect_catalog
@@ -51,8 +51,8 @@ test_with_fresh_db(con_admin, "db_ts_add_to_collection add keys to existing", {
   expect_setequal(result$ts_key, c("ts1", "ts2", "ts3", "vts1"))
 })
 
-test_with_fresh_db(con_admin, "db_ts_add_to_collection add new collection & keys", {
-  db_ts_add_to_collection(con_writer,
+test_with_fresh_db(con_admin, "db_collection_add_ts add new collection & keys", {
+  db_collection_add_ts(con_writer,
                     "tests new",
                     c("vts1", "vts2"),
                     user = "test",
@@ -84,7 +84,7 @@ test_with_fresh_db(con_admin, "db_ts_add_to_collection add new collection & keys
 })
 
 test_with_fresh_db(con_admin, "reader may create sets and add keys", {
-  db_ts_add_to_collection(con_reader,
+  db_collection_add_ts(con_reader,
                     "tests new",
                     c("vts1", "vts2"),
                     user = "test",
@@ -119,8 +119,8 @@ test_with_fresh_db(con_admin, "reader may create sets and add keys", {
 
 context("collections - remove")
 
-test_with_fresh_db(con_admin, "db_ts_remove_from_collection removing some keys returns ok", {
-  result <- db_ts_remove_from_collection(con_writer,
+test_with_fresh_db(con_admin, "db_collection_remove_ts removing some keys returns ok", {
+  result <- db_collection_remove_ts(con_writer,
                                  collection_name = "tests first",
                                  ts_keys = "ts1",
                                  user = "test",
@@ -130,18 +130,18 @@ test_with_fresh_db(con_admin, "db_ts_remove_from_collection removing some keys r
   expect_equal(result$status, "ok")
 })
 
-test_with_fresh_db(con_admin, "db_ts_remove_from_collection warns if combo not found", {
+test_with_fresh_db(con_admin, "db_collection_remove_ts warns if combo not found", {
 
 
-  expect_error(db_ts_remove_from_collection(con_writer,
+  expect_error(db_collection_remove_ts(con_writer,
                                     collection_name = "not a collection",
                                     ts_keys = c("does", "it", "matter?"),
                                     user = "alexandra_maine",
                                     schema = "tsdb_test"), "not exist")
 })
 
-test_with_fresh_db(con_admin, "db_ts_remove_from_collection also removing collection", {
-  result <- db_ts_remove_from_collection(con_writer,
+test_with_fresh_db(con_admin, "db_collection_remove_ts also removing collection", {
+  result <- db_collection_remove_ts(con_writer,
                                  collection_name = "tests second",
                                  ts_keys = c("ts4", "ts5"),
                                  user = "test",
@@ -152,8 +152,8 @@ test_with_fresh_db(con_admin, "db_ts_remove_from_collection also removing collec
   expect_equal(result$status, "notice")
 })
 
-test_with_fresh_db(con_admin, "db_ts_remove_from_collection state", {
-  db_ts_remove_from_collection(con_writer,
+test_with_fresh_db(con_admin, "db_collection_remove_ts state", {
+  db_collection_remove_ts(con_writer,
                        collection_name = "tests first",
                        ts_keys = c("ts1"),
                        user = "test",
@@ -172,8 +172,8 @@ test_with_fresh_db(con_admin, "db_ts_remove_from_collection state", {
   expect_equal(nrow(result_collections), 1)
 })
 
-test_with_fresh_db(con_admin, "db_ts_remove_from_collection with remove collection state", {
-  db_ts_remove_from_collection(con_writer,
+test_with_fresh_db(con_admin, "db_collection_remove_ts with remove collection state", {
+  db_collection_remove_ts(con_writer,
                        collection_name = "tests first",
                        ts_keys = c("ts1", "ts2", "ts3"),
                        user = "test",
@@ -193,7 +193,7 @@ test_with_fresh_db(con_admin, "db_ts_remove_from_collection with remove collecti
 })
 
 test_with_fresh_db(con_admin, "reader may remove from collections", {
-  db_ts_remove_from_collection(con_reader,
+  db_collection_remove_ts(con_reader,
                        collection_name = "tests first",
                        ts_keys = c("ts1"),
                        user = "test",

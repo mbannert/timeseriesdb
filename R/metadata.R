@@ -124,7 +124,7 @@ print.tsmeta <- function(x, ...) {
 #'
 #'
 #' @param metadata object of class tsmeta that contains the metadata to be stored.
-#' @param valid_from \strong{character} representation of a date in the form of 'YYYY-MM-DD'. It should always be explicitly specified.  The function \code{\link{db_meta_get_last_update}} checks the last time meta information was updated.
+#' @param valid_from \strong{character} representation of a date in the form of 'YYYY-MM-DD'. It should always be explicitly specified.  The function \code{\link{db_metadata_last_update}} checks the last time meta information was updated.
 #' @param on_conflict \strong{character} representing either \code{update}: add new fields and update existing ones or "overwrite": completely replace existing record.
 #'
 #' @inheritParams param_defs
@@ -140,7 +140,7 @@ print.tsmeta <- function(x, ...) {
 #' \dontrun{
 #' sum("a")
 #' }
-db_meta_store <- function(con,
+db_metadata_store <- function(con,
                           metadata,
                           valid_from,
                           locale = NULL,
@@ -218,7 +218,7 @@ db_meta_store <- function(con,
 #' @return list of tsmeta objects.
 #' @importFrom jsonlite fromJSON
 #' @export
-db_meta_read <- function(con,
+db_metadata_read <- function(con,
                                 ts_keys,
                                 valid_on = NULL,
                                 regex = FALSE,
@@ -273,7 +273,7 @@ db_meta_read <- function(con,
 #'
 #' @return
 #' @export
-db_collection_read_meta <- function(con,
+db_collection_read_metadata <- function(con,
                                     collection_name,
                                     collection_owner,
                                     valid_on = NULL,
@@ -326,7 +326,7 @@ db_collection_read_meta <- function(con,
 #' @return
 #' @export
 
-db_dataset_read_meta <- function(con,
+db_dataset_read_metadata <- function(con,
                                  dataset_id,
                                  valid_on = NULL,
                                  locale = NULL,
