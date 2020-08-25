@@ -33,7 +33,7 @@ meta_fixture_df <- function(ts_key,
 }
 
 test_that("db_store_metadata does not accept invalid on_conflict", {
-  expect_error(db_meta_store("con",
+  expect_error(db_metadata_store("con",
                                     "stuff",
                                     on_conflict = "call the police"),
                "one of")
@@ -55,7 +55,7 @@ test_that("is passes correct args to db_call_function unlocalized", {
     dbExecute = mock(),
     db_call_function = fake_db_call_function,
     {
-      db_meta_store("con",
+      db_metadata_store("con",
                            as.tsmeta.list(
                              list(
                                ts1 = list(
@@ -79,7 +79,7 @@ test_that("is passes correct args to db_call_function unlocalized", {
 
 # return values -----------------------------------------------------------
 test_with_fresh_db(con_admin, "reader may not store metadata", {
-  expect_error(db_meta_store(con_reader,
+  expect_error(db_metadata_store(con_reader,
                                     create_tsmeta(ts1 = list(field = "value")),
                                     valid_from = "2020-06-10",
                                     locale = "de",
@@ -87,8 +87,8 @@ test_with_fresh_db(con_admin, "reader may not store metadata", {
                "sufficient privileges")
 })
 
-test_with_fresh_db(con_admin, "db_meta_store localized returns 'ok'", {
-  result <- db_meta_store(con_writer,
+test_with_fresh_db(con_admin, "db_metadata_store localized returns 'ok'", {
+  result <- db_metadata_store(con_writer,
                                  create_tsmeta(ts1 = list(field = "value")),
                                  valid_from = "2020-01-01",
                                  locale = "de",
@@ -100,9 +100,9 @@ test_with_fresh_db(con_admin, "db_meta_store localized returns 'ok'", {
   )
 })
 
-test_with_fresh_db(con_admin, "db_meta_store localized warns on missing keys", {
+test_with_fresh_db(con_admin, "db_metadata_store localized warns on missing keys", {
   expect_warning(
-    db_meta_store(con_writer,
+    db_metadata_store(con_writer,
                          create_tsmeta(tsx = list(field = "value")),
                          valid_from = "2020-01-01",
                          locale = "de",
@@ -110,9 +110,9 @@ test_with_fresh_db(con_admin, "db_meta_store localized warns on missing keys", {
     "catalog")
 })
 
-test_with_fresh_db(con_admin, "db_meta_store localized missing key warning contents", {
+test_with_fresh_db(con_admin, "db_metadata_store localized missing key warning contents", {
   result <- suppressWarnings(
-    db_meta_store(con_writer,
+    db_metadata_store(con_writer,
                          create_tsmeta(tsx = list(field = "value")),
                          valid_from = "2020-01-01",
                          locale = "de",
@@ -133,12 +133,12 @@ test_with_fresh_db(con_admin, "db_meta_store localized missing key warning conte
 })
 
 test_with_fresh_db(con_admin, "storing older vintages is a nono", {
-  db_meta_store(con_writer,
+  db_metadata_store(con_writer,
                        create_tsmeta(ts1 = list(field = "value")),
                        "2020-02-01",
                        "de",
                        schema = "tsdb_test")
-  expect_warning(db_meta_store(con_writer,
+  expect_warning(db_metadata_store(con_writer,
                                       create_tsmeta(ts1 = list(field = "value")),
                                       "2020-01-01",
                                       "de",
@@ -147,12 +147,12 @@ test_with_fresh_db(con_admin, "storing older vintages is a nono", {
 })
 
 test_with_fresh_db(con_admin, "storing older vintages warning contents", {
-  db_meta_store(con_writer,
+  db_metadata_store(con_writer,
                        create_tsmeta(ts1 = list(field = "value")),
                        "2020-02-01",
                        locale = "de",
                        schema = "tsdb_test")
-  result <- suppressWarnings(db_meta_store(con_writer,
+  result <- suppressWarnings(db_metadata_store(con_writer,
                                                   create_tsmeta(ts1 = list(field = "value")),
                                                   "2020-01-01",
                                                   locale = "de",
@@ -173,12 +173,12 @@ test_with_fresh_db(con_admin, "storing older vintages warning contents", {
 })
 
 test_with_fresh_db(con_admin, "invalid keys and invalid vintages", {
-  db_meta_store(con_writer,
+  db_metadata_store(con_writer,
                        create_tsmeta(ts1 = list(field = "value")),
                        "2020-02-01",
                        locale = "de",
                        schema = "tsdb_test")
-  warnings <- capture_warnings(db_meta_store(con_writer,
+  warnings <- capture_warnings(db_metadata_store(con_writer,
                                                     create_tsmeta(ts1 = list(field = "value"),
                                                                   tsx = list(field = "value")),
                                                     "2020-01-01",
@@ -193,8 +193,8 @@ test_with_fresh_db(con_admin, "invalid keys and invalid vintages", {
 # db state ----------------------------------------------------------------
 
 
-test_with_fresh_db(con_admin, "db_meta_store localized stores metadata", {
-  db_meta_store(con_writer,
+test_with_fresh_db(con_admin, "db_metadata_store localized stores metadata", {
+  db_metadata_store(con_writer,
                        create_tsmeta(ts1 = list(field = "value")),
                        valid_from = "2020-01-01",
                        locale = "de",
@@ -209,13 +209,13 @@ test_with_fresh_db(con_admin, "db_meta_store localized stores metadata", {
   )
 })
 
-test_with_fresh_db(con_admin, "db_meta_store localized can add fields", {
-  db_meta_store(con_writer,
+test_with_fresh_db(con_admin, "db_metadata_store localized can add fields", {
+  db_metadata_store(con_writer,
                        create_tsmeta(ts1 = list(field = "value")),
                        valid_from = "2020-01-01",
                        locale = "de",
                        schema = "tsdb_test")
-  db_meta_store(con_writer,
+  db_metadata_store(con_writer,
                        create_tsmeta(ts1 = list(field2 = 3)),
                        valid_from = "2020-01-01",
                        locale = "de",
@@ -231,13 +231,13 @@ test_with_fresh_db(con_admin, "db_meta_store localized can add fields", {
   )
 })
 
-test_with_fresh_db(con_admin, "db_meta_store localized can override fields", {
-  db_meta_store(con_writer,
+test_with_fresh_db(con_admin, "db_metadata_store localized can override fields", {
+  db_metadata_store(con_writer,
                        create_tsmeta(ts1 = list(field = "value")),
                        valid_from = "2020-01-01",
                        locale = "de",
                        schema = "tsdb_test")
-  db_meta_store(con_writer,
+  db_metadata_store(con_writer,
                        create_tsmeta(ts1 = list(field = "new_value")),
                        valid_from = "2020-01-01",
                        locale = "de",
@@ -253,13 +253,13 @@ test_with_fresh_db(con_admin, "db_meta_store localized can override fields", {
   )
 })
 
-test_with_fresh_db(con_admin, "db_meta_store localized can overwrite records", {
-  db_meta_store(con_writer,
+test_with_fresh_db(con_admin, "db_metadata_store localized can overwrite records", {
+  db_metadata_store(con_writer,
                        create_tsmeta(ts1 = list(field = "value")),
                        valid_from = "2020-01-01",
                        locale = "de",
                        schema = "tsdb_test")
-  db_meta_store(con_writer,
+  db_metadata_store(con_writer,
                        create_tsmeta(ts1 = list(other_field = 23)),
                        valid_from = "2020-01-01",
                        locale = "de",
@@ -275,13 +275,13 @@ test_with_fresh_db(con_admin, "db_meta_store localized can overwrite records", {
   )
 })
 
-test_with_fresh_db(con_admin, "db_meta_store localized creates vintages", {
-  db_meta_store(con_writer,
+test_with_fresh_db(con_admin, "db_metadata_store localized creates vintages", {
+  db_metadata_store(con_writer,
                        create_tsmeta(ts1 = list(field = "value")),
                        valid_from = "2020-01-01",
                        locale = "de",
                        schema = "tsdb_test")
-  db_meta_store(con_writer,
+  db_metadata_store(con_writer,
                        create_tsmeta(ts1 = list(field = "vallue")),
                        valid_from = "2020-02-01",
                        locale = "de",
@@ -300,13 +300,13 @@ test_with_fresh_db(con_admin, "db_meta_store localized creates vintages", {
   )
 })
 
-test_with_fresh_db(con_admin, "db_meta_store localized can hold different languages for the same key", {
-  db_meta_store(con_writer,
+test_with_fresh_db(con_admin, "db_metadata_store localized can hold different languages for the same key", {
+  db_metadata_store(con_writer,
                        create_tsmeta(ts1 = list(field = "value")),
                        valid_from = "2020-01-01",
                        locale = "de",
                        schema = "tsdb_test")
-  db_meta_store(con_writer,
+  db_metadata_store(con_writer,
                        create_tsmeta(ts1 = list(field = "valeur")),
                        valid_from = "2020-01-01",
                        locale = "fr",
@@ -340,7 +340,7 @@ test_that("is passes correct args to db_call_function localized", {
     dbExecute = mock(),
     db_call_function = fake_db_call_function,
     {
-      db_meta_store("con",
+      db_metadata_store("con",
                            as.tsmeta.list(
                              list(
                                ts1 = list(
@@ -366,15 +366,15 @@ test_that("is passes correct args to db_call_function localized", {
 # returns -----------------------------------------------------------------
 
 test_with_fresh_db(con_admin, "reader may not store unlocaloized metadata", {
-  expect_error(db_meta_store(con_reader,
+  expect_error(db_metadata_store(con_reader,
                                     create_tsmeta(ts1 = list(field = "value")),
                                     valid_from = "2020-06-10",
                                     schema = "tsdb_test"),
                "sufficient privileges")
 })
 
-test_with_fresh_db(con_admin, "db_meta_store unlocalized returns ok", {
-  result <- db_meta_store(con_writer,
+test_with_fresh_db(con_admin, "db_metadata_store unlocalized returns ok", {
+  result <- db_metadata_store(con_writer,
                                  create_tsmeta(ts1 = list(field = "value")),
                                  "2020-01-01",
                                  schema = "tsdb_test")
@@ -385,9 +385,9 @@ test_with_fresh_db(con_admin, "db_meta_store unlocalized returns ok", {
       status = "ok"))
 })
 
-test_with_fresh_db(con_admin, "db_meta_store unlocalized warns on missing keys", {
+test_with_fresh_db(con_admin, "db_metadata_store unlocalized warns on missing keys", {
   expect_warning(
-    db_meta_store(con_writer,
+    db_metadata_store(con_writer,
                          create_tsmeta(tsx = list(field = "value")),
                          "2020-01-01",
                          schema = "tsdb_test"),
@@ -396,9 +396,9 @@ test_with_fresh_db(con_admin, "db_meta_store unlocalized warns on missing keys",
 
 # These may be overkill
 # testing at least for the structure is valid though as it is public interface
-test_with_fresh_db(con_admin, "db_meta_store unlocalized missing key warning contents", {
+test_with_fresh_db(con_admin, "db_metadata_store unlocalized missing key warning contents", {
   result <- suppressWarnings(
-    db_meta_store(con_writer,
+    db_metadata_store(con_writer,
                          create_tsmeta(tsx = list(field = "value")),
                          "2020-01-01",
                          schema = "tsdb_test"))
@@ -418,11 +418,11 @@ test_with_fresh_db(con_admin, "db_meta_store unlocalized missing key warning con
 })
 
 test_with_fresh_db(con_admin, "storing older vintages is a nono", {
-  db_meta_store(con_writer,
+  db_metadata_store(con_writer,
                        create_tsmeta(ts1 = list(field = "value")),
                        "2020-02-01",
                        schema = "tsdb_test")
-  expect_warning(db_meta_store(con_writer,
+  expect_warning(db_metadata_store(con_writer,
                                       create_tsmeta(ts1 = list(field = "value")),
                                       "2020-01-01",
                                       schema = "tsdb_test"),
@@ -430,11 +430,11 @@ test_with_fresh_db(con_admin, "storing older vintages is a nono", {
 })
 
 test_with_fresh_db(con_admin, "storing older vintages warning contents", {
-  db_meta_store(con_writer,
+  db_metadata_store(con_writer,
                        create_tsmeta(ts1 = list(field = "value")),
                        "2020-02-01",
                        schema = "tsdb_test")
-  result <- suppressWarnings(db_meta_store(con_writer,
+  result <- suppressWarnings(db_metadata_store(con_writer,
                                                   create_tsmeta(ts1 = list(field = "value")),
                                                   "2020-01-01",
                                                   schema = "tsdb_test"))
@@ -454,11 +454,11 @@ test_with_fresh_db(con_admin, "storing older vintages warning contents", {
 })
 
 test_with_fresh_db(con_admin, "invalid keys and invalid vintages", {
-  db_meta_store(con_writer,
+  db_metadata_store(con_writer,
                        create_tsmeta(ts1 = list(field = "value")),
                        "2020-02-01",
                        schema = "tsdb_test")
-  warnings <- capture_warnings(db_meta_store(con_writer,
+  warnings <- capture_warnings(db_metadata_store(con_writer,
                                                     create_tsmeta(ts1 = list(field = "value"),
                                                                   tsx = list(field = "value")),
                                                     "2020-01-01",
@@ -472,8 +472,8 @@ test_with_fresh_db(con_admin, "invalid keys and invalid vintages", {
 # db state ----------------------------------------------------------------
 
 
-test_with_fresh_db(con_admin, "db_meta_store unlocalized stores metadata", {
-  db_meta_store(con_writer,
+test_with_fresh_db(con_admin, "db_metadata_store unlocalized stores metadata", {
+  db_metadata_store(con_writer,
                        create_tsmeta(ts1 = list(field = "value")),
                        "2020-01-01",
                        schema = "tsdb_test")
@@ -487,12 +487,12 @@ test_with_fresh_db(con_admin, "db_meta_store unlocalized stores metadata", {
   )
 })
 
-test_with_fresh_db(con_admin, "db_meta_store unlocalized can add fields", {
-  db_meta_store(con_writer,
+test_with_fresh_db(con_admin, "db_metadata_store unlocalized can add fields", {
+  db_metadata_store(con_writer,
                        create_tsmeta(ts1 = list(field = "value")),
                        "2020-01-01",
                        schema = "tsdb_test")
-  db_meta_store(con_writer,
+  db_metadata_store(con_writer,
                        create_tsmeta(ts1 = list(field2 = 3)),
                        "2020-01-01",
                        on_conflict = "update",
@@ -507,12 +507,12 @@ test_with_fresh_db(con_admin, "db_meta_store unlocalized can add fields", {
   )
 })
 
-test_with_fresh_db(con_admin, "db_meta_store unlocalized can override fields", {
-  db_meta_store(con_writer,
+test_with_fresh_db(con_admin, "db_metadata_store unlocalized can override fields", {
+  db_metadata_store(con_writer,
                        create_tsmeta(ts1 = list(field = "value")),
                        "2020-01-01",
                        schema = "tsdb_test")
-  db_meta_store(con_writer,
+  db_metadata_store(con_writer,
                        create_tsmeta(ts1 = list(field = "new_value")),
                        "2020-01-01",
                        on_conflict = "update",
@@ -527,12 +527,12 @@ test_with_fresh_db(con_admin, "db_meta_store unlocalized can override fields", {
   )
 })
 
-test_with_fresh_db(con_admin, "db_meta_store unlocalized can override fields", {
-  db_meta_store(con_writer,
+test_with_fresh_db(con_admin, "db_metadata_store unlocalized can override fields", {
+  db_metadata_store(con_writer,
                        create_tsmeta(ts1 = list(field = "value")),
                        "2020-01-01",
                        schema = "tsdb_test")
-  db_meta_store(con_writer,
+  db_metadata_store(con_writer,
                        create_tsmeta(ts1 = list(itger_vield = 23)), # It's an inside joke
                        "2020-01-01",
                        on_conflict = "overwrite",
@@ -547,12 +547,12 @@ test_with_fresh_db(con_admin, "db_meta_store unlocalized can override fields", {
   )
 })
 
-test_with_fresh_db(con_admin, "db_meta_store creates vintages", {
-  db_meta_store(con_writer,
+test_with_fresh_db(con_admin, "db_metadata_store creates vintages", {
+  db_metadata_store(con_writer,
                        create_tsmeta(ts1 = list(field = "value")),
                        valid_from = "2020-01-01",
                        schema = "tsdb_test")
-  db_meta_store(con_writer,
+  db_metadata_store(con_writer,
                        create_tsmeta(ts1 = list(field = "vallue")),
                        valid_from = "2020-02-01",
                        schema = "tsdb_test")

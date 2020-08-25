@@ -14,7 +14,7 @@ dt <- data.table(
 
 
 # store time series from lists  ##########################
-context("store_time_series.tslist")
+context("db_ts_store.tslist")
 
 test_that("it calls through to store_records", {
   store_recs <- mock()
@@ -23,7 +23,7 @@ test_that("it calls through to store_records", {
     "timeseriesdb:::store_records" = store_recs,
     "timeseriesdb:::to_ts_json" = mock("ts_json"), # Oh how I love isolating units under test. You are going to die all alone, little function...
     {
-      store_time_series(
+      db_ts_store(
         "con",
         tsl,
         "access",
@@ -56,7 +56,7 @@ test_that("defaults are passed on correctly", {
     "timeseriesdb:::store_records" = store_recs,
     "timeseriesdb:::to_ts_json" = mock("ts_json"), # Oh how I love isolating units under test. You are going to die all alone, little function...
     {
-      store_time_series(
+      db_ts_store(
         "con",
         tsl
       )
@@ -81,7 +81,7 @@ test_that("defaults are passed on correctly", {
 test_that("it handles empty lists", {
   tsl <- list()
   class(tsl) <- c("tslist", "list")
-  expect_warning(xx <- store_time_series("con", tsl), "no-op")
+  expect_warning(xx <- db_ts_store("con", tsl), "no-op")
   expect_equal(xx, list())
 })
 
@@ -93,7 +93,7 @@ test_that("it handles non-ts-likes", {
     "timeseriesdb:::store_records"= store_recs,
     {
       expect_message(
-        store_time_series("con", local_tsl, "release", "access"),
+        db_ts_store("con", local_tsl, "release", "access"),
         "no valid time series objects.*not_a_ts"
       )
     })
@@ -103,14 +103,14 @@ test_that("It handles duplicate names", {
   tsl_local <- tsl
   names(tsl_local) <- c("tsa", "tsa")
   expect_error(
-    store_time_series("con", tsl_local, "release", "access"),
+    db_ts_store("con", tsl_local, "release", "access"),
     "duplicate keys"
   )
 })
 
 # # store time series from data.table  ##########################
 
-context("store_time_series.data.table")
+context("db_ts_store.data.table")
 
 test_that("it calls through to store_records", {
   store_recs <- mock()
@@ -118,7 +118,7 @@ test_that("it calls through to store_records", {
     "timeseriesdb:::store_records" = store_recs,
     "timeseriesdb:::to_ts_json" = mock("ts_json"),
     {
-      store_time_series(
+      db_ts_store(
         "con",
         dt,
         "access",
@@ -151,7 +151,7 @@ test_that("defaults are passed on correctly", {
     "timeseriesdb:::store_records" = store_recs,
     "timeseriesdb:::to_ts_json" = mock("ts_json"),
     {
-      store_time_series(
+      db_ts_store(
         "con",
         dt
       )
@@ -179,13 +179,13 @@ test_that("defaults are passed on correctly", {
 
 test_that("it handles empty lists", {
   dt <- data.table(id = numeric(), time = numeric(), value = numeric())
-  expect_warning(xx <- store_time_series("con", dt, "release", "access"), "no-op")
+  expect_warning(xx <- db_ts_store("con", dt, "release", "access"), "no-op")
   expect_equal(xx, list())
 })
 
 test_that("it complains when it gets a non-ts_dt", {
   dt <- data.table(gronkh = numeric(), knight_in_shining_armour = numeric())
-  expect_error(store_time_series("con", dt, "release", "access"))
+  expect_error(db_ts_store("con", dt, "release", "access"))
 })
 
 test_that("it complains about character-ts in list", {
@@ -195,7 +195,7 @@ test_that("it complains about character-ts in list", {
 
   # Yes I am using my knowledge that the db is not hit in this case. Sue me.
   expect_error(
-    store_time_series("con", char_tsl, "release", "access"),
+    db_ts_store("con", char_tsl, "release", "access"),
     "numeric"
   )
 })
@@ -208,7 +208,7 @@ test_that("it complains about character-ts in dt", {
   )
 
   expect_error(
-    store_time_series("con", char_dt, "release", "access"),
+    db_ts_store("con", char_dt, "release", "access"),
     "numeric"
   )
 })
@@ -221,7 +221,7 @@ test_that("id complains about duplicate series in dt", {
   )
 
   expect_error(
-    store_time_series("con", dup_dt, "release", "access"),
+    db_ts_store("con", dup_dt, "release", "access"),
     "duplicated"
   )
 })

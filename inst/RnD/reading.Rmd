@@ -16,7 +16,7 @@ dbExecute(con, "DELETE FROM timeseries.releases")
 tsl <- tstools::generate_random_ts(5000, lengths = 200)
 class(tsl) <- c("tslist", "list")
 t0 <- Sys.time()
-store_time_series(con, tsl, "lotsaseries", "public", valid_from = "2019-01-01")
+db_ts_store(con, tsl, "lotsaseries", "public", valid_from = "2019-01-01")
 difftime(Sys.time(), t0, units = "secs")
 ```
 

@@ -11,7 +11,7 @@ if(is_test_db_reachable()) {
 }
 
 test_with_fresh_db(con, hard_reset = TRUE, "vintage id is a uuid", {
-  store_time_series(con,
+  db_ts_store(con,
                     tsl,
                     access = "tsdb_test_access_public",
                     valid_from = "2019-01-01",
@@ -23,7 +23,7 @@ test_with_fresh_db(con, hard_reset = TRUE, "vintage id is a uuid", {
 })
 
 test_with_fresh_db(con, hard_reset = TRUE, "it can deal with string valid_from", {
-  expect_error(store_time_series(con,
+  expect_error(db_ts_store(con,
                                  tsl,
                                  access = "tsdb_test_access_public",
                                  valid_from = "2019-01-01",
@@ -32,7 +32,7 @@ test_with_fresh_db(con, hard_reset = TRUE, "it can deal with string valid_from",
 })
 
 test_with_fresh_db(con, hard_reset = TRUE, "it can deal with string release_date", {
-  expect_error(store_time_series(con,
+  expect_error(db_ts_store(con,
                                  tsl,
                                  access = "tsdb_test_access_public",
                                  release_date = "2019-01-01",

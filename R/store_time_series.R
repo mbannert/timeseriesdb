@@ -14,13 +14,13 @@
 #'
 #' \dontrun{
 #' # storing zrh_airport data that is a list with two xts objects.
-#' store_time_series(con = connection, zrh_airport, schema = "schema")
+#' db_ts_store(con = connection, zrh_airport, schema = "schema")
 #'
 #' # to store different versions of the data, use parameter valid_from
 #' # different versions are stored with the same key
 #' ch.kof.barometer <- kof_ts["baro_2019m11"]
 #' names(ch.kof.barometer) <- c("ch.kof.barometer")
-#' store_time_series(
+#' db_ts_store(
 #'   con = connection,
 #'   ch.kof.barometer,
 #'   valid_from = "2019-12-01",
@@ -29,24 +29,24 @@
 #'
 #' ch.kof.barometer <- kof_ts["baro_2019m12"]
 #' names(ch.kof.barometer) <- c("ch.kof.barometer")
-#' store_time_series(
+#' db_ts_store(
 #'   con = connection,
 #'   ch.kof.barometer,
 #'   valid_from = "2020-01-01",
 #'   schema = "schema"
 #' )
 #' }
-store_time_series <- function(con,
+db_ts_store <- function(con,
                               x,
                               access = NULL,
                               valid_from = NULL,
                               release_date = NULL,
                               schema = "timeseries"){
-  UseMethod("store_time_series", object = x)
+  UseMethod("db_ts_store", object = x)
 }
 
 #' @export
-store_time_series.list <- function(con,
+db_ts_store.list <- function(con,
                                    tsl,
                                    access = NULL,
                                    valid_from = NULL,
@@ -57,7 +57,7 @@ store_time_series.list <- function(con,
 
   tsl <- tsl[is_tsl]
   class(tsl) <- c("tslist", "tsl")
-  store_time_series(con, tsl,
+  db_ts_store(con, tsl,
     access = access,
     valid_from = valid_from,
     release_date = release_date,
@@ -66,7 +66,7 @@ store_time_series.list <- function(con,
 }
 
 #' @export
-store_time_series.tslist <- function(con,
+db_ts_store.tslist <- function(con,
                                      tsl,
                                      access = NULL,
                                      valid_from = NULL,
@@ -112,7 +112,7 @@ store_time_series.tslist <- function(con,
 
 #' @import data.table
 #' @export
-store_time_series.data.table <- function(con,
+db_ts_store.data.table <- function(con,
                                          dt,
                                          access = NULL,
                                          valid_from = NULL,
@@ -147,13 +147,13 @@ store_time_series.data.table <- function(con,
 }
 
 #' @export
-store_time_series.ts <- function(con,
+db_ts_store.ts <- function(con,
                               x,
                               access = NA,
                               valid_from = NA,
                               release_date = NA,
                               schema = "timeseries"){
-  store_time_series(con,
+  db_ts_store(con,
                     structure(
                       list(x),
                       names = deparse(substitute(x))
@@ -165,13 +165,13 @@ store_time_series.ts <- function(con,
 }
 
 #' @export
-store_time_series.xts <- function(con,
+db_ts_store.xts <- function(con,
                                  x,
                                  access = NA,
                                  valid_from = NA,
                                  release_date = NA,
                                  schema = "timeseries"){
-  store_time_series(con,
+  db_ts_store(con,
                     structure(
                       list(x),
                       names = deparse(substitute(x))

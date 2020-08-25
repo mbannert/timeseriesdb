@@ -17,7 +17,7 @@
 #'
 #' \dontrun{
 #' # Store zrh_airport data
-#' store_time_series(con = connection, zrh_airport, schema = "schema")
+#' db_ts_store(con = connection, zrh_airport, schema = "schema")
 #'
 #' # Deleting one key
 #' db_ts_delete(
@@ -95,7 +95,7 @@ db_ts_delete <- function(con,
 #' # Store different versions of the time series data
 #' ch.kof.barometer <- kof_ts["baro_2019m11"]
 #' names(ch.kof.barometer) <- c("ch.kof.barometer")
-#' store_time_series(
+#' db_ts_store(
 #'   con = connection,
 #'   ch.kof.barometer,
 #'   valid_from = "2019-12-01",
@@ -104,7 +104,7 @@ db_ts_delete <- function(con,
 #'
 #' ch.kof.barometer <- kof_ts["baro_2019m12"]
 #' names(ch.kof.barometer) <- c("ch.kof.barometer")
-#' store_time_series(
+#' db_ts_store(
 #'   con = connection,
 #'   ch.kof.barometer,
 #'   valid_from = "2020-01-01",
@@ -166,7 +166,7 @@ db_ts_delete_latest_version <- function(con,
 #' # Store different versions of the time series data
 #' ch.kof.barometer <- kof_ts["baro_2019m11"]
 #' names(ch.kof.barometer) <- c("ch.kof.barometer")
-#' store_time_series(
+#' db_ts_store(
 #'   con = connection,
 #'   ch.kof.barometer,
 #'   valid_from = "2019-12-01",
@@ -175,7 +175,7 @@ db_ts_delete_latest_version <- function(con,
 #'
 #' ch.kof.barometer <- kof_ts["baro_2019m12"]
 #' names(ch.kof.barometer) <- c("ch.kof.barometer")
-#' store_time_series(
+#' db_ts_store(
 #'   con = connection,
 #'   ch.kof.barometer,
 #'   valid_from = "2020-01-01",

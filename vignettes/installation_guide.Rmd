@@ -111,7 +111,7 @@ backend from R is just a matter of:
 
 ```{r, eval=FALSE}
 library(timeseriesdb)
-con <- db_create_connection("yourdbname",
+con <- db_connection_create("yourdbname",
                             user = "tsdb_admin",
                             host = "localhost")
 install_timeseriesdb(con)
@@ -121,7 +121,7 @@ YAY! You're all set up. Store a time series to your fresh new database.
 
 ```{r, eval=FALSE}
 tsl <- list(AirPassengers = AirPassengers)
-store_time_series(con, tsl)
+db_ts_store(con, tsl)
 ```
 
 
@@ -148,7 +148,7 @@ and set up {timeseriesdb} so you could connect to the database running inside th
 container like this: 
 
 ```{r, eval=FALSE}
-con <- db_create_connection(
+con <- db_connection_create(
   dbname = "postgres",
   user = "dev_admin",
   host = "localhost",

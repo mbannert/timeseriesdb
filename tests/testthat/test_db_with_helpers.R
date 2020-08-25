@@ -146,7 +146,7 @@ test_with_fresh_db(con_admin, "temp_ts_read gets cleaned up in failure case", {
   with_mock(
     get_tsl_from_res = boom_bot,
     {
-      e <- capture_error(read_time_series(con_admin, "rts1", schema = "tsdb_test"))
+      e <- capture_error(db_ts_read(con_admin, "rts1", schema = "tsdb_test"))
 
       expect_equal(
         dbListTables(con_admin),

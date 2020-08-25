@@ -218,14 +218,14 @@ test_with_fresh_db(con_admin, "db_dataset_list returns data frame with correct n
 
 test_with_fresh_db(con_admin, "writer may not update datasets", {
   expect_error(
-    db_dataset_update(con_writer, "set1", "you've been haxx0rd", schema = "tsdb_test"),
+    db_dataset_update_metadata(con_writer, "set1", "you've been haxx0rd", schema = "tsdb_test"),
     "sufficient privileges"
   )
 })
 
 test_with_fresh_db(con_admin, "mode must be one of overwrite or update", {
   expect_error(
-    db_dataset_update(con_admin,
+    db_dataset_update_metadata(con_admin,
                       "set1",
                       "blabla",
                       metadata_update_mode = "super mode",
@@ -235,7 +235,7 @@ test_with_fresh_db(con_admin, "mode must be one of overwrite or update", {
 })
 
 test_with_fresh_db(con_admin, "updating set description returns status", {
-  out <- db_dataset_update(con_admin, "set1", "right proper", schema = "tsdb_test")
+  out <- db_dataset_update_metadata(con_admin, "set1", "right proper", schema = "tsdb_test")
 
   expect_equal(
     out,
@@ -246,7 +246,7 @@ test_with_fresh_db(con_admin, "updating set description returns status", {
 })
 
 test_with_fresh_db(con_admin, "updating set description", {
-  db_dataset_update(con_admin, "set1", "right proper, mate", schema = "tsdb_test")
+  db_dataset_update_metadata(con_admin, "set1", "right proper, mate", schema = "tsdb_test")
 
   res <- dbGetQuery(con_admin, "SELECT * FROM tsdb_test.datasets WHERE set_id = 'set1'")
 
@@ -262,7 +262,7 @@ test_with_fresh_db(con_admin, "updating set description", {
 })
 
 test_with_fresh_db(con_admin, "updating set metadata, update", {
-  db_dataset_update(con_admin,
+  db_dataset_update_metadata(con_admin,
                     "set1",
                     metadata = list(another_field = "hello"),
                     schema = "tsdb_test")
@@ -288,7 +288,7 @@ test_with_fresh_db(con_admin, "updating set metadata, update", {
 })
 
 test_with_fresh_db(con_admin, "updating set metadata, overwrite", {
-  db_dataset_update(con_admin,
+  db_dataset_update_metadata(con_admin,
                     "set1",
                     metadata = list(another_field = "hello"),
                     metadata_update_mode = "overwrite",
