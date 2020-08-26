@@ -54,7 +54,29 @@ SECURITY DEFINER
 SET search_path = timeseries, pg_temp;
 
 
-
+-- List all keys in a given user collection
+--
+-- param: p_name the name of the collection
+-- param: p_owner: owner of the collection
+--
+-- returns: table(ts_key TEXT)
+CREATE OR REPLACE FUNCTION timeseries.keys_in_collection(p_name TEXT,
+                                                         p_owner TEXT)
+RETURNS TABLE(ts_key TEXT)
+AS $$
+BEGIN
+  RETURN QUERY
+  SELECT cc.ts_key
+  FROM timeseries.collect_catalog AS cc
+  JOIN timeseries.collections col
+  USING(id)
+  WHERE col.name = p_name
+  AND col.owner = p_owner
+  ORDER BY cc.ts_key;
+END;
+$$ LANGUAGE PLPGSQL
+SECURITY DEFINER
+SET search_path = timeseries, pg_temp;
 
 
 -- Remove keys from a user collection
