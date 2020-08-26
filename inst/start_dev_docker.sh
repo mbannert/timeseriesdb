@@ -28,7 +28,7 @@ rm roles.sql
 sed 's/timeseries/tsdb_test/g' sql/create_dev_admin.sql > admin.sql
 PGPASSWORD=pgking psql -p 1111 -h 'localhost' -d postgres -U postgres -f admin.sql
 rm admin.sql
-R -e "devtools::load_all('../'); con <- db_create_connection(dbname = 'postgres', host = 'localhost', user =  'dev_admin', passwd = 'dev_admin', port = 1111);  install_timeseriesdb(con, schema = 'tsdb_test', verbose = TRUE)"
+R -e "devtools::load_all('../'); con <- db_connection_create(dbname = 'postgres', host = 'localhost', user =  'dev_admin', passwd = 'dev_admin', port = 1111);  install_timeseriesdb(con, schema = 'tsdb_test', verbose = TRUE)"
 sed 's/timeseries/tsdb_test/g' sql/finalize_dev_env.sql > fin.sql
 PGPASSWORD=pgking psql -p 1111 -h 'localhost' -d postgres -U postgres -f fin.sql
 rm fin.sql

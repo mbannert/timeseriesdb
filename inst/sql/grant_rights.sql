@@ -1,6 +1,7 @@
 REVOKE EXECUTE ON FUNCTION timeseries.insert_collect_from_tmp FROM public;
 REVOKE EXECUTE ON FUNCTION timeseries.collection_remove FROM public;
 REVOKE EXECUTE ON FUNCTION timeseries.collection_delete FROM public;
+REVOKE EXECUTE ON FUNCTION timeseries.keys_in_collection FROM public;
 REVOKE EXECUTE ON FUNCTION timeseries.list_collections FROM public;
 REVOKE EXECUTE ON FUNCTION timeseries.dataset_exists FROM public;
 REVOKE EXECUTE ON FUNCTION timeseries.keys_in_dataset FROM public;
@@ -50,6 +51,7 @@ REVOKE EXECUTE ON FUNCTION timeseries.dataset_get_last_update FROM public;
 GRANT EXECUTE ON FUNCTION timeseries.insert_collect_from_tmp TO timeseries_reader;
 GRANT EXECUTE ON FUNCTION timeseries.collection_remove TO timeseries_reader;
 GRANT EXECUTE ON FUNCTION timeseries.collection_delete TO timeseries_reader;
+GRANT EXECUTE ON FUNCTION timeseries.keys_in_collection TO timeseries_reader;
 GRANT EXECUTE ON FUNCTION timeseries.list_collections TO timeseries_reader;
 GRANT EXECUTE ON FUNCTION timeseries.dataset_exists TO timeseries_reader;
 GRANT EXECUTE ON FUNCTION timeseries.keys_in_dataset TO timeseries_reader;
