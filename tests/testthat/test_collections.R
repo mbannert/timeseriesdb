@@ -314,3 +314,18 @@ test_with_fresh_db(con_admin, "getting the latest update", {
     max(dbGetQuery(con_admin, "SELECT created_at FROM tsdb_test.timeseries_main WHERE ts_key = 'vts1'")$created_at)
   )
 })
+
+
+# read keys in a collection -----------------------------------------------
+
+test_with_fresh_db(con_admin, "getting keys in a collection", {
+  out <- db_collection_get_keys(con_reader, "some random one", "johnny_public", schema = "tsdb_test")
+
+  expect_equal(out, c("ts1", "ts4", "vts1"))
+})
+
+test_with_fresh_db(con_admin, "getting keys in a nonexistent collection", {
+  out <- db_collection_get_keys(con_reader, "notacollection", "C'thulhu", schema = "tsdb_test")
+
+  expect_length(out, 0)
+})

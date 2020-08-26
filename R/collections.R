@@ -132,6 +132,19 @@ db_collection_remove_ts <- function(con,
   db_return
 }
 
+db_collection_get_keys <- function(con,
+                                   collection_name,
+                                   user = Sys.info()["user"],
+                                   schema = "timeseriesdb") {
+  db_call_function(con,
+                   "keys_in_collection",
+                   list(
+                     collection_name,
+                     user
+                   ),
+                   schema = schema)$ts_key
+}
+
 
 #' Remove an Entire Time Series Key Collection
 #'
@@ -250,7 +263,7 @@ db_collection_list <- function(con,
 #' @examples
 #'
 #' \dontrun{
-#' 
+#'
 #' db_ts_store(con = connection, zrh_airport, schema = "schema")
 #' db_ts_store(con = connection, kof_ts, schema = "schema")
 #'
