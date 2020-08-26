@@ -132,6 +132,15 @@ db_collection_remove_ts <- function(con,
   db_return
 }
 
+
+#' Get All Keys in a User Collection
+#'
+#' Reads all keys in the given collection and returns them in a vector
+#'
+#' @inheritParams param_defs
+#' @family collections functions
+#'
+#' @export
 db_collection_get_keys <- function(con,
                                    collection_name,
                                    user = Sys.info()["user"],
