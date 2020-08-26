@@ -221,7 +221,7 @@ db_release_list <- function(con,
 #' @return data.frame with columns `set_id`, `release_id`, `release_date`
 #'
 #' @export
-db_ts_next_release <- function(con,
+db_dataset_next_release <- function(con,
                                         set_ids,
                                         schema = "timeseries") {
   db_with_temp_table(con,
@@ -249,7 +249,7 @@ db_ts_next_release <- function(con,
 #'
 #' @return data.frame with columns `set_id`, `release_id`, `release_date`
 #' @export
-db_ts_latest_release <- function(con,
+db_dataset_latest_release <- function(con,
                                           set_ids,
                                           schema = "timeseries") {
   db_with_temp_table(con,

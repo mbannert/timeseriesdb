@@ -107,7 +107,7 @@ Cancellation of past releases is not possible, but release can be updated with [
 db_get_latest_release_for_set(con, "ch.zrh_airport",schema = "tsdb_test")
 ```
 
-Similarily use [db_ts_next_release()](../reference/db_ts_next_release.html) to get the next upcoming
+Similarily use [db_dataset_next_release()](../reference/db_dataset_next_release) to get the next upcoming
 release. 
 
 
