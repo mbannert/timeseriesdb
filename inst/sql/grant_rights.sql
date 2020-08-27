@@ -1,4 +1,5 @@
 REVOKE EXECUTE ON FUNCTION timeseries.insert_collect_from_tmp FROM public;
+REVOKE EXECUTE ON FUNCTION timeseries.rename_ts FROM public;
 REVOKE EXECUTE ON FUNCTION timeseries.collection_remove FROM public;
 REVOKE EXECUTE ON FUNCTION timeseries.collection_delete FROM public;
 REVOKE EXECUTE ON FUNCTION timeseries.keys_in_collection FROM public;

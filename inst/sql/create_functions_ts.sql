@@ -354,3 +354,35 @@ END;
 $$ LANGUAGE PLPGSQL
 SECURITY DEFINER
 SET search_path = timeseries, pg_temp;
+
+CREATE OR REPLACE FUNCTION timeseries.rename_ts()
+RETURNS JSON
+AS $$
+DECLARE
+  v_not_found TEXT[];
+BEGIN
+  SELECT array_agg(rn.ts_key)
+  FROM tmp_ts_rename AS rn
+  LEFT JOIN timeseries.catalog AS cat
+  USING(ts_key)
+  WHERE cat.ts_key IS NULL
+  INTO v_not_found;
+
+  UPDATE timeseries.catalog AS cat
+  SET ts_key = rn.ts_key_new
+  FROM tmp_ts_rename AS rn
+  WHERE cat.ts_key = rn.ts_key
+  -- Better safe than sorry
+  AND NOT rn.ts_key_new IS NULL;
+
+  IF array_length(v_not_found, 1) > 0 THEN
+    RETURN json_build_object('status', 'warning',
+                             'message', 'Some keys not found in the catalog.',
+                             'offending_keys', to_json(v_not_found));
+  ELSE
+    RETURN json_build_object('status', 'ok');
+  END IF;
+END;
+$$ LANGUAGE PLPGSQL
+SECURITY DEFINER
+SET search_path = timeseries, pg_temp;
