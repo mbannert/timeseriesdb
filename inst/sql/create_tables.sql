@@ -31,7 +31,7 @@ CREATE TABLE timeseries.timeseries_main(
   ts_data JSON,
   access TEXT,
   UNIQUE (ts_key, validity),
-  FOREIGN KEY (ts_key) REFERENCES timeseries.catalog(ts_key) ON DELETE CASCADE,
+  FOREIGN KEY (ts_key) REFERENCES timeseries.catalog(ts_key) ON DELETE CASCADE ON UPDATE CASCADE,
   FOREIGN KEY (access) REFERENCES timeseries.access_levels(role)
 );
 
@@ -43,7 +43,7 @@ CREATE TABLE timeseries.metadata(
   created_at TIMESTAMPTZ NOT NULL DEFAULT CURRENT_TIMESTAMP,
   metadata JSONB,
   UNIQUE (ts_key, validity),
-  FOREIGN KEY (ts_key) REFERENCES timeseries.catalog(ts_key) ON DELETE CASCADE
+  FOREIGN KEY (ts_key) REFERENCES timeseries.catalog(ts_key) ON DELETE CASCADE ON UPDATE CASCADE
 );
 
 CREATE TABLE timeseries.metadata_localized(
@@ -55,7 +55,7 @@ CREATE TABLE timeseries.metadata_localized(
   created_at TIMESTAMPTZ NOT NULL DEFAULT CURRENT_TIMESTAMP,
   metadata JSONB,
   UNIQUE (ts_key, locale, validity),
-  FOREIGN KEY (ts_key) REFERENCES timeseries.catalog(ts_key) ON DELETE CASCADE
+  FOREIGN KEY (ts_key) REFERENCES timeseries.catalog(ts_key) ON DELETE CASCADE ON UPDATE CASCADE
 );
 
 CREATE TABLE timeseries.collections (
@@ -71,7 +71,7 @@ CREATE TABLE timeseries.collect_catalog (
   ts_key TEXT,
   PRIMARY KEY (id,ts_key),
   FOREIGN KEY (id) REFERENCES timeseries.collections(id) ON DELETE CASCADE,
-  FOREIGN KEY (ts_key) REFERENCES timeseries.catalog(ts_key) ON DELETE CASCADE
+  FOREIGN KEY (ts_key) REFERENCES timeseries.catalog(ts_key) ON DELETE CASCADE ON UPDATE CASCADE
 );
 
 CREATE TABLE timeseries.release_calendar (
