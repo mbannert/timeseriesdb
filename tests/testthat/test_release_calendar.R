@@ -326,15 +326,15 @@ test_with_fresh_db(con_admin, "db_release_list with past return value (approx)",
 
 # get next release --------------------------------------------------------
 
-test_with_fresh_db(con_admin, "db_dataset_next_release return shape", {
-  out <- db_dataset_next_release(con_reader, "set1", schema = "tsdb_test")
+test_with_fresh_db(con_admin, "db_dataset_get_next_release return shape", {
+  out <- db_dataset_get_next_release(con_reader, "set1", schema = "tsdb_test")
 
   expect_is(out, "data.frame")
   expect_equal(names(out), c("set_id", "release_id", "release_date"))
 })
 
-test_with_fresh_db(con_admin, "db_dataset_next_release", {
-  out <- db_dataset_next_release(con_reader, c("set1", "set2"), schema = "tsdb_test")
+test_with_fresh_db(con_admin, "db_dataset_get_next_release", {
+  out <- db_dataset_get_next_release(con_reader, c("set1", "set2"), schema = "tsdb_test")
 
   expect_equal(
     out,
@@ -346,8 +346,8 @@ test_with_fresh_db(con_admin, "db_dataset_next_release", {
   )
 })
 
-test_with_fresh_db(con_admin, "db_dataset_next_release with missing set", {
-  out <- db_dataset_next_release(con_reader, c("set1", "bananas"), schema = "tsdb_test")
+test_with_fresh_db(con_admin, "db_dataset_get_next_release with missing set", {
+  out <- db_dataset_get_next_release(con_reader, c("set1", "bananas"), schema = "tsdb_test")
 
   expect_equal(
     out,
@@ -361,15 +361,15 @@ test_with_fresh_db(con_admin, "db_dataset_next_release with missing set", {
 
 # get latest release ------------------------------------------------------
 
-test_with_fresh_db(con_admin, "db_dataset_latest_release return shape", {
-  out <- db_dataset_latest_release(con_reader, "set1", schema = "tsdb_test")
+test_with_fresh_db(con_admin, "db_dataset_get_latest_release return shape", {
+  out <- db_dataset_get_latest_release(con_reader, "set1", schema = "tsdb_test")
 
   expect_is(out, "data.frame")
   expect_equal(names(out), c("set_id", "release_id", "release_date"))
 })
 
-test_with_fresh_db(con_admin, "db_dataset_latest_release return", {
-  out <- db_dataset_latest_release(con_reader, "set1", schema = "tsdb_test")
+test_with_fresh_db(con_admin, "db_dataset_get_latest_release return", {
+  out <- db_dataset_get_latest_release(con_reader, "set1", schema = "tsdb_test")
 
   expect_equal(
     out,
@@ -382,7 +382,7 @@ test_with_fresh_db(con_admin, "db_dataset_latest_release return", {
 })
 
 test_with_fresh_db(con_admin, "db_get_latest_release with missing set", {
-  out <- db_dataset_latest_release(con_reader, c("set1", "bananas"), schema = "tsdb_test")
+  out <- db_dataset_get_latest_release(con_reader, c("set1", "bananas"), schema = "tsdb_test")
 
   expect_equal(
     out,
@@ -390,6 +390,55 @@ test_with_fresh_db(con_admin, "db_get_latest_release with missing set", {
       set_id = c("bananas", "set1"),
       release_id = c(NA, "last_release"),
       release_date = c(as.POSIXct(NA), as.POSIXct(Sys.Date() - 1, origin = "1970-01-01"))
+    )
+  )
+})
+
+
+# get target release ------------------------------------------------------
+
+test_with_fresh_db(con_admin, "db_dataset_get_release return shape", {
+  out <- db_dataset_get_release(con_reader, "set1", 2020, 2, schema = "tsdb_test")
+
+  expect_is(out, "data.table")
+  expect_named(out, c("set_id", "release_id", "release_date"))
+})
+
+test_with_fresh_db(con_admin, "db_dataset_get_release return", {
+  out <- db_dataset_get_release(con_reader, "set1", 2020, 2, schema = "tsdb_test")
+
+  expect_equal(
+    out,
+    data.table(
+      set_id = "set1",
+      release_id = "combo_release",
+      release_date = as.POSIXct(Sys.Date() + 4, origin = "1970-01-01")
+    )
+  )
+})
+
+test_with_fresh_db(con_admin, "db_dataset_get_release with nonexistent set", {
+  out <- db_dataset_get_release(con_reader, c("set1", "nono"), 2020, 2, schema = "tsdb_test")
+
+  expect_equal(
+    out,
+    data.table(
+      set_id = c("nono", "set1"),
+      release_id = c(NA, "combo_release"),
+      release_date = c(as.POSIXct(NA), as.POSIXct(Sys.Date() + 4, origin = "1970-01-01"))
+    )
+  )
+})
+
+test_with_fresh_db(con_admin, "db_dataset_get_release with nonexistent release", {
+  out <- db_dataset_get_release(con_reader, "set1", 2020, 3, schema = "tsdb_test")
+
+  expect_equal(
+    out,
+    data.table(
+      set_id = "set1",
+      release_id = NA_character_,
+      release_date = as.POSIXct(NA)
     )
   )
 })

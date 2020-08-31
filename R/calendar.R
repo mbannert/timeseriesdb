@@ -221,7 +221,7 @@ db_release_list <- function(con,
 #' @return data.frame with columns `set_id`, `release_id`, `release_date`
 #'
 #' @export
-db_dataset_next_release <- function(con,
+db_dataset_get_next_release <- function(con,
                                         set_ids,
                                         schema = "timeseries") {
   db_with_temp_table(con,
@@ -249,7 +249,7 @@ db_dataset_next_release <- function(con,
 #'
 #' @return data.frame with columns `set_id`, `release_id`, `release_date`
 #' @export
-db_dataset_latest_release <- function(con,
+db_dataset_get_latest_release <- function(con,
                                           set_ids,
                                           schema = "timeseries") {
   db_with_temp_table(con,
@@ -263,6 +263,44 @@ db_dataset_latest_release <- function(con,
                      {
                        db_call_function(con,
                                         "get_latest_release_for_sets",
+                                        schema = schema)
+                     },
+                     schema = schema)
+}
+
+
+#' Get the latest Release for Given Datasets
+#'
+#' @param set_ids Sets to get release dates for
+#' @param target_year Year of the desired release
+#' @param target_period Period of the desired release
+#'
+#' @inheritParams param_defs
+#' @family calendar functions
+#'
+#' @import data.table
+#' @return data.frame with columns `set_id`, `release_id`, `release_date`
+#' @export
+db_dataset_get_release <- function(con,
+                                      set_ids,
+                                      target_year = year(Sys.Date()),
+                                      target_period = month(Sys.Date()),
+                                      schema = "timeseries") {
+  db_with_temp_table(con,
+                     "tmp_get_release",
+                     data.table(
+                       set_id = set_ids
+                     ),
+                     field.types = c(
+                       set_id = "text"
+                     ),
+                     {
+                       db_call_function(con,
+                                        "get_target_release_for_sets",
+                                        list(
+                                          target_year,
+                                          target_period
+                                        ),
                                         schema = schema)
                      },
                      schema = schema)

@@ -34,7 +34,7 @@ BEGIN
   INTO v_nonexistent_datasets;
 
   IF array_length(v_nonexistent_datasets, 1) != 0 THEN
-  
+
     RETURN json_build_object('status', 'error',
                              'reason', 'Some datasets do not exist.',
                              'missing_datasets', v_nonexistent_datasets);
@@ -242,6 +242,33 @@ BEGIN
     JOIN timeseries.release_dataset AS rls
     ON rls.release_id = cal.id
     WHERE cal.release_date <= CURRENT_TIMESTAMP
+  )
+  SELECT DISTINCT ON(tmp.set_id) tmp.set_id, rlscal.release_id, rlscal.release_date
+  FROM tmp_get_release AS tmp
+  LEFT JOIN rlscal
+  USING(set_id)
+  ORDER BY tmp.set_id, rlscal.release_date DESC;
+END;
+$$ LANGUAGE PLPGSQL
+SECURITY DEFINER
+SET search_path = timeseries, pg_temp;
+
+
+CREATE OR REPLACE FUNCTION timeseries.get_target_release_for_sets(p_year INTEGER,
+                                                                  p_period INTEGER)
+RETURNS TABLE(set_id TEXT,
+              release_id TEXT,
+              release_date TIMESTAMPTZ)
+AS $$
+BEGIN
+  RETURN QUERY
+  WITH rlscal AS (
+    SELECT rls.set_id, rls.release_id, cal.release_date
+    FROM timeseries.release_calendar AS cal
+    JOIN timeseries.release_dataset AS rls
+    ON rls.release_id = cal.id
+    WHERE cal.target_year = p_year
+    AND cal.target_period = p_period
   )
   SELECT DISTINCT ON(tmp.set_id) tmp.set_id, rlscal.release_id, rlscal.release_date
   FROM tmp_get_release AS tmp
