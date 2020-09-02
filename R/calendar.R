@@ -47,7 +47,7 @@ db_release_create <- function(con,
                             {
                               tryCatch(
                                 db_call_function(con,
-                                                 "create_release",
+                                                 "release_create",
                                                  list(
                                                    id,
                                                    title,
@@ -127,7 +127,7 @@ db_release_update <- function(con,
                             {
                               tryCatch(
                                 db_call_function(con,
-                                                 "update_release",
+                                                 "release_update",
                                                  list(
                                                    id,
                                                    title,
@@ -178,7 +178,7 @@ db_release_cancel <- function(con,
                               schema = "timeseries") {
   # TODO: We shoulda try-caught all failures in db_call_function
   out <- fromJSON(db_call_function(con,
-                                   "cancel_release",
+                                   "release_cancel",
                                    list(
                                      release_id
                                    ),
@@ -204,7 +204,7 @@ db_release_list <- function(con,
                              include_past = FALSE,
                              schema = "timeseries") {
   db_call_function(con,
-                   "list_releases",
+                   "release_list",
                    list(
                      include_past
                    ),
@@ -234,7 +234,7 @@ db_dataset_get_next_release <- function(con,
                      ),
                      {
                        db_call_function(con,
-                                        "get_next_release_for_sets",
+                                        "release_get_next",
                                         schema = schema)
                      },
                      schema = schema)
@@ -262,7 +262,7 @@ db_dataset_get_latest_release <- function(con,
                      ),
                      {
                        db_call_function(con,
-                                        "get_latest_release_for_sets",
+                                        "release_get_latest",
                                         schema = schema)
                      },
                      schema = schema)
@@ -296,7 +296,7 @@ db_dataset_get_release <- function(con,
                      ),
                      {
                        db_call_function(con,
-                                        "get_target_release_for_sets",
+                                        "release_get",
                                         list(
                                           target_year,
                                           target_period

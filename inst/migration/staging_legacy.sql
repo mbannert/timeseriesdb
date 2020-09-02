@@ -30,7 +30,7 @@ SELECT ts_key, json_build_object(
 
 alter table tmp_ts_updates alter column coverage type DATERANGE USING NULL;
 GRANT ALL ON TABLE tmp_ts_updates TO lgcy_timeseries_admin;
-SELECT * FROM lgcy_timeseries.insert_from_tmp(CURRENT_DATE, CURRENT_TIMESTAMP, 'lgcy_timeseries_access_main');
+SELECT * FROM lgcy_timeseries.ts_insert(CURRENT_DATE, CURRENT_TIMESTAMP, 'lgcy_timeseries_access_main');
 
 -- The textual representation of NA (which is to be converted to NULL) complicates the query
 WITH series AS (
@@ -71,4 +71,4 @@ INSERT INTO new_schema.timeseries_main (
 -- );
 --
 -- GRANT ALL ON TABLE tmp_md_insert TO lgcy_timeseries_admin;
--- SELECT * FROM lgcy_timeseries.md_unlocal_upsert(CURRENT_DATE, 'overwrite');
+-- SELECT * FROM lgcy_timeseries.metadata_unlocalized_upsert(CURRENT_DATE, 'overwrite');

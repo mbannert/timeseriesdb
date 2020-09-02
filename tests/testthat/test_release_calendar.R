@@ -34,7 +34,7 @@ test_that("defaults", {
       expect_args(fake_db_call_function,
                   1,
                   "con",
-                  "create_release",
+                  "release_create",
                   list(
                     "a_release",
                     "Super Data",

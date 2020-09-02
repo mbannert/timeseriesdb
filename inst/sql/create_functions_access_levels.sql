@@ -1,7 +1,7 @@
 -- List all registered levels
 --
 -- returns: table(set_id TEXT, set_description TEXT)
-CREATE OR REPLACE FUNCTION timeseries.list_access_levels()
+CREATE OR REPLACE FUNCTION timeseries.access_level_list()
 RETURNS TABLE(role TEXT,
               description TEXT,
               is_default BOOLEAN)
@@ -25,7 +25,7 @@ SET search_path = timeseries, pg_temp;
 -- role: role to remove
 --
 -- returns: json {"status": "", "message": "", ["id"]: ""}
-CREATE OR REPLACE FUNCTION timeseries.access_levels_delete(access_level TEXT)
+CREATE OR REPLACE FUNCTION timeseries.access_level_delete(access_level TEXT)
 RETURNS JSON
 AS $$
 DECLARE
@@ -64,7 +64,7 @@ SET search_path = timeseries, pg_temp;
 -- role: role to add
 -- role: role to add
 -- returns: json {"status": "", "message": "", ["id"]: ""}
-CREATE OR REPLACE FUNCTION timeseries.access_levels_insert(access_level_name TEXT,
+CREATE OR REPLACE FUNCTION timeseries.access_level_insert(access_level_name TEXT,
                                                 access_level_description TEXT DEFAULT NULL,
                                                 access_level_default BOOLEAN DEFAULT NULL)
 RETURNS JSON
@@ -77,7 +77,7 @@ BEGIN
     INSERT INTO timeseries.access_levels(role, description)
       VALUES(access_level_name, access_level_description);
     IF access_level_default THEN
-      PERFORM timeseries.set_access_level_default(access_level_name);
+      PERFORM timeseries.access_level_set_default(access_level_name);
     END IF;
     RETURN json_build_object('status', 'ok');
 
@@ -108,7 +108,7 @@ SET search_path = timeseries, pg_temp;
 -- role: role to add
 --
 -- returns: json {"status": "", "message": "", ["id"]: ""}
-CREATE OR REPLACE FUNCTION timeseries.set_access_level_default(access_level_name TEXT)
+CREATE OR REPLACE FUNCTION timeseries.access_level_set_default(access_level_name TEXT)
 RETURNS JSON
 AS $$
 BEGIN
@@ -143,7 +143,7 @@ SET search_path = timeseries, pg_temp;
 -- param:  p_validity DATE, the exact vintage for which to change the access level
 --
 -- By default all vintages are set to the specified level
-CREATE OR REPLACE FUNCTION timeseries.change_access_level_dataset(p_dataset TEXT,
+CREATE OR REPLACE FUNCTION timeseries.dataset_change_access_level(p_dataset TEXT,
                                                        p_level TEXT,
                                                        p_validity DATE DEFAULT NULL)
 RETURNS JSON
@@ -168,7 +168,7 @@ BEGIN
   );
 
   SELECT *
-  FROM timeseries.change_access_level(p_level, p_validity)
+  FROM timeseries.ts_change_access_level(p_level, p_validity)
   INTO v_out;
 
   RETURN v_out;

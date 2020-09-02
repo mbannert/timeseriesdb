@@ -50,7 +50,7 @@ db_collection_add_ts <- function(con,
       ts_key = "text"
     ),
     fromJSON(db_call_function(con,
-      "insert_collect_from_tmp",
+      "collection_insert",
       list(collection_name, user, description),
       schema = schema
     )),
@@ -118,7 +118,7 @@ db_collection_remove_ts <- function(con,
     ),
     fromJSON(db_call_function(
       con,
-      "collection_remove",
+      "collection_remove_keys",
       list(collection_name, user),
       schema
     )),
@@ -146,7 +146,7 @@ db_collection_get_keys <- function(con,
                                    user = Sys.info()["user"],
                                    schema = "timeseriesdb") {
   db_call_function(con,
-                   "keys_in_collection",
+                   "collection_get_keys",
                    list(
                      collection_name,
                      user
@@ -253,7 +253,7 @@ db_collection_list <- function(con,
                                schema = "timeseries") {
   db_call_function(
     con,
-    "list_collections",
+    "collection_list",
     list(
       user
     ),

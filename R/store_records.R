@@ -32,7 +32,7 @@ store_records <- function(con,
                            coverage = "daterange"
                          ),
                          fromJSON(db_call_function(con,
-                                                   "insert_from_tmp",
+                                                   "ts_insert",
                                                    list(
                                                      valid_from,
                                                      release_date,

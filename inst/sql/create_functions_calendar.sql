@@ -16,7 +16,7 @@
 -- param: p_frequency The frequency of the release e.g. 4 for quarterly
 --
 -- returns: json {"status": "", "reason": "", "missing_datasets", [""]}
-CREATE OR REPLACE FUNCTION timeseries.create_release(p_id TEXT, p_title TEXT, p_note TEXT,
+CREATE OR REPLACE FUNCTION timeseries.release_create(p_id TEXT, p_title TEXT, p_note TEXT,
                                           p_date TIMESTAMPTZ, p_year INTEGER,
                                           p_period INTEGER, p_frequency INTEGER)
 RETURNS JSON
@@ -71,7 +71,7 @@ SET search_path = timeseries, pg_temp;
 -- param: p_sets_change Do the sets of the release change? Guards against reading from a nonexistent temp table
 --
 -- returns: json {"status": "", "reason": "", "missing_datasets", [""]}
-CREATE OR REPLACE FUNCTION timeseries.update_release(p_id TEXT, p_title TEXT, p_note TEXT,
+CREATE OR REPLACE FUNCTION timeseries.release_update(p_id TEXT, p_title TEXT, p_note TEXT,
                                           p_date TIMESTAMPTZ, p_year INTEGER,
                                           p_period INTEGER, p_frequency INTEGER,
                                           p_sets_change BOOLEAN)
@@ -134,7 +134,7 @@ SET search_path = timeseries, pg_temp;
 -- Cancelling past releases should not be possible (no rewriting history)
 --
 -- param: p_id ID of the release to cancel
-CREATE OR REPLACE FUNCTION timeseries.cancel_release(p_id TEXT)
+CREATE OR REPLACE FUNCTION timeseries.release_cancel(p_id TEXT)
 RETURNS JSON
 AS $$
 DECLARE
@@ -172,7 +172,7 @@ SET search_path = timeseries, pg_temp;
 --
 -- param: p_include_past Should releases in the past be included? Default FALSE
 --
-CREATE OR REPLACE FUNCTION timeseries.list_releases(p_include_past BOOLEAN DEFAULT FALSE)
+CREATE OR REPLACE FUNCTION timeseries.release_list(p_include_past BOOLEAN DEFAULT FALSE)
 RETURNS TABLE(id TEXT,
               title TEXT,
               note TEXT,
@@ -200,7 +200,7 @@ SET search_path = timeseries, pg_temp;
 -- tmp_get_release has column (set_id TEXT)
 --
 -- returns: a table with (set_id TEXT, release_id TEXT, release_date TIMESTAMPTZ)
-CREATE OR REPLACE FUNCTION timeseries.get_next_release_for_sets()
+CREATE OR REPLACE FUNCTION timeseries.release_get_next()
 RETURNS TABLE(set_id TEXT,
               release_id TEXT,
               release_date TIMESTAMPTZ)
@@ -229,7 +229,7 @@ SET search_path = timeseries, pg_temp;
 -- tmp_get_release has column (set_id TEXT)
 --
 -- returns: a table with (set_id TEXT, release_id TEXT, release_date TIMESTAMPTZ)
-CREATE OR REPLACE FUNCTION timeseries.get_latest_release_for_sets()
+CREATE OR REPLACE FUNCTION timeseries.release_get_latest()
 RETURNS TABLE(set_id TEXT,
               release_id TEXT,
               release_date TIMESTAMPTZ)
@@ -254,7 +254,7 @@ SECURITY DEFINER
 SET search_path = timeseries, pg_temp;
 
 
-CREATE OR REPLACE FUNCTION timeseries.get_target_release_for_sets(p_year INTEGER,
+CREATE OR REPLACE FUNCTION timeseries.release_get(p_year INTEGER,
                                                                   p_period INTEGER)
 RETURNS TABLE(set_id TEXT,
               release_id TEXT,

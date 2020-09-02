@@ -1,4 +1,4 @@
-CREATE OR REPLACE PROCEDURE timeseries.insert_from_tmp()
+CREATE OR REPLACE PROCEDURE timeseries.ts_insert()
 AS $$
 BEGIN
   INSERT INTO timeseries.catalog
@@ -13,7 +13,7 @@ LANGUAGE plpgsql ;
 
 -- I guess this is preferred cause we don't need
 -- DYNAMIC SQL here.
-CREATE OR REPLACE PROCEDURE timeseries.insert_from_tmp()
+CREATE OR REPLACE PROCEDURE timeseries.ts_insert()
 AS $$
 LANGUAGE SQL
 BEGIN
