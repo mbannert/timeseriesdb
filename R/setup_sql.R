@@ -14,7 +14,9 @@
 #' @export
 install_timeseriesdb <- function(con,
                                  schema = "timeseries",
-                                 verbose = FALSE) {
+                                 verbose = FALSE,
+                                 install_tables = TRUE,
+                                 install_functions = TRUE) {
   schema_exists <- dbGetQuery(con,
                               "SELECT true
                               FROM information_schema.schemata
@@ -36,8 +38,14 @@ install_timeseriesdb <- function(con,
   # Switch role so the objects belong to timeseries_admin as they should
   dbExecute(con, sprintf("SET ROLE %s_admin", schema))
 
-  setup_sql_tables(con, schema, prnt)
-  setup_sql_functions(con, schema, prnt)
+  if(install_tables) {
+    setup_sql_tables(con, schema, prnt)
+  }
+
+  if(install_functions) {
+    setup_sql_functions(con, schema, prnt)
+  }
+
   setup_sql_triggers(con, schema, prnt)
   setup_sql_grant_rights(con, schema, prnt)
 
