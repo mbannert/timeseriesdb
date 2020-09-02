@@ -103,7 +103,7 @@ test_with_fresh_db(con_admin, "reading an xts", {
 
 # yeh yeh we said we weren't going to test pure sql stuff...
 test_with_fresh_db(con_admin, "SQL-only test for array version", {
-  out <- dbGetQuery(con_reader_main, "SELECT * FROM tsdb_test.read_ts_raw('{rts1,rtsp}'::TEXT[])")
+  out <- dbGetQuery(con_reader_main, "SELECT * FROM tsdb_test.ts_read_raw('{rts1,rtsp}'::TEXT[])")
 
   expect_equal(
     out$ts_key,
@@ -180,7 +180,7 @@ test_with_fresh_db(con_admin, "reading multiple sets", {
 })
 
 test_with_fresh_db(con_admin, "SQL-only test for array version of read dataset", {
-  out <- dbGetQuery(con_reader_main, "SELECT * FROM tsdb_test.read_ts_dataset_raw('{set_read}'::TEXT[])")
+  out <- dbGetQuery(con_reader_main, "SELECT * FROM tsdb_test.ts_read_dataset_raw('{set_read}'::TEXT[])")
 
   expect_equal(
     out$ts_key,

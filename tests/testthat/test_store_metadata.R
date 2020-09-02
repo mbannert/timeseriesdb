@@ -70,7 +70,7 @@ test_that("is passes correct args to db_call_function unlocalized", {
       expect_args(fake_db_call_function,
                   1,
                   "con",
-                  "md_unlocal_upsert",
+                  "metadata_unlocalized_upsert",
                   list(as.Date("2020-01-01"), "overwrite"),
                   "schema")
     }
@@ -356,7 +356,7 @@ test_that("is passes correct args to db_call_function localized", {
       expect_args(fake_db_call_function,
                   1,
                   "con",
-                  "md_local_upsert",
+                  "metadata_localized_upsert",
                   list(as.Date("2020-01-01"), "overwrite"),
                   "schema")
     }

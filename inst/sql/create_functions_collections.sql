@@ -5,7 +5,7 @@
 -- tmp_collect_updates has columns (ts_key TEXT)
 --
 -- returns: JSON {"status": "", "message": "", ["invalid_keys": [""]]}
-CREATE OR REPLACE FUNCTION timeseries.insert_collect_from_tmp(collection_name TEXT,
+CREATE OR REPLACE FUNCTION timeseries.collection_insert(collection_name TEXT,
                                                    col_owner TEXT,
                                                    description TEXT)
 RETURNS JSON
@@ -60,7 +60,7 @@ SET search_path = timeseries, pg_temp;
 -- param: p_owner: owner of the collection
 --
 -- returns: table(ts_key TEXT)
-CREATE OR REPLACE FUNCTION timeseries.keys_in_collection(p_name TEXT,
+CREATE OR REPLACE FUNCTION timeseries.collection_get_keys(p_name TEXT,
                                                          p_owner TEXT)
 RETURNS TABLE(ts_key TEXT)
 AS $$
@@ -91,7 +91,7 @@ SET search_path = timeseries, pg_temp;
 -- param: col_owner the owner of the collection
 --
 -- returns: json {"status": "", "message": "", ["removed_collection"]: ""}
-CREATE OR REPLACE FUNCTION timeseries.collection_remove(col_name TEXT, col_owner TEXT)
+CREATE OR REPLACE FUNCTION timeseries.collection_remove_keys(col_name TEXT, col_owner TEXT)
 RETURNS JSON
 AS $$
 DECLARE
@@ -189,9 +189,9 @@ SET search_path = timeseries, pg_temp;
 
 -- Read all (accessible) series in a collection
 --
--- This function wraps read_ts_raw, filling the tmp_ts_read_keys table with
+-- This function wraps ts_read_raw, filling the tmp_ts_read_keys table with
 -- keys in the desired collection.
-CREATE OR REPLACE FUNCTION timeseries.read_ts_collection_raw(
+CREATE OR REPLACE FUNCTION timeseries.ts_read_collection_raw(
                                                   p_name TEXT,
                                                   p_owner TEXT,
                                                   p_valid_on DATE DEFAULT CURRENT_DATE,
@@ -211,7 +211,7 @@ BEGIN
   );
 
   RETURN QUERY
-  SELECT * FROM timeseries.read_ts_raw(p_valid_on, p_respect_release_date);
+  SELECT * FROM timeseries.ts_read_raw(p_valid_on, p_respect_release_date);
 END;
 $$ LANGUAGE PLPGSQL
 SECURITY DEFINER
@@ -223,7 +223,7 @@ SET search_path = timeseries, pg_temp;
 -- Mainly for use in the API
 --
 -- param p_user: The user for which to get collections
-CREATE OR REPLACE FUNCTION timeseries.list_collections(p_user TEXT)
+CREATE OR REPLACE FUNCTION timeseries.collection_list(p_user TEXT)
 RETURNS TABLE(name TEXT, description TEXT)
 AS $$
 BEGIN

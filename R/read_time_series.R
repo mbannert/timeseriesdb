@@ -35,7 +35,7 @@ db_ts_read <- function(con,
                           ts_keys,
                           regex,
                           {
-                            res <- dbSendQuery(con, sprintf("select * from %sread_ts_raw(%s, %s)",
+                            res <- dbSendQuery(con, sprintf("select * from %sts_read_raw(%s, %s)",
                                                      dbQuoteIdentifier(con, Id(schema = schema)),
                                                      dbQuoteLiteral(con, valid_on),
                                                      dbQuoteLiteral(con, respect_release_date)))
@@ -147,7 +147,7 @@ db_dataset_read_ts <- function(con,
               ),
               field.types = c(set_id = "text"),
               {
-                res <- dbSendQuery(con, sprintf("SELECT * FROM %sread_ts_dataset_raw(%s, %s)",
+                res <- dbSendQuery(con, sprintf("SELECT * FROM %sts_read_dataset_raw(%s, %s)",
                                                 dbQuoteIdentifier(con, Id(schema = schema)),
                                                 dbQuoteLiteral(con, valid_on),
                                                 dbQuoteLiteral(con, respect_release_date)))
@@ -210,7 +210,7 @@ db_collection_read_ts <- function(con,
   }
 
 
-  res <- dbSendQuery(con, sprintf("SELECT * FROM %sread_ts_collection_raw(%s, %s, %s, %s)",
+  res <- dbSendQuery(con, sprintf("SELECT * FROM %sts_read_collection_raw(%s, %s, %s, %s)",
                                   dbQuoteIdentifier(con, Id(schema = schema)),
                                   dbQuoteLiteral(con, collection_name),
                                   dbQuoteLiteral(con, collection_owner),

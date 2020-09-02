@@ -22,7 +22,7 @@ db_ts_change_access <- function(con,
                             ),
                             {
                               db_call_function(con,
-                                               "change_access_level",
+                                               "ts_change_access_level",
                                                list(
                                                  new_access_level,
                                                  valid_from
@@ -52,7 +52,7 @@ db_dataset_change_access <- function(con,
                                         schema = "timeseries") {
 
   out <- db_call_function(con,
-                          "change_access_level_dataset",
+                          "dataset_change_access_level",
                           list(
                             dataset,
                             new_access_level,
@@ -86,7 +86,7 @@ db_access_level_list <- function(con,
                                   schema = "timeseries") {
 
   db_call_function(con,
-                   "list_access_levels",
+                   "access_level_list",
                    schema = schema)
 }
 
@@ -103,7 +103,7 @@ db_access_level_delete <- function(con,
                                    schema = "timeseries") {
 
   out <- db_call_function(con,
-                          "access_levels_delete",
+                          "access_level_delete",
                           list(
                             access_level
                           ),
@@ -146,7 +146,7 @@ db_access_level_create <- function(con,
 
 
   out <- db_call_function(con,
-                          "access_levels_insert",
+                          "access_level_insert",
                           list(
                             access_level_name,
                             access_level_description,
@@ -180,7 +180,7 @@ db_access_level_set_default <- function(con,
                                   access_level,
                                   schema = "timeseries") {
   out <- db_call_function(con,
-                          "set_access_level_default",
+                          "access_level_set_default",
                           list(
                             access_level
                           ),

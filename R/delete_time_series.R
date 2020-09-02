@@ -55,7 +55,7 @@ db_ts_delete <- function(con,
     field.types = c(ts_key = "text"),
     {
       tryCatch(
-        db_call_function(con, "delete_ts", schema = schema),
+        db_call_function(con, "ts_delete", schema = schema),
         error = function(e) {
           if (grepl("permission denied for function delete_ts", e)) {
             stop("Only timeseries admins may delete time series.")
@@ -128,7 +128,7 @@ db_ts_delete_latest_version <- function(con,
     field.types = c(ts_key = "text"),
     {
       tryCatch(
-        db_call_function(con, "delete_ts_edge", schema = schema),
+        db_call_function(con, "ts_delete_edge", schema = schema),
         error = function(e) {
           if (grepl("permission denied for function delete_ts_edge", e)) {
             stop("Only timeseries admins may delete vintages.")
@@ -203,7 +203,7 @@ db_ts_trim_history <- function(con,
       tryCatch(
         db_call_function(
           con,
-          "delete_ts_old_vintages",
+          "ts_trim_history",
           list(
             older_than
           ),

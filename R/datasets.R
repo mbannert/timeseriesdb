@@ -41,7 +41,7 @@ db_dataset_create <- function(con,
 
   out <- db_call_function(
     con,
-    "create_dataset",
+    "dataset_create",
     list(
       set_name,
       set_description,
@@ -85,7 +85,7 @@ db_dataset_get_keys <- function(con,
                                 schema = "timeseries") {
   db_call_function(
     con,
-    "keys_in_dataset",
+    "dataset_get_keys",
     list(
       set_name
     ),
@@ -134,7 +134,7 @@ db_ts_get_dataset <- function(con,
       ts_key = "text"
     ),
     db_call_function(con,
-      "get_set_of_keys",
+      "keys_get_dataset",
       schema = schema
     ),
     schema = schema
@@ -192,7 +192,7 @@ db_ts_assign_dataset <- function(con,
     field.types = c(ts_key = "text"),
     db_call_function(
       con,
-      "assign_dataset",
+      "dataset_add_keys",
       list(
         set_name
       ),
@@ -296,7 +296,7 @@ db_dataset_update_metadata <- function(con,
 db_dataset_list <- function(con,
                             schema = "timeseries") {
   db_call_function(con,
-    "list_datasets",
+    "dataset_list",
     schema = schema
   )
 }
@@ -427,7 +427,7 @@ db_dataset_trim_history <- function(con,
                                     older_than,
                                     schema = "timeseries") {
   fromJSON(db_call_function(con,
-    "dataset_trim",
+    "dataset_trim_history",
     list(
       set_id,
       older_than

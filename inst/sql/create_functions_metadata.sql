@@ -15,7 +15,7 @@
 --
 -- returns: A json with either {"status": "ok"} or
 --          {"status": "warning", "warnings": [{"message": "", "offending_keys": [...]}, ...]}
-CREATE OR REPLACE FUNCTION timeseries.md_unlocal_upsert(validity_in DATE, on_conflict TEXT)
+CREATE OR REPLACE FUNCTION timeseries.metadata_unlocalized_upsert(validity_in DATE, on_conflict TEXT)
 RETURNS JSONB
 AS $$
 DECLARE
@@ -86,7 +86,7 @@ SET search_path = timeseries, pg_temp;
 --
 -- returns: A json with either {"status": "ok"} or
 --          {"status": "warning", "warnings": [{"message": "", "offending_keys": [...]}, ...]}
-CREATE OR REPLACE FUNCTION timeseries.md_local_upsert(validity_in DATE, on_conflict TEXT)
+CREATE OR REPLACE FUNCTION timeseries.metadata_localized_upsert(validity_in DATE, on_conflict TEXT)
 RETURNS JSON
 AS $$
 DECLARE
@@ -204,7 +204,7 @@ SET search_path = timeseries, pg_temp;
 -- param: valid_on the date for which to get the metadata
 --
 -- returns: table(ts_key TEXT, metadata JSONB)
-CREATE OR REPLACE FUNCTION timeseries.read_metadata_raw(valid_on DATE DEFAULT CURRENT_DATE)
+CREATE OR REPLACE FUNCTION timeseries.metadata_read_raw(valid_on DATE DEFAULT CURRENT_DATE)
 RETURNS TABLE(ts_key TEXT, metadata JSONB)
 AS $$
 BEGIN
@@ -230,7 +230,7 @@ SET search_path = timeseries, pg_temp;
 -- Vectorized Version for frontends that support passing an array of keys
 --
 --
-CREATE OR REPLACE FUNCTION timeseries.read_metadata_raw(p_keys TEXT[],
+CREATE OR REPLACE FUNCTION timeseries.metadata_read_raw(p_keys TEXT[],
                                                         p_valid_on DATE DEFAULT CURRENT_DATE)
 RETURNS TABLE(ts_key TEXT, metadata JSONB)
 AS $$
@@ -242,7 +242,7 @@ BEGIN
   );
 
   RETURN QUERY
-  SELECT * FROM timeseries.read_metadata_raw(p_valid_on::DATE);
+  SELECT * FROM timeseries.metadata_read_raw(p_valid_on::DATE);
 END;
 $$ LANGUAGE PLPGSQL
 SECURITY DEFINER
@@ -253,7 +253,7 @@ SET search_path = timeseries, pg_temp;
 -- param p_collection_name: Name of the collection to read
 -- param p_owner: owner of the collection to read
 -- param p_valid_on: see read_metadata_raw
-CREATE OR REPLACE FUNCTION timeseries.read_collection_metadata_raw(p_collection_name TEXT,
+CREATE OR REPLACE FUNCTION timeseries.metadata_collection_read_raw(p_collection_name TEXT,
                                                                    p_owner TEXT,
                                                                    p_valid_on DATE DEFAULT CURRENT_DATE)
 RETURNS TABLE (ts_key TEXT, metadata JSONB)
@@ -271,7 +271,7 @@ BEGIN
   );
 
   RETURN QUERY
-  SELECT * FROM timeseries.read_metadata_raw(p_valid_on::DATE);
+  SELECT * FROM timeseries.metadata_read_raw(p_valid_on::DATE);
 END;
 $$ LANGUAGE PLPGSQL
 SECURITY DEFINER
@@ -282,7 +282,7 @@ SET search_path = timeseries, pg_temp;
 --
 -- param p_dataset: the dataset_id to read
 -- param p_valid_on: see read_metadata_raw
-CREATE OR REPLACE FUNCTION timeseries.read_dataset_metadata_raw(p_dataset TEXT,
+CREATE OR REPLACE FUNCTION timeseries.metadata_dataset_read_raw(p_dataset TEXT,
                                                                 p_valid_on DATE DEFAULT CURRENT_DATE)
 RETURNS TABLE (ts_key TEXT, metadata JSONB)
 AS $$
@@ -296,7 +296,7 @@ BEGIN
   );
 
   RETURN QUERY
-  SELECT * FROM timeseries.read_metadata_raw(p_valid_on::DATE);
+  SELECT * FROM timeseries.metadata_read_raw(p_valid_on::DATE);
 END;
 $$ LANGUAGE PLPGSQL
 SECURITY DEFINER
@@ -309,7 +309,7 @@ SET search_path = timeseries, pg_temp;
 -- param: valid_on the date for which to get the metadata
 --
 -- returns: table(ts_key TEXT, metadata JSONB)
-CREATE OR REPLACE FUNCTION timeseries.read_metadata_localized_raw(valid_on DATE DEFAULT CURRENT_DATE, loc TEXT DEFAULT 'en')
+CREATE OR REPLACE FUNCTION timeseries.metadata_localized_read_raw(valid_on DATE DEFAULT CURRENT_DATE, loc TEXT DEFAULT 'en')
 RETURNS TABLE(ts_key TEXT, metadata JSONB)
 AS $$
 BEGIN
@@ -335,7 +335,7 @@ SET search_path = timeseries, pg_temp;
 -- Vectorized version for frontends that can supply arrays of ts keys
 --
 --
-CREATE OR REPLACE FUNCTION timeseries.read_metadata_localized_raw(p_keys TEXT[],
+CREATE OR REPLACE FUNCTION timeseries.metadata_localized_read_raw(p_keys TEXT[],
                                                         p_valid_on DATE DEFAULT CURRENT_DATE,
                                                         loc TEXT DEFAULT 'en')
 RETURNS TABLE(ts_key TEXT, metadata JSONB)
@@ -348,7 +348,7 @@ BEGIN
   );
 
   RETURN QUERY
-  SELECT * FROM timeseries.read_metadata_localized_raw(p_valid_on::DATE, loc::TEXT);
+  SELECT * FROM timeseries.metadata_localized_read_raw(p_valid_on::DATE, loc::TEXT);
 END;
 $$ LANGUAGE PLPGSQL
 SECURITY DEFINER
@@ -358,9 +358,9 @@ SET search_path = timeseries, pg_temp;
 --
 -- param p_collection_name: Name of the collection to read
 -- param p_owner: owner of the collection to read
--- param p_valid_on: see read_metadata_localized_raw_raw
--- oaran p_loc: see read_metadata_localized_raw
-CREATE OR REPLACE FUNCTION timeseries.read_collection_metadata_localized_raw(p_collection_name TEXT,
+-- param p_valid_on: see read_metadata_localized_raw
+-- paran p_loc: see read_metadata_localized_raw
+CREATE OR REPLACE FUNCTION timeseries.metadata_collection_localized_read_raw(p_collection_name TEXT,
                                                                    p_owner TEXT,
                                                                    p_valid_on DATE DEFAULT CURRENT_DATE,
                                                                    p_loc TEXT DEFAULT 'en')
@@ -379,7 +379,7 @@ BEGIN
   );
 
   RETURN QUERY
-  SELECT * FROM timeseries.read_metadata_localized_raw(p_valid_on::DATE, p_loc::TEXT);
+  SELECT * FROM timeseries.metadata_localized_read_raw(p_valid_on::DATE, p_loc::TEXT);
 END;
 $$ LANGUAGE PLPGSQL
 SECURITY DEFINER
@@ -391,7 +391,7 @@ SET search_path = timeseries, pg_temp;
 -- param p_dataset: the dataset_id to read
 -- param p_valid_on: see read_metadata_raw
 -- param p_log: see read_metadata_raw
-CREATE OR REPLACE FUNCTION timeseries.read_dataset_metadata_localized_raw(p_dataset TEXT,
+CREATE OR REPLACE FUNCTION timeseries.metadata_dataset_localized_read_raw(p_dataset TEXT,
                                                                           p_valid_on DATE DEFAULT CURRENT_DATE,
                                                                           p_loc TEXT DEFAULT 'en')
 RETURNS TABLE (ts_key TEXT, metadata JSONB)
@@ -406,7 +406,7 @@ BEGIN
   );
 
   RETURN QUERY
-  SELECT * FROM timeseries.read_metadata_localized_raw(p_valid_on::DATE, p_loc::TEXT);
+  SELECT * FROM timeseries.metadata_localized_read_raw(p_valid_on::DATE, p_loc::TEXT);
 END;
 $$ LANGUAGE PLPGSQL
 SECURITY DEFINER
@@ -420,7 +420,7 @@ SET search_path = timeseries, pg_temp;
 -- tmp_ts_read_keys has columns (ts_key TEXT)
 --
 -- returns: table(ts_key TEXT, metadata JSONB)
-CREATE OR REPLACE FUNCTION timeseries.get_latest_vintages_metadata()
+CREATE OR REPLACE FUNCTION timeseries.metadata_get_latest_vintages()
 RETURNS TABLE(ts_key TEXT, validity DATE)
 AS $$
 BEGIN
@@ -448,7 +448,7 @@ SET search_path = timeseries, pg_temp;
 -- tmp_ts_read_keys has columns (ts_key TEXT)
 --
 -- returns: table(ts_key TEXT, metadata JSONB)
-CREATE OR REPLACE FUNCTION timeseries.get_latest_vintages_metadata_localized(locale_in TEXT)
+CREATE OR REPLACE FUNCTION timeseries.metadata_localized_get_latest_vintages(locale_in TEXT)
 RETURNS TABLE(ts_key TEXT, validity DATE)
 AS $$
 BEGIN

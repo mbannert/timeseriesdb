@@ -22,7 +22,7 @@ SET search_path = timeseries, pg_temp;
 -- before any time series can be assigned to it.
 --
 -- returns: name of the set
-CREATE OR REPLACE FUNCTION timeseries.create_dataset(dataset_name TEXT,
+CREATE OR REPLACE FUNCTION timeseries.dataset_create(dataset_name TEXT,
                                           dataset_description TEXT DEFAULT NULL,
                                           dataset_md JSON DEFAULT NULL)
 RETURNS JSON
@@ -54,7 +54,7 @@ SET search_path = timeseries, pg_temp;
 -- param: id the name of the set
 --
 -- returns: table(ts_key TEXT)
-CREATE OR REPLACE FUNCTION timeseries.keys_in_dataset(id TEXT)
+CREATE OR REPLACE FUNCTION timeseries.dataset_get_keys(id TEXT)
 RETURNS TABLE(ts_key TEXT)
 AS $$
 BEGIN
@@ -76,7 +76,7 @@ SET search_path = timeseries, pg_temp;
 -- tmp_get_set has columns (ts_key TEXT)
 --
 -- returns: table(ts_key TEXT, set_id TEXT)
-CREATE OR REPLACE FUNCTION timeseries.get_set_of_keys()
+CREATE OR REPLACE FUNCTION timeseries.keys_get_dataset()
 RETURNS TABLE(ts_key TEXT, set_id TEXT)
 AS $$
 BEGIN
@@ -105,7 +105,7 @@ SET search_path = timeseries, pg_temp;
 -- tmp_set_assign has columns (ts_key TEXT)
 --
 -- returns: json {"status": "", "message": "", "offending_keys": [""]}
-CREATE OR REPLACE FUNCTION timeseries.assign_dataset(id TEXT)
+CREATE OR REPLACE FUNCTION timeseries.dataset_add_keys(id TEXT)
 RETURNS JSON
 AS $$
 DECLARE
@@ -149,7 +149,7 @@ SET search_path = timeseries, pg_temp;
 -- List all datasets and their description
 --
 -- returns: table(set_id TEXT, set_description TEXT)
-CREATE OR REPLACE FUNCTION timeseries.list_datasets()
+CREATE OR REPLACE FUNCTION timeseries.dataset_list()
 RETURNS TABLE(set_id TEXT, set_description TEXT)
 AS $$
 BEGIN
@@ -230,7 +230,7 @@ SET search_path = timeseries, pg_temp;
 -- param p_older_than The cut off point. All vintages older than that date are removed.
 --
 -- tmp_ts_delete_keys (ts_key TEXT)
-CREATE OR REPLACE FUNCTION timeseries.dataset_trim(p_dataset TEXT,
+CREATE OR REPLACE FUNCTION timeseries.dataset_trim_history(p_dataset TEXT,
                                         p_older_than DATE)
 RETURNS JSON
 AS $$
@@ -244,7 +244,7 @@ BEGIN
     WHERE set_id = p_dataset
   );
 
-  SELECT * FROM timeseries.delete_ts_old_vintages(p_older_than)
+  SELECT * FROM timeseries.ts_trim_history(p_older_than)
   INTO v_out;
 
   RETURN v_out;
@@ -255,11 +255,11 @@ SET search_path = timeseries, pg_temp;
 
 -- Read all (accessible) series in a dataset
 --
--- This function wraps read_ts_raw, filling the tmp_ts_read_keys table with
+-- This function wraps ts_read_raw, filling the tmp_ts_read_keys table with
 -- keys in the desired dataset.
 --
 -- tmp_datasets_read (set_id TEXT)
-CREATE OR REPLACE FUNCTION timeseries.read_ts_dataset_raw(p_valid_on DATE DEFAULT CURRENT_DATE,
+CREATE OR REPLACE FUNCTION timeseries.ts_read_dataset_raw(p_valid_on DATE DEFAULT CURRENT_DATE,
                                                           p_respect_release_date BOOLEAN DEFAULT FALSE)
 RETURNS TABLE(ts_key TEXT, ts_data JSON)
 AS $$
@@ -276,14 +276,14 @@ BEGIN
   );
 
   RETURN QUERY
-  SELECT * FROM timeseries.read_ts_raw(p_valid_on, p_respect_release_date);
+  SELECT * FROM timeseries.ts_read_raw(p_valid_on, p_respect_release_date);
 END;
 $$ LANGUAGE PLPGSQL
 SECURITY DEFINER
 SET search_path = timeseries, pg_temp;
 
 
-CREATE OR REPLACE FUNCTION timeseries.read_ts_dataset_raw(p_datasets TEXT[],
+CREATE OR REPLACE FUNCTION timeseries.ts_read_dataset_raw(p_datasets TEXT[],
                                                           p_valid_on DATE DEFAULT CURRENT_DATE,
                                                           p_respect_release_date BOOLEAN DEFAULT FALSE)
 RETURNS TABLE(ts_key TEXT, ts_data JSON)
@@ -300,7 +300,7 @@ BEGIN
   );
 
   RETURN QUERY
-  SELECT * FROM timeseries.read_ts_raw(p_valid_on, p_respect_release_date);
+  SELECT * FROM timeseries.ts_read_raw(p_valid_on, p_respect_release_date);
 END;
 $$ LANGUAGE PLPGSQL
 SECURITY DEFINER

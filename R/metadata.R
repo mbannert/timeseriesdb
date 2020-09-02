@@ -169,7 +169,7 @@ db_metadata_store <- function(con,
                                       locale = "text",
                                       metadata = "jsonb"),
                                       db_call_function(con,
-                                                       "md_local_upsert",
+                                                       "metadata_localized_upsert",
                                                        list(as.Date(valid_from), on_conflict),
                                                        schema = schema),
                                      schema = schema)
@@ -188,7 +188,7 @@ db_metadata_store <- function(con,
                                      ts_key = "text",
                                      metadata = "jsonb"),
                                      db_call_function(con,
-                                                      "md_unlocal_upsert",
+                                                      "metadata_unlocalized_upsert",
                                                       list(as.Date(valid_from), on_conflict),
                                                       schema = schema),
                                    schema = schema)
@@ -235,14 +235,14 @@ db_metadata_read <- function(con,
                                 {
                                   if(is.null(locale)) {
                                     db_call_function(con,
-                                                     "read_metadata_raw",
+                                                     "metadata_read_raw",
                                                      list(
                                                        valid_on = as.Date(valid_on)
                                                      ),
                                                      schema = schema)
                                   } else {
                                     db_call_function(con,
-                                                     "read_metadata_localized_raw",
+                                                     "metadata_localized_read_raw",
                                                      list(
                                                        valid_on = as.Date(valid_on),
                                                        loc = locale
@@ -287,7 +287,7 @@ db_collection_read_metadata <- function(con,
 
   db_return <- if(is.null(locale)) {
     db_call_function(con,
-                     "read_collection_metadata_raw",
+                     "metadata_collection_read_raw",
                      list(
                        p_collection_name = collection_name,
                        p_owner = collection_owner,
@@ -296,7 +296,7 @@ db_collection_read_metadata <- function(con,
                      schema = schema)
   } else {
     db_call_function(con,
-                     "read_collection_metadata_localized_raw",
+                     "metadata_collection_localized_read_raw",
                      list(
                        p_collection_name = collection_name,
                        p_owner = collection_owner,
@@ -338,7 +338,7 @@ db_dataset_read_metadata <- function(con,
 
   db_return <- if(is.null(locale)) {
     db_call_function(con,
-                     "read_dataset_metadata_raw",
+                     "metadata_dataset_read_raw",
                      list(
                        p_dataset = dataset_id,
                        p_valid_on = as.Date(valid_on)
@@ -346,7 +346,7 @@ db_dataset_read_metadata <- function(con,
                      schema = schema)
   } else {
     db_call_function(con,
-                     "read_dataset_metadata_localized_raw",
+                     "metadata_dataset_localized_read_raw",
                      list(
                        p_dataset = dataset_id,
                        p_valid_on = as.Date(valid_on),
@@ -389,11 +389,11 @@ db_meta_get_latest_validity <- function(con,
                           {
                             if(is.null(locale)) {
                               out <- db_call_function(con,
-                                                      "get_latest_vintages_metadata",
+                                                      "metadata_get_latest_vintages",
                                                       schema = schema)
                             } else {
                               out <- db_call_function(con,
-                                                      "get_latest_vintages_metadata_localized",
+                                                      "metadata_localized_get_latest_vintages",
                                                       list(locale),
                                                       schema = schema)
                             }

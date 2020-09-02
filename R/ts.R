@@ -25,7 +25,7 @@ db_ts_rename <- function(con,
                      ),
                      {
                        db_call_function(con,
-                                        "rename_ts",
+                                        "ts_rename",
                                         schema = schema)
                      },
                      schema = schema)

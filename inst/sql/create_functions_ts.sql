@@ -11,7 +11,7 @@
 --                             access TEXT)
 --
 -- returns: json {"status": "", "message": "", ["offending_keys": ""]}
-CREATE OR REPLACE FUNCTION timeseries.insert_from_tmp(p_validity DATE,
+CREATE OR REPLACE FUNCTION timeseries.ts_insert(p_validity DATE,
                                            p_release_date TIMESTAMPTZ,
                                            p_access TEXT)
 RETURNS JSON
@@ -103,7 +103,7 @@ SET search_path = timeseries, pg_temp;
 -- param: pattern regular expression to find keys
 --
 -- returns: json {"status": "", "message": "", ["removed_collection"]: ""}
-CREATE OR REPLACE FUNCTION timeseries.fill_read_tmp_regex(pattern TEXT)
+CREATE OR REPLACE FUNCTION timeseries.helper_keys_fill_read_regex(pattern TEXT)
 RETURNS VOID
 AS $$
 BEGIN
@@ -129,7 +129,7 @@ SET search_path = timeseries, pg_temp;
 -- param:  p_validity DATE, the exact vintage for which to change the access level
 --
 -- By default all vintages are set to the specified level
-CREATE OR REPLACE FUNCTION timeseries.change_access_level(p_level TEXT,
+CREATE OR REPLACE FUNCTION timeseries.ts_change_access_level(p_level TEXT,
                                                p_validity DATE DEFAULT NULL)
 RETURNS JSON
 AS $$
@@ -167,7 +167,7 @@ SET search_path = timeseries, pg_temp;
 --        time be held back?
 --
 -- returns: TABLE(ts_key TEXT, ts_data JSON)
-CREATE OR REPLACE FUNCTION timeseries.read_ts_raw(valid_on DATE DEFAULT CURRENT_DATE,
+CREATE OR REPLACE FUNCTION timeseries.ts_read_raw(valid_on DATE DEFAULT CURRENT_DATE,
                                        respect_release_date BOOLEAN DEFAULT false)
 RETURNS TABLE(ts_key TEXT, ts_data JSON)
 AS $$
@@ -199,11 +199,11 @@ SET search_path = timeseries, pg_temp;
 
 -- Read time series data in raw (i.e. JSON) form
 --
--- see timeseries.read_ts_raw(date, boolean)
+-- see timeseries.ts_read_raw(date, boolean)
 --
 -- This version handles all the temp tableing on the databas by accepting an array of keys to read
 -- Wherever possible, prefer this.
-CREATE OR REPLACE FUNCTION timeseries.read_ts_raw(p_keys TEXT[],
+CREATE OR REPLACE FUNCTION timeseries.ts_read_raw(p_keys TEXT[],
                                                   p_valid_on DATE DEFAULT CURRENT_DATE,
                                                   p_respect_release_date BOOLEAN DEFAULT false)
 RETURNS TABLE(ts_key TEXT, ts_data JSON)
@@ -216,7 +216,7 @@ BEGIN
   );
 
   RETURN QUERY
-  SELECT * FROM timeseries.read_ts_raw(p_valid_on::DATE, p_respect_release_date::BOOLEAN);
+  SELECT * FROM timeseries.ts_read_raw(p_valid_on::DATE, p_respect_release_date::BOOLEAN);
 END;
 $$ LANGUAGE PLPGSQL
 SECURITY DEFINER
@@ -228,8 +228,8 @@ SET search_path = timeseries, pg_temp;
 -- param p_key: the key to read
 -- param p_respect_release_date: should the release date be respected?
 --
--- This function follows the same constraints (release date, access) as read_ts_raw
-CREATE OR REPLACE FUNCTION timeseries.read_ts_history_raw(p_key TEXT,
+-- This function follows the same constraints (release date, access) as ts_read_raw
+CREATE OR REPLACE FUNCTION timeseries.ts_read_history_raw(p_key TEXT,
                                                           p_respect_release_date BOOLEAN DEFAULT false)
 RETURNS TABLE(validity TEXT, ts_data JSON)
 AS $$
@@ -254,7 +254,7 @@ SET search_path = timeseries, pg_temp;
 -- Removes all vintages, metadata, catalog entries, collection entries and dataset entries
 -- (also the set if it ends up empty).
 -- Use VERY SPARINGLY!
-CREATE OR REPLACE FUNCTION timeseries.delete_ts()
+CREATE OR REPLACE FUNCTION timeseries.ts_delete()
 RETURNS JSON
 AS $$
 BEGIN
@@ -272,7 +272,7 @@ SET search_path = timeseries, pg_temp;
 -- Delete the latest vintage from given time series
 --
 -- tmp_ts_delete_keys (ts_key TEXT)
-CREATE OR REPLACE FUNCTION timeseries.delete_ts_edge()
+CREATE OR REPLACE FUNCTION timeseries.ts_delete_edge()
 RETURNS JSON
 AS $$
 BEGIN
@@ -300,7 +300,7 @@ SET search_path = timeseries, pg_temp;
 -- param p_older_than The cut off point. All vintages older than that date are removed.
 --
 -- tmp_ts_delete_keys (ts_key TEXT)
-CREATE OR REPLACE FUNCTION timeseries.delete_ts_old_vintages(p_older_than DATE)
+CREATE OR REPLACE FUNCTION timeseries.ts_trim_history(p_older_than DATE)
 RETURNS JSON
 AS $$
 BEGIN
@@ -355,7 +355,7 @@ $$ LANGUAGE PLPGSQL
 SECURITY DEFINER
 SET search_path = timeseries, pg_temp;
 
-CREATE OR REPLACE FUNCTION timeseries.rename_ts()
+CREATE OR REPLACE FUNCTION timeseries.ts_rename()
 RETURNS JSON
 AS $$
 DECLARE
