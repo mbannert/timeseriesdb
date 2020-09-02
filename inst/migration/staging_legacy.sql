@@ -87,10 +87,10 @@ WITH old AS (
 new as (
   select id, ts_key
   from old as old
-  join collections as col
+  join timeseries.collections as col
   on col.owner = old.owner
   and col.name = old.name
 )
-INSERT INTO timeseries.collections (
+INSERT INTO timeseries.collect_catalog (
   SELECT * FROM new
 );
