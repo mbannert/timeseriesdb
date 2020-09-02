@@ -282,9 +282,6 @@ test_with_fresh_db(con_admin, "db_ts_find_keys returns data frame with correct t
   
   expected <- data.table(
     ts_key = c("rts1",
-               "rts1",
-               "rts1",
-               "rts1",
                "rtsp",
                "rtsx"
     )

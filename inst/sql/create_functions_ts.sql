@@ -399,9 +399,9 @@ RETURNS TABLE(ts_key TEXT)
 AS $$
 BEGIN
   RETURN QUERY
-  SELECT mn.ts_key FROM timeseries.timeseries_main AS mn
-  WHERE mn.ts_key ~ pattern
-  ORDER BY mn.ts_key;
+  SELECT cat.ts_key FROM timeseries.catalog AS cat
+  WHERE cat.ts_key ~ pattern
+  ORDER BY cat.ts_key;
 END;
 $$ LANGUAGE PLPGSQL
 SECURITY DEFINER
