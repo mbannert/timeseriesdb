@@ -277,3 +277,36 @@ db_ts_get_last_update <- function(con,
                    },
                    schema = schema)
 }
+
+#' Get All keys that follow a pattern
+#'
+#' @inheritParams param_defs
+#' @param pattern \strong{character} that represents a regular expression to find keys
+#' @family access levels functions
+#'
+#' @export
+#'
+#' @examples
+#'
+#' \dontrun{
+#' db_ts_store(con = connection, zrh_airport, schema = "schema")
+#'
+#' # get all keys that start with "ch"
+#' db_ts_find_keys(
+#'   con = connection,
+#'   "^ch",
+#'   schema = "schema")
+#' }
+db_ts_find_keys <- function(con,
+                            pattern,
+                            schema = "timeseries") {
+  
+  out <- db_call_function(con,
+                          "ts_find_keys",
+                          list(
+                            pattern
+                          ),
+                          schema = schema)
+  out
+}
+
