@@ -78,7 +78,7 @@ db_with_tmp_read <- function(con,
 
     db_grant_to_admin(con, "tmp_ts_read_keys", schema)
     dbExecute(con,
-              sprintf("SELECT 1 FROM %skeys_fill_read_regex(%s)",
+              sprintf("SELECT 1 FROM %shelper_keys_fill_read_regex(%s)",
                       dbQuoteIdentifier(con, Id(schema = schema)),
                       dbQuoteLiteral(con, ts_keys[1])))
   } else {

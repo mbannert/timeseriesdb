@@ -18,7 +18,7 @@ REVOKE EXECUTE ON FUNCTION timeseries.ts_read_dataset_raw(TEXT[], DATE, BOOLEAN)
 REVOKE EXECUTE ON FUNCTION timeseries.ts_read_dataset_raw(DATE, BOOLEAN) FROM public;
 REVOKE EXECUTE ON FUNCTION timeseries.metadata_get_latest_vintages FROM public;
 REVOKE EXECUTE ON FUNCTION timeseries.metadata_localized_get_latest_vintages FROM public;
-REVOKE EXECUTE ON FUNCTION timeseries.keys_fill_read_regex FROM public;
+REVOKE EXECUTE ON FUNCTION timeseries.helper_keys_fill_read_regex FROM public;
 REVOKE EXECUTE ON FUNCTION timeseries.dataset_create FROM public;
 REVOKE EXECUTE ON FUNCTION timeseries.dataset_add_keys FROM public;
 REVOKE EXECUTE ON FUNCTION timeseries.metadata_unlocalized_upsert FROM public;
@@ -71,7 +71,7 @@ GRANT EXECUTE ON FUNCTION timeseries.ts_read_dataset_raw(TEXT[], DATE, BOOLEAN) 
 GRANT EXECUTE ON FUNCTION timeseries.ts_read_dataset_raw(DATE, BOOLEAN) TO timeseries_reader;
 GRANT EXECUTE ON FUNCTION timeseries.metadata_get_latest_vintages TO timeseries_reader;
 GRANT EXECUTE ON FUNCTION timeseries.metadata_localized_get_latest_vintages TO timeseries_reader;
-GRANT EXECUTE ON FUNCTION timeseries.keys_fill_read_regex TO timeseries_reader;
+GRANT EXECUTE ON FUNCTION timeseries.helper_keys_fill_read_regex TO timeseries_reader;
 GRANT EXECUTE ON FUNCTION timeseries.dataset_list TO timeseries_reader;
 GRANT EXECUTE ON FUNCTION timeseries.release_list TO timeseries_reader;
 GRANT EXECUTE ON FUNCTION timeseries.release_get TO timeseries_reader;

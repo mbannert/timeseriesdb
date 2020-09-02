@@ -103,7 +103,7 @@ SET search_path = timeseries, pg_temp;
 -- param: pattern regular expression to find keys
 --
 -- returns: json {"status": "", "message": "", ["removed_collection"]: ""}
-CREATE OR REPLACE FUNCTION timeseries.keys_fill_read_regex(pattern TEXT)
+CREATE OR REPLACE FUNCTION timeseries.helper_keys_fill_read_regex(pattern TEXT)
 RETURNS VOID
 AS $$
 BEGIN
