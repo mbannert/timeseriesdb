@@ -386,3 +386,24 @@ END;
 $$ LANGUAGE PLPGSQL
 SECURITY DEFINER
 SET search_path = timeseries, pg_temp;
+
+
+
+-- Find keys given a pattern
+--
+-- param: pattern regular expression to find keys
+--
+-- returns: table(ts_key TEXT)
+CREATE OR REPLACE FUNCTION timeseries.ts_find_keys(pattern TEXT)
+RETURNS TABLE(ts_key TEXT)
+AS $$
+BEGIN
+  RETURN QUERY
+  SELECT cat.ts_key FROM timeseries.catalog AS cat
+  WHERE cat.ts_key ~ pattern
+  ORDER BY cat.ts_key;
+END;
+$$ LANGUAGE PLPGSQL
+SECURITY DEFINER
+SET search_path = timeseries, pg_temp;
+
