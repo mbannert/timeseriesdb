@@ -7,6 +7,7 @@
 #' admins may perform this action and should do so very diligently.
 #'
 #' @inheritParams param_defs
+#' @param skip_checks boolean should checks be skipped? Use with caution and only in batch mode! Defaults to FALSE.
 #' @family time series functions
 #'
 #' @export
@@ -38,14 +39,17 @@
 #' }
 db_ts_delete <- function(con,
                          ts_keys,
-                         schema = "timeseries") {
-  message("This operation will PERMANENTLY delete the specified time series, including their histories and metadata. If this is what you intend to do, please type yes below.")
+                         schema = "timeseries",
+                         skip_checks = FALSE) {
+  if(!skip_checks){
+    message("This operation will PERMANENTLY delete the specified time series, including their histories and metadata. If this is what you intend to do, please type yes below.")
+    ans <- readline("answer: ")
 
-  ans <- readline("answer: ")
-
-  if (ans != "yes") {
-    stop(sprintf("You typed %s, aborting.", ans))
+    if (ans != "yes") {
+      stop(sprintf("You typed %s, aborting.", ans))
+    }
   }
+
 
   out <- db_with_temp_table(con,
     "tmp_ts_delete_keys",
