@@ -229,6 +229,22 @@ test_with_fresh_db(con_admin, "updating a nonexistent release", {
   )
 })
 
+test_with_fresh_db(con_admin, "updating release - datasets", {
+  db_release_update(con_admin,
+                    id = "future_release",
+                    datasets = c("set1", "set2"),
+                    schema = "tsdb_test")
+
+  state_sets <- dbGetQuery(con_admin, "SELECT * FROM tsdb_test.release_dataset WHERE release_id = 'future_release'")
+  expect_equal(
+    state_sets,
+    data.frame(
+      release_id = "future_release",
+      set_id = c("set1", "set2"),
+      stringsAsFactors = FALSE
+    )
+  )
+})
 
 # cancel releases ---------------------------------------------------------
 

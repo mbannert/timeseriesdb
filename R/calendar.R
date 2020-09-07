@@ -136,7 +136,7 @@ db_release_update <- function(con,
                                                    target_year,
                                                    target_period,
                                                    target_frequency,
-                                                   !is.na(datasets)
+                                                   !all(is.na(datasets))
                                                  ),
                                                  schema = schema
                                 ),
