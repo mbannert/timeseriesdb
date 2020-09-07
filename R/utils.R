@@ -152,6 +152,19 @@ db_connection_create <- function(dbname,
 
 
 
+#' Close an Existing Database Connection
+#'
+#' Close database connection given a connection object.
+#'
+#' @inheritParams param_defs
+#' @importFrom DBI dbDisconnect
+#' @export
+db_connection_close <- function(con, ...){
+   dbDisconnect(con, ...)
+}
+
+
+
 #' Helper to construct SQL function calls
 #'
 #' Calls function `schema`.`fname` with the given `args`, returning
