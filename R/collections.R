@@ -144,7 +144,7 @@ db_collection_remove_ts <- function(con,
 db_collection_get_keys <- function(con,
                                    collection_name,
                                    user = Sys.info()["user"],
-                                   schema = "timeseriesdb") {
+                                   schema = "timeseries") {
   db_call_function(con,
                    "collection_get_keys",
                    list(
