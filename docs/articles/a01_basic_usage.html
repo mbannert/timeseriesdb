@@ -98,7 +98,7 @@
             <h3 class="subtitle">Getting Started</h3>
                         <h4 class="author">Matthias Bannert and Severin Thöni</h4>
             
-            <h4 class="date">2020-08-20</h4>
+            <h4 class="date">2020-09-09</h4>
       
       <small class="dont-index">Source: <a href="https://github.com/mbannert/timeseriesdb/blob/master/vignettes/a01_basic_usage.Rmd"><code>vignettes/a01_basic_usage.Rmd</code></a></small>
       <div class="hidden name"><code>a01_basic_usage.Rmd</code></div>
@@ -121,7 +121,7 @@
 <h2 class="hasAnchor">
 <a href="#create-a-database-connection" class="anchor"></a>Create a Database Connection</h2>
 <p>No matter whether you want to read or write, you’ll need a database connection. {timeseriesdb} offers a simple wrapper function around {DBI}’s more universal <code>dbConnect</code>:</p>
-<div class="sourceCode" id="cb1"><html><body><pre class="r"><span class="no">con</span> <span class="kw">&lt;-</span> <span class="fu"><a href="../reference/db_create_connection.html">db_create_connection</a></span>(
+<div class="sourceCode" id="cb1"><html><body><pre class="r"><span class="no">con</span> <span class="kw">&lt;-</span> <span class="fu"><a href="../reference/db_connection_create.html">db_connection_create</a></span>(
   <span class="kw">dbname</span> <span class="kw">=</span> <span class="st">"postgres"</span>,
   <span class="kw">user</span> <span class="kw">=</span> <span class="st">"dev_admin"</span>,
   <span class="kw">host</span> <span class="kw">=</span> <span class="st">"localhost"</span>,
@@ -136,14 +136,14 @@
 <p>Let’s take two time series from the {datasets} R package that ships with R (monthly AirPassengers, JohnsonJohnson quarterly earnings per share) and put them into a named list. The {timeseriesdb} R package uses lists of time series or long format time series <code>data.tables</code> to store one or more time series into PostgreSQL.</p>
 <div class="sourceCode" id="cb2"><html><body><pre class="r"><span class="no">tsl</span> <span class="kw">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html">list</a></span>(<span class="kw">AirPassengers</span> <span class="kw">=</span> <span class="no">AirPassengers</span>,
             <span class="kw">JohnsonJohnson</span> <span class="kw">=</span> <span class="no">JohnsonJohnson</span>)
-<span class="fu"><a href="../reference/store_time_series.html">store_time_series</a></span>(<span class="no">con</span>, <span class="no">tsl</span>, <span class="st">"main"</span>,
+<span class="fu"><a href="../reference/db_ts_store.html">db_ts_store</a></span>(<span class="no">con</span>, <span class="no">tsl</span>, <span class="st">"main"</span>,
                   <span class="kw">schema</span> <span class="kw">=</span> <span class="st">"tsdb_test"</span>)</pre></body></html></div>
 </div>
 <div id="read-time-series" class="section level2">
 <h2 class="hasAnchor">
 <a href="#read-time-series" class="anchor"></a>Read Time Series</h2>
-<p>Now let’s read the series we have just stored to the database into R again. Note that <code>read_time_series</code> returns a list of time series whose elements’ names are the time series keys (unique identifiers) from the database. In this case example we use our <a href="https://cran.r-project.org/package=tstools">{tstools}</a> package to visualize both series.</p>
-<div class="sourceCode" id="cb3"><html><body><pre class="r"><span class="no">out</span> <span class="kw">&lt;-</span> <span class="fu"><a href="../reference/read_time_series.html">read_time_series</a></span>(<span class="no">con</span>, <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span>(<span class="st">"JohnsonJohnson"</span>,
+<p>Now let’s read the series we have just stored to the database into R again. Note that <code>db_ts_read</code> returns a list of time series whose elements’ names are the time series keys (unique identifiers) from the database. In this case example we use our <a href="https://cran.r-project.org/package=tstools">{tstools}</a> package to visualize both series.</p>
+<div class="sourceCode" id="cb3"><html><body><pre class="r"><span class="no">out</span> <span class="kw">&lt;-</span> <span class="fu"><a href="../reference/db_ts_read.html">db_ts_read</a></span>(<span class="no">con</span>, <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span>(<span class="st">"JohnsonJohnson"</span>,
                                <span class="st">"AirPassengers"</span>),
                         <span class="kw">schema</span> <span class="kw">=</span> <span class="st">"tsdb_test"</span>)
 

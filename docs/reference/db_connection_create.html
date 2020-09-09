@@ -6,7 +6,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>Create an Entry in the Release Calendar — db_release_create • timeseriesdb</title>
+<title>Create Database Connection — db_connection_create • timeseriesdb</title>
 
 
 <!-- jquery -->
@@ -39,8 +39,11 @@
 
 
 
-<meta property="og:title" content="Create an Entry in the Release Calendar — db_release_create" />
-<meta property="og:description" content="The idea of the release calendar is to set a release date for some time series that might be in the database already but should not be publicly available before a specific date, e.g., a press release. Since publishing is simply a matter of changing the access level, an update of the access levels could be triggered based on the release information in a release table. Only timeseries admins may create and modify releases." />
+<meta property="og:title" content="Create Database Connection — db_connection_create" />
+<meta property="og:description" content="Connects to the PostgreSQL database backend of timeseriesdb. This function
+is convenience wrapper around DBI's dbConnect. It's less general than the DBI
+function and only works for PostgreSQL, but it is a little more convenient
+because of its defaults / assumptions." />
 
 
 
@@ -135,92 +138,75 @@
 <div class="row">
   <div class="col-md-9 contents">
     <div class="page-header">
-    <h1>Create an Entry in the Release Calendar</h1>
-    <small class="dont-index">Source: <a href='https://github.com/mbannert/timeseriesdb/blob/master/R/calendar.R'><code>R/calendar.R</code></a></small>
-    <div class="hidden name"><code>db_release_create.Rd</code></div>
+    <h1>Create Database Connection</h1>
+    <small class="dont-index">Source: <a href='https://github.com/mbannert/timeseriesdb/blob/master/R/utils.R'><code>R/utils.R</code></a></small>
+    <div class="hidden name"><code>db_connection_create.Rd</code></div>
     </div>
 
     <div class="ref-description">
-    <p>The idea of the release calendar is to set a release date for some time series that might be in the database already but should not be publicly available before a specific date, e.g., a press release. Since publishing is simply a matter of changing the access level, an update of the access levels could be triggered based on the release information in a release table. Only timeseries admins may create and modify releases.</p>
+    <p>Connects to the PostgreSQL database backend of timeseriesdb. This function
+is convenience wrapper around DBI's dbConnect. It's less general than the DBI
+function and only works for PostgreSQL, but it is a little more convenient
+because of its defaults / assumptions.</p>
     </div>
 
-    <pre class="usage"><span class='fu'>db_release_create</span>(
-  <span class='no'>con</span>,
-  <span class='no'>id</span>,
-  <span class='no'>title</span>,
-  <span class='no'>release_date</span>,
-  <span class='no'>datasets</span>,
-  <span class='kw'>target_year</span> <span class='kw'>=</span> <span class='fu'>year</span>(<span class='no'>release_date</span>),
-  <span class='kw'>target_period</span> <span class='kw'>=</span> <span class='fu'>month</span>(<span class='no'>release_date</span>),
-  <span class='kw'>target_frequency</span> <span class='kw'>=</span> <span class='fl'>12</span>,
-  <span class='kw'>note</span> <span class='kw'>=</span> <span class='kw'>NULL</span>,
-  <span class='kw'>schema</span> <span class='kw'>=</span> <span class='st'>"timeseries"</span>
+    <pre class="usage"><span class='fu'>db_connection_create</span>(
+  <span class='no'>dbname</span>,
+  <span class='kw'>user</span> <span class='kw'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/Sys.info.html'>Sys.info</a></span>()<span class='kw'>[[</span><span class='st'>"user"</span>]],
+  <span class='kw'>host</span> <span class='kw'>=</span> <span class='st'>"localhost"</span>,
+  <span class='kw'>passwd</span> <span class='kw'>=</span> <span class='kw'>NULL</span>,
+  <span class='kw'>passwd_from_file</span> <span class='kw'>=</span> <span class='fl'>FALSE</span>,
+  <span class='kw'>line_no</span> <span class='kw'>=</span> <span class='fl'>1</span>,
+  <span class='kw'>passwd_from_env</span> <span class='kw'>=</span> <span class='fl'>FALSE</span>,
+  <span class='kw'>connection_description</span> <span class='kw'>=</span> <span class='st'>"timeseriesdb"</span>,
+  <span class='kw'>port</span> <span class='kw'>=</span> <span class='fl'>5432</span>
 )</pre>
 
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
     <table class="ref-arguments">
     <colgroup><col class="name" /><col class="desc" /></colgroup>
     <tr>
-      <th>con</th>
-      <td><p>RPostgres connection object.</p></td>
+      <th>dbname</th>
+      <td><p>character name of the database.</p></td>
     </tr>
     <tr>
-      <th>id</th>
-      <td><p>Identifier for the release e.g. 'gdb_may_2020'</p></td>
+      <th>user</th>
+      <td><p>character name of the database user. Defaults to the user of the R session.
+this is often the user for the database, too so you do not have to specify
+your username explicitly if that is the case.</p></td>
     </tr>
     <tr>
-      <th>title</th>
-      <td><p>Display title for the release</p></td>
+      <th>host</th>
+      <td><p>character denoting the hostname. Defaults to localhost.</p></td>
     </tr>
     <tr>
-      <th>release_date</th>
-      <td><p>Timestamp when the release is to occur</p></td>
+      <th>passwd</th>
+      <td><p>character password, file or environment name. Defaults to NULL triggering an R Studio function that
+asks for your passwords interactively if you are on R Studio. Make sure to adapt the boolean params correspondingly.</p></td>
     </tr>
     <tr>
-      <th>datasets</th>
-      <td><p><strong>character</strong> vector of the datasets. Dataset is a group of time series.</p></td>
+      <th>passwd_from_file</th>
+      <td><p>boolean if set to TRUE the passwd param is interpreted as a file
+location for a password file such as .pgpass. Make sure to be very
+restrictive with file permissions if you store a password to a file.</p></td>
     </tr>
     <tr>
-      <th>target_year</th>
-      <td><p>Year observed in the data</p></td>
+      <th>line_no</th>
+      <td><p>integer specify line number of password file that holds the actual password.</p></td>
     </tr>
     <tr>
-      <th>target_period</th>
-      <td><p>Period observed in the data (e.g. month, quarter)</p></td>
+      <th>connection_description</th>
+      <td><p>character connection description describing the application
+that connects to the database. This is mainly helpful for
+DB admins and shows up in the pg_stat_activity table.
+Defaults to 'timeseriesdb'. Avoid spaces as this is a psql option.</p></td>
     </tr>
     <tr>
-      <th>target_frequency</th>
-      <td><p>Frequency of the data (e.g. 4 for quarterly)</p></td>
-    </tr>
-    <tr>
-      <th>note</th>
-      <td><p>Additional remarks about the release.</p></td>
-    </tr>
-    <tr>
-      <th>schema</th>
-      <td><p><strong>character</strong> name of the database schema. Defaults to 'timeseries'</p></td>
+      <th>port</th>
+      <td><p>integer defaults to 5432, the PostgreSQL standard port.</p></td>
     </tr>
     </table>
 
-    <h2 class="hasAnchor" id="value"><a class="anchor" href="#value"></a>Value</h2>
-
-    <p>a status list</p>
-    <h2 class="hasAnchor" id="details"><a class="anchor" href="#details"></a>Details</h2>
-
-    <p><code>target_period</code> changes meaning depending on the frequency of the release.
-e.g. period 2 for quarterly data (reference_frequency = 4) means Q2 whereas
-period 2 for monthly data (frequency 12) means February
-In other words: <code>target_year</code> and <code>target_period</code> mark the end of the time series
-in the release.</p>
-    <h2 class="hasAnchor" id="see-also"><a class="anchor" href="#see-also"></a>See also</h2>
-
-    <div class='dont-index'><p>Other calendar functions: 
-<code><a href='db_dataset_get_latest_release.html'>db_dataset_get_latest_release</a>()</code>,
-<code><a href='db_dataset_get_next_release.html'>db_dataset_get_next_release</a>()</code>,
-<code><a href='db_dataset_get_release.html'>db_dataset_get_release</a>()</code>,
-<code><a href='db_release_cancel.html'>db_release_cancel</a>()</code>,
-<code><a href='db_release_list.html'>db_release_list</a>()</code>,
-<code><a href='db_release_update.html'>db_release_update</a>()</code></p></div>
 
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">

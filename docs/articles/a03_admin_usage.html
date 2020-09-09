@@ -98,7 +98,7 @@
             <h3 class="subtitle">Administrator Documentation</h3>
                         <h4 class="author">Matthias Bannert and Severin Thöni</h4>
             
-            <h4 class="date">2020-08-20</h4>
+            <h4 class="date">2020-09-09</h4>
       
       <small class="dont-index">Source: <a href="https://github.com/mbannert/timeseriesdb/blob/master/vignettes/a03_admin_usage.Rmd"><code>vignettes/a03_admin_usage.Rmd</code></a></small>
       <div class="hidden name"><code>a03_admin_usage.Rmd</code></div>
@@ -128,7 +128,7 @@
 <span class="no">arr</span> <span class="kw">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/kofdata/man/get_time_series.html">get_time_series</a></span>(<span class="st">"ch.zrh_airport.arrival.total"</span>)
 <span class="no">dep</span> <span class="kw">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/kofdata/man/get_time_series.html">get_time_series</a></span>(<span class="st">"ch.zrh_airport.departure.total"</span>)
 
-<span class="fu"><a href="../reference/store_time_series.html">store_time_series</a></span>(<span class="no">con</span>, <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span>(<span class="no">arr</span>,<span class="no">dep</span>), <span class="kw">schema</span> <span class="kw">=</span> <span class="st">"tsdb_test"</span>)
+<span class="fu"><a href="../reference/db_ts_store.html">db_ts_store</a></span>(<span class="no">con</span>, <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span>(<span class="no">arr</span>,<span class="no">dep</span>), <span class="kw">schema</span> <span class="kw">=</span> <span class="st">"tsdb_test"</span>)
 
 <span class="fu"><a href="../reference/db_dataset_create.html">db_dataset_create</a></span>(<span class="no">con</span>, <span class="st">"ch.zrh_airport"</span>,
                   <span class="kw">set_description</span> <span class="kw">=</span> <span class="st">"Arrivals and Departures ZH Airport"</span>,
@@ -177,19 +177,19 @@
 <h3 class="hasAnchor">
 <a href="#access-levels" class="anchor"></a>Access Levels</h3>
 <p>{timeseriesdb} can control access at the time series and even at the version level. The basic installation ships with three access levels: public, main and restricted. The idea of the public level is that every users with access to the {timeseriesdb} database schema can read public series. The idea of the ‘main’ level is to give all users inside an organization access to the assigned data. ‘restricted’ is designed to limit access to subgroups within an organization. We guess you see where this is going. By adding further access levels, admins can add more narrow user groups for parts of the data.</p>
-<p><a href="../reference/db_access_list_levels.html">db_access_list_levels()</a> lists all access levels available for a schema. New levels are created easily. Note also that new levels can be made the default.</p>
-<div class="sourceCode" id="cb4"><html><body><pre class="r"><span class="fu"><a href="../reference/db_access_create_level.html">db_access_create_level</a></span>(<span class="no">con</span>,
+<p><a href="../reference/db_access_level_list.html">db_access_level_list()</a> lists all access levels available for a schema. New levels are created easily. Note also that new levels can be made the default.</p>
+<div class="sourceCode" id="cb4"><html><body><pre class="r"><span class="fu"><a href="../reference/db_access_level_create.html">db_access_level_create</a></span>(<span class="no">con</span>,
                        <span class="kw">access_level_name</span> <span class="kw">=</span>  <span class="st">"management"</span>,
                        <span class="kw">access_level_description</span> <span class="kw">=</span> <span class="st">"series only available"</span>,
                        <span class="kw">access_level_default</span> <span class="kw">=</span> <span class="fl">TRUE</span>,
                        <span class="kw">schema</span> <span class="kw">=</span> <span class="st">"tsdb_test"</span>
                        )</pre></body></html></div>
-<p>Obviously only one access level can be ‘default’ at a time. Defaults can be set post creation as well using <a href="../reference/db_access_set_default.html">db_access_set_default()</a>. To delete levels, run <a href="../reference/db_access_delete_level.html">db_access_delete_level()</a>.</p>
+<p>Obviously only one access level can be ‘default’ at a time. Defaults can be set post creation as well using <a href="../reference/db_access_level_set_default.html">db_access_level_set_default()</a>. To delete levels, run <a href="../reference/db_access_level_delete.html">db_access_level_delete()</a>.</p>
 </div>
 <div id="assigning-access" class="section level3">
 <h3 class="hasAnchor">
 <a href="#assigning-access" class="anchor"></a>Assigning Access</h3>
-<p>To assign an access level to a single time series use <a href="../reference/db_ts_change_access.html">db_ts_change_access()</a>, to assign an access level to an entire dataset, i.e., to all series in a set, use <a href="../reference/db_ts_change_access_dataset.html">db_ts_change_access_dataset()</a>.</p>
+<p>To assign an access level to a single time series use <a href="../reference/db_ts_change_access.html">db_ts_change_access()</a>, to assign an access level to an entire dataset, i.e., to all series in a set, use <a href="../reference/db_dataset_change_access.html">db_dataset_change_access()</a>.</p>
 </div>
 </div>
   </div>
