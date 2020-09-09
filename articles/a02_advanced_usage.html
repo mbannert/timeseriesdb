@@ -97,7 +97,7 @@
       <h1 data-toc-skip>Advanced Usage</h1>
                         <h4 class="author">Matthias Bannert and Severin Thöni</h4>
             
-            <h4 class="date">2020-08-20</h4>
+            <h4 class="date">2020-09-09</h4>
       
       <small class="dont-index">Source: <a href="https://github.com/mbannert/timeseriesdb/blob/master/vignettes/a02_advanced_usage.Rmd"><code>vignettes/a02_advanced_usage.Rmd</code></a></small>
       <div class="hidden name"><code>a02_advanced_usage.Rmd</code></div>
@@ -117,20 +117,20 @@
 <p>A core feature of {timeseriesdb} is the ability to store vintages, i.e., different versions of time series. The package was created with official and economic statistics in mind, so data revisions and the ability to evaluate forecasts play an important role in the package design. Hence {timeseriesdb} versions every time series it stores by default.</p>
 <p>Let’s assume <code>baro_2019m10</code> is a time series published in October 2019 and <code>baro_2019m11</code> is yet another version of the very same time series. We can simply store</p>
 <div class="sourceCode" id="cb1"><html><body><pre class="r"><span class="fu"><a href="https://rdrr.io/r/utils/data.html">data</a></span>(<span class="st">"kof_ts"</span>)
-<span class="fu"><a href="../reference/store_time_series.html">store_time_series</a></span>(<span class="no">con</span>,
+<span class="fu"><a href="../reference/db_ts_store.html">db_ts_store</a></span>(<span class="no">con</span>,
                   <span class="fu"><a href="https://rdrr.io/r/base/list.html">list</a></span>(<span class="kw">ch.kof.barometer</span> <span class="kw">=</span> <span class="no">kof_ts</span>$<span class="no">baro_2019m10</span>),
                   <span class="kw">valid_from</span><span class="kw">=</span><span class="st">"2019-10-30"</span>,
                   <span class="kw">schema</span> <span class="kw">=</span> <span class="st">"tsdb_test"</span>)
 
-<span class="fu"><a href="../reference/store_time_series.html">store_time_series</a></span>(<span class="no">con</span>,
+<span class="fu"><a href="../reference/db_ts_store.html">db_ts_store</a></span>(<span class="no">con</span>,
                   <span class="fu"><a href="https://rdrr.io/r/base/list.html">list</a></span>(<span class="kw">ch.kof.barometer</span> <span class="kw">=</span> <span class="no">kof_ts</span>$<span class="no">baro_2019m11</span>),
                   <span class="kw">valid_from</span><span class="kw">=</span><span class="st">"2019-11-30"</span>,
                   <span class="kw">schema</span> <span class="kw">=</span> <span class="st">"tsdb_test"</span>)</pre></body></html></div>
 <p>and read them under the same key.</p>
-<div class="sourceCode" id="cb2"><html><body><pre class="r"><span class="fu"><a href="../reference/read_time_series.html">read_time_series</a></span>(<span class="no">con</span>, <span class="st">"ch.kof.barometer"</span>,
+<div class="sourceCode" id="cb2"><html><body><pre class="r"><span class="fu"><a href="../reference/db_ts_read.html">db_ts_read</a></span>(<span class="no">con</span>, <span class="st">"ch.kof.barometer"</span>,
                  <span class="kw">schema</span> <span class="kw">=</span> <span class="st">"tsdb_test"</span>)</pre></body></html></div>
 <p>Note how the default validity (today per <code><a href="https://rdrr.io/r/base/Sys.time.html">Sys.Date()</a></code>) is used when <code>valid_on</code> is not specified. You can also get read the entire history which returns a list of time series that contains version of time series. List elements will be named according validity thresholds.</p>
-<div class="sourceCode" id="cb3"><html><body><pre class="r"><span class="no">tsl</span> <span class="kw">&lt;-</span> <span class="fu"><a href="../reference/read_time_series_history.html">read_time_series_history</a></span>(<span class="no">con</span>,<span class="st">"ch.kof.barometer"</span>,
+<div class="sourceCode" id="cb3"><html><body><pre class="r"><span class="no">tsl</span> <span class="kw">&lt;-</span> <span class="fu"><a href="../reference/db_ts_read_history.html">db_ts_read_history</a></span>(<span class="no">con</span>,<span class="st">"ch.kof.barometer"</span>,
                                 <span class="kw">schema</span> <span class="kw">=</span> <span class="st">"tsdb_test"</span>)</pre></body></html></div>
 </div>
 <div id="datasets" class="section level2">
@@ -156,7 +156,7 @@
 <div class="sourceCode" id="cb7"><html><body><pre class="r"><span class="fu">db_list_releases</span>(<span class="no">con</span>, <span class="kw">include_past</span> <span class="kw">=</span> <span class="no">T</span>, <span class="kw">schema</span> <span class="kw">=</span> <span class="st">"tsdb_test"</span>)</pre></body></html></div>
 <p>Cancelling a future release is simply a matter of calling <a href="../reference/db_release_cancel.html">db_release_cancel()</a>. Cancellation of past releases is not possible, but release can be updated with <a href="../reference/db_release_update.html">db_release_update()</a>. Also you can easily query the latest release</p>
 <div class="sourceCode" id="cb8"><html><body><pre class="r"><span class="fu">db_get_latest_release_for_set</span>(<span class="no">con</span>, <span class="st">"ch.zrh_airport"</span>,<span class="kw">schema</span> <span class="kw">=</span> <span class="st">"tsdb_test"</span>)</pre></body></html></div>
-<p>Similarily use <a href="../reference/db_release_get_next.html">db_release_get_next()</a> to get the next upcoming release.</p>
+<p>Similarily use <a href="../reference/db_dataset_next_release">db_dataset_next_release()</a> to get the next upcoming release.</p>
 </div>
 <div id="collections" class="section level2">
 <h2 class="hasAnchor">
@@ -172,7 +172,7 @@
                            <span class="st">"AirPassengers"</span>),
                   <span class="kw">description</span> <span class="kw">=</span> <span class="st">"Flying Around Now and Then"</span>,
                   <span class="kw">schema</span> <span class="kw">=</span> <span class="st">"tsdb_test"</span>)</pre></body></html></div>
-<p>You can remove keys from a collection using <a href="../reference/db_ts_remove_from_collection.html">db_ts_remove_from_collection()</a> and delete an entire collection with <a href="../reference/db_collection_delete">db_collection_delete()</a>.</p>
+<p>You can remove keys from a collection using <a href="../reference/db_collection_remove_ts.html">db_collection_remove_ts()</a> and delete an entire collection with <a href="../reference/db_collection_delete">db_collection_delete()</a>.</p>
 </div>
 <div id="advanced-meta-information" class="section level2">
 <h2 class="hasAnchor">

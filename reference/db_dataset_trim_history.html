@@ -179,8 +179,9 @@ of versions are not needed.</p>
 <code><a href='db_dataset_create.html'>db_dataset_create</a>()</code>,
 <code><a href='db_dataset_delete.html'>db_dataset_delete</a>()</code>,
 <code><a href='db_dataset_get_keys.html'>db_dataset_get_keys</a>()</code>,
+<code><a href='db_dataset_get_last_update.html'>db_dataset_get_last_update</a>()</code>,
 <code><a href='db_dataset_list.html'>db_dataset_list</a>()</code>,
-<code><a href='db_dataset_update.html'>db_dataset_update</a>()</code>,
+<code><a href='db_dataset_update_metadata.html'>db_dataset_update_metadata</a>()</code>,
 <code><a href='db_ts_assign_dataset.html'>db_ts_assign_dataset</a>()</code>,
 <code><a href='db_ts_get_dataset.html'>db_ts_get_dataset</a>()</code></p></div>
 
@@ -192,7 +193,7 @@ of versions are not needed.</p>
 <span class='co'># different versions are stored with the same key</span>
 <span class='no'>ch.kof.barometer</span> <span class='kw'>&lt;-</span> <span class='no'>kof_ts</span>[<span class='st'>"baro_2019m11"</span>]
 <span class='fu'><a href='https://rdrr.io/r/base/names.html'>names</a></span>(<span class='no'>ch.kof.barometer</span>) <span class='kw'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span>(<span class='st'>"ch.kof.barometer"</span>)
-<span class='fu'><a href='store_time_series.html'>store_time_series</a></span>(
+<span class='fu'><a href='db_ts_store.html'>db_ts_store</a></span>(
   <span class='kw'>con</span> <span class='kw'>=</span> <span class='no'>connection</span>,
   <span class='no'>ch.kof.barometer</span>,
   <span class='kw'>valid_from</span> <span class='kw'>=</span> <span class='st'>"2019-12-01"</span>,
@@ -201,7 +202,7 @@ of versions are not needed.</p>
 
 <span class='no'>ch.kof.barometer</span> <span class='kw'>&lt;-</span> <span class='no'>kof_ts</span>[<span class='st'>"baro_2019m12"</span>]
 <span class='fu'><a href='https://rdrr.io/r/base/names.html'>names</a></span>(<span class='no'>ch.kof.barometer</span>) <span class='kw'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span>(<span class='st'>"ch.kof.barometer"</span>)
-<span class='fu'><a href='store_time_series.html'>store_time_series</a></span>(
+<span class='fu'><a href='db_ts_store.html'>db_ts_store</a></span>(
   <span class='kw'>con</span> <span class='kw'>=</span> <span class='no'>connection</span>,
   <span class='no'>ch.kof.barometer</span>,
   <span class='kw'>valid_from</span> <span class='kw'>=</span> <span class='st'>"2020-01-01"</span>,

@@ -6,7 +6,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>Create an Entry in the Release Calendar — db_release_create • timeseriesdb</title>
+<title>Get All Access Levels and Their Description — db_access_level_list • timeseriesdb</title>
 
 
 <!-- jquery -->
@@ -39,8 +39,9 @@
 
 
 
-<meta property="og:title" content="Create an Entry in the Release Calendar — db_release_create" />
-<meta property="og:description" content="The idea of the release calendar is to set a release date for some time series that might be in the database already but should not be publicly available before a specific date, e.g., a press release. Since publishing is simply a matter of changing the access level, an update of the access levels could be triggered based on the release information in a release table. Only timeseries admins may create and modify releases." />
+<meta property="og:title" content="Get All Access Levels and Their Description — db_access_level_list" />
+<meta property="og:description" content="Gets an overview of roles and shows whether a role (aka access level) is
+the default level for series stored without an explicitly specified access level." />
 
 
 
@@ -135,27 +136,17 @@
 <div class="row">
   <div class="col-md-9 contents">
     <div class="page-header">
-    <h1>Create an Entry in the Release Calendar</h1>
-    <small class="dont-index">Source: <a href='https://github.com/mbannert/timeseriesdb/blob/master/R/calendar.R'><code>R/calendar.R</code></a></small>
-    <div class="hidden name"><code>db_release_create.Rd</code></div>
+    <h1>Get All Access Levels and Their Description</h1>
+    <small class="dont-index">Source: <a href='https://github.com/mbannert/timeseriesdb/blob/master/R/access_levels.R'><code>R/access_levels.R</code></a></small>
+    <div class="hidden name"><code>db_access_level_list.Rd</code></div>
     </div>
 
     <div class="ref-description">
-    <p>The idea of the release calendar is to set a release date for some time series that might be in the database already but should not be publicly available before a specific date, e.g., a press release. Since publishing is simply a matter of changing the access level, an update of the access levels could be triggered based on the release information in a release table. Only timeseries admins may create and modify releases.</p>
+    <p>Gets an overview of roles and shows whether a role (aka access level) is
+the default level for series stored without an explicitly specified access level.</p>
     </div>
 
-    <pre class="usage"><span class='fu'>db_release_create</span>(
-  <span class='no'>con</span>,
-  <span class='no'>id</span>,
-  <span class='no'>title</span>,
-  <span class='no'>release_date</span>,
-  <span class='no'>datasets</span>,
-  <span class='kw'>target_year</span> <span class='kw'>=</span> <span class='fu'>year</span>(<span class='no'>release_date</span>),
-  <span class='kw'>target_period</span> <span class='kw'>=</span> <span class='fu'>month</span>(<span class='no'>release_date</span>),
-  <span class='kw'>target_frequency</span> <span class='kw'>=</span> <span class='fl'>12</span>,
-  <span class='kw'>note</span> <span class='kw'>=</span> <span class='kw'>NULL</span>,
-  <span class='kw'>schema</span> <span class='kw'>=</span> <span class='st'>"timeseries"</span>
-)</pre>
+    <pre class="usage"><span class='fu'>db_access_level_list</span>(<span class='no'>con</span>, <span class='kw'>schema</span> <span class='kw'>=</span> <span class='st'>"timeseries"</span>)</pre>
 
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
     <table class="ref-arguments">
@@ -165,38 +156,6 @@
       <td><p>RPostgres connection object.</p></td>
     </tr>
     <tr>
-      <th>id</th>
-      <td><p>Identifier for the release e.g. 'gdb_may_2020'</p></td>
-    </tr>
-    <tr>
-      <th>title</th>
-      <td><p>Display title for the release</p></td>
-    </tr>
-    <tr>
-      <th>release_date</th>
-      <td><p>Timestamp when the release is to occur</p></td>
-    </tr>
-    <tr>
-      <th>datasets</th>
-      <td><p><strong>character</strong> vector of the datasets. Dataset is a group of time series.</p></td>
-    </tr>
-    <tr>
-      <th>target_year</th>
-      <td><p>Year observed in the data</p></td>
-    </tr>
-    <tr>
-      <th>target_period</th>
-      <td><p>Period observed in the data (e.g. month, quarter)</p></td>
-    </tr>
-    <tr>
-      <th>target_frequency</th>
-      <td><p>Frequency of the data (e.g. 4 for quarterly)</p></td>
-    </tr>
-    <tr>
-      <th>note</th>
-      <td><p>Additional remarks about the release.</p></td>
-    </tr>
-    <tr>
       <th>schema</th>
       <td><p><strong>character</strong> name of the database schema. Defaults to 'timeseries'</p></td>
     </tr>
@@ -204,23 +163,15 @@
 
     <h2 class="hasAnchor" id="value"><a class="anchor" href="#value"></a>Value</h2>
 
-    <p>a status list</p>
-    <h2 class="hasAnchor" id="details"><a class="anchor" href="#details"></a>Details</h2>
-
-    <p><code>target_period</code> changes meaning depending on the frequency of the release.
-e.g. period 2 for quarterly data (reference_frequency = 4) means Q2 whereas
-period 2 for monthly data (frequency 12) means February
-In other words: <code>target_year</code> and <code>target_period</code> mark the end of the time series
-in the release.</p>
+    <p>access levels data.frame with columns `role` and `description` and `is_default`</p>
     <h2 class="hasAnchor" id="see-also"><a class="anchor" href="#see-also"></a>See also</h2>
 
-    <div class='dont-index'><p>Other calendar functions: 
-<code><a href='db_dataset_get_latest_release.html'>db_dataset_get_latest_release</a>()</code>,
-<code><a href='db_dataset_get_next_release.html'>db_dataset_get_next_release</a>()</code>,
-<code><a href='db_dataset_get_release.html'>db_dataset_get_release</a>()</code>,
-<code><a href='db_release_cancel.html'>db_release_cancel</a>()</code>,
-<code><a href='db_release_list.html'>db_release_list</a>()</code>,
-<code><a href='db_release_update.html'>db_release_update</a>()</code></p></div>
+    <div class='dont-index'><p>Other access levels functions: 
+<code><a href='change_access_level.html'>change_access_level</a></code>,
+<code><a href='db_access_level_create.html'>db_access_level_create</a>()</code>,
+<code><a href='db_access_level_delete.html'>db_access_level_delete</a>()</code>,
+<code><a href='db_access_level_set_default.html'>db_access_level_set_default</a>()</code>,
+<code><a href='db_ts_find_keys.html'>db_ts_find_keys</a>()</code></p></div>
 
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">

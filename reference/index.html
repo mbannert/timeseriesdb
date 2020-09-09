@@ -160,7 +160,7 @@
       <tr>
         
         <td>
-          <p><code><a href="change_access_level.html">db_ts_change_access()</a></code> <code><a href="change_access_level.html">db_ts_change_access_dataset()</a></code> </p>
+          <p><code><a href="change_access_level.html">db_ts_change_access()</a></code> <code><a href="change_access_level.html">db_dataset_change_access()</a></code> </p>
         </td>
         <td><p>Change the Access Level of a Time Series</p></td>
       </tr><tr>
@@ -172,25 +172,25 @@
       </tr><tr>
         
         <td>
-          <p><code><a href="db_access_create_level.html">db_access_create_level()</a></code> </p>
+          <p><code><a href="db_access_level_create.html">db_access_level_create()</a></code> </p>
         </td>
         <td><p>Create a New Role (Access Level)</p></td>
       </tr><tr>
         
         <td>
-          <p><code><a href="db_access_delete_level.html">db_access_delete_level()</a></code> </p>
+          <p><code><a href="db_access_level_delete.html">db_access_level_delete()</a></code> </p>
         </td>
         <td><p>Delete a role in access levels table</p></td>
       </tr><tr>
         
         <td>
-          <p><code><a href="db_access_list_levels.html">db_access_list_levels()</a></code> </p>
+          <p><code><a href="db_access_level_list.html">db_access_level_list()</a></code> </p>
         </td>
         <td><p>Get All Access Levels and Their Description</p></td>
       </tr><tr>
         
         <td>
-          <p><code><a href="db_access_set_default.html">db_access_set_default()</a></code> </p>
+          <p><code><a href="db_access_level_set_default.html">db_access_level_set_default()</a></code> </p>
         </td>
         <td><p>Set the Default Access Level</p></td>
       </tr><tr>
@@ -202,9 +202,27 @@
       </tr><tr>
         
         <td>
+          <p><code><a href="db_collection_add_ts.html">db_collection_add_ts()</a></code> </p>
+        </td>
+        <td><p>Bundles Keys into an Existing Collection or Adds a New Collection</p></td>
+      </tr><tr>
+        
+        <td>
           <p><code><a href="db_collection_delete.html">db_collection_delete()</a></code> </p>
         </td>
         <td><p>Remove an Entire Time Series Key Collection</p></td>
+      </tr><tr>
+        
+        <td>
+          <p><code><a href="db_collection_get_keys.html">db_collection_get_keys()</a></code> </p>
+        </td>
+        <td><p>Get All Keys in a User Collection</p></td>
+      </tr><tr>
+        
+        <td>
+          <p><code><a href="db_collection_get_last_update.html">db_collection_get_last_update()</a></code> </p>
+        </td>
+        <td><p>Get the last update of a collection for a specific User</p></td>
       </tr><tr>
         
         <td>
@@ -214,7 +232,7 @@
       </tr><tr>
         
         <td>
-          <p><code><a href="db_collection_read_meta.html">db_collection_read_meta()</a></code> </p>
+          <p><code><a href="db_collection_read_metadata.html">db_collection_read_metadata()</a></code> </p>
         </td>
         <td><p>Read Metadata for a Collection</p></td>
       </tr><tr>
@@ -226,7 +244,19 @@
       </tr><tr>
         
         <td>
-          <p><code><a href="db_create_connection.html">db_create_connection()</a></code> </p>
+          <p><code><a href="db_collection_remove_ts.html">db_collection_remove_ts()</a></code> </p>
+        </td>
+        <td><p>Remove Keys From a User's Collection</p></td>
+      </tr><tr>
+        
+        <td>
+          <p><code><a href="db_connection_close.html">db_connection_close()</a></code> </p>
+        </td>
+        <td><p>Close an Existing Database Connection</p></td>
+      </tr><tr>
+        
+        <td>
+          <p><code><a href="db_connection_create.html">db_connection_create()</a></code> </p>
         </td>
         <td><p>Create Database Connection</p></td>
       </tr><tr>
@@ -250,13 +280,37 @@
       </tr><tr>
         
         <td>
+          <p><code><a href="db_dataset_get_last_update.html">db_dataset_get_last_update()</a></code> </p>
+        </td>
+        <td><p>Get the dataset last update</p></td>
+      </tr><tr>
+        
+        <td>
+          <p><code><a href="db_dataset_get_latest_release.html">db_dataset_get_latest_release()</a></code> </p>
+        </td>
+        <td><p>Get the latest Release for Given Datasets</p></td>
+      </tr><tr>
+        
+        <td>
+          <p><code><a href="db_dataset_get_next_release.html">db_dataset_get_next_release()</a></code> </p>
+        </td>
+        <td><p>Get Next Release Date for Given Datasets</p></td>
+      </tr><tr>
+        
+        <td>
+          <p><code><a href="db_dataset_get_release.html">db_dataset_get_release()</a></code> </p>
+        </td>
+        <td><p>Get the latest Release for Given Datasets</p></td>
+      </tr><tr>
+        
+        <td>
           <p><code><a href="db_dataset_list.html">db_dataset_list()</a></code> </p>
         </td>
         <td><p>Get All Available Datasets and Their Description</p></td>
       </tr><tr>
         
         <td>
-          <p><code><a href="db_dataset_read_meta.html">db_dataset_read_meta()</a></code> </p>
+          <p><code><a href="db_dataset_read_metadata.html">db_dataset_read_metadata()</a></code> </p>
         </td>
         <td><p>Read Dataset Meta Information</p></td>
       </tr><tr>
@@ -274,7 +328,7 @@
       </tr><tr>
         
         <td>
-          <p><code><a href="db_dataset_update.html">db_dataset_update()</a></code> </p>
+          <p><code><a href="db_dataset_update_metadata.html">db_dataset_update_metadata()</a></code> </p>
         </td>
         <td><p>Update Description and/or Metadata of a Dataset</p></td>
       </tr><tr>
@@ -292,13 +346,13 @@
       </tr><tr>
         
         <td>
-          <p><code><a href="db_meta_read.html">db_meta_read()</a></code> </p>
+          <p><code><a href="db_metadata_read.html">db_metadata_read()</a></code> </p>
         </td>
         <td><p>Read Time Series Metadata</p></td>
       </tr><tr>
         
         <td>
-          <p><code><a href="db_meta_store.html">db_meta_store()</a></code> </p>
+          <p><code><a href="db_metadata_store.html">db_metadata_store()</a></code> </p>
         </td>
         <td><p>Store Time Series Metadata to PostgreSQL</p></td>
       </tr><tr>
@@ -316,18 +370,6 @@
       </tr><tr>
         
         <td>
-          <p><code><a href="db_release_get_latest.html">db_release_get_latest()</a></code> </p>
-        </td>
-        <td><p>Get the latest Release for Given Datasets</p></td>
-      </tr><tr>
-        
-        <td>
-          <p><code><a href="db_release_get_next.html">db_release_get_next()</a></code> </p>
-        </td>
-        <td><p>Get Next Release Date for Given Datasets</p></td>
-      </tr><tr>
-        
-        <td>
           <p><code><a href="db_release_list.html">db_release_list()</a></code> </p>
         </td>
         <td><p>List Data on Registered Releases</p></td>
@@ -337,12 +379,6 @@
           <p><code><a href="db_release_update.html">db_release_update()</a></code> </p>
         </td>
         <td><p>Update an Existing Release Record</p></td>
-      </tr><tr>
-        
-        <td>
-          <p><code><a href="db_ts_add_to_collection.html">db_ts_add_to_collection()</a></code> </p>
-        </td>
-        <td><p>Bundles Keys into an Existing Collection or Adds a New Collection</p></td>
       </tr><tr>
         
         <td>
@@ -364,15 +400,45 @@
       </tr><tr>
         
         <td>
+          <p><code><a href="db_ts_find_keys.html">db_ts_find_keys()</a></code> </p>
+        </td>
+        <td><p>Get All keys that follow a pattern</p></td>
+      </tr><tr>
+        
+        <td>
           <p><code><a href="db_ts_get_dataset.html">db_ts_get_dataset()</a></code> </p>
         </td>
         <td><p>Find Datasets Given a Set</p></td>
       </tr><tr>
         
         <td>
-          <p><code><a href="db_ts_remove_from_collection.html">db_ts_remove_from_collection()</a></code> </p>
+          <p><code><a href="db_ts_get_last_update.html">db_ts_get_last_update()</a></code> </p>
         </td>
-        <td><p>Remove Keys From a User's Collection</p></td>
+        <td><p>Get the times series last update</p></td>
+      </tr><tr>
+        
+        <td>
+          <p><code><a href="db_ts_read.html">db_ts_read()</a></code> </p>
+        </td>
+        <td><p>Read Time Series From PostgreSQL into R</p></td>
+      </tr><tr>
+        
+        <td>
+          <p><code><a href="db_ts_read_history.html">db_ts_read_history()</a></code> </p>
+        </td>
+        <td><p>Read the Entire History of a Time Series</p></td>
+      </tr><tr>
+        
+        <td>
+          <p><code><a href="db_ts_rename.html">db_ts_rename()</a></code> </p>
+        </td>
+        <td><p>Rename Time Series by Assigning a New Key</p></td>
+      </tr><tr>
+        
+        <td>
+          <p><code><a href="db_ts_store.html">db_ts_store()</a></code> </p>
+        </td>
+        <td><p>Store a Time Series to the Database</p></td>
       </tr><tr>
         
         <td>
@@ -424,18 +490,6 @@
       </tr><tr>
         
         <td>
-          <p><code><a href="read_time_series.html">read_time_series()</a></code> </p>
-        </td>
-        <td><p>Read Time Series From PostgreSQL into R</p></td>
-      </tr><tr>
-        
-        <td>
-          <p><code><a href="read_time_series_history.html">read_time_series_history()</a></code> </p>
-        </td>
-        <td><p>Read the Entire History of a Time Series</p></td>
-      </tr><tr>
-        
-        <td>
           <p><code><a href="setup_sql_extentions.html">setup_sql_extentions()</a></code> </p>
         </td>
         <td><p>Install PostgreSQL Schemas and Extensions</p></td>
@@ -469,12 +523,6 @@
           <p><code><a href="setup_sql_triggers.html">setup_sql_triggers()</a></code> </p>
         </td>
         <td><p>Install timeseriesdb Triggers</p></td>
-      </tr><tr>
-        
-        <td>
-          <p><code><a href="store_time_series.html">store_time_series()</a></code> </p>
-        </td>
-        <td><p>Store a Time Series to the Database</p></td>
       </tr>
     </tbody>
     </table>

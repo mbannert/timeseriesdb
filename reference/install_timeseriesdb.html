@@ -152,7 +152,13 @@ rights will be granted and revoked from the freshly created roles.
 Note also, that the functions created are created as SECURITY DEFINER roles.</p>
     </div>
 
-    <pre class="usage"><span class='fu'>install_timeseriesdb</span>(<span class='no'>con</span>, <span class='kw'>schema</span> <span class='kw'>=</span> <span class='st'>"timeseries"</span>, <span class='kw'>verbose</span> <span class='kw'>=</span> <span class='fl'>FALSE</span>)</pre>
+    <pre class="usage"><span class='fu'>install_timeseriesdb</span>(
+  <span class='no'>con</span>,
+  <span class='kw'>schema</span> <span class='kw'>=</span> <span class='st'>"timeseries"</span>,
+  <span class='kw'>verbose</span> <span class='kw'>=</span> <span class='fl'>FALSE</span>,
+  <span class='kw'>install_tables</span> <span class='kw'>=</span> <span class='fl'>TRUE</span>,
+  <span class='kw'>install_functions</span> <span class='kw'>=</span> <span class='fl'>TRUE</span>
+)</pre>
 
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
     <table class="ref-arguments">
