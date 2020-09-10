@@ -57,47 +57,47 @@ test_with_fresh_db(con_admin, "by default it reads the most recent valid vintage
 
 test_with_fresh_db(con_admin, "by default it reads the most recent valid vintage but with respecting rls date", {
   tsl_read <- db_ts_read(con_reader_main,
-                               "rts1",
-                               respect_release_date = TRUE,
-                               schema = "tsdb_test")
+                         "rts1",
+                         respect_release_date = TRUE,
+                         schema = "tsdb_test")
   expect_equal(tsl_read, tsl_state_1)
 })
 
 test_with_fresh_db(con_admin, "reading desired vintages works", {
   tsl_read_1 <- db_ts_read(con_reader_main,
-                                 "rts1",
-                                 valid_on = Sys.Date() - 4,
-                                 schema = "tsdb_test")
+                           "rts1",
+                           valid_on = Sys.Date() - 4,
+                           schema = "tsdb_test")
   expect_equal(tsl_read_1, tsl_state_0)
 
   tsl_read_2 <- db_ts_read(con_reader_main,
-                                 "rts1",
-                                 valid_on = Sys.Date() - 2,
-                                 schema = "tsdb_test")
+                           "rts1",
+                           valid_on = Sys.Date() - 2,
+                           schema = "tsdb_test")
   expect_equal(tsl_read_2, tsl_state_1)
 })
 
 test_with_fresh_db(con_admin, "reading vintages, respecting release date", {
   tsl_read <- db_ts_read(con_reader_main,
-                               "rts1",
-                               valid_on = Sys.Date() - 2,
-                               respect_release_date = TRUE,
-                               schema = "tsdb_test")
+                         "rts1",
+                         valid_on = Sys.Date() - 2,
+                         respect_release_date = TRUE,
+                         schema = "tsdb_test")
   expect_equal(tsl_read, tsl_state_1)
 })
 
 test_with_fresh_db(con_admin, "reading via regex works", {
   tsl_read <- db_ts_read(con_reader_main,
-                               "^rts",
-                               regex = TRUE,
-                               schema = "tsdb_test")
+                         "^rts",
+                         regex = TRUE,
+                         schema = "tsdb_test")
   expect_setequal(names(tsl_read), c("rts1", "rtsp", "rtsx"))
 })
 
 test_with_fresh_db(con_admin, "reading an xts", {
   tsl_read <- db_ts_read(con_reader_main,
-                               "rtsx",
-                               schema = "tsdb_test")
+                         "rtsx",
+                         schema = "tsdb_test")
   expect_equal(tsl_read, tslx)
 })
 
@@ -127,8 +127,8 @@ context("reading datasets")
 
 test_with_fresh_db(con_admin, "reading a whole dataset works", {
   tsl_read <- db_dataset_read_ts(con_reader_main,
-                                          "set_read",
-                                          schema = "tsdb_test")
+                                 "set_read",
+                                 schema = "tsdb_test")
 
   exp <- structure(c(tsl_state_2, tsl_pblc), class = c("tslist", "list"))
 
@@ -137,9 +137,9 @@ test_with_fresh_db(con_admin, "reading a whole dataset works", {
 
 test_with_fresh_db(con_admin, "reading whole dataset, reapecting release date",  {
   tsl_read <- db_dataset_read_ts(con_reader_main,
-                                          "set_read",
-                                          respect_release_date = TRUE,
-                                          schema = "tsdb_test")
+                                 "set_read",
+                                 respect_release_date = TRUE,
+                                 schema = "tsdb_test")
 
   exp <- structure(c(tsl_state_1, tsl_pblc), class = c("tslist", "list"))
 
@@ -148,25 +148,25 @@ test_with_fresh_db(con_admin, "reading whole dataset, reapecting release date", 
 
 test_with_fresh_db(con_admin, "reading whole dataset, leaving out prohibited series", {
   tsl_read <- db_dataset_read_ts(con_reader_public,
-                                          "set_read",
-                                          schema = "tsdb_test")
+                                 "set_read",
+                                 schema = "tsdb_test")
 
   expect_equal(tsl_read, tsl_pblc)
 })
 
 test_with_fresh_db(con_admin, "reading older vintages of dataset", {
   tsl_read <- db_dataset_read_ts(con_reader_main,
-                                          "set_read",
-                                          valid_on = Sys.Date() - 4,
-                                          schema = "tsdb_test")
+                                 "set_read",
+                                 valid_on = Sys.Date() - 4,
+                                 schema = "tsdb_test")
 
   expect_equal(tsl_read, tsl_state_0)
 })
 
 test_with_fresh_db(con_admin, "reading nonexistend set", {
   tsl_read <- db_dataset_read_ts(con_reader_main,
-                                          "notaset",
-                                          schema = "tsdb_test")
+                                 "notaset",
+                                 schema = "tsdb_test")
 
   expect_is(tsl_read, "tslist")
   expect_length(tsl_read, 0)
@@ -174,8 +174,8 @@ test_with_fresh_db(con_admin, "reading nonexistend set", {
 
 test_with_fresh_db(con_admin, "reading multiple sets", {
   tsl_read <- db_dataset_read_ts(con_reader_main,
-                                          c("set_read", "default"),
-                                          schema = "tsdb_test")
+                                 c("set_read", "default"),
+                                 schema = "tsdb_test")
   expect_setequal(names(tsl_read), c("rts1", "rtsp", "rtsx", "vts1", "vts2"))
 })
 
@@ -187,7 +187,7 @@ test_with_fresh_db(con_admin, "SQL-only test for array version of read dataset",
     c(
       "rts1",
       "rtsp"
-      )
+    )
   )
 
   expect_match(
@@ -201,14 +201,38 @@ test_with_fresh_db(con_admin, "SQL-only test for array version of read dataset",
   )
 })
 
+
+
+test_with_fresh_db(con_admin, "SQL-only test for long format ts read", {
+  out <- dbGetQuery(con_reader_main, "SELECT * FROM tsdb_test.ts_read_long('{rts1,rts2}'::TEXT[])")
+
+  expect_equal(
+    out,
+    structure(list(ts_key = c("rts1", "rts1", "rts1", "rts1", "rts1",
+                              "rts1", "rts1", "rts1", "rts1", "rts1"),
+                   date = c("\"2019-01-01\"",                                                                                "\"2019-04-01\"", "\"2019-07-01\"", "\"2019-10-01\"", "\"2020-01-01\"",
+                            "\"2020-04-01\"", "\"2020-07-01\"", "\"2020-10-01\"", "\"2021-01-01\"",
+                            "\"2021-04-01\""), value = c(2.1, 2.1, 2.1, 2.1, 2.1, 2.1, 2.1,
+                                                         2.1, 2.1, 2.1)),
+              class = "data.frame", row.names = c(NA, -10L
+                                                         ))
+  )
+
+
+})
+
+
+
+
+
 # reading collections --------------------------------------------------------
 context("reading collections")
 
 test_with_fresh_db(con_admin, "reading a collection works", {
   tsl_read <- db_collection_read_ts(con_reader_main,
-                                             "readtest",
-                                             "test",
-                                             schema = "tsdb_test")
+                                    "readtest",
+                                    "test",
+                                    schema = "tsdb_test")
 
   exp <- structure(c(tsl_state_2, tsl_pblc), class = c("tslist", "list"))
 
@@ -217,10 +241,10 @@ test_with_fresh_db(con_admin, "reading a collection works", {
 
 test_with_fresh_db(con_admin, "reading collection, respecting release date",  {
   tsl_read <- db_collection_read_ts(con_reader_main,
-                                          "readtest",
-                                          "test",
-                                          respect_release_date = TRUE,
-                                          schema = "tsdb_test")
+                                    "readtest",
+                                    "test",
+                                    respect_release_date = TRUE,
+                                    schema = "tsdb_test")
 
   exp <- structure(c(tsl_state_1, tsl_pblc), class = c("tslist", "list"))
 
@@ -229,28 +253,28 @@ test_with_fresh_db(con_admin, "reading collection, respecting release date",  {
 
 test_with_fresh_db(con_admin, "reading collection, leaving out prohibited series", {
   tsl_read <- db_collection_read_ts(con_reader_public,
-                                          "readtest",
-                                          "test",
-                                          schema = "tsdb_test")
+                                    "readtest",
+                                    "test",
+                                    schema = "tsdb_test")
 
   expect_equal(tsl_read, tsl_pblc)
 })
 
 test_with_fresh_db(con_admin, "reading older vintages of collection", {
   tsl_read <- db_collection_read_ts(con_reader_main,
-                                          "readtest",
-                                          "test",
-                                          valid_on = Sys.Date() - 4,
-                                          schema = "tsdb_test")
+                                    "readtest",
+                                    "test",
+                                    valid_on = Sys.Date() - 4,
+                                    schema = "tsdb_test")
 
   expect_equal(tsl_read, tsl_state_0)
 })
 
 test_with_fresh_db(con_admin, "reading nonexistend collection", {
   tsl_read <- db_collection_read_ts(con_reader_main,
-                                          "readtest",
-                                          "mineallmine",
-                                          schema = "tsdb_test")
+                                    "readtest",
+                                    "mineallmine",
+                                    schema = "tsdb_test")
 
   expect_is(tsl_read, "tslist")
   expect_length(tsl_read, 0)
@@ -279,14 +303,14 @@ test_with_fresh_db(con_admin, "getting latest update of ts", {
 # test db_ts_find_keys --------------------------------------------------
 test_with_fresh_db(con_admin, "db_ts_find_keys returns data frame with correct ts_keys", {
   out <- db_ts_find_keys(con_reader_public, "rts" , schema = "tsdb_test")
-  
+
   expected <- data.table(
     ts_key = c("rts1",
                "rtsp",
                "rtsx"
     )
   )
-  
+
   expect_equal(out, expected)
 })
 

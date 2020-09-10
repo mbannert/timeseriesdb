@@ -223,6 +223,27 @@ SECURITY DEFINER
 SET search_path = timeseries, pg_temp;
 
 
+-- Return Long Format Time Series Instead of JSON
+CREATE OR REPLACE FUNCTION timeseries.ts_read_long(p_keys TEXT[],
+                      p_valid_on DATE DEFAULT CURRENT_DATE,
+                                          p_respect_release_date BOOLEAN DEFAULT false)
+RETURNS TABLE(ts_key TEXT, date TEXT, value NUMERIC)
+AS $$
+BEGIN
+RETURN QUERY
+SELECT j.ts_key, json_array_elements(ts_data->'time')::TEXT AS time,
+       json_array_elements(ts_data->'value')::TEXT::NUMERIC AS value
+       FROM timeseries.ts_read_raw(p_keys, p_valid_on, p_respect_release_date) AS j;
+END;
+$$ LANGUAGE PLPGSQL
+SECURITY DEFINER
+SET search_path = timeseries, pg_temp;
+
+
+
+
+
+
 -- Read all vintages of a given time series
 --
 -- param p_key: the key to read

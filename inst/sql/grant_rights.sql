@@ -14,6 +14,7 @@ REVOKE EXECUTE ON FUNCTION timeseries.metadata_localized_read_raw(TEXT[], DATE, 
 REVOKE EXECUTE ON FUNCTION timeseries.metadata_collection_read_raw FROM public;
 REVOKE EXECUTE ON FUNCTION timeseries.ts_read_raw(TEXT[], DATE, BOOLEAN) FROM public;
 REVOKE EXECUTE ON FUNCTION timeseries.ts_read_raw(DATE, BOOLEAN) FROM public;
+REVOKE EXECUTE ON FUNCTION timeseries.ts_read_long FROM public;
 REVOKE EXECUTE ON FUNCTION timeseries.ts_read_dataset_raw(TEXT[], DATE, BOOLEAN) FROM public;
 REVOKE EXECUTE ON FUNCTION timeseries.ts_read_dataset_raw(DATE, BOOLEAN) FROM public;
 REVOKE EXECUTE ON FUNCTION timeseries.metadata_get_latest_vintages FROM public;
@@ -68,6 +69,7 @@ GRANT EXECUTE ON FUNCTION timeseries.metadata_localized_read_raw(TEXT[], DATE, T
 GRANT EXECUTE ON FUNCTION timeseries.metadata_collection_read_raw TO timeseries_reader;
 GRANT EXECUTE ON FUNCTION timeseries.ts_read_raw(TEXT[], DATE, BOOLEAN) TO timeseries_reader;
 GRANT EXECUTE ON FUNCTION timeseries.ts_read_raw(DATE, BOOLEAN) TO timeseries_reader;
+GRANT EXECUTE ON FUNCTION timeseries.ts_read_long TO timeseries_reader;
 GRANT EXECUTE ON FUNCTION timeseries.ts_read_dataset_raw(TEXT[], DATE, BOOLEAN) TO timeseries_reader;
 GRANT EXECUTE ON FUNCTION timeseries.ts_read_dataset_raw(DATE, BOOLEAN) TO timeseries_reader;
 GRANT EXECUTE ON FUNCTION timeseries.metadata_get_latest_vintages TO timeseries_reader;
