@@ -230,10 +230,14 @@ CREATE OR REPLACE FUNCTION timeseries.ts_read_long(p_keys TEXT[],
 RETURNS TABLE(ts_key TEXT, date TEXT, value NUMERIC)
 AS $$
 BEGIN
-RETURN QUERY
-SELECT j.ts_key, json_array_elements(ts_data->'time')::TEXT AS time,
-       json_array_elements(ts_data->'value')::TEXT::NUMERIC AS value
-       FROM timeseries.ts_read_raw(p_keys, p_valid_on, p_respect_release_date) AS j;
+  RETURN QUERY
+  WITH json AS (
+    SELECT j.ts_key, json_array_elements(ts_data->'time')::TEXT AS time,
+           json_array_elements(ts_data->'value')::TEXT AS value
+           FROM timeseries.ts_read_raw(p_keys, p_valid_on, p_respect_release_date) AS j
+  )
+  SELECT time, CASE WHEN value = 'null' THEN NULL ELSE value::NUMERIC END
+  FROM json;
 END;
 $$ LANGUAGE PLPGSQL
 SECURITY DEFINER
