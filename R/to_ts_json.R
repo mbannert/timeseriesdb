@@ -12,7 +12,8 @@ to_ts_json.tslist <- function(x, ...){
         time = index_to_date(time(xx), as.string = TRUE),
         value = c(unclass(xx))
       ),
-      digits = NA
+      digits = NA,
+      na = "null"
     )
   })
   class(l) <- "ts_json"
@@ -34,7 +35,8 @@ to_ts_json.data.table <- function(x, ...){
           time = time,
           value = value
         ),
-        digits = NA
+        digits = NA,
+        na = "null"
       )
     )
   ), by = "id"]
