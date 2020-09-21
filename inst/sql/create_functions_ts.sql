@@ -182,15 +182,22 @@ BEGIN
     respect_release_date := false;
   END IF;
 
-  RETURN QUERY SELECT distinct on (rd.ts_key) rd.ts_key, mn.ts_data
-    FROM tmp_ts_read_keys as rd
-    JOIN timeseries.timeseries_main as mn
-    USING (ts_key)
-    WHERE ((NOT respect_release_date) OR release_date <= CURRENT_TIMESTAMP)
-    AND validity <= valid_on
-    -- Use SESSION_USER because function is executed under timeseries_admin
-    AND (pg_has_role(SESSION_USER, 'timeseries_admin', 'usage') OR pg_has_role(SESSION_USER, access, 'usage'))
-    ORDER BY rd.ts_key, mn.validity DESC;
+  RETURN QUERY
+    WITH result AS (
+      SELECT distinct on (rd.ts_key) rd.ts_key, mn.ts_data
+      FROM tmp_ts_read_keys as rd
+      JOIN timeseries.timeseries_main as mn
+      USING (ts_key)
+      WHERE ((NOT respect_release_date) OR release_date <= CURRENT_TIMESTAMP)
+      AND validity <= valid_on
+      -- Use SESSION_USER because function is executed under timeseries_admin
+      AND (pg_has_role(SESSION_USER, 'timeseries_admin', 'usage') OR pg_has_role(SESSION_USER, access, 'usage'))
+      ORDER BY rd.ts_key, mn.validity DESC
+    )
+    -- JOIN against temp table again to restore original order of keys
+    SELECT *
+    FROM result AS res
+    JOIN tmp_ts_read_keys AS tmp USING(ts_key);
 END;
 $$ LANGUAGE PLPGSQL
 SECURITY DEFINER
