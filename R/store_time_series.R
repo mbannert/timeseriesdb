@@ -37,71 +37,71 @@
 #' )
 #' }
 db_ts_store <- function(con,
-                              x,
-                              access = NULL,
-                              valid_from = NULL,
-                              release_date = NULL,
-                              schema = "timeseries"){
+                        x,
+                        access = NULL,
+                        valid_from = NULL,
+                        release_date = NULL,
+                        schema = "timeseries"){
   UseMethod("db_ts_store", object = x)
 }
 
 #' @export
 db_ts_store.list <- function(con,
-                                   tsl,
-                                   access = NULL,
-                                   valid_from = NULL,
-                                   release_date = NULL,
-                                   schema = "timeseries"){
+                             x,
+                             access = NULL,
+                             valid_from = NULL,
+                             release_date = NULL,
+                             schema = "timeseries"){
 
-  is_tsl <- sapply(tsl, function(x) inherits(x,c("ts","zoo","xts")))
+  is_tsl <- sapply(x, function(y) inherits(y, c("ts","zoo","xts")))
 
-  tsl <- tsl[is_tsl]
-  class(tsl) <- c("tslist", "tsl")
-  db_ts_store(con, tsl,
-    access = access,
-    valid_from = valid_from,
-    release_date = release_date,
-    schema = schema
+  x <- x[is_tsl]
+  class(x) <- c("tslist", "tsl")
+  db_ts_store(con, x,
+              access = access,
+              valid_from = valid_from,
+              release_date = release_date,
+              schema = schema
   )
 }
 
 #' @export
 db_ts_store.tslist <- function(con,
-                                     tsl,
-                                     access = NULL,
-                                     valid_from = NULL,
-                                     release_date = NULL,
-                                     schema = "timeseries"){
-  if(length(tsl) == 0) {
+                               x,
+                               access = NULL,
+                               valid_from = NULL,
+                               release_date = NULL,
+                               schema = "timeseries"){
+  if(length(x) == 0) {
     warning("Ts list is empty. This is a no-op.")
     return(list())
   }
 
-  if (any(duplicated(names(tsl)))) {
+  if (any(duplicated(names(x)))) {
     stop("Time series list contains duplicate keys.")
   }
 
   # SANITY CHECK ##############
-  keep <- sapply(tsl, function(x) inherits(x, c("ts", "zoo", "xts")))
+  keep <- sapply(x, function(y) inherits(y, c("ts", "zoo", "xts")))
   dontkeep <- !keep
 
   if (!all(keep)) {
     message(
       "These elements are no valid time series objects: \n",
-      paste0(names(tsl[dontkeep]), " \n")
+      paste0(names(x[dontkeep]), " \n")
     )
   }
 
-  tsl <- tsl[keep]
+  x <- x[keep]
 
-  modes <- sapply(tsl, mode)
+  modes <- sapply(x, mode)
   if (any(modes != "numeric")) {
     stop("All time series must be numeric!")
   }
 
   store_records(
     con,
-    to_ts_json(tsl),
+    to_ts_json(x),
     access,
     "timeseries_main",
     valid_from,
@@ -113,31 +113,31 @@ db_ts_store.tslist <- function(con,
 #' @import data.table
 #' @export
 db_ts_store.data.table <- function(con,
-                                         dt,
-                                         access = NULL,
-                                         valid_from = NULL,
-                                         release_date = NULL,
-                                         schema = "timeseries") {
+                                   x,
+                                   access = NULL,
+                                   valid_from = NULL,
+                                   release_date = NULL,
+                                   schema = "timeseries") {
   if (!all(c("id", "time", "value") %in% names(dt))) {
     stop("This does not look like a ts data.table. Expected column names id, time and value.")
   }
 
-  if (dt[, .N] == 0) {
+  if (x[, .N] == 0) {
     warning("No time series in data.table. This is a no-op.")
     return(list())
   }
 
-  if (dt[, mode(value)] != "numeric") {
+  if (x[, mode(value)] != "numeric") {
     stop("\"value\" must be numeric.")
   }
 
-  if (anyDuplicated(dt, by = c("id", "time")) > 0) {
+  if (anyDuplicated(x, by = c("id", "time")) > 0) {
     stop("data.table contains duplicated (id, time) pairs. Are there duplicate series?")
   }
 
   store_records(
     con,
-    to_ts_json(dt),
+    to_ts_json(x),
     access,
     "timeseries_main",
     valid_from,
@@ -148,36 +148,36 @@ db_ts_store.data.table <- function(con,
 
 #' @export
 db_ts_store.ts <- function(con,
-                              x,
-                              access = NA,
-                              valid_from = NA,
-                              release_date = NA,
-                              schema = "timeseries"){
+                           x,
+                           access = NA,
+                           valid_from = NA,
+                           release_date = NA,
+                           schema = "timeseries"){
   db_ts_store(con,
-                    structure(
-                      list(x),
-                      names = deparse(substitute(x))
-                    ),
-                    access,
-                    valid_from,
-                    release_date,
-                    schema)
+              structure(
+                list(x),
+                names = deparse(substitute(x))
+              ),
+              access,
+              valid_from,
+              release_date,
+              schema)
 }
 
 #' @export
 db_ts_store.xts <- function(con,
-                                 x,
-                                 access = NA,
-                                 valid_from = NA,
-                                 release_date = NA,
-                                 schema = "timeseries"){
+                            x,
+                            access = NA,
+                            valid_from = NA,
+                            release_date = NA,
+                            schema = "timeseries"){
   db_ts_store(con,
-                    structure(
-                      list(x),
-                      names = deparse(substitute(x))
-                    ),
-                    access,
-                    valid_from,
-                    release_date,
-                    schema)
+              structure(
+                list(x),
+                names = deparse(substitute(x))
+              ),
+              access,
+              valid_from,
+              release_date,
+              schema)
 }
