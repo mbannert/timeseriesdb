@@ -215,12 +215,16 @@ BEGIN
 
   -- DISCINCT ON ts_key with ORDER BY ts_key, validity DESC
   -- results in the row with validity = max(validities <= valid_on) for each key
-  RETURN QUERY SELECT DISTINCT ON (rd.ts_key) rd.ts_key, md.metadata
-    FROM tmp_ts_read_keys AS rd
-    JOIN timeseries.metadata AS md
-    USING (ts_key)
-    WHERE validity <= valid_on
-    ORDER BY rd.ts_key, md.validity DESC;
+  RETURN QUERY
+   WITH result AS (SELECT DISTINCT ON (rd.ts_key) rd.ts_key, md.metadata
+     FROM tmp_ts_read_keys AS rd
+     JOIN timeseries.metadata AS md
+     USING (ts_key)
+     WHERE validity <= valid_on
+     ORDER BY rd.ts_key, md.validity DESC)
+   SELECT * FROM result
+   JOIN tmp_ts_read_keys
+   USING(ts_key);
 END;
 $$ LANGUAGE PLPGSQL
 SECURITY DEFINER
@@ -320,13 +324,18 @@ BEGIN
 
   -- DISCINCT ON ts_key with ORDER BY ts_key, validity DESC
   -- results in the row with validity = max(validities <= valid_on) for each key
-  RETURN QUERY SELECT DISTINCT ON (rd.ts_key) rd.ts_key, md.metadata
+  RETURN QUERY
+   WITH result AS (
+    SELECT DISTINCT ON (rd.ts_key) rd.ts_key, md.metadata
     FROM tmp_ts_read_keys AS rd
     JOIN timeseries.metadata_localized AS md
     USING (ts_key)
     WHERE validity <= valid_on
     AND locale = loc
-    ORDER BY rd.ts_key, md.validity DESC;
+    ORDER BY rd.ts_key, md.validity DESC)
+   SELECT * FROM result
+   JOIN tmp_ts_read_keys
+   USING(ts_key);
 END;
 $$ LANGUAGE PLPGSQL
 SECURITY DEFINER

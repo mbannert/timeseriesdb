@@ -239,11 +239,11 @@ AS $$
 BEGIN
   RETURN QUERY
   WITH json AS (
-    SELECT j.ts_key, json_array_elements(ts_data->'time')::TEXT AS time,
+    SELECT j.ts_key, json_array_elements(ts_data->'time')::TEXT AS date,
            json_array_elements(ts_data->'value')::TEXT AS value
            FROM timeseries.ts_read_raw(p_keys, p_valid_on, p_respect_release_date) AS j
   )
-  SELECT time, CASE WHEN value = 'null' THEN NULL ELSE value::NUMERIC END
+  SELECT date, CASE WHEN json.value = 'null' THEN NULL ELSE json.value::NUMERIC END
   FROM json;
 END;
 $$ LANGUAGE PLPGSQL
