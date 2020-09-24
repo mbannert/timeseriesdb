@@ -243,7 +243,7 @@ BEGIN
            json_array_elements(ts_data->'value')::TEXT AS value
            FROM timeseries.ts_read_raw(p_keys, p_valid_on, p_respect_release_date) AS j
   )
-  SELECT date, CASE WHEN json.value = 'null' THEN NULL ELSE json.value::NUMERIC END
+  SELECT json.ts_key, json.date, CASE WHEN json.value = 'null' THEN NULL ELSE json.value::NUMERIC END
   FROM json;
 END;
 $$ LANGUAGE PLPGSQL
