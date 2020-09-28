@@ -132,7 +132,7 @@ test_with_fresh_db(con_admin, "reading a whole dataset works", {
 
   exp <- structure(c(tsl_state_2, tsl_pblc), class = c("tslist", "list"))
 
-  expect_equal(tsl_read, exp)
+  expect_equal(tsl_read, exp[names(tsl_read)])
 })
 
 test_with_fresh_db(con_admin, "reading whole dataset, reapecting release date",  {
@@ -143,7 +143,7 @@ test_with_fresh_db(con_admin, "reading whole dataset, reapecting release date", 
 
   exp <- structure(c(tsl_state_1, tsl_pblc), class = c("tslist", "list"))
 
-  expect_equal(tsl_read, exp)
+  expect_equal(tsl_read, exp[names(tsl_read)]) # Order does not matter (at the moment)
 })
 
 test_with_fresh_db(con_admin, "reading whole dataset, leaving out prohibited series", {
@@ -185,18 +185,18 @@ test_with_fresh_db(con_admin, "SQL-only test for array version of read dataset",
   expect_equal(
     out$ts_key,
     c(
-      "rts1",
-      "rtsp"
+      "rtsp",
+      "rts1"
     )
   )
 
   expect_match(
-    out$ts_data[[1]],
+    out$ts_data[[2]],
     "2.1"
   )
 
   expect_match(
-    out$ts_data[[2]],
+    out$ts_data[[1]],
     "3"
   )
 })

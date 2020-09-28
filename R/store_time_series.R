@@ -118,7 +118,7 @@ db_ts_store.data.table <- function(con,
                                    valid_from = NULL,
                                    release_date = NULL,
                                    schema = "timeseries") {
-  if (!all(c("id", "time", "value") %in% names(dt))) {
+  if (!all(c("id", "time", "value") %in% names(x))) {
     stop("This does not look like a ts data.table. Expected column names id, time and value.")
   }
 

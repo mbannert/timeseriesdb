@@ -34,93 +34,93 @@ names_to_test <- setdiff(main_names, c("id", "created_by", "created_at"))
 # con_admin <- connect_to_test_db()
 # con_writer <- connect_to_test_db("dev_writer")
 #
-dbExecute(con_admin, "DELETE FROM tsdb_test.timeseries_main")
-dbExecute(con_admin, "DELETE FROM tsdb_test.catalog")
-
-db_ts_store(con_writer,
-                  tsl,
-                  "tsdb_test_access_public",
-                  valid_from = "2019-01-01",
-                  release_date = "2019-01-02",
-                  schema = "tsdb_test")
-
-catalog_after_insert_1 <- dbGetQuery(con_admin, "SELECT * FROM tsdb_test.catalog ORDER BY ts_key")
-main_after_insert_1 <- dbGetQuery(con_admin, "SELECT * FROM tsdb_test.timeseries_main ORDER BY ts_key, validity")
-
-db_ts_store(con_writer,
-                  tsl,
-                  "tsdb_test_access_public",
-                  valid_from = "2019-02-01",
-                  release_date = "2019-02-02",
-                  schema = "tsdb_test")
-
-catalog_after_insert_2 <- dbGetQuery(con_admin, "SELECT * FROM tsdb_test.catalog ORDER BY ts_key")
-main_after_insert_2 <- dbGetQuery(con_admin, "SELECT * FROM tsdb_test.timeseries_main ORDER BY ts_key, validity")
-
-db_ts_store(con_writer,
-                  tsl,
-                  "tsdb_test_access_public",
-                  valid_from = "2019-03-01",
-                  release_date = "2019-03-02",
-                  schema = "tsdb_test")
-
-catalog_after_insert_3 <- dbGetQuery(con_admin, "SELECT * FROM tsdb_test.catalog ORDER BY ts_key")
-main_after_insert_3 <- dbGetQuery(con_admin, "SELECT * FROM tsdb_test.timeseries_main ORDER BY ts_key, validity")
-
-db_ts_store(con_writer,
-                  ts_single,
-                  "tsdb_test_access_public",
-                  valid_from = "2020-01-01",
-                  release_date = "2020-04-01",
-                  schema = "tsdb_test")
-
-catalog_after_insert_single <- dbGetQuery(con_admin, "SELECT * FROM tsdb_test.catalog ORDER BY ts_key")
-main_after_insert_single <- dbGetQuery(con_admin, "SELECT * FROM tsdb_test.timeseries_main ORDER BY ts_key, validity")
-
-db_ts_store(con_writer,
-                  xts_single,
-                  "tsdb_test_access_public",
-                  valid_from = "2020-01-01",
-                  release_date = "2020-04-01",
-                  schema = "tsdb_test")
-
-catalog_after_insert_single_xts <- dbGetQuery(con_admin, "SELECT * FROM tsdb_test.catalog ORDER BY ts_key")
-main_after_insert_single_xts <- dbGetQuery(con_admin, "SELECT * FROM tsdb_test.timeseries_main ORDER BY ts_key, validity")
-
-db_ts_store(con_writer,
-            tsl_na,
-            "tsdb_test_access_main",
-            valid_from = "2020-01-01",
-            release_date = "2020-01-02",
-            schema = "tsdb_test")
-
-main_after_na <- dbGetQuery(con_admin, "SELECT * FROM tsdb_test.timeseries_main ORDER BY ts_key, validity")
-
-db_ts_store(con_writer,
-                  tsl_update,
-                  "tsdb_test_access_public",
-                  valid_from = "2019-03-01",
-                  release_date = "2019-03-02",
-                  schema = "tsdb_test")
-
-main_after_update <- dbGetQuery(con_admin, "SELECT * FROM tsdb_test.timeseries_main ORDER BY ts_key, validity")
-
-
-save(
-  catalog_after_insert_1,
-  main_after_insert_1,
-  catalog_after_insert_2,
-  main_after_insert_2,
-  catalog_after_insert_3,
-  main_after_insert_3,
-  catalog_after_insert_single,
-  main_after_insert_single,
-  main_after_insert_single_xts,
-  catalog_after_insert_single_xts,
-  main_after_update,
-  main_after_na,
-  file = "tests/testdata/store_records_data.RData"
-)
+# dbExecute(con_admin, "DELETE FROM tsdb_test.timeseries_main")
+# dbExecute(con_admin, "DELETE FROM tsdb_test.catalog")
+#
+# db_ts_store(con_writer,
+#                   tsl,
+#                   "tsdb_test_access_public",
+#                   valid_from = "2019-01-01",
+#                   release_date = "2019-01-02",
+#                   schema = "tsdb_test")
+#
+# catalog_after_insert_1 <- dbGetQuery(con_admin, "SELECT * FROM tsdb_test.catalog ORDER BY ts_key")
+# main_after_insert_1 <- dbGetQuery(con_admin, "SELECT * FROM tsdb_test.timeseries_main ORDER BY ts_key, validity")
+#
+# db_ts_store(con_writer,
+#                   tsl,
+#                   "tsdb_test_access_public",
+#                   valid_from = "2019-02-01",
+#                   release_date = "2019-02-02",
+#                   schema = "tsdb_test")
+#
+# catalog_after_insert_2 <- dbGetQuery(con_admin, "SELECT * FROM tsdb_test.catalog ORDER BY ts_key")
+# main_after_insert_2 <- dbGetQuery(con_admin, "SELECT * FROM tsdb_test.timeseries_main ORDER BY ts_key, validity")
+#
+# db_ts_store(con_writer,
+#                   tsl,
+#                   "tsdb_test_access_public",
+#                   valid_from = "2019-03-01",
+#                   release_date = "2019-03-02",
+#                   schema = "tsdb_test")
+#
+# catalog_after_insert_3 <- dbGetQuery(con_admin, "SELECT * FROM tsdb_test.catalog ORDER BY ts_key")
+# main_after_insert_3 <- dbGetQuery(con_admin, "SELECT * FROM tsdb_test.timeseries_main ORDER BY ts_key, validity")
+#
+# db_ts_store(con_writer,
+#                   ts_single,
+#                   "tsdb_test_access_public",
+#                   valid_from = "2020-01-01",
+#                   release_date = "2020-04-01",
+#                   schema = "tsdb_test")
+#
+# catalog_after_insert_single <- dbGetQuery(con_admin, "SELECT * FROM tsdb_test.catalog ORDER BY ts_key")
+# main_after_insert_single <- dbGetQuery(con_admin, "SELECT * FROM tsdb_test.timeseries_main ORDER BY ts_key, validity")
+#
+# db_ts_store(con_writer,
+#                   xts_single,
+#                   "tsdb_test_access_public",
+#                   valid_from = "2020-01-01",
+#                   release_date = "2020-04-01",
+#                   schema = "tsdb_test")
+#
+# catalog_after_insert_single_xts <- dbGetQuery(con_admin, "SELECT * FROM tsdb_test.catalog ORDER BY ts_key")
+# main_after_insert_single_xts <- dbGetQuery(con_admin, "SELECT * FROM tsdb_test.timeseries_main ORDER BY ts_key, validity")
+#
+# db_ts_store(con_writer,
+#             tsl_na,
+#             "tsdb_test_access_main",
+#             valid_from = "2020-01-01",
+#             release_date = "2020-01-02",
+#             schema = "tsdb_test")
+#
+# main_after_na <- dbGetQuery(con_admin, "SELECT * FROM tsdb_test.timeseries_main ORDER BY ts_key, validity")
+#
+# db_ts_store(con_writer,
+#                   tsl_update,
+#                   "tsdb_test_access_public",
+#                   valid_from = "2019-03-01",
+#                   release_date = "2019-03-02",
+#                   schema = "tsdb_test")
+#
+# main_after_update <- dbGetQuery(con_admin, "SELECT * FROM tsdb_test.timeseries_main ORDER BY ts_key, validity")
+#
+#
+# save(
+#   catalog_after_insert_1,
+#   main_after_insert_1,
+#   catalog_after_insert_2,
+#   main_after_insert_2,
+#   catalog_after_insert_3,
+#   main_after_insert_3,
+#   catalog_after_insert_single,
+#   main_after_insert_single,
+#   main_after_insert_single_xts,
+#   catalog_after_insert_single_xts,
+#   main_after_update,
+#   main_after_na,
+#   file = "tests/testdata/store_records_data.RData"
+# )
 
 
 load("../testdata/store_records_data.RData")
@@ -311,6 +311,12 @@ test_with_fresh_db(con_admin, hard_reset = TRUE, "storing with edge vintage caus
                     schema = "tsdb_test")
 
   # TODO: disentangle these tests
+  db_ts_store(con_writer,
+              tsl_na,
+              valid_from = "2020-01-01",
+              release_date = "2020-01-02",
+              schema = "tsdb_test")
+
   db_ts_store(con_writer,
                     ts_single,
                     "tsdb_test_access_public",
