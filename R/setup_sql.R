@@ -31,6 +31,8 @@ install_timeseriesdb <- function(con,
     error = function(e) {
       if(grepl(sprintf("%s_admin", schema), e)) {
         stop(sprintf("Schema %s does not exist. Please read the Installation Guide vignette.", schema))
+      } else {
+        stop(e)
       }
     }
   )
