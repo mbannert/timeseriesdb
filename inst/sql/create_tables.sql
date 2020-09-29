@@ -63,6 +63,8 @@ CREATE TABLE timeseries.collections (
   name TEXT,
   owner TEXT,
   description TEXT,
+  created_by TEXT DEFAULT SESSION_USER,
+  created_at TIMESTAMPTZ DEFAULT CURRENTTIMESTAMP,
   UNIQUE (name, owner)
 );
 
