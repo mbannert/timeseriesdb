@@ -101,6 +101,19 @@ test_with_fresh_db(con_admin, "reading an xts", {
   expect_equal(tsl_read, tslx)
 })
 
+test_with_fresh_db(con_admin, "reading with duplicate keys warns", {
+  expect_warning(db_ts_read(con_reader_main, c("rts1", "rts1"), schema = "tsdb_test"))
+})
+
+test_with_fresh_db(con_admin, "reading with duplicate keys returns proper ts list", {
+  tsl_read <- suppressWarnings(
+    db_ts_read(con_reader_main,
+                         c("rts1", "rts1"),
+                         schema = "tsdb_test"))
+
+  expect_equal(tsl_read, tsl_state_2)
+})
+
 # yeh yeh we said we weren't going to test pure sql stuff...
 test_with_fresh_db(con_admin, "SQL-only test for array version", {
   out <- dbGetQuery(con_reader_main, "SELECT * FROM tsdb_test.ts_read_raw('{rts1,rtsp}'::TEXT[])")
