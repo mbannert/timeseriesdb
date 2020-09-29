@@ -140,6 +140,26 @@ test_with_fresh_db(con_admin, "db_ts_trim_history", {
   expect_true(all(ids_kept %in% main$id))
 })
 
+test_with_fresh_db(con_admin, "db_ts_trim_history on exact validity should keep that vintage", {
+  db_ts_trim_history(con_admin, c("vts1", "vts2"), as.Date("2020-02-01"), "tsdb_test")
+
+  main <- dbGetQuery(con_admin, "SELECT * FROM tsdb_test.timeseries_main")
+
+  ids_deleted <- c(
+    "f6aa69c8-41ae-11ea-b77f-2e728ce88125",
+    "f6aa6dba-41ae-11ea-b77f-2e728ce88125"
+  )
+
+  expect_false(any(ids_deleted %in% main$id))
+
+  ids_kept <- c(
+    "f6aa6c70-41ae-11ea-b77f-2e728ce88125",
+    "f6aa6ee6-41ae-11ea-b77f-2e728ce88125"
+  )
+  expect_true(all(ids_kept %in% main$id))
+})
+
+
 test_with_fresh_db(con_admin, "db_ts_trim_history with character date", {
   out <- db_ts_trim_history(con_admin, "vts1", "2020-01-12", "tsdb_test")
 
