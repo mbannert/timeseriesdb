@@ -194,3 +194,25 @@ db_access_level_set_default <- function(con,
   out_parsed
 
 }
+
+
+db_ts_get_access_level <- function(con,
+                                   ts_keys,
+                                   valid_on = NULL,
+                                   schema = "timeseries") {
+  db_with_temp_table(con,
+                     "tmp_get_access",
+                     data.frame(ts_key = ts_keys),
+                     field.types = c(
+                       ts_key = "text"
+                     ),
+                     {
+                       db_call_function(con,
+                                        "ts_get_access_level",
+                                        list(valid_on),
+                                        schema = schema
+                       )
+                     },
+                     schema = schema
+  )
+}

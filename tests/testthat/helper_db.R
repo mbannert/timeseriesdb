@@ -217,7 +217,7 @@ prepare_db <- function(con,
         "value": [1, 2, 3, 4]}'
     ),
     access = c(
-      "tsdb_test_access_public",
+      "tsdb_test_access_main",
       "tsdb_test_access_public",
       "tsdb_test_access_main",
       "tsdb_test_access_main",
