@@ -122,6 +122,27 @@ test_with_fresh_db(con_admin, "SQL-only test for array version", {
   )
 })
 
+
+# pre-release date access -------------------------------------------------
+
+test_with_fresh_db(con_admin, "non pre reader gets pre release vintage", {
+  tsl <- db_ts_read(con_reader_public,
+                    "ts.pre",
+                    respect_release_date = FALSE,
+                    schema = "tsdb_test")
+
+  expect_true(all(tsl[[1]] == 9))
+})
+
+test_with_fresh_db(con_admin, "pre reader is allowed to skip release date", {
+  tsl <- db_ts_read(con_reader_main,
+                    "ts.pre",
+                    respect_release_date = FALSE,
+                    schema = "tsdb_test")
+
+  expect_true(all(tsl[[1]] == 8))
+})
+
 # reading datasets --------------------------------------------------------
 context("reading datasets")
 
@@ -176,7 +197,7 @@ test_with_fresh_db(con_admin, "reading multiple sets", {
   tsl_read <- db_dataset_read_ts(con_reader_main,
                                  c("set_read", "default"),
                                  schema = "tsdb_test")
-  expect_setequal(names(tsl_read), c("rts1", "rtsp", "rtsx", "vts1", "vts2"))
+  expect_setequal(names(tsl_read), c("rts1", "rtsp", "rtsx", "vts1", "vts2", "ts.pre"))
 })
 
 test_with_fresh_db(con_admin, "SQL-only test for array version of read dataset", {
