@@ -17,15 +17,15 @@ install_timeseriesdb <- function(con,
                                  verbose = FALSE,
                                  install_tables = TRUE,
                                  install_functions = TRUE) {
-  schema_exists <- dbGetQuery(con,
-                              "SELECT true
-                              FROM information_schema.schemata
-                              WHERE schema_name = $1;",
-                              list(schema))$bool
-
-  if(length(schema_exists) == 0) {
-    stop(sprintf("Schema %s does not exist. Please read the Installation Guide vignette.", schema))
-  }
+  # schema_exists <- dbGetQuery(con,
+  #                             "SELECT true
+  #                             FROM information_schema.schemata
+  #                             WHERE schema_name = $1;",
+  #                             list(schema))$bool
+  #
+  # if(length(schema_exists) == 0) {
+  #   stop(sprintf("Schema %s does not exist. Please read the Installation Guide vignette.", schema))
+  # }
 
   prnt <- function(x) {
     if(verbose) {
