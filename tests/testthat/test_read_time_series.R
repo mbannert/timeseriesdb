@@ -180,23 +180,23 @@ test_with_fresh_db(con_admin, "reading multiple sets", {
 })
 
 test_with_fresh_db(con_admin, "SQL-only test for array version of read dataset", {
-  out <- dbGetQuery(con_reader_main, "SELECT * FROM tsdb_test.ts_read_dataset_raw('{set_read}'::TEXT[])")
+  out <- dbGetQuery(con_reader_main, "SELECT * FROM tsdb_test.ts_read_dataset_raw('{set_read}'::TEXT[]) order by ts_key")
 
   expect_equal(
     out$ts_key,
     c(
-      "rtsp",
-      "rts1"
+      "rts1",
+      "rtsp"
     )
   )
 
   expect_match(
-    out$ts_data[[2]],
+    out$ts_data[[1]],
     "2.1"
   )
 
   expect_match(
-    out$ts_data[[1]],
+    out$ts_data[[2]],
     "3"
   )
 })
