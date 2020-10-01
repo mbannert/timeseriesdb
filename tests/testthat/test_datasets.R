@@ -201,12 +201,14 @@ test_with_fresh_db(con_admin, "db_dataset_list returns data frame with correct n
     set_id = c("default",
       "set1",
       "set2",
-      "set_read"
+      "set_read",
+      "catalog_only"
     ),
     set_description = c("A set that is used if no other set is specified. Every time series needs to be part of a dataset",
       "test set 1",
       "test set 2",
-      "where the series for read tests live"
+      "where the series for read tests live",
+      "a set with a key that is not present in timeseries_main"
     )
   )
 

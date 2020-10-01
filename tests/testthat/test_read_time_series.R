@@ -94,12 +94,22 @@ test_with_fresh_db(con_admin, "reading via regex works", {
   expect_setequal(names(tsl_read), c("rts1", "rtsp", "rtsx"))
 })
 
+test_with_fresh_db(con_admin, "reading via regex with a key not in main", {
+  tsl_read <- db_ts_read(con_reader_main,
+                         "(rts1|onlycat)",
+                         regex = TRUE,
+                         schema = "tsdb_test")
+
+  expect_named(tsl_read, "rts1")
+})
+
 test_with_fresh_db(con_admin, "reading an xts", {
   tsl_read <- db_ts_read(con_reader_main,
                          "rtsx",
                          schema = "tsdb_test")
   expect_equal(tsl_read, tslx)
 })
+
 
 # yeh yeh we said we weren't going to test pure sql stuff...
 test_with_fresh_db(con_admin, "SQL-only test for array version", {
