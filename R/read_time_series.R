@@ -91,7 +91,7 @@ db_ts_read_history <- function(con,
                                      ts_key,
                                      respect_release_date = FALSE,
                                      schema = "timeseries") {
-  res <- dbSendQuery(con, sprintf("SELECT * FROM %sread_ts_history_raw(%s, %s)",
+  res <- dbSendQuery(con, sprintf("SELECT * FROM %sts_read_history_raw(%s, %s)",
                                   dbQuoteIdentifier(con, Id(schema = schema)),
                                   dbQuoteLiteral(con, ts_key),
                                   dbQuoteLiteral(con, respect_release_date)))
@@ -300,7 +300,7 @@ db_ts_get_last_update <- function(con,
 db_ts_find_keys <- function(con,
                             pattern,
                             schema = "timeseries") {
-  
+
   out <- db_call_function(con,
                           "ts_find_keys",
                           list(

@@ -132,6 +132,25 @@ test_with_fresh_db(con_admin, "SQL-only test for array version", {
   )
 })
 
+
+# read history ------------------------------------------------------------
+
+test_with_fresh_db(con_admin, "reading whole history of a ts", {
+  out <- db_ts_read_history(con_reader_main, "rts1", schema = "tsdb_test")
+
+  nms <- strftime(c(Sys.Date() - 4,
+                    Sys.Date() - 3,
+                    Sys.Date() - 1,
+                    Sys.Date() + 1), "%Y%m%d")
+
+  expect_named(out, nms)
+
+  expect_equal(out[[1]], tsl_state_0[[1]])
+  expect_equal(out[[2]], tsl_state_1[[1]])
+  expect_equal(out[[3]], tsl_state_2[[1]])
+  expect_equal(out[[4]], tsl_state_2_v2[[1]])
+})
+
 # reading datasets --------------------------------------------------------
 context("reading datasets")
 
