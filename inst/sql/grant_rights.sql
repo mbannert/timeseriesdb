@@ -57,6 +57,7 @@ REVOKE EXECUTE ON FUNCTION timeseries.ts_get_last_update(TEXT[]) FROM public;
 REVOKE EXECUTE ON FUNCTION timeseries.collection_get_last_update FROM public;
 REVOKE EXECUTE ON FUNCTION timeseries.dataset_get_last_update FROM public;
 REVOKE EXECUTE ON FUNCTION timeseries.ts_find_keys FROM public;
+REVOKE EXECUTE ON FUNCTION timeseries.get_version FROM public;
 
 GRANT EXECUTE ON FUNCTION timeseries.collection_insert TO timeseries_reader;
 GRANT EXECUTE ON FUNCTION timeseries.collection_remove_keys TO timeseries_reader;
@@ -95,6 +96,7 @@ GRANT EXECUTE ON FUNCTION timeseries.ts_get_last_update(TEXT[]) TO timeseries_re
 GRANT EXECUTE ON FUNCTION timeseries.collection_get_last_update TO timeseries_reader;
 GRANT EXECUTE ON FUNCTION timeseries.dataset_get_last_update TO timeseries_reader;
 GRANT EXECUTE ON FUNCTION timeseries.ts_find_keys TO timeseries_reader;
+GRANT EXECUTE ON FUNCTION timeseries.get_version TO timeseries_reader;
 
 GRANT EXECUTE ON FUNCTION timeseries.dataset_add_keys TO timeseries_writer;
 GRANT EXECUTE ON FUNCTION timeseries.metadata_unlocalized_upsert TO timeseries_writer;

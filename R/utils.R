@@ -254,3 +254,17 @@ db_grant_to_admin <- function(con,
                     dbQuoteIdentifier(con, table),
                     dbQuoteIdentifier(con, sprintf("%s_admin", schema))))
 }
+
+
+#' Get the Currently Installed Version of Timeseriesdb
+#'
+#' @inheritParams param_defs
+#'
+#' @return character The version number of timeseriesdb currently installed on the given schema
+#' @export
+db_get_installed_version <- function(con,
+                                     schema = "timeseries") {
+  db_call_function(con,
+                   "get_version",
+                   schema = schema)$version
+}

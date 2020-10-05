@@ -49,6 +49,11 @@ install_timeseriesdb <- function(con,
   setup_sql_triggers(con, schema, prnt)
   setup_sql_grant_rights(con, schema, prnt)
 
+  dbWriteTable(con,
+               DBI::Id(schema = schema, table = "version"),
+               data.frame(version = as.character(packageVersion("timeseriesdb"))),
+               overwrite = TRUE)
+
   dbExecute(con, sprintf("SET ROLE %s", current_user))
 }
 
