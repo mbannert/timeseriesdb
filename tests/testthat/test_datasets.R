@@ -198,17 +198,19 @@ test_with_fresh_db(con_admin, "db_dataset_list returns data frame with correct n
   out <- db_dataset_list(con_reader, schema = "tsdb_test")
 
   expected <- data.table(
-    set_id = c("default",
+    set_id = c(
+      "catalog_only",
+      "default",
       "set1",
       "set2",
-      "set_read",
-      "catalog_only"
+      "set_read"
     ),
-    set_description = c("A set that is used if no other set is specified. Every time series needs to be part of a dataset",
+    set_description = c(
+      "a set with a key that is not present in timeseries_main",
+      "A set that is used if no other set is specified. Every time series needs to be part of a dataset",
       "test set 1",
       "test set 2",
-      "where the series for read tests live",
-      "a set with a key that is not present in timeseries_main"
+      "where the series for read tests live"
     )
   )
 
