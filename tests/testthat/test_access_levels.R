@@ -359,3 +359,46 @@ test_with_fresh_db(con_admin, "db_access_level_set_default sets the default", {
     "tsdb_test_access_public"
   )
 })
+
+
+# getting access level of ts ----------------------------------------------
+
+test_with_fresh_db(con_admin, "db_ts_get_access_level", {
+  out <- db_ts_get_access_level(con_reader, c("vts2", "vts1"), schema = "tsdb_test")
+
+  expect_equal(
+    out,
+    data.table(
+      ts_key = c("vts2", "vts1"),
+      access_level = c("tsdb_test_access_main", "tsdb_test_access_public")
+    )
+  )
+})
+
+test_with_fresh_db(con_admin, "db_ts_get_access_level with targetted vintage", {
+  out <- db_ts_get_access_level(con_reader,
+                                c("vts2", "vts1"),
+                                valid_on = "2020-01-01",
+                                schema = "tsdb_test")
+
+  expect_equal(
+    out,
+    data.table(
+      ts_key = c("vts2", "vts1"),
+      access_level = c("tsdb_test_access_main", "tsdb_test_access_main")
+    )
+  )
+})
+
+test_with_fresh_db(con_admin, "db_ts_access_level with missing key", {
+  out <- db_ts_get_access_level(con_reader, "notakey", schema = "tsdb_test")
+
+  expect_equal(
+    out,
+    data.table(
+      ts_key = "notakey",
+      access_level = NA_character_
+    )
+  )
+})
+

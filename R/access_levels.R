@@ -194,3 +194,30 @@ db_access_level_set_default <- function(con,
   out_parsed
 
 }
+
+#' Find Out About the Access Level of a Vintage
+#'
+#' Provide the function with vector of time series keys and find out which access level is necessary to access the supplied keys. 
+#'
+#' @inheritParams param_defs
+#' @export
+db_ts_get_access_level <- function(con,
+                                   ts_keys,
+                                   valid_on = NULL,
+                                   schema = "timeseries") {
+  db_with_temp_table(con,
+                     "tmp_get_access",
+                     data.frame(ts_key = ts_keys),
+                     field.types = c(
+                       ts_key = "text"
+                     ),
+                     {
+                       db_call_function(con,
+                                        "ts_get_access_level",
+                                        list(valid_on),
+                                        schema = schema
+                       )
+                     },
+                     schema = schema
+  )
+}
