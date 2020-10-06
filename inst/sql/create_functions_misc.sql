@@ -3,7 +3,7 @@ RETURNS TABLE (version TEXT)
 AS $$
 BEGIN
   RETURN QUERY
-  SELECT version.version FROM timeseries.version;
+  SELECT timeseriesdb_info.version FROM timeseries.timeseriesdb_info;
 END;
 $$ LANGUAGE PLPGSQL
 SECURITY DEFINER
