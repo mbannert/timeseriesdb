@@ -40,16 +40,19 @@ prepare_db <- function(con,
     set_id = c(
       "set1",
       "set2",
-      "set_read"
+      "set_read",
+      "catalog_only"
     ),
     set_description = c(
       "test set 1",
       "test set 2",
-      "where the series for read tests live"
+      "where the series for read tests live",
+      "a set with a key that is not present in timeseries_main"
     ),
     set_md = c(
       '{"testno": 1}',
       '{"testno": 2}',
+      NA,
       NA
     )
   )
@@ -77,7 +80,8 @@ prepare_db <- function(con,
       "ts4",
       "ts5",
       "vts1",
-      "vts2"
+      "vts2",
+      "onlycat"
     ),
     set_id = c(
       "set_read",
@@ -89,7 +93,8 @@ prepare_db <- function(con,
       "set2",
       "default",
       "default",
-      "default"
+      "default",
+      "catalog_only"
     )
   )
 

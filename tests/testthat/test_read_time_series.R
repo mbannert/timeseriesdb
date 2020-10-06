@@ -94,12 +94,22 @@ test_with_fresh_db(con_admin, "reading via regex works", {
   expect_setequal(names(tsl_read), c("rts1", "rtsp", "rtsx"))
 })
 
+test_with_fresh_db(con_admin, "reading via regex with a key not in main", {
+  tsl_read <- db_ts_read(con_reader_main,
+                         "(rts1|onlycat)",
+                         regex = TRUE,
+                         schema = "tsdb_test")
+
+  expect_named(tsl_read, "rts1")
+})
+
 test_with_fresh_db(con_admin, "reading an xts", {
   tsl_read <- db_ts_read(con_reader_main,
                          "rtsx",
                          schema = "tsdb_test")
   expect_equal(tsl_read, tslx)
 })
+
 
 test_with_fresh_db(con_admin, "reading with duplicate keys warns", {
   expect_warning(db_ts_read(con_reader_main, c("rts1", "rts1"), schema = "tsdb_test"))
@@ -113,6 +123,7 @@ test_with_fresh_db(con_admin, "reading with duplicate keys returns proper ts lis
 
   expect_equal(tsl_read, tsl_state_2)
 })
+
 
 # yeh yeh we said we weren't going to test pure sql stuff...
 test_with_fresh_db(con_admin, "SQL-only test for array version", {
@@ -133,6 +144,25 @@ test_with_fresh_db(con_admin, "SQL-only test for array version", {
     out$ts_data[[2]],
     "3"
   )
+})
+
+
+# read history ------------------------------------------------------------
+
+test_with_fresh_db(con_admin, "reading whole history of a ts", {
+  out <- db_ts_read_history(con_reader_main, "rts1", schema = "tsdb_test")
+
+  nms <- strftime(c(Sys.Date() - 4,
+                    Sys.Date() - 3,
+                    Sys.Date() - 1,
+                    Sys.Date() + 1), "%Y%m%d")
+
+  expect_named(out, nms)
+
+  expect_equal(out[[1]], tsl_state_0[[1]])
+  expect_equal(out[[2]], tsl_state_1[[1]])
+  expect_equal(out[[3]], tsl_state_2[[1]])
+  expect_equal(out[[4]], tsl_state_2_v2[[1]])
 })
 
 # reading datasets --------------------------------------------------------
