@@ -17,16 +17,6 @@ install_timeseriesdb <- function(con,
                                  verbose = FALSE,
                                  install_tables = TRUE,
                                  install_functions = TRUE) {
-  schema_exists <- dbGetQuery(con,
-                              "SELECT true
-                              FROM information_schema.schemata
-                              WHERE schema_name = $1;",
-                              list(schema))$bool
-
-  if(length(schema_exists) == 0) {
-    stop(sprintf("Schema %s does not exist. Please read the Installation Guide vignette.", schema))
-  }
-
   prnt <- function(x) {
     if(verbose) {
       message(x)
@@ -36,7 +26,16 @@ install_timeseriesdb <- function(con,
   current_user <- dbGetQuery(con, "SELECT CURRENT_USER as cu")$cu
 
   # Switch role so the objects belong to timeseries_admin as they should
-  dbExecute(con, sprintf("SET ROLE %s_admin", schema))
+  tryCatch(
+    dbExecute(con, sprintf("SET ROLE %s_admin", schema)),
+    error = function(e) {
+      if(grepl(sprintf("%s_admin", schema), e)) {
+        stop(sprintf("Schema %s does not exist. Please read the Installation Guide vignette.", schema))
+      } else {
+        stop(e)
+      }
+    }
+  )
 
   if(install_tables) {
     setup_sql_tables(con, schema, prnt)
