@@ -30,9 +30,11 @@ CREATE TABLE timeseries.timeseries_main(
   created_at TIMESTAMPTZ DEFAULT CURRENT_TIMESTAMP,
   ts_data JSON,
   access TEXT,
+  pre_release_access TEXT DEFAULT NULL,
   UNIQUE (ts_key, validity),
   FOREIGN KEY (ts_key) REFERENCES timeseries.catalog(ts_key) ON DELETE CASCADE ON UPDATE CASCADE,
-  FOREIGN KEY (access) REFERENCES timeseries.access_levels(role)
+  FOREIGN KEY (access) REFERENCES timeseries.access_levels(role),
+  FOREIGN KEY (pre_release_access) REFERENCES timeseries.access_levels(role)
 );
 
 CREATE TABLE timeseries.metadata(

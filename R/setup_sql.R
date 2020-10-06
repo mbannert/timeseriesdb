@@ -17,6 +17,7 @@ install_timeseriesdb <- function(con,
                                  verbose = FALSE,
                                  install_tables = TRUE,
                                  install_functions = TRUE) {
+
   prnt <- function(x) {
     if(verbose) {
       message(x)

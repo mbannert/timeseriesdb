@@ -13,7 +13,8 @@
 -- returns: json {"status": "", "message": "", ["offending_keys": ""]}
 CREATE OR REPLACE FUNCTION timeseries.ts_insert(p_validity DATE,
                                            p_release_date TIMESTAMPTZ,
-                                           p_access TEXT)
+                                           p_access TEXT,
+                                           p_pre_release_access TEXT)
 RETURNS JSON
 AS $$
 DECLARE
@@ -57,10 +58,11 @@ BEGIN
   SET coverage = concat('[', ts_data->'time'->0, ',', ts_data->'time'->-1, ')')::daterange;
 
   -- Main insert
-  INSERT INTO timeseries.timeseries_main(ts_key, validity, coverage, release_date, ts_data, access)
+  INSERT INTO timeseries.timeseries_main(ts_key, validity, coverage, release_date, ts_data, access, pre_release_access)
   SELECT tmp.ts_key, COALESCE(p_validity, CURRENT_DATE), tmp.coverage,
             COALESCE(p_release_date, CURRENT_TIMESTAMP), tmp.ts_data,
-            COALESCE(p_access, (SELECT role FROM timeseries.access_levels WHERE is_default))
+            COALESCE(p_access, (SELECT role FROM timeseries.access_levels WHERE is_default)),
+            p_pre_release_access
   FROM tmp_ts_updates AS tmp
   LEFT JOIN timeseries.timeseries_main AS main
   ON tmp.ts_key = main.ts_key
@@ -72,7 +74,8 @@ BEGIN
     created_by = EXCLUDED.created_by,
     created_at = EXCLUDED.created_at,
     ts_data = EXCLUDED.ts_data,
-    access = COALESCE(p_access, timeseries.timeseries_main.access);
+    access = COALESCE(p_access, timeseries.timeseries_main.access),
+    pre_release_access = p_pre_release_access;
 
   IF array_length(v_invalid_keys, 1) > 0 THEN
     RETURN json_build_object('status', 'warning',
@@ -188,7 +191,12 @@ BEGIN
       FROM tmp_ts_read_keys as rd
       JOIN timeseries.timeseries_main as mn
       USING (ts_key)
-      WHERE ((NOT respect_release_date) OR release_date <= CURRENT_TIMESTAMP)
+      WHERE (((NOT respect_release_date) AND
+             ( pre_release_access IS NULL OR
+				       pg_has_role(SESSION_USER, pre_release_access, 'usage') OR
+				       pg_has_role(SESSION_USER, 'timeseries_admin', 'usage')))
+		         OR
+		         release_date <= CURRENT_TIMESTAMP)
       AND validity <= valid_on
       -- Use SESSION_USER because function is executed under timeseries_admin
       AND (pg_has_role(SESSION_USER, 'timeseries_admin', 'usage') OR pg_has_role(SESSION_USER, access, 'usage'))

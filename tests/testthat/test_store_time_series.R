@@ -12,6 +12,9 @@ dt <- data.table(
   value = 1:4
 )
 
+ts <- tsl$ts1
+
+xts <- xts::as.xts(ts)
 
 # store time series from lists  ##########################
 context("db_ts_store.tslist")
@@ -29,6 +32,7 @@ test_that("it calls through to store_records", {
         "access",
         "valid_from",
         "release_date",
+        "pre_release_access",
         "schema"
       )
 
@@ -43,6 +47,7 @@ test_that("it calls through to store_records", {
         "timeseries_main",
         "valid_from",
         "release_date",
+        "pre_release_access",
         "schema"
       )
     }
@@ -70,6 +75,7 @@ test_that("defaults are passed on correctly", {
         "ts_json",
         NULL,
         "timeseries_main",
+        NULL,
         NULL,
         NULL,
         "timeseries"
@@ -124,6 +130,7 @@ test_that("it calls through to store_records", {
         "access",
         "valid_from",
         "release_date",
+        "pre_release_access",
         "schema"
       )
 
@@ -138,6 +145,7 @@ test_that("it calls through to store_records", {
         "timeseries_main",
         "valid_from",
         "release_date",
+        "pre_release_access",
         "schema"
       )
     }
@@ -165,6 +173,7 @@ test_that("defaults are passed on correctly", {
         "ts_json",
         NULL,
         "timeseries_main",
+        NULL,
         NULL,
         NULL,
         "timeseries"
@@ -223,5 +232,141 @@ test_that("id complains about duplicate series in dt", {
   expect_error(
     db_ts_store("con", dup_dt, "release", "access"),
     "duplicated"
+  )
+})
+
+
+# storing single ts -------------------------------------------------------
+
+context("db_ts_store.ts")
+
+test_that("it calls through to store_records", {
+  store_recs <- mock()
+  with_mock(
+    "timeseriesdb:::store_records" = store_recs,
+    "timeseriesdb:::to_ts_json" = mock("ts_json"),
+    {
+      db_ts_store(
+        "con",
+        ts,
+        "access",
+        "valid_from",
+        "release_date",
+        "pre_release_access",
+        "schema"
+      )
+
+      expect_called(store_recs, 1)
+
+      expect_args(
+        store_recs,
+        1,
+        "con",
+        "ts_json",
+        "access",
+        "timeseries_main",
+        "valid_from",
+        "release_date",
+        "pre_release_access",
+        "schema"
+      )
+    }
+  )
+})
+
+test_that("defaults are passed on correctly", {
+  store_recs <- mock()
+  with_mock(
+    "timeseriesdb:::store_records" = store_recs,
+    "timeseriesdb:::to_ts_json" = mock("ts_json"),
+    {
+      db_ts_store(
+        "con",
+        ts
+      )
+
+      expect_called(store_recs, 1)
+
+      expect_args(
+        store_recs,
+        1,
+        "con",
+        "ts_json",
+        NULL,
+        "timeseries_main",
+        NULL,
+        NULL,
+        NULL,
+        "timeseries"
+      )
+    }
+  )
+})
+
+
+# store xts ---------------------------------------------------------------
+
+context("db_ts_store.xts")
+
+test_that("it calls through to store_records", {
+  store_recs <- mock()
+  with_mock(
+    "timeseriesdb:::store_records" = store_recs,
+    "timeseriesdb:::to_ts_json" = mock("ts_json"),
+    {
+      db_ts_store(
+        "con",
+        xts,
+        "access",
+        "valid_from",
+        "release_date",
+        "pre_release_access",
+        "schema"
+      )
+
+      expect_called(store_recs, 1)
+
+      expect_args(
+        store_recs,
+        1,
+        "con",
+        "ts_json",
+        "access",
+        "timeseries_main",
+        "valid_from",
+        "release_date",
+        "pre_release_access",
+        "schema"
+      )
+    }
+  )
+})
+
+test_that("defaults are passed on correctly", {
+  store_recs <- mock()
+  with_mock(
+    "timeseriesdb:::store_records" = store_recs,
+    "timeseriesdb:::to_ts_json" = mock("ts_json"),
+    {
+      db_ts_store(
+        "con",
+        xts
+      )
+
+      expect_called(store_recs, 1)
+
+      expect_args(
+        store_recs,
+        1,
+        "con",
+        "ts_json",
+        NULL,
+        "timeseries_main",
+        NULL,
+        NULL,
+        NULL,
+        "timeseries"
+      )
+    }
   )
 })

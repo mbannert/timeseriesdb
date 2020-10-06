@@ -8,6 +8,7 @@ store_records <- function(con,
                           tbl,
                           valid_from = Sys.Date(),
                           release_date = Sys.time(),
+                          pre_release_access = NULL,
                           schema = "timeseries"){
   if(!is.null(valid_from)) {
     valid_from <- format(as.POSIXct(valid_from), "%Y-%m-%d")
@@ -15,6 +16,11 @@ store_records <- function(con,
 
   if(!is.null(release_date)) {
     release_date <- format(as.POSIXct(release_date), "%Y-%m-%d %T %z")
+  }
+
+  # RPostgres/data.table play better with NA (not length 0 for example)
+  if(is.null(pre_release_access)) {
+    pre_release_access <- NA
   }
 
   dt <- data.table(
@@ -36,7 +42,8 @@ store_records <- function(con,
                                                    list(
                                                      valid_from,
                                                      release_date,
-                                                     access
+                                                     access,
+                                                     pre_release_access
                                                    ),
                                                    schema)),
                          schema = schema),
