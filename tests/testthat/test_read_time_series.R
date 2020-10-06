@@ -333,12 +333,10 @@ test_with_fresh_db(con_admin, "getting latest update of ts", {
 test_with_fresh_db(con_admin, "db_ts_find_keys returns data frame with correct ts_keys", {
   out <- db_ts_find_keys(con_reader_public, "rts" , schema = "tsdb_test")
 
-  expected <- data.table(
-    ts_key = c("rts1",
+  expected <- c("rts1",
                "rtsp",
                "rtsx"
     )
-  )
 
   expect_equal(out, expected)
 })

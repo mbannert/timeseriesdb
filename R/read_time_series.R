@@ -306,7 +306,7 @@ db_ts_find_keys <- function(con,
                           list(
                             pattern
                           ),
-                          schema = schema)
+                          schema = schema)$ts_key
   out
 }
 
