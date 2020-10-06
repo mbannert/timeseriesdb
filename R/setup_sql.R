@@ -50,7 +50,7 @@ install_timeseriesdb <- function(con,
   setup_sql_grant_rights(con, schema, prnt)
 
   dbWriteTable(con,
-               DBI::Id(schema = schema, table = "version"),
+               DBI::Id(schema = schema, table = "timeseriesdb_info"),
                data.frame(version = as.character(packageVersion("timeseriesdb"))),
                overwrite = TRUE)
 
