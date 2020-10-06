@@ -348,7 +348,7 @@ BEGIN
   FROM timeseries.timeseries_main mn
   USING tmp_ts_delete_keys tmp
   WHERE mn.ts_key = tmp.ts_key
-  AND mn.validity <= p_older_than;
+  AND mn.validity < p_older_than;
 
   RETURN json_build_object('status', 'ok');
 END;

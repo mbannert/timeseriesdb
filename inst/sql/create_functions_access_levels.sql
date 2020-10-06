@@ -177,3 +177,35 @@ $$ LANGUAGE PLPGSQL
 SECURITY DEFINER
 SET search_path = timeseries, pg_temp;
 
+-- Get the access level for given vintages
+--
+-- tmp_get_access has columns (ts_key TEXT)
+--
+-- param p_valid_on Vintage for which to get the access level
+--
+-- returns: table(ts_key TEXT, access_level TEXT)
+CREATE OR REPLACE FUNCTION timeseries.ts_get_access_level(p_valid_on DATE DEFAULT CURRENT_DATE)
+RETURNS TABLE(ts_key TEXT, access_level TEXT)
+AS $$
+BEGIN
+  IF p_valid_on IS NULL THEN
+    p_valid_on := CURRENT_DATE;
+  END IF;
+
+  RETURN QUERY
+  WITH result AS (
+    SELECT DISTINCT ON (rd.ts_key) rd.ts_key, mn.access AS access_level
+    FROM tmp_get_access AS rd
+    JOIN timeseries.timeseries_main AS mn
+    USING(ts_key)
+    WHERE mn.validity <= p_valid_on
+    ORDER BY rd.ts_key, mn.validity DESC
+  )
+  SELECT *
+  FROM tmp_get_access
+  LEFT JOIN result
+  USING(ts_key);
+END;
+$$ LANGUAGE PLPGSQL
+SECURITY DEFINER
+SET search_path = timeseries, pg_temp;
