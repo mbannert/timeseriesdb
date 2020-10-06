@@ -29,10 +29,16 @@ db_ts_read <- function(con,
     valid_on <- NA
   }
 
+  keys_unique <- unique(ts_keys)
+
+  if(length(keys_unique) != length(ts_keys)) {
+    warning("Duplicate keys removed. Return list will only contain one instance of each series.")
+  }
+
   # timeseriesdb makes use of a temporary table that is joined against
   # to get the right data. This is much faster than WHERE clauses.
   tsl <- db_with_tmp_read(con,
-                          ts_keys,
+                          keys_unique,
                           regex,
                           {
                             res <- dbSendQuery(con, sprintf("select * from %sts_read_raw(%s, %s)",
