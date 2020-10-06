@@ -140,6 +140,7 @@ names_to_test <- setdiff(main_names, c("id", "created_by", "created_at"))
 #   catalog_after_insert_single_xts,
 #   main_after_update,
 #   main_after_na,
+#   main_after_pr,
 #   file = "tests/testdata/store_records_data.RData"
 # )
 
