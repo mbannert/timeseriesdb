@@ -94,6 +94,8 @@ test_that("password from env, missing", {
 })
 
 test_that("asking for password", {
+  skip_if_not(require(rstudioapi) && rstudioapi::isAvailable())
+
   fake_dbConnect = mock()
 
   with_mock(
@@ -122,7 +124,7 @@ test_that("getting password from file", {
     Sys.info = mock(list(user = "bobby")),
     file.exists = mock(TRUE),
     dbConnect = fake_dbConnect,
-    readPasswordFile = fake_readlines,
+    "timeseriesdb:::readPasswordFile" = fake_readlines,
     {
       db_connection_create("mydb",
                            passwd = "my/password/file",
@@ -146,7 +148,7 @@ test_that("password from file, line no too big", {
 
   with_mock(
     file.exists = mock(TRUE),
-    readPasswordFile = fake_readlines,
+    "timeseriesdb:::readPasswordFile" = fake_readlines,
     {
       expect_error(
         db_connection_create("mydb",

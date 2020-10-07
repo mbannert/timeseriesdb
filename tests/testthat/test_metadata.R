@@ -147,7 +147,7 @@ test_that("as.tsmeta.data.table skips depth check", {
   fake_as.tsmeta.list <- mock()
 
   with_mock(
-    as.tsmeta.list = fake_as.tsmeta.list,
+    "timeseriesdb:::as.tsmeta.list" = fake_as.tsmeta.list,
     {
       as.tsmeta(as.data.table(meta_df()))
     }

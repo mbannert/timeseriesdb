@@ -49,11 +49,11 @@ test_that("is passes correct args to db_call_function unlocalized", {
   fake_db_call_function = mock()
 
   with_mock(
-    db_with_temp_table = function(con, name, content, field.types, code, schema){eval(code)},
-    toJSON = mock("json"),
-    fromJSON = mock(list(status = "ok")),
+    "timeseriesdb:::db_with_temp_table" = function(con, name, content, field.types, code, schema){eval(code)},
+    "jsonlite::toJSON" = mock("json"),
+    "jsonlite::fromJSON" = mock(list(status = "ok")),
     dbExecute = mock(),
-    db_call_function = fake_db_call_function,
+    "timeseriesdb:::db_call_function" = fake_db_call_function,
     {
       db_metadata_store("con",
                            as.tsmeta.list(
@@ -334,11 +334,11 @@ test_that("is passes correct args to db_call_function localized", {
   fake_db_call_function = mock()
 
   with_mock(
-    db_with_temp_table = function(con, name, content, field.types, code, schema){eval(code)},
-    toJSON = mock("json"),
-    fromJSON = mock(list(status = "ok")),
+    "timeseriesdb:::db_with_temp_table" = function(con, name, content, field.types, code, schema){eval(code)},
+    "jsonlite::toJSON" = mock("json"),
+    "jsonlite::fromJSON" = mock(list(status = "ok")),
     dbExecute = mock(),
-    db_call_function = fake_db_call_function,
+    "timeseriesdb:::db_call_function" = fake_db_call_function,
     {
       db_metadata_store("con",
                            as.tsmeta.list(
