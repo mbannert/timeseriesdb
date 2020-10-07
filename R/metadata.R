@@ -83,7 +83,7 @@ as.tsmeta.data.frame <- function(meta, ...) {
 
 #' @export
 as.tsmeta.tsmeta <- function(meta, ...) {
-  x
+  meta
 }
 
 
