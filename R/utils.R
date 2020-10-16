@@ -11,7 +11,7 @@
 #' @param as.string logical If as.string is TRUE the string representation of the
 #' Date is returned, otherwise a Date object.
 #' @examples
-#' index_to_date(2020.25)
+#' \dontrun{index_to_date(2020.25)}
 index_to_date <- function (x, as.string = FALSE)
 {
   if(inherits(x, "Date")) {
@@ -45,7 +45,7 @@ index_to_date <- function (x, as.string = FALSE)
 #'
 #' @return The numeric representation of the date that can be used with ts
 #' @examples
-#' date_to_index("2020-07-01")
+#' \dontrun{date_to_index("2020-07-01")}
 date_to_index <- function(x) {
   x <- as.character(x)
   components <- as.numeric(unlist(strsplit(x, "-")))

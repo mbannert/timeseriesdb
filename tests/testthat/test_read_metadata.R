@@ -14,8 +14,8 @@ test_that("is passes correct args to db_call_function unlocalized", {
   fake_db_with_tmp_read <- function(con, keys, regex, code, schema){force(code)}
 
   with_mock(
-    db_call_function = fake_db_call_function,
-    db_with_tmp_read = fake_db_with_tmp_read,
+    "timeseriesdb:::db_call_function" = fake_db_call_function,
+    "timeseriesdb:::db_with_tmp_read" = fake_db_with_tmp_read,
     {
       db_metadata_read("con", "vts1", valid_on = "2020-01-01", schema = "schema")
 
@@ -38,8 +38,8 @@ test_that("is passes correct args to db_call_function localized", {
   fake_db_with_tmp_read <- function(con, keys, regex, code, schema){force(code)}
 
   with_mock(
-    db_with_tmp_read = fake_db_with_tmp_read,
-    db_call_function = fake_db_call_function,
+    "timeseriesdb:::db_with_tmp_read" = fake_db_with_tmp_read,
+    "timeseriesdb:::db_call_function" = fake_db_call_function,
     {
       db_metadata_read("con", "vts1", valid_on = "2020-01-01", schema = "schema", locale = "de")
 

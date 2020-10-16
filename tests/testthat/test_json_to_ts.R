@@ -28,7 +28,7 @@ mock_date_to_index <- mock(2019)
 test_that("it converts a regular json to ts", {
   # Is this too pedantic?
   with_mock(
-    date_to_index = mock_date_to_index,
+    "timeseriesdb:::date_to_index" = mock_date_to_index,
     {
       x <- json_to_ts(regular_json)
       expect_is(x, "ts")

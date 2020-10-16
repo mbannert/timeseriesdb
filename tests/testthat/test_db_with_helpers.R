@@ -6,7 +6,7 @@ test_that("It creates a temp table and hands it over to admin", {
 
   with_mock(
     dbWriteTable = fake_dbWriteTable,
-    db_grant_to_admin = fake_db_grant_to_admin,
+    "timeseriesdb:::db_grant_to_admin" = fake_db_grant_to_admin,
     dbRemoveTable = mock(),
     {
       db_with_temp_table("con", "temp", "content", "field.types", {1+1}, "schema")
@@ -37,7 +37,7 @@ test_that("it evaluates the code", {
   fake_code = mock()
   with_mock(
     dbWriteTable = mock(),
-    db_grant_to_admin = mock(),
+    "timeseriesdb:::db_grant_to_admin" = mock(),
     dbRemoveTable = mock(),
     {
       db_with_temp_table("con", "temp", "content", "field.types", fake_code(), "schema")
@@ -51,7 +51,7 @@ test_that("it removes the table even in error case", {
 
   with_mock(
     dbWriteTable = mock(),
-    db_grant_to_admin = mock(),
+    "timeseriesdb:::db_grant_to_admin" = mock(),
     dbRemoveTable = fake_remove,
     {
       capture_error(db_with_temp_table("con", "temp", "content", "field.types", stop("oh noes"), "schema"))
@@ -67,7 +67,7 @@ context("db_with_tmp_read")
 test_that("It warns when using regex with multiple ts_keys", {
   with_mock(
     dbWriteTable = mock(),
-    db_grant_to_admin = mock(),
+    "timeseriesdb:::db_grant_to_admin" = mock(),
     dbRemoveTable = mock(),
     dbExecute = mock(),
     dbQuoteIdentifier = mock(),
@@ -85,7 +85,7 @@ test_that("It only uses the first element of ts_keys when regex == TRUE", {
   db_quote_literal_mock = mock()
   with_mock(
     dbWriteTable = mock(),
-    db_grant_to_admin = mock(),
+    "timeseriesdb:::db_grant_to_admin" = mock(),
     dbRemoveTable = mock(),
     dbExecute = mock(),
     dbQuoteIdentifier = mock(),
@@ -103,7 +103,7 @@ test_that("It evaluates the code", {
 
   with_mock(
     dbWriteTable = mock(),
-    db_grant_to_admin = mock(),
+    "timeseriesdb:::db_grant_to_admin" = mock(),
     dbRemoveTable = mock(),
     dbExecute = mock(),
     dbQuoteIdentifier = mock(),
@@ -121,7 +121,7 @@ test_that("It removes the temp table in error case", {
 
   with_mock(
     dbWriteTable = mock(),
-    db_grant_to_admin = mock(),
+    "timeseriesdb:::db_grant_to_admin" = mock(),
     dbRemoveTable = fake_dbRemoveTable,
     dbExecute = mock(),
     dbQuoteIdentifier = mock(),
@@ -144,7 +144,7 @@ test_with_fresh_db(con_admin, "temp_ts_read gets cleaned up in failure case", {
   boom_bot <- mock(stop("Kablammy!"))
 
   with_mock(
-    get_tsl_from_res = boom_bot,
+    "timeseriesdb:::get_tsl_from_res" = boom_bot,
     {
       e <- capture_error(db_ts_read(con_admin, "rts1", schema = "tsdb_test"))
 
