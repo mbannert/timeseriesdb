@@ -56,10 +56,6 @@ db_ts_store.list <- function(con,
                              release_date = NULL,
                              pre_release_access = NULL,
                              schema = "timeseries"){
-
-  is_tsl <- sapply(x, function(y) inherits(y, c("ts","zoo","xts")))
-
-  x <- x[is_tsl]
   class(x) <- c("tslist", "tsl")
   db_ts_store(con, x,
               access = access,
