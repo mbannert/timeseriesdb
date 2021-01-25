@@ -9,7 +9,7 @@
 #' @importFrom jsonlite fromJSON
 db_ts_change_access <- function(con,
                                 ts_keys,
-                                new_access_level,
+                                access_level,
                                 valid_from = NULL,
                                 schema = "timeseries") {
   out <- db_with_temp_table(con,
@@ -24,7 +24,7 @@ db_ts_change_access <- function(con,
                               db_call_function(con,
                                                "ts_change_access_level",
                                                list(
-                                                 new_access_level,
+                                                 access_level,
                                                  valid_from
                                                ),
                                                schema = schema)
@@ -47,7 +47,7 @@ db_ts_change_access <- function(con,
 #' @importFrom jsonlite fromJSON
 db_dataset_change_access <- function(con,
                                         dataset,
-                                        new_access_level,
+                                        access_level,
                                         valid_from = NULL,
                                         schema = "timeseries") {
 
@@ -55,7 +55,7 @@ db_dataset_change_access <- function(con,
                           "dataset_change_access_level",
                           list(
                             dataset,
-                            new_access_level,
+                            access_level,
                             valid_from
                           ),
                           schema = schema)
@@ -197,7 +197,7 @@ db_access_level_set_default <- function(con,
 
 #' Find Out About the Access Level of a Vintage
 #'
-#' Provide the function with vector of time series keys and find out which access level is necessary to access the supplied keys. 
+#' Provide the function with vector of time series keys and find out which access level is necessary to access the supplied keys.
 #'
 #' @inheritParams param_defs
 #' @export
