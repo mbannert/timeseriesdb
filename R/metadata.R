@@ -268,8 +268,8 @@ db_metadata_read <- function(con,
 #'
 #'
 #'
-#' @param character collection_name character name of the collection.
-#' @param character collection_owner character name of the collection owner.
+#' @param collection_name character name of the collection.
+#' @param collection_owner character name of the collection owner.
 #' @inheritParams param_defs
 #' @family metadata functions
 #'
