@@ -67,6 +67,7 @@ install_timeseriesdb <- function(con,
 #' This function must be run with a connection of a database level admin.
 #'
 #' @param con RPostgres connection object.
+#' @param schema schema character schema name, defaults to 'timeseries'.
 setup_sql_extentions <- function(con, schema = "timeseries"){
   sql <- readLines(system.file("sql/create_extensions.sql",
                                package = "timeseriesdb"))
@@ -108,6 +109,7 @@ setup_sql_roles <- function(con, schema = "timeseries") {
 #'
 #' @param con PostgreSQL connection object created by the RPostgres package.
 #' @param schema character schema name, defaults to 'timeseries'.
+#' @param prnt function log printing function
 setup_sql_tables <- function(con, schema = "timeseries", prnt = identity){
   prnt("Setting up tables...")
   sql <- readLines(system.file("sql/create_tables.sql",
@@ -137,6 +139,7 @@ setup_sql_tables <- function(con, schema = "timeseries", prnt = identity){
 #'
 #' @param con PostgreSQL connection object created by the RPostgres package.
 #' @param schema character schema name, defaults to 'timeseries'.
+#' @param prnt function log printing function
 setup_sql_functions <- function(con, schema = "timeseries", prnt = identity){
   prnt("Setting up functions")
   fls <- list.files(
@@ -176,6 +179,7 @@ setup_sql_functions <- function(con, schema = "timeseries", prnt = identity){
 #'
 #' @param con PostgreSQL connection object created by the RPostgres package.
 #' @param schema character schema name, defaults to 'timeseries'.
+#' @param prnt function log printing function
 setup_sql_triggers <- function(con, schema = "timeseries", prnt = identity){
   prnt("Setting up triggers")
   sql <- readLines(system.file("sql/create_triggers.sql",
@@ -196,6 +200,7 @@ setup_sql_triggers <- function(con, schema = "timeseries", prnt = identity){
 #'
 #' @param con RPostgres connection object
 #' @param schema character schema name, defaults to 'timeseries'
+#' @param prnt function log printing function
 #'
 #' @return
 setup_sql_grant_rights <- function(con, schema = "timeseries", prnt = identity) {
