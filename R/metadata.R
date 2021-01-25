@@ -7,7 +7,7 @@ create_meta <- function(...) {
 }
 
 #' @export
-create_meta.list <- function(metadata) {
+create_meta.list <- function(metadata, ...) {
   if(is.null(names(metadata)) || any(nchar(names(metadata)) == 0)) {
     stop("All fields of metadata objects must be named!")
   }
@@ -50,7 +50,7 @@ as.tsmeta <- function(meta, ...) {
 }
 
 #' @export
-as.tsmeta.data.table <- function(meta) {
+as.tsmeta.data.table <- function(meta, ...) {
   if(nrow(meta) > 0) {
     out <- apply(meta[, -"ts_key", with = FALSE], 1, as.list)
     names(out) <- meta$ts_key
@@ -63,7 +63,7 @@ as.tsmeta.data.table <- function(meta) {
 }
 
 #' @export
-as.tsmeta.list <- function(meta, check_depth = TRUE) {
+as.tsmeta.list <- function(meta, check_depth = TRUE, ...) {
   if(check_depth && !has_depth_2(meta) && length(meta) > 0) {
     stop("A meta list must have exactly depth 2!")
   }
@@ -76,13 +76,15 @@ as.tsmeta.list <- function(meta, check_depth = TRUE) {
 }
 
 #' @export
-as.tsmeta.data.frame <- function(meta) {
+as.tsmeta.data.frame <- function(meta, ...) {
   as.tsmeta(as.data.table(meta))
 }
 
 
 #' @export
-as.tsmeta.tsmeta <- identity
+as.tsmeta.tsmeta <- function(meta, ...) {
+  meta
+}
 
 
 # printers ----------------------------------------------------------------
