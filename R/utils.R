@@ -93,6 +93,8 @@ readPasswordFile <- readLines
 #'                         location for a password file such as .pgpass. Make sure to be very
 #'                         restrictive with file permissions if you store a password to a file.
 #' @param line_no integer specify line number of password file that holds the actual password.
+#' @param passwd_from_env boolean if set to TRUE the passwd param is interpreted as the name of an
+#'                        environment variable from which to get the password
 #' @param connection_description character connection description describing the application
 #'                               that connects to the database. This is mainly helpful for
 #'                               DB admins and shows up in the pg_stat_activity table.
@@ -156,6 +158,7 @@ db_connection_create <- function(dbname,
 #'
 #' Close database connection given a connection object.
 #'
+#' @param ... passed on to RPostgres::dbDisconnect
 #' @inheritParams param_defs
 #' @importFrom DBI dbDisconnect
 #' @export
