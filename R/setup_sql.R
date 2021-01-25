@@ -6,6 +6,13 @@
 #' rights will be granted and revoked from the freshly created roles.
 #' Note also, that the functions created are created as SECURITY DEFINER roles.
 #'
+#' \code{install_tables} and \code{install_functions} can be used to install components of
+#' timeseriesdb independently (e.g. only update function definitions without touching the
+#' table structure). They are used mainly for development purposes.
+#'
+#' @param verbose boolean Should progress messages be printed? Default FALSE
+#' @param install_tables boolean Should the tables be created? Default TRUE
+#' @param install_functions boolean Should the functions be installed? Default TRUE
 #' @inheritParams param_defs
 #' @family setup SQL functions
 #'
