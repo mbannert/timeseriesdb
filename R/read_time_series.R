@@ -62,6 +62,7 @@ db_ts_read <- function(con,
 #' This function returns a list whose keys correspond to the date on which the
 #' contained version of the time series took effect.
 #'
+#' @param ts_key character The identifier of the time series to read.
 #' @inheritParams param_defs
 #' @family time series functions
 #'
