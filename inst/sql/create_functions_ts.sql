@@ -318,7 +318,7 @@ AS $$
 BEGIN
   WITH ids_to_delete AS (
     SELECT DISTINCT ON (ts_key) id
-    FROM tsdb_test.timeseries_main mn
+    FROM timeseries.timeseries_main mn
     JOIN tmp_ts_delete_keys del
     USING(ts_key)
     ORDER BY ts_key, validity DESC
