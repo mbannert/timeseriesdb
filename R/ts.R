@@ -5,6 +5,7 @@
 #' @param ts_key_new character Vector of new names
 #'
 #' @importFrom jsonlite fromJSON
+#' @export
 db_ts_rename <- function(con,
                          ts_key,
                          ts_key_new,
