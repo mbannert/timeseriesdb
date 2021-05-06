@@ -55,7 +55,7 @@ BEGIN
 
   -- Generate computed property "coverage"
   UPDATE tmp_ts_updates
-  SET coverage = concat('[', ts_data->'time'->0, ',', ts_data->'time'->-1, ')')::daterange;
+  SET coverage = concat('[', ts_data->'time'->0, ',', ts_data->'time'->-1, ']')::daterange;
 
   -- Main insert
   INSERT INTO timeseries.timeseries_main(ts_key, validity, coverage, release_date, ts_data, access, pre_release_access)
