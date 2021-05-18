@@ -6,7 +6,7 @@
 #' @param release_date character date from which on this version of the time series should be made available when release date is respected. Applies to all time series in x.
 # TODO: rephrase default for access (main is kof specific, it just uses the default in the access table)
 #' @param access character Access level for all ts to be stored. If set to NA (default) the database set it to 'main' access.
-#' @param pre_release_access character Only allow access to the series being stored ahead of the release date to users with this access level. NULL (default) allows everybody. See \Code{respect_release_date} in \Code{db_ts_read}.
+#' @param pre_release_access character Only allow access to the series being stored ahead of the release date to users with this access level. NULL (default) allows everybody. See respect_release_date in \code{\link{db_ts_read}}.
 #' @inheritParams param_defs
 #' @family time series functions
 #'

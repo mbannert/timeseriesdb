@@ -19,6 +19,7 @@ Imports:
 Suggests:
     openxlsx,
     knitr,
+    rstudioapi,
     testthat (>= 2.1.0),
     covr,
     mockery

@@ -133,7 +133,11 @@ db_connection_create <- function(dbname,
     passwd <- pwdlines[line_no]
   } else if(is.null(passwd)) {
     if(commandArgs()[1] == "RStudio") {
-      passwd <- .rs.askForPassword("Please enter your database password: ")
+      if(requireNamespace("rstudioapi", quietly = TRUE)){
+        passwd <- rstudioapi::askForPassword("Please enter your database password: ")
+      } else {
+        stop("Asking for Password interactively is an R Studio feature. If you do not use R Studio please use another way of providing your credentials.")
+      }
     } else {
       stop("Unable to obtain password. Please use passwd_from_file or pass the password directly via passwd.")
     }
