@@ -209,8 +209,6 @@ setup_sql_triggers <- function(con, schema = "timeseries", prnt = identity){
 #' @param con RPostgres connection object
 #' @param schema character schema name, defaults to 'timeseries'
 #' @param prnt function log printing function
-#'
-#' @return
 setup_sql_grant_rights <- function(con, schema = "timeseries", prnt = identity) {
   prnt("Setting up function rights")
   sql <- readLines(system.file("sql/grant_rights.sql",

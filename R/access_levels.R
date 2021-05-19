@@ -4,6 +4,7 @@
 #' @rdname change_access_level
 #' @inheritParams param_defs
 #' @family access levels functions
+#' @return returns a list containing the parsed JSON status feedback from the DB.
 #'
 #' @export
 #' @importFrom jsonlite fromJSON
@@ -41,6 +42,8 @@ db_ts_change_access <- function(con,
 
 #' @rdname change_access_level
 #' @inheritParams param_defs
+#' @return returns a list containing the parsed JSON status feedback from the DB.
+#'
 #'
 #' @return
 #' @export
@@ -95,6 +98,7 @@ db_access_level_list <- function(con,
 #'
 #' @inheritParams param_defs
 #' @family access levels functions
+#' @return returns a list containing the parsed JSON status feedback from the DB.
 #'
 #' @importFrom jsonlite fromJSON
 #' @export
@@ -134,6 +138,7 @@ db_access_level_delete <- function(con,
 #' @param access_level_name \strong{character} name of the access level to insert.
 #' @param access_level_description \strong{character} description of the access level. Defaults to NA.
 #' @param access_level_default set if the new access level should be the default. Defaults to NA.
+#' @return returns a list containing the parsed JSON status feedback from the DB.
 #' @family access levels functions
 #'
 #' @importFrom jsonlite fromJSON
@@ -173,6 +178,7 @@ db_access_level_create <- function(con,
 #'
 #' @inheritParams param_defs
 #' @family access levels functions
+#' @return returns a list containing the parsed JSON status feedback from the DB.
 #'
 #' @export
 #' @importFrom jsonlite fromJSON

@@ -20,6 +20,11 @@ create_meta.default <- function(...) {
   create_meta.list(list(...))
 }
 
+#' Convert a List into a Metadata Object
+#'
+#' Create timeseriesdb specific metadata class. Typically one list per natural language
+#' is converted to a meta description object.
+#'
 #' @export
 as.meta <- function(x) {
   if(is.na(x) || is.null(x)) {
@@ -27,14 +32,13 @@ as.meta <- function(x) {
   } else if(!is.list(x)) {
     stop("Only lists can be converted to meta objects!")
   } else {
-    create_meta(x)
+    .create_meta(x)
   }
 }
 
 # tsmeta -------------------------------------------------------------
 
 
-#' @export
 create_tsmeta <- function(...) {
   l <- list(...)
   n <- names(l)
@@ -44,6 +48,12 @@ create_tsmeta <- function(...) {
   as.tsmeta(l)
 }
 
+#' Convert a List into a Metadata Object
+#'
+#' Create timeseriesdb specific metadata class. Typically one list per natural language
+#' is converted to a meta description object.
+#'
+#' @param list containing meta information. List elements are character strings.
 #' @export
 as.tsmeta <- function(meta, ...) {
   UseMethod("as.tsmeta")
@@ -89,6 +99,9 @@ as.tsmeta.tsmeta <- function(meta, ...) {
 
 # printers ----------------------------------------------------------------
 
+#' Print Method for meta Object
+#'
+#' @param x a metadata object.
 #' @export
 print.meta <- function(x, ...) {
   if(length(x) > 0) {
@@ -126,8 +139,8 @@ print.tsmeta <- function(x, ...) {
 #'
 #'
 #' @param metadata object of class tsmeta that contains the metadata to be stored.
-#' @param valid_from \strong{character} representation of a date in the form of 'YYYY-MM-DD'. It should always be explicitly specified.  The function \code{\link{db_metadata_last_update}} checks the last time meta information was updated.
-#' @param on_conflict \strong{character} representing either \code{update}: add new fields and update existing ones or "overwrite": completely replace existing record.
+#' @param valid_from \strong{character} representation of a date in the form of 'YYYY-MM-DD'. It should always be explicitly specified.
+#' @param on_conflict \strong{character} either "update": add new fields and update existing ones or "overwrite": completely replace existing record.
 #'
 #' @inheritParams param_defs
 #' @family metadata functions
@@ -273,7 +286,7 @@ db_metadata_read <- function(con,
 #' @inheritParams param_defs
 #' @family metadata functions
 #'
-#' @return
+#' @return list of all available meta descriptions for a particular collection and language.
 #' @export
 db_collection_read_metadata <- function(con,
                                     collection_name,
@@ -378,7 +391,7 @@ db_dataset_read_metadata <- function(con,
 #' @inheritParams param_defs
 #' @family metadata functions
 #'
-#' @return
+#' @return data.table of latest validity
 #' @export
 db_meta_get_latest_validity <- function(con,
                                         ts_keys,

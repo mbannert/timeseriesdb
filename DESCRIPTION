@@ -21,6 +21,7 @@ Suggests:
     openxlsx,
     knitr,
     rstudioapi,
+    tstools,
     testthat (>= 2.1.0),
     covr,
     mockery
