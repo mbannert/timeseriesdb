@@ -126,6 +126,9 @@ db_ts_store.data.table <- function(con,
                                    release_date = NULL,
                                    pre_release_access = NULL,
                                    schema = "timeseries") {
+  # avoid no visible global function def warning in CHECK
+  # https://cran.r-project.org/web/packages/data.table/vignettes/datatable-importing.html
+  value <- NULL
   if (!all(c("id", "time", "value") %in% names(x))) {
     stop("This does not look like a ts data.table. Expected column names id, time and value.")
   }

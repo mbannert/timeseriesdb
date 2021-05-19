@@ -22,6 +22,10 @@ to_ts_json.tslist <- function(x, ...){
 
 #' @import data.table
 to_ts_json.data.table <- function(x, ...){
+  freq <- NULL
+  . <- NULL
+  value <- NULL
+  id <- NULL
   if(!"freq" %in% names(x)) {
     # Syntactically correct: it is NA. Also jsonlite translates NA into null. Neat!
     x[, freq := NA]

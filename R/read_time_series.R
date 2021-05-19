@@ -233,6 +233,10 @@ db_collection_read_ts <- function(con,
 #' @importFrom RPostgres dbHasCompleted dbFetch
 #' @import data.table
 get_tsl_from_res <- function(res, chunksize = 10000, id.col = "ts_key") {
+  # declare vars used data.table Non standard evaluation (NSE) to
+  # resolve global variable issue for RMD CHECK /w data.table
+  . <- NULL
+  ts_data <- NULL
   tsl <- list()
   while(!dbHasCompleted(res)) {
     chunk <- data.table(dbFetch(res, n = chunksize))

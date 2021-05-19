@@ -17,6 +17,7 @@
 #' @family setup SQL functions
 #'
 #' @importFrom RPostgres dbConnect Postgres dbGetQuery dbIsValid
+#' @importFrom utils packageVersion
 #'
 #' @export
 install_timeseriesdb <- function(con,
