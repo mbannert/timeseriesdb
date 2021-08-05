@@ -32,7 +32,7 @@ as.meta <- function(x) {
   } else if(!is.list(x)) {
     stop("Only lists can be converted to meta objects!")
   } else {
-    .create_meta(x)
+    create_meta(x)
   }
 }
 
