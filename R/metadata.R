@@ -37,8 +37,7 @@ as.meta <- function(x) {
 }
 
 # tsmeta -------------------------------------------------------------
-
-
+#' @export
 create_tsmeta <- function(...) {
   l <- list(...)
   n <- names(l)
@@ -338,9 +337,7 @@ db_collection_read_metadata <- function(con,
 #' @inheritParams param_defs
 #' @family metadata functions
 #'
-#' @return
 #' @export
-
 db_dataset_read_metadata <- function(con,
                                  dataset_id,
                                  valid_on = NULL,

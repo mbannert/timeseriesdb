@@ -1,2 +1,0 @@
-library(mockery)
-library(RPostgres)

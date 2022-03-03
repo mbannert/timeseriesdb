@@ -160,7 +160,6 @@ db_collection_get_keys <- function(con,
 #' @inheritParams param_defs
 #' @family collections functions
 #'
-#' @return
 #'
 #' @importFrom jsonlite fromJSON
 #' @export

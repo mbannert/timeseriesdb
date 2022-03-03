@@ -23,13 +23,12 @@ Suggests:
     rstudioapi,
     tstools,
     testthat (>= 2.1.0),
-    covr,
-    mockery
+    covr
 VignetteBuilder: knitr
 Date: 2020-08-17
 License: GPL-3
 URL: https://github.com/mbannert/timeseriesdb
 BugReports: https://github.com/mbannert/timeseriesdb/issues
 LazyData: true
-RoxygenNote: 7.1.1
+RoxygenNote: 7.1.2
 Encoding: UTF-8

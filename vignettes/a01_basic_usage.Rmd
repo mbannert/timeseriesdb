@@ -90,8 +90,7 @@ to the database, lets first create a `tsmeta` object in R.
 
 
 ```{r}
-#library(timeseriesdb)
-devtools::load_all()
+library(timeseriesdb)
 tsm <- create_tsmeta(
   JohnsonJohnson = list(
     title = "Historical Quarterly earnings (dollars) per Johnson & Johnson share",
