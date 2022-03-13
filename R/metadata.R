@@ -1,6 +1,9 @@
-
-# meta --------------------------------------------------------------------
-
+#' Create Meta Data Objects
+#' 
+#' Create list based S3 objects to store meta data. Meta data objects can 
+#' be passed on to a plethora of functions including storing to database. 
+#' 
+#' @param ... arguments passed on the respective method. 
 #' @export
 create_meta <- function(...) {
   UseMethod("create_meta")
@@ -25,6 +28,8 @@ create_meta.default <- function(...) {
 #' Create timeseriesdb specific metadata class. Typically one list per natural language
 #' is converted to a meta description object.
 #'
+#' @param x list of meta data.
+#'
 #' @export
 as.meta <- function(x) {
   if(is.na(x) || is.null(x)) {
@@ -32,11 +37,14 @@ as.meta <- function(x) {
   } else if(!is.list(x)) {
     stop("Only lists can be converted to meta objects!")
   } else {
-    .create_meta(x)
+    create_meta(x)
   }
 }
 
-# tsmeta -------------------------------------------------------------
+#' Meta in
+#' 
+#' 
+#' @param ... arguments passed on the respective method. 
 #' @export
 create_tsmeta <- function(...) {
   l <- list(...)
@@ -52,7 +60,8 @@ create_tsmeta <- function(...) {
 #' Create timeseriesdb specific metadata class. Typically one list per natural language
 #' is converted to a meta description object.
 #'
-#' @param list containing meta information. List elements are character strings.
+#' @param meta list containing meta information. List elements are character strings.
+#' @param ... additional arguments, passed on to metthods below.
 #' @export
 as.tsmeta <- function(meta, ...) {
   UseMethod("as.tsmeta")
@@ -101,6 +110,7 @@ as.tsmeta.tsmeta <- function(meta, ...) {
 #' Print Method for meta Object
 #'
 #' @param x a metadata object.
+#' @param ... list of print options.  
 #' @export
 print.meta <- function(x, ...) {
   if(length(x) > 0) {

@@ -71,8 +71,6 @@ has_depth_2 <- function(x) {
 }
 
 
-# Mocking functions from base does not work :shrug:
-readPasswordFile <- readLines
 
 
 #' Create Database Connection
@@ -123,7 +121,7 @@ db_connection_create <- function(dbname,
       stop("Password file does not exist.")
     }
 
-    pwdlines <- readPasswordFile(passwd)
+    pwdlines <- readLines(passwd)
     nlines <- length(pwdlines)
 
     if(nlines < line_no) {

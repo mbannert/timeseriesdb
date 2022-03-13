@@ -6,7 +6,7 @@ date: "`r Sys.Date()`"
 output: rmarkdown::html_vignette
 vignette: >
   %\VignetteIndexEntry{Basic Usage}
-  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEngine{rmarkdown::render}
   \usepackage[utf8]{inputenc}
 ---
 
@@ -45,11 +45,13 @@ database interaction functions.
 Let's take two time series from the {datasets} R package that ships with R (monthly AirPassengers, JohnsonJohnson quarterly earnings per share) and put them into a named list. The {timeseriesdb} R package uses lists of time series or long format time series `data.tables` to store one or more time series into PostgreSQL. 
 
 ```{r, eval=FALSE}
-tsl <- list(AirPassengers = AirPassengers,
-            JohnsonJohnson = JohnsonJohnson)
+tsl <- list(
+  AirPassengers = AirPassengers,
+  JohnsonJohnson = JohnsonJohnson
+)
 db_ts_store(con, tsl, "main",
-                  schema = "tsdb_test")
-
+  schema = "tsdb_test"
+)
 ```
  
 ## Read Time Series
@@ -61,24 +63,30 @@ example we use our [{tstools}](https://cran.r-project.org/package=tstools) packa
  
 ```{r, eval=FALSE}
 
-out <- db_ts_read(con, c("JohnsonJohnson",
-                               "AirPassengers"),
-                        schema = "tsdb_test")
+out <- db_ts_read(con, c(
+  "JohnsonJohnson",
+  "AirPassengers"
+),
+schema = "tsdb_test"
+)
 
 library(tstools)
-tsplot(AirPassengers = out$AirPassengers,
-       tsr = list(JohnsonJohnson = out$JohnsonJohnson))
+tsplot(
+  AirPassengers = out$AirPassengers,
+  tsr = list(JohnsonJohnson = out$JohnsonJohnson)
+)
 ```
 
 ```{r,echo=FALSE,message=FALSE, warning=FALSE}
 library(tstools)
-out <- list(AirPassengers = AirPassengers,
-            JohnsonJohnson = JohnsonJohnson)
-tsplot(AirPassengers = out$AirPassengers,
-       tsr = list(JohnsonJohnson = out$JohnsonJohnson))
-
-
-
+out <- list(
+  AirPassengers = AirPassengers,
+  JohnsonJohnson = JohnsonJohnson
+)
+tsplot(
+  AirPassengers = out$AirPassengers,
+  tsr = list(JohnsonJohnson = out$JohnsonJohnson)
+)
 ```
 
 
@@ -94,7 +102,7 @@ library(timeseriesdb)
 tsm <- create_tsmeta(
   JohnsonJohnson = list(
     title = "Historical Quarterly earnings (dollars) per Johnson & Johnson share",
-    source = "Shumway, R. H. and Stoffer, D. S. (2000) Time Series Analysis and its Applications. Second Edition. Springer. Example 1.1"  
+    source = "Shumway, R. H. and Stoffer, D. S. (2000) Time Series Analysis and its Applications. Second Edition. Springer. Example 1.1"
   ),
   AirPassengers = list(
     title = "The classic Box & Jenkins airline data. Monthly totals of international airline passengers",
@@ -111,10 +119,10 @@ Now, pass on the `tsmeta` object to the database.
 ```{r, eval=FALSE}
 
 db_store_ts_metadata(con,
-                     tsm,
-                     valid_from = Sys.Date(),
-                     schema = "tsdb_test")
-
+  tsm,
+  valid_from = Sys.Date(),
+  schema = "tsdb_test"
+)
 ```
 Note that the default locale for the write operation is NULL. 
 This means there is only one language and data descriptions are 
@@ -125,11 +133,12 @@ Reading the data from the database is just as easy:
 
 
 ```{r, eval=FALSE}
-tsm <- db_read_ts_metadata(con, c("JohnsonJohnson",
-                           "AirPassengers"),
-                    schema = "tsdb_test")
-
-
+tsm <- db_read_ts_metadata(con, c(
+  "JohnsonJohnson",
+  "AirPassengers"
+),
+schema = "tsdb_test"
+)
 ```
 
 
