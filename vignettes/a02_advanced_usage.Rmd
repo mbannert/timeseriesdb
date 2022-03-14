@@ -1,13 +1,22 @@
 ---
 title: "Advanced Usage"
-author: "Matthias Bannert and Severin Thöni"
-date: "`r Sys.Date()`"
 output: rmarkdown::html_vignette
 vignette: >
-  %\VignetteIndexEntry{Advanced Usage}
-  %\VignetteEngine{rmarkdown::render}
-  \usepackage[utf8]{inputenc}
+  %\VignetteIndexEntry{a02_advanced_usage}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
 ---
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>"
+)
+```
+
+```{r setup}
+library(timeseriesdb)
+```
 
 ## Starting Point
 

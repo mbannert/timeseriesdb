@@ -1,14 +1,22 @@
 ---
 title: "Admin Usage"
-subtitle: "Administrator Documentation"
-author: "Matthias Bannert and Severin Thöni"
-date: "`r Sys.Date()`"
 output: rmarkdown::html_vignette
 vignette: >
-  %\VignetteIndexEntry{Admin Usage}
-  %\VignetteEngine{rmarkdown::render}
-  \usepackage[utf8]{inputenc}
+  %\VignetteIndexEntry{a03_admin_usage}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
 ---
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>"
+)
+```
+
+```{r setup}
+library(timeseriesdb)
+```
 
 ## Starting Point
 

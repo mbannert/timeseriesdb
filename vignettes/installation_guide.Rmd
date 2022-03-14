@@ -1,13 +1,22 @@
 ---
 title: "Installation Guide"
-author: "Matthias Bannert and Severin Thöni"
-date: "`r Sys.Date()`"
 output: rmarkdown::html_vignette
 vignette: >
-  %\VignetteIndexEntry{Installation Guide}
-  %\VignetteEngine{rmarkdown::render}
-  \usepackage[utf8]{inputenc}
+  %\VignetteIndexEntry{installation_guide}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
 ---
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>"
+)
+```
+
+```{r setup}
+library(timeseriesdb)
+```
 
 ## Starting Point
 
@@ -36,8 +45,7 @@ or for the latest developer version from github (assuming you have the {remotes}
 remotes::install_github("mbannert/timeseriesdb")
 ```
 
-{timeseriesdb} ships we installation routines to help you set up the database relations. 
-Still, the database itself obviously needs to be there first and you need 
+{timeseriesdb} ships we installation routines to help you set up the database relations. Still, the database itself  needs to be there first and you need 
 proper access rights before you can install the {timeseriesdb} database backend.
 
 
@@ -45,11 +53,9 @@ proper access rights before you can install the {timeseriesdb} database backend.
 
 {timseriesdb} uses the PostgreSQL RDMBS as a database backend. 
 You can either use {timeseriesdb} with a remote database running on, e.g., 
-[Google Cloud](https://cloud.google.com/sql/docs/postgres#:~:text=Cloud%20SQL%20for%20PostgreSQL%20is,databases%20on%20Google%20Cloud%20Platform.), [AWS](https://aws.amazon.com/rds/postgresql/), [Heruko](https://www.heroku.com/postgres) and many more, or you can simply install PostgreSQL 
-locally. In both cases the [PostgreSQL docker images](https://hub.docker.com/_/postgres)
-are a hassle-free solution, in particular if you want to try out timeseriesdb.
-Alternatively, just install [PostgreSQL on your local machine](https://www.postgresql.org/download/). 
-To verify that your installation worked make sure the database is running and create 
+[Google Cloud](https://cloud.google.com/sql/docs/postgres#:~:text=Cloud%20SQL%20for%20PostgreSQL%20is,databases%20on%20Google%20Cloud%20Platform.), [AWS](https://aws.amazon.com/rds/postgresql/), [Heruko](https://www.heroku.com/postgres) and many more, or you can simply install PostgreSQL locally. In both cases the [PostgreSQL docker images](https://hub.docker.com/_/postgres)
+are a hassle-free solution, in particular if you just want to try out timeseriesdb.
+Alternatively, just install [PostgreSQL on your local machine](https://www.postgresql.org/download/). To verify that your installation worked make sure the database is running and create 
 a basic connection. 
 
 
@@ -156,6 +162,7 @@ con <- db_connection_create(
   port = 1111
 )
 ```
+
 
 
 

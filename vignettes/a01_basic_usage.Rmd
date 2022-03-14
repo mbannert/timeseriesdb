@@ -1,14 +1,23 @@
 ---
 title: "Basic Usage"
-subtitle: "Getting Started"
-author: "Matthias Bannert and Severin Thöni"
-date: "`r Sys.Date()`"
 output: rmarkdown::html_vignette
 vignette: >
-  %\VignetteIndexEntry{Basic Usage}
-  %\VignetteEngine{rmarkdown::render}
-  \usepackage[utf8]{inputenc}
+  %\VignetteIndexEntry{a01_basic_usage}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
 ---
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>"
+)
+```
+
+```{r setup}
+library(timeseriesdb)
+```
+
 
 ## Starting Point
 
