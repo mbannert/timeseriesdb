@@ -1,179 +1,275 @@
-#' 
+#' Helper Function for Date Operations
+#'
+#' This function is not exported.
 #' Helper function to convert time series indices of the form 2005.75
 #' to a date representation like 2005-07-01.
 #' Does not currently support sub-monthly frequencies.
-#' 
+#'
+#'
+#'
 #' @param x numeric A vector of time series time indices (e.g. from stats::time)
-#' @param as.string logical If as.string is TRUE the string representation of the 
+#' @param as.string logical If as.string is TRUE the string representation of the
 #' Date is returned, otherwise a Date object.
-#' 
-#' @author Severin Thöni
-#' @export
-indexToDate <- function (x, as.string = FALSE) 
+#' @examples
+#' \dontrun{index_to_date(2020.25)}
+index_to_date <- function (x, as.string = FALSE)
 {
+  if(inherits(x, "Date")) {
+    if(as.string) {
+      return(as.character(x))
+    } else {
+      return(x)
+    }
+  }
+
+  # If called as index_to_date(time(a_ts))
+  # x is a ts. Unclass it so we can work with the faster basic operators
+  x <- c(x)
+
   years <- floor(x + 1/24)
   months <- floor(12*(x - years + 1/24)) + 1
   # No support for days currently
   # datestr <- paste(years, months, 1, sep = "-")
   datestr <- sprintf("%d-%02d-01", years, months)
-  
+
   if(!as.string) {
-    date <- as.Date(datestr)
+    return(as.Date(datestr))
   } else {
-    date <- datestr
+    return(datestr)
   }
-  date
 }
 
-#' Check Validity of a PostgreSQL connection
-#' 
-#' Is the PostgreSQL connection expired?
-#' 
-#' @param dbObj PostgreSQL connection object.
-#' @importFrom DBI dbIsValid
-#' @importFrom DBI dbGetInfo
-#' @import RPostgreSQL
-#' @import methods
-#' @docType methods
-#' @aliases dbIsValid
-#' @rdname dbIsValid-methods
+#' Convert date-likes to time index
+#'
+#' @param x The Date or Y-m-d string to convert
+#'
+#' @return The numeric representation of the date that can be used with ts
+#' @examples
+#' \dontrun{date_to_index("2020-07-01")}
+date_to_index <- function(x) {
+  x <- as.character(x)
+  components <- as.numeric(unlist(strsplit(x, "-")))
+  components[1] + (components[2] - 1)/12
+}
+
 #' @export
-setMethod("dbIsValid", "PostgreSQLConnection", function(dbObj) {
-  isValid <- tryCatch({DBI::dbGetInfo(dbObj)},
-                      error = function(e) NULL)
-  !is.null(isValid)  
-})
+`[.tslist` <- function(x, i) {
+  x <- unclass(x)
+  out <- x[i]
+  class(out) <- c("tslist", "list")
+  out
+}
 
-# recursive function to check depth of list. hat tip flodel 
-# at stackoverflow: http://stackoverflow.com/questions/13432863/determine-level-of-nesting-in-r
-#' Determine depth of a list
-#' 
-#' This function recursively checks the depth of a list and returns an integer value of depth
-#' 
-#' @param this an object of class list 
-#' @details Hat tip to flodel at stackoverflow for suggesting this light weight way analyze depth of a nested list. Further complexity needs to be added to cover the fact that data.frame are lists, too. A more sophisticated recursive function can be found in the gatveys2 package.
-#' @references http://stackoverflow.com/questions/13432863/determine-level-of-nesting-in-r
+#' Test if a list has exactly depth 2
+#'
+#' @param x The list to check
+has_depth_2 <- function(x) {
+  xx <- unlist(x, recursive = FALSE)
+  xxx <- unlist(xx, recursive = FALSE)
+
+  is.list(x) && is.list(xx) && !is.list(xxx)
+}
+
+
+
+
+#' Create Database Connection
+#'
+#' Connects to the PostgreSQL database backend of timeseriesdb. This function
+#' is convenience wrapper around DBI's dbConnect. It's less general than the DBI
+#' function and only works for PostgreSQL, but it is a little more convenient
+#' because of its defaults / assumptions.
+#'
+#' @param dbname character name of the database.
+#' @param user character name of the database user. Defaults to the user of the R session.
+#'             this is often the user for the database, too so you do not have to specify
+#'             your username explicitly if that is the case.
+#' @param host character denoting the hostname. Defaults to localhost.
+#' @param passwd character password, file or environment name. Defaults to NULL triggering an R Studio function that
+#' asks for your passwords interactively if you are on R Studio. Make sure to adapt the boolean params correspondingly.
+#' @param passwd_from_file boolean if set to TRUE the passwd param is interpreted as a file
+#'                         location for a password file such as .pgpass. Make sure to be very
+#'                         restrictive with file permissions if you store a password to a file.
+#' @param line_no integer specify line number of password file that holds the actual password.
+#' @param passwd_from_env boolean if set to TRUE the passwd param is interpreted as the name of an
+#'                        environment variable from which to get the password
+#' @param connection_description character connection description describing the application
+#'                               that connects to the database. This is mainly helpful for
+#'                               DB admins and shows up in the pg_stat_activity table.
+#'                               Defaults to 'timeseriesdb'. Avoid spaces as this is a psql option.
+#' @param port integer defaults to 5432, the PostgreSQL standard port.
+#' @importFrom RPostgres Postgres
+#' @importFrom DBI dbConnect
 #' @export
-getListDepth <- function(this) {
-  ifelse(
-    is.list(this), 
-    ifelse(
-      length(this) > 0,
-      1L + max(sapply(this, getListDepth)),
-      1L
-    ),
-    0L
-  )
-}
-
-.createValues <- function(li, validity = NULL, store_freq, release_date = NULL){
-  # CREATE ELEMENTS AND RECORDS ##########################
-  # use the form (..record1..),(..record2..),(..recordN..)
-  # to be able to store everything in one big query
-  hstores <- unlist(lapply(li,createHstore))
-  series <- names(li)
-  freqs <- sapply(li,function(x) {
-    ifelse(inherits(x,"zoo"),'NULL',stats::frequency(x))
-  })
-  
-  if(is.null(release_date)) {
-    release_date <- "DEFAULT"
-  } 
-  
-  if(is.null(validity)){
-    if(!store_freq){
-      values <- paste(paste0("('",
-                             paste(series,
-                                   hstores,
-                                   sep="','"),
-                             "', '", release_date, "')"),
-                      collapse = ",")
-    } else {
-      values <- paste(paste0("('",
-                             paste(series,
-                                   hstores,
-                                   freqs,
-                                   sep="','"),
-                             "', '", release_date, "')"),
-                      collapse = ",")
+db_connection_create <- function(dbname,
+                          user = Sys.info()[['user']],
+                          host = "localhost",
+                          passwd = NULL,
+                          passwd_from_file = FALSE,
+                          line_no = 1,
+                          passwd_from_env = FALSE,
+                          connection_description = "timeseriesdb",
+                          port = 5432){
+  if(passwd_from_env){
+    env_name <- passwd
+    passwd <- Sys.getenv(env_name)
+    if(passwd == "") {
+      stop(sprintf("Could not find password in %s!", env_name))
     }
-  } else {
-    if(!store_freq){
-      values <- paste(paste0("('",
-                             paste(series,
-                                   validity,
-                                   hstores,
-                                   sep="','"),
-                             "', '", release_date, "')"),
-                      collapse = ",")
-    } else {
-      values <- paste(paste0("('",
-                             paste(series,
-                                   validity,
-                                   hstores,
-                                   freqs,
-                                   sep="','"),
-                             "', '", release_date, "')"),
-                      collapse = ",")
+  } else if(passwd_from_file) {
+    if(!file.exists(passwd)) {
+      stop("Password file does not exist.")
     }
-  }
-  values <- gsub("''","'",values)
-  values <- gsub("::hstore'","::hstore",values)
-  values <- gsub("'NULL'","NULL",values)
-  values <- gsub("'DEFAULT'", "DEFAULT", values)
-  values
-}
 
+    pwdlines <- readLines(passwd)
+    nlines <- length(pwdlines)
 
-#'@importFrom stats tsp time
-.createValuesMeta <- function(li){
-  # CREATE META INFORMATION -------------------------------------------------
-  # automatically generated meta information
-  md_generated_by <- Sys.info()["user"]
-  md_resource_last_update <- Sys.time()
-  md_coverages <- unlist(lapply(li,function(x){
-    
-    if(inherits(x, "zoo")) {
-      idx <- time(x)
-      t0 <- min(idx)
-      t1 <- max(idx)
-      if(class(t0) == "Date") {
-        time_range <- as.character(c(t0, t1))
-      } else if(class(t0) == "character") {
-        time_range <- c(t0, t1)
+    if(nlines < line_no) {
+      stop(sprintf("line_no too great (password file only has %d lines)", nlines))
+    }
+
+    passwd <- pwdlines[line_no]
+  } else if(is.null(passwd)) {
+    if(commandArgs()[1] == "RStudio") {
+      if(requireNamespace("rstudioapi", quietly = TRUE)){
+        passwd <- rstudioapi::askForPassword("Please enter your database password: ")
       } else {
-        time_range <- indexToDate(c(t0, t1), as.string = TRUE)
+        stop("Asking for Password interactively is an R Studio feature. If you do not use R Studio please use another way of providing your credentials.")
       }
     } else {
-      tsp.x <- tsp(x)
-      time_range <- indexToDate(tsp.x[c(1, 2)], as.string = TRUE)
+      stop("Unable to obtain password. Please use passwd_from_file or pass the password directly via passwd.")
     }
-    
-    sprintf('%s to %s',
-            time_range[1],
-            time_range[2]
-    )}
-  ))
-  
-  series <- names(li)
-  
-  # same trick as for data itself, one query
-  md_values <- paste(paste0("('",
-                            paste(series,
-                                  md_generated_by,
-                                  md_resource_last_update,
-                                  md_coverages,
-                                  sep="','"),
-                            "')"),
-                     collapse = ",")
-  md_values
+  }
+
+  options <- sprintf("--application_name=%s", connection_description)
+
+  # Unname the params as names cause issues in dbConnect
+  # e.g. when passing a username obtained from Sys.user
+  dbConnect(drv = Postgres(),
+            dbname = unname(dbname),
+            user = unname(user),
+            host = unname(host),
+            password = unname(passwd),
+            port = unname(port),
+            options = options)
 }
 
-stringSafeAsNumeric <- function(x) {
-  y <- suppressWarnings(as.numeric(x))
-  if(any(is.na(x) != is.na(y))) {
-    x
-  } else {
-    y
+
+
+#' Close an Existing Database Connection
+#'
+#' Close database connection given a connection object.
+#'
+#' @param ... passed on to RPostgres::dbDisconnect
+#' @inheritParams param_defs
+#' @importFrom DBI dbDisconnect
+#' @export
+db_connection_close <- function(con, ...){
+   dbDisconnect(con, ...)
+}
+
+
+
+#' Helper to construct SQL function calls
+#'
+#' Calls function `schema`.`fname` with the given `args`, returning
+#' the result.
+#'
+#' Args may be named to enable postgres to decide which candidate to choose in case
+#' of overloaded functions.
+#' If any args are named, all of them must be.
+#'
+#' @param fname character Name of the function to be called
+#' @param args list of function arguments. A single, unnested list.
+#'
+#' @inheritParams param_defs
+#'
+#' @return value of `dbGetQuery(con, "SELECT * FROM schema.fname($args)")$fname`
+db_call_function <- function(con,
+                             fname,
+                             args = NULL,
+                             schema = "timeseries") {
+  args_names = names(args)
+  if(!is.null(args_names) && any(nchar(args_names) == 0)) {
+    stop("Either all args must be named or none!")
   }
+
+  args_pattern <- ""
+  if(!is.null(args)) {
+    # dbGetQuery does not like parameters to be NULL so we substitute NA here
+    # which the db will treat as null anyway
+    args[sapply(args, is.null)] <- NA
+
+    args_pattern <- sprintf("$%d", 1:length(args))
+
+    if(!is.null(args_names)) {
+      args_pattern <- paste(
+        sprintf("%s :=", args_names),
+        args_pattern
+      )
+    }
+
+    args_pattern <- paste(args_pattern, collapse = ", ")
+
+  }
+
+  query <- sprintf("SELECT * FROM %s.%s(%s)",
+                   dbQuoteIdentifier(con, schema),
+                   dbQuoteIdentifier(con, fname),
+                   args_pattern)
+
+  res <- tryCatch(
+    dbGetQuery(con, query, unname(args)),
+    error = function(e) {
+      if(grepl("permission denied for function", e)) {
+        stop("You do not have sufficient privileges to perform this action.")
+      } else {
+        stop(e)
+      }
+    })
+
+  if(fname %in% names(res)) {
+    res[[fname]] # query returns value (e.g. JSON) -> unwrap the value
+  } else {
+    if(class(res) == "data.frame") {
+      as.data.table(res) # query returns table -> just return as data.table
+    } else {
+      res
+    }
+  }
+}
+
+
+#' GRANT all rights on a (temp) table to schema admin
+#'
+#' The SECURITY DEFINER functions do not have access to tables that
+#' are stored via dbWriteTable. Usage rights on these tables must
+#' be granted for them to be usable inside the db functions
+#'
+#' @param table which table to grant rights on
+#'
+#' @inheritParams param_defs
+#'
+#' @importFrom DBI dbExecute dbQuoteIdentifier
+db_grant_to_admin <- function(con,
+                              table,
+                              schema = "timeseries") {
+  dbExecute(con,
+            sprintf("GRANT SELECT, UPDATE, INSERT, DELETE ON %s TO %s",
+                    dbQuoteIdentifier(con, table),
+                    dbQuoteIdentifier(con, sprintf("%s_admin", schema))))
+}
+
+
+#' Get the Currently Installed Version of Timeseriesdb
+#'
+#' @inheritParams param_defs
+#'
+#' @return character The version number of timeseriesdb currently installed on the given schema
+#' @export
+db_get_installed_version <- function(con,
+                                     schema = "timeseries") {
+  db_call_function(con,
+                   "get_version",
+                   schema = schema)$version
 }

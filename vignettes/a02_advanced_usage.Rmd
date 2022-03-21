@@ -1,0 +1,233 @@
+---
+title: "Advanced Usage"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{a02_advanced_usage}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>"
+)
+```
+
+```{r setup}
+library(timeseriesdb)
+```
+
+## Starting Point
+
+We assume you are past the basics and R, {timeseriesdb} and PostgreSQL are up and running. 
+(*For the remainder of this guide we assume PostgreSQL runs on a local docker container accessible via port 1111.*)
+
+## Versioning of Time Series (Vintages)
+
+A core feature of {timeseriesdb} is the ability to store vintages, i.e., different 
+versions of time series. The package was created with official and economic statistics in mind, so data revisions and the ability to evaluate forecasts play an important role in the package
+design. Hence {timeseriesdb} versions every time series it stores by default. 
+
+Let's assume `baro_2019m10` is a time series published in October 2019 and `baro_2019m11` is yet 
+another version of the very same time series. We can simply store 
+
+
+```{r, eval=FALSE}
+data("kof_ts")
+db_ts_store(con,
+                  list(ch.kof.barometer = kof_ts$baro_2019m10),
+                  valid_from="2019-10-30",
+                  schema = "tsdb_test")
+
+db_ts_store(con,
+                  list(ch.kof.barometer = kof_ts$baro_2019m11),
+                  valid_from="2019-11-30",
+                  schema = "tsdb_test")
+
+```
+
+and read them under the same key. 
+
+```{r, eval=FALSE}
+db_ts_read(con, "ch.kof.barometer",
+                 schema = "tsdb_test")
+
+
+```
+
+Note how the default validity (today per `Sys.Date()`) is used when `valid_on` is not
+specified. You can also get read the entire history which returns a list of time series 
+that contains version of time series. List elements will be named according validity thresholds. 
+
+```{r,eval=FALSE}
+tsl <- db_ts_read_history(con,"ch.kof.barometer",
+                                schema = "tsdb_test")
+```
+
+## Datasets
+
+Make sure the time series you want to register and set itself are actually around.
+Creating sets is an admin level function.
+Assigning series to a dataset is *not* a
+vintage level operation, it applies to all versions of a series. This is why time series are assigned to the 'default' schema at first when they are stored and can be moved later on. 
+
+```{r, eval=FALSE}
+db_ts_assign_dataset(con,
+                  ts_keys = c("ch.zrh_airport.arrival.total",
+                              "ch.zrh_airport.departure.total"),
+                  set_name = "ch.zrh_airport",
+                  schema = "tsdb_test")
+
+```
+
+**Note** that there is no such thing as remove time series from dataset. Either
+you delete a time series entirely or you assign it to another dataset.
+Think of a registry similar to a software registry. 
+
+
+To see all keys registered in a dataset simply call:
+
+```{r, eval=FALSE}
+db_get_dataset_keys(con, "ch.zrh_airport", schema = "tsdb_test")
+```
+
+To do the opposite, that is, find out which dataset series are assigned to, run:
+
+
+```{r, eval=FALSE}
+db_get_dataset_id(con, "ch.zrh_airport.arrival.total",
+                  schema = "tsdb_test")
+```
+
+With [db_dataset_read_ts()](../reference/db_dataset_read_ts.html) you can read all time series from a given dataset.
+
+## Release Management
+
+```{r, eval=FALSE}
+db_list_releases(con, include_past = T, schema = "tsdb_test")
+```
+
+Cancelling a future release is simply a matter of calling [db_release_cancel()](../reference/db_release_cancel.html). 
+Cancellation of past releases is not possible, but release can be updated with [db_release_update()](../reference/db_release_update.html). Also you can easily query the latest release
+
+
+```{r, eval=FALSE}
+db_get_latest_release_for_set(con, "ch.zrh_airport",schema = "tsdb_test")
+```
+
+Similarily use [db_dataset_next_release()](../reference/db_dataset_next_release) to get the next upcoming
+release. 
+
+
+## Collections
+
+Collections are another concept introduced in v1.0.. Collections are user specific compositions of time series identifiers. Users of earlier versions of time series may think of this
+functionality as 'sets'. To avoid any confusion, let's be clear about the new terminology here: 
+
+- datasets = registration of time series into global datasets. This happens typically
+at the admin level. Time series are unique ACROSS datasets.
+
+- collection = playlist are like user specific bookmarks. A time series can part of 
+multiple collections, users can have multiple collections. The purpose of
+collections is to be able to re-visit a selection of time series after updates etc,
+e.g., to update time series visualizations.
+
+```{r, eval = FALSE}
+db_collection_add(con, 
+                  collection_name = "demo_collect",
+                  keys = c("ch.zrh_airport.arrival.total",
+                           "AirPassengers"),
+                  description = "Flying Around Now and Then",
+                  schema = "tsdb_test")
+```
+
+You can remove keys from a collection using [db_collection_remove_ts()](../reference/db_collection_remove_ts.html) and 
+delete an entire collection with [db_collection_delete()](../reference/db_collection_delete).
+
+
+## Advanced Meta Information
+
+Context aware data description is one of the core aims of {timeseriesdb}. 
+Meta information done properly can quickly become a complex topic: descriptions
+can be assigned at different levels. Descriptions can be language agnostic or 
+language specific. Moreover with versioned time series descriptions can also 
+be specific to a particular version of a time series. 
+
+### Multi Language Data Descriptions
+
+Simply create meta information objects for each language, similar to the fashion
+we've seen in the [Basic Usage](a01_basic_usage.html) article. Meta information objects can 
+hold descriptions for one or more time series. Make sure you do NOT change the
+language within one object. 
+
+
+```{r, eval=FALSE}
+
+de <- create_tsmeta(
+  ch.zrh_airport.arrival.total = list(
+    provider = "Flughafen Zürich",
+    description = "Eine deutschsprachige Beschreibung"
+  )
+)
+
+en <- create_tsmeta(
+  ch.zrh_airport.arrival.total = list(
+    provider = "Zurich Airport",
+    description = "An English speaking description"
+  )
+)
+
+
+
+db_store_ts_metadata(con,
+                     metadata = de,
+                     valid_from = Sys.Date(),
+                     locale = "de",
+                     schema = "tsdb_test")
+
+db_store_ts_metadata(con,
+                     metadata = en,
+                     valid_from = Sys.Date(),
+                     locale = "en",
+                     schema = "tsdb_test")
+
+
+
+```
+
+Retrieving the information is just as simple, let's get the English description... 
+
+```{r, eval=FALSE}
+
+db_read_ts_metadata(con, "ch.zrh_airport.arrival.total",
+                    locale = "en",
+                    valid_on = Sys.Date(),
+                    schema = "tsdb_test")
+
+
+```
+
+### Levels of Assignment
+
+Meta descriptions can be assigned at various levels. Descriptions
+either belong to a *dataset*, to a *time series* or two a *vintage of a time series*.
+Meta information is only loosely coupled to vintages of time
+series, because in most usecases meta descriptions do not change every time 
+there is a data revision. So by simply not updating unchanged descriptions when 
+data are revised / updated, we allow descriptions to last for multiple versions of 
+a time series. 
+
+```{r, eval=FALSE}
+db_get_metadata_validity(con, "ch.zrh_airport.arrival.total", 
+                         locale = "de",
+                         schema = "tsdb_test")
+```
+
+
+helps to get and overview find out since when meta information is valid. 
+Note that dataset level meta information can currently only be assigned when the dataset
+is created and is not versioned. 
+
+
+

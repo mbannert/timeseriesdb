@@ -1,0 +1,164 @@
+---
+title: "Admin Usage"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{a03_admin_usage}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>"
+)
+```
+
+```{r setup}
+library(timeseriesdb)
+```
+
+## Starting Point
+
+This guide assumes you have installed the {timeseriesdb} R package and a local PostgreSQL client library successfully. We also assume you're connect to your PostgreSQL database and are familiar with the basic ideas of {timeseriesdb}. (*For the remainder of this guide we assume PostgreSQL runs on a local docker container accessible via port 1111.*)
+
+## General Note
+
+With {timeseriesdb}, access rights can be customized quite a bit, so in the end 
+roles will be quite specific to any institution that uses it. Still though, {timeseriesdb}
+ships with a basic idea of access levels and roles. This document focuses on 
+administrator usage as opposed to users, i.e., researchers that want to work
+with the time series in the database. 
+
+
+## Datasets
+
+In {timeseriesdb}, all time series have to be part of a dataset. If the user 
+stores a time series w/o specifying a dataset that series will be assigned to the 'default'
+dataset. Datasets allow to group data and store data descriptions at the 
+dataset level. Also, datasets come in handy for admin operations like 
+deletion of an entire dataset. Therefore new datasets can only be added by admins while
+time series can be assigned to existing datasets by ordinary users with write access.
+
+### Registering a New Dataset
+
+```{r, eval=FALSE}
+library(kofdata)
+arr <- get_time_series("ch.zrh_airport.arrival.total")
+dep <- get_time_series("ch.zrh_airport.departure.total")
+
+db_ts_store(con, c(arr,dep), schema = "tsdb_test")
+
+db_dataset_create(con, "ch.zrh_airport",
+                  set_description = "Arrivals and Departures ZH Airport",
+                  schema = "tsdb_test")
+
+# see, the new dataset is there... 
+db_dataset_list(con, schema = "tsdb_test")
+
+```
+
+Apparently, the dataset is empty. We need to assign some time series first.
+
+
+
+### DANGER ZONE: Deleting Datasets
+
+Admin users can delete an entire dataset. The power to do so comes with 
+great responsibility as it will delete not only the dataset registration entry
+but ALL time series, their versions and all meta information associated to the
+dataset AND the time series. A deleted dataset CANNOT by restored. The only way
+to get a deleted dataset back is a PostgreSQL level backup outside of {timeseriesdb}.
+
+```{r, eval=FALSE}
+db_dataset_delete(con, "dataset_name", schema = "tsdb_test")
+```
+
+Note, datasets can only be deleted interactively as you have to confirm the 
+deletion of a dataset by typing its name to the console. 
+
+
+### Trimming History
+
+{timeseriesdb} stores every new update of a registered time series as a new version of this series. 
+That way it keeps track of all changes and revision. For unrevised series and/or series that are updated very frequently, this behavior may be over the top and admins may want to delete versions that are older than 
+a particular threshold. {timeseriesdb} offer [db_dataset_trim_history()](../reference/db_dataset_trim_history.html) and [db_ts_trim_history()](../reference/db_ts_trim_history.html) to facilitate this type of maintenance work. In production setups this functions might be used in batch mode / workflow automation. 
+
+
+## Release Management
+
+A new feature introduced with {timeseriesdb} 1.0 is its support for release management. 
+In official and economic statistics, data are usually updated periodically. Often 
+data are released on release date known in advance. Data may be available inside an institution but 
+only be released later on. In order to facilitate the publication process. 
+
+```{r, eval=FALSE}
+db_release_create(con,
+                  id = "jul_2020_air",
+                  datasets = "ch.zrh_airport",
+                  title = "Airport Data from Zurich Airport",
+                  release_date = "2020-07-08",
+                  target_year = 2020,
+                  target_period = 7,
+                  target_frequency = 12,
+                  note = "Just a test release",
+                  schema = "tsdb_test"
+                  )
+```
+
+In {timeseriesdb}, releases have an id which uniquely identifies the release.
+We recommend to choose a short human readable text identifier. Releases relate to a dataset and therefore are assigned at the dataset level. This is a good reason to make use of the dataset feature as opposed to storing all series in the default set. Releases have a target year and target period because the release date itself may not safely identify the period it relates to (assume July data get released at the beginning of August). 
+
+[db_release_update()](../reference/db_release_update.html) updates a release date and [db_release_cancel(db_release_cancel.html)] lets an admin 
+cancel a release. Past releases cannot be cancelled. Note that, there are several 
+release related functions that are not restricted to admins and are therefore 
+discussed in the function reference and the user vignettes. 
+
+
+## Access 
+
+The access concept of {timeseriesdb} relies on revoking all rights to query the
+data directly and allows users instead to use functions to get the data. 
+The right to run functions on a particular time series is linked to access levels. 
+
+### Access Levels
+
+{timeseriesdb} can control access at the time series and even at the version level. 
+The basic installation ships with three access levels: public, main and restricted. 
+The idea of the public level is that every users with access to the {timeseriesdb}
+database schema can read public series. The idea of the 'main' level is to give 
+all users inside an organization access to the assigned data. 'restricted' is
+designed to limit access to subgroups within an organization. We guess you see 
+where this is going. By adding further access levels, admins can add more narrow
+user groups for parts of the data.
+
+[db_access_level_list()](../reference/db_access_level_list.html) lists all access levels available for a schema. 
+New levels are created easily. Note also that new levels can be made the default.
+
+```{r,eval=FALSE}
+db_access_level_create(con, 
+                       access_level_name =  "management",
+                       access_level_description = "series only available",
+                       access_level_default = TRUE,
+                       schema = "tsdb_test"
+                       )
+```
+
+Obviously only one access level can be 'default' at a time. Defaults can be
+set post creation as well using [db_access_level_set_default()](../reference/db_access_level_set_default.html). To delete levels, 
+run [db_access_level_delete()](../reference/db_access_level_delete.html).
+
+### Assigning Access
+
+To assign an access level to a single time series use [db_ts_change_access()](../reference/db_ts_change_access.html), 
+to assign an access level to an entire dataset, i.e., to all series in a set, use
+[db_dataset_change_access()](../reference/db_dataset_change_access.html).
+
+
+
+
+
+
+
+
+

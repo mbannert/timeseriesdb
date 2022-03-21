@@ -5,3 +5,6 @@
 .RData
 *.out
 *.Rproj
+
+# Documentation is generated and should thus be excluded from version control
+man/

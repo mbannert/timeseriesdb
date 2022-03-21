@@ -1,0 +1,11 @@
+pandoc: 2.17.1.1
+pkgdown: 2.0.2
+pkgdown_sha: ~
+articles:
+  a01_basic_usage: a01_basic_usage.html
+  a02_advanced_usage: a02_advanced_usage.html
+  a03_admin_usage: a03_admin_usage.html
+  developer_doc: developer_doc.html
+  installation_guide: installation_guide.html
+last_built: 2022-03-21T11:49Z
+

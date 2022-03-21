@@ -1,28 +1,36 @@
 Package: timeseriesdb
 Type: Package
-Version: 0.5.0.1
-Title: Manage Time Series for Official Statistics with R and PostgreSQL
+Version: 1.0.0-1.1.2
+Title: A Time Series Database for Official Statistics with R and PostgreSQL
 Description: Archive and manage times series data from official statistics. The 'timeseriesdb' package was designed to manage a large catalog of time series from official statistics which are typically published on a monthly, quarterly or yearly basis. Thus timeseriesdb is optimized to handle updates caused by data revision as well as elaborate, multi-lingual meta information. 
-Author: "Matthias Bannert <bannert@kof.ethz.ch> [aut, cre]"
+Authors@R: as.person(c(
+    "Matthias Bannert <bannert@kof.ethz.ch> [aut, cre]",
+    "Severin Thöni <sthoeni@kof.ethz.ch> [aut]",
+    "Ioan Gabriel Bucur [ctb]"
+  ))
 Depends:
     R (>= 3.0.0),
-    RPostgreSQL,
+Imports:
+    RPostgres (>= 1.2.0),
     jsonlite (>= 1.1),
     data.table (>= 1.9.4),
-Imports:
+    utils,
     xts,
-    zoo,
     DBI,
-    openxlsx,
 Suggests:
-    knitr,
-    testthat
+    openxlsx,
+    rstudioapi,
+    tstools,
+    rmarkdown,
+    testthat (>= 3.0.0),
+    covr,
+    knitr
 VignetteBuilder: knitr
-Date: 2018-07-19
-License: GPL-2
+Date: 2020-08-17
+License: GPL-3
 URL: https://github.com/mbannert/timeseriesdb
 BugReports: https://github.com/mbannert/timeseriesdb/issues
 LazyData: true
-Maintainer: 'Matthias Bannert' <bannert@kof.ethz.ch>
-RoxygenNote: 6.1.1
+RoxygenNote: 7.1.2
 Encoding: UTF-8
+Config/testthat/edition: 3
