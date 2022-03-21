@@ -33,7 +33,7 @@
 "zrh_airport"
 
 
-#' Meta DAta Zurich Airport Departures and Arrivals 
+#' Meta Data Zurich Airport Departures and Arrivals 
 #' 
 #' Meta Data of time series of daily departures and arrivals at Zurich airport. 
 #'

@@ -19,6 +19,8 @@
 <![endif]-->
 </head>
 <body data-spy="scroll" data-target="#toc">
+    
+
     <div class="container template-article">
       <header><div class="navbar navbar-default navbar-fixed-top" role="navigation">
   <div class="container">
@@ -31,23 +33,17 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">timeseriesdb</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">1.0</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">1.0.0-1.1.2</span>
       </span>
     </div>
 
     <div id="navbar" class="navbar-collapse collapse">
       <ul class="nav navbar-nav">
 <li>
-  <a href="../index.html">
-    <span class="fas fa fas fa-home fa-lg"></span>
-     
-  </a>
-</li>
-<li>
   <a href="../reference/index.html">Reference</a>
 </li>
 <li class="dropdown">
-  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
     Articles
      
     <span class="caret"></span>
@@ -76,8 +72,8 @@
       </ul>
 <ul class="nav navbar-nav navbar-right">
 <li>
-  <a href="https://github.com/mbannert/timeseriesdb/">
-    <span class="fab fa fab fa-github fa-lg"></span>
+  <a href="https://github.com/mbannert/timeseriesdb/" class="external-link">
+    <span class="fab fa-github fa-lg"></span>
      
   </a>
 </li>
@@ -95,101 +91,169 @@
   <div class="col-md-9 contents">
     <div class="page-header toc-ignore">
       <h1 data-toc-skip>Admin Usage</h1>
-            <h3 class="subtitle">Administrator Documentation</h3>
-                        <h4 class="author">Matthias Bannert and Severin Thöni</h4>
             
-            <h4 class="date">2020-09-09</h4>
       
-      <small class="dont-index">Source: <a href="https://github.com/mbannert/timeseriesdb/blob/master/vignettes/a03_admin_usage.Rmd"><code>vignettes/a03_admin_usage.Rmd</code></a></small>
+      <small class="dont-index">Source: <a href="https://github.com/mbannert/timeseriesdb/blob/HEAD/vignettes/a03_admin_usage.Rmd" class="external-link"><code>vignettes/a03_admin_usage.Rmd</code></a></small>
       <div class="hidden name"><code>a03_admin_usage.Rmd</code></div>
 
     </div>
 
     
     
-<div id="starting-point" class="section level2">
-<h2 class="hasAnchor">
-<a href="#starting-point" class="anchor"></a>Starting Point</h2>
-<p>This guide assumes you have installed the {timeseriesdb} R package and a local PostgreSQL client library successfully. We also assume you’re connect to your PostgreSQL database and are familiar with the basic ideas of {timeseriesdb}. (<em>For the remainder of this guide we assume PostgreSQL runs on a local docker container accessible via port 1111.</em>)</p>
+<div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/mbannert/timeseriesdb" class="external-link">timeseriesdb</a></span><span class="op">)</span></code></pre></div>
+<div class="section level2">
+<h2 id="starting-point">Starting Point<a class="anchor" aria-label="anchor" href="#starting-point"></a>
+</h2>
+<p>This guide assumes you have installed the {timeseriesdb} R package
+and a local PostgreSQL client library successfully. We also assume
+you’re connect to your PostgreSQL database and are familiar with the
+basic ideas of {timeseriesdb}. (<em>For the remainder of this guide we
+assume PostgreSQL runs on a local docker container accessible via port
+1111.</em>)</p>
 </div>
-<div id="general-note" class="section level2">
-<h2 class="hasAnchor">
-<a href="#general-note" class="anchor"></a>General Note</h2>
-<p>With {timeseriesdb}, access rights can be customized quite a bit, so in the end roles will be quite specific to any institution that uses it. Still though, {timeseriesdb} ships with a basic idea of access levels and roles. This document focuses on administrator usage as opposed to users, i.e., researchers that want to work with the time series in the database.</p>
+<div class="section level2">
+<h2 id="general-note">General Note<a class="anchor" aria-label="anchor" href="#general-note"></a>
+</h2>
+<p>With {timeseriesdb}, access rights can be customized quite a bit, so
+in the end roles will be quite specific to any institution that uses it.
+Still though, {timeseriesdb} ships with a basic idea of access levels
+and roles. This document focuses on administrator usage as opposed to
+users, i.e., researchers that want to work with the time series in the
+database.</p>
 </div>
-<div id="datasets" class="section level2">
-<h2 class="hasAnchor">
-<a href="#datasets" class="anchor"></a>Datasets</h2>
-<p>In {timeseriesdb}, all time series have to be part of a dataset. If the user stores a time series w/o specifying a dataset that series will be assigned to the ‘default’ dataset. Datasets allow to group data and store data descriptions at the dataset level. Also, datasets come in handy for admin operations like deletion of an entire dataset. Therefore new datasets can only be added by admins while time series can be assigned to existing datasets by ordinary users with write access.</p>
-<div id="registering-a-new-dataset" class="section level3">
-<h3 class="hasAnchor">
-<a href="#registering-a-new-dataset" class="anchor"></a>Registering a New Dataset</h3>
-<div class="sourceCode" id="cb1"><html><body><pre class="r"><span class="fu"><a href="https://rdrr.io/r/base/library.html">library</a></span>(<span class="no">kofdata</span>)
-<span class="no">arr</span> <span class="kw">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/kofdata/man/get_time_series.html">get_time_series</a></span>(<span class="st">"ch.zrh_airport.arrival.total"</span>)
-<span class="no">dep</span> <span class="kw">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/kofdata/man/get_time_series.html">get_time_series</a></span>(<span class="st">"ch.zrh_airport.departure.total"</span>)
+<div class="section level2">
+<h2 id="datasets">Datasets<a class="anchor" aria-label="anchor" href="#datasets"></a>
+</h2>
+<p>In {timeseriesdb}, all time series have to be part of a dataset. If
+the user stores a time series w/o specifying a dataset that series will
+be assigned to the ‘default’ dataset. Datasets allow to group data and
+store data descriptions at the dataset level. Also, datasets come in
+handy for admin operations like deletion of an entire dataset. Therefore
+new datasets can only be added by admins while time series can be
+assigned to existing datasets by ordinary users with write access.</p>
+<div class="section level3">
+<h3 id="registering-a-new-dataset">Registering a New Dataset<a class="anchor" aria-label="anchor" href="#registering-a-new-dataset"></a>
+</h3>
+<div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/KOF-ch/kofdata" class="external-link">kofdata</a></span><span class="op">)</span>
+<span class="va">arr</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/kofdata/man/get_time_series.html" class="external-link">get_time_series</a></span><span class="op">(</span><span class="st">"ch.zrh_airport.arrival.total"</span><span class="op">)</span>
+<span class="va">dep</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/kofdata/man/get_time_series.html" class="external-link">get_time_series</a></span><span class="op">(</span><span class="st">"ch.zrh_airport.departure.total"</span><span class="op">)</span>
 
-<span class="fu"><a href="../reference/db_ts_store.html">db_ts_store</a></span>(<span class="no">con</span>, <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span>(<span class="no">arr</span>,<span class="no">dep</span>), <span class="kw">schema</span> <span class="kw">=</span> <span class="st">"tsdb_test"</span>)
+<span class="fu"><a href="../reference/db_ts_store.html">db_ts_store</a></span><span class="op">(</span><span class="va">con</span>, <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="va">arr</span>,<span class="va">dep</span><span class="op">)</span>, schema <span class="op">=</span> <span class="st">"tsdb_test"</span><span class="op">)</span>
 
-<span class="fu"><a href="../reference/db_dataset_create.html">db_dataset_create</a></span>(<span class="no">con</span>, <span class="st">"ch.zrh_airport"</span>,
-                  <span class="kw">set_description</span> <span class="kw">=</span> <span class="st">"Arrivals and Departures ZH Airport"</span>,
-                  <span class="kw">schema</span> <span class="kw">=</span> <span class="st">"tsdb_test"</span>)
+<span class="fu"><a href="../reference/db_dataset_create.html">db_dataset_create</a></span><span class="op">(</span><span class="va">con</span>, <span class="st">"ch.zrh_airport"</span>,
+                  set_description <span class="op">=</span> <span class="st">"Arrivals and Departures ZH Airport"</span>,
+                  schema <span class="op">=</span> <span class="st">"tsdb_test"</span><span class="op">)</span>
 
 <span class="co"># see, the new dataset is there... </span>
-<span class="fu"><a href="../reference/db_dataset_list.html">db_dataset_list</a></span>(<span class="no">con</span>, <span class="kw">schema</span> <span class="kw">=</span> <span class="st">"tsdb_test"</span>)</pre></body></html></div>
-<p>Apparently, the dataset is empty. We need to assign some time series first.</p>
+<span class="fu"><a href="../reference/db_dataset_list.html">db_dataset_list</a></span><span class="op">(</span><span class="va">con</span>, schema <span class="op">=</span> <span class="st">"tsdb_test"</span><span class="op">)</span></code></pre></div>
+<p>Apparently, the dataset is empty. We need to assign some time series
+first.</p>
 </div>
-<div id="danger-zone-deleting-datasets" class="section level3">
-<h3 class="hasAnchor">
-<a href="#danger-zone-deleting-datasets" class="anchor"></a>DANGER ZONE: Deleting Datasets</h3>
-<p>Admin users can delete an entire dataset. The power to do so comes with great responsibility as it will delete not only the dataset registration entry but ALL time series, their versions and all meta information associated to the dataset AND the time series. A deleted dataset CANNOT by restored. The only way to get a deleted dataset back is a PostgreSQL level backup outside of {timeseriesdb}.</p>
-<div class="sourceCode" id="cb2"><html><body><pre class="r"><span class="fu"><a href="../reference/db_dataset_delete.html">db_dataset_delete</a></span>(<span class="no">con</span>, <span class="st">"dataset_name"</span>, <span class="kw">schema</span> <span class="kw">=</span> <span class="st">"tsdb_test"</span>)</pre></body></html></div>
-<p>Note, datasets can only be deleted interactively as you have to confirm the deletion of a dataset by typing its name to the console.</p>
+<div class="section level3">
+<h3 id="danger-zone-deleting-datasets">DANGER ZONE: Deleting Datasets<a class="anchor" aria-label="anchor" href="#danger-zone-deleting-datasets"></a>
+</h3>
+<p>Admin users can delete an entire dataset. The power to do so comes
+with great responsibility as it will delete not only the dataset
+registration entry but ALL time series, their versions and all meta
+information associated to the dataset AND the time series. A deleted
+dataset CANNOT by restored. The only way to get a deleted dataset back
+is a PostgreSQL level backup outside of {timeseriesdb}.</p>
+<div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="fu"><a href="../reference/db_dataset_delete.html">db_dataset_delete</a></span><span class="op">(</span><span class="va">con</span>, <span class="st">"dataset_name"</span>, schema <span class="op">=</span> <span class="st">"tsdb_test"</span><span class="op">)</span></code></pre></div>
+<p>Note, datasets can only be deleted interactively as you have to
+confirm the deletion of a dataset by typing its name to the console.</p>
 </div>
-<div id="trimming-history" class="section level3">
-<h3 class="hasAnchor">
-<a href="#trimming-history" class="anchor"></a>Trimming History</h3>
-<p>{timeseriesdb} stores every new update of a registered time series as a new version of this series. That way it keeps track of all changes and revision. For unrevised series and/or series that are updated very frequently, this behavior may be over the top and admins may want to delete versions that are older than a particular threshold. {timeseriesdb} offer <a href="../reference/db_dataset_trim_history.html">db_dataset_trim_history()</a> and <a href="../reference/db_ts_trim_history.html">db_ts_trim_history()</a> to facilitate this type of maintenance work. In production setups this functions might be used in batch mode / workflow automation.</p>
+<div class="section level3">
+<h3 id="trimming-history">Trimming History<a class="anchor" aria-label="anchor" href="#trimming-history"></a>
+</h3>
+<p>{timeseriesdb} stores every new update of a registered time series as
+a new version of this series. That way it keeps track of all changes and
+revision. For unrevised series and/or series that are updated very
+frequently, this behavior may be over the top and admins may want to
+delete versions that are older than a particular threshold.
+{timeseriesdb} offer <a href="../reference/db_dataset_trim_history.html">db_dataset_trim_history()</a>
+and <a href="../reference/db_ts_trim_history.html">db_ts_trim_history()</a> to
+facilitate this type of maintenance work. In production setups this
+functions might be used in batch mode / workflow automation.</p>
 </div>
 </div>
-<div id="release-management" class="section level2">
-<h2 class="hasAnchor">
-<a href="#release-management" class="anchor"></a>Release Management</h2>
-<p>A new feature introduced with {timeseriesdb} 1.0 is its support for release management. In official and economic statistics, data are usually updated periodically. Often data are released on release date known in advance. Data may be available inside an institution but only be released later on. In order to facilitate the publication process.</p>
-<div class="sourceCode" id="cb3"><html><body><pre class="r"><span class="fu"><a href="../reference/db_release_create.html">db_release_create</a></span>(<span class="no">con</span>,
-                  <span class="kw">id</span> <span class="kw">=</span> <span class="st">"jul_2020_air"</span>,
-                  <span class="kw">datasets</span> <span class="kw">=</span> <span class="st">"ch.zrh_airport"</span>,
-                  <span class="kw">title</span> <span class="kw">=</span> <span class="st">"Airport Data from Zurich Airport"</span>,
-                  <span class="kw">release_date</span> <span class="kw">=</span> <span class="st">"2020-07-08"</span>,
-                  <span class="kw">target_year</span> <span class="kw">=</span> <span class="fl">2020</span>,
-                  <span class="kw">target_period</span> <span class="kw">=</span> <span class="fl">7</span>,
-                  <span class="kw">target_frequency</span> <span class="kw">=</span> <span class="fl">12</span>,
-                  <span class="kw">note</span> <span class="kw">=</span> <span class="st">"Just a test release"</span>,
-                  <span class="kw">schema</span> <span class="kw">=</span> <span class="st">"tsdb_test"</span>
-                  )</pre></body></html></div>
-<p>In {timeseriesdb}, releases have an id which uniquely identifies the release. We recommend to choose a short human readable text identifier. Releases relate to a dataset and therefore are assigned at the dataset level. This is a good reason to make use of the dataset feature as opposed to storing all series in the default set. Releases have a target year and target period because the release date itself may not safely identify the period it relates to (assume July data get released at the beginning of August).</p>
-<p><a href="../reference/db_release_update.html">db_release_update()</a> updates a release date and [db_release_cancel(db_release_cancel.html)] lets an admin cancel a release. Past releases cannot be cancelled. Note that, there are several release related functions that are not restricted to admins and are therefore discussed in the function reference and the user vignettes.</p>
+<div class="section level2">
+<h2 id="release-management">Release Management<a class="anchor" aria-label="anchor" href="#release-management"></a>
+</h2>
+<p>A new feature introduced with {timeseriesdb} 1.0 is its support for
+release management. In official and economic statistics, data are
+usually updated periodically. Often data are released on release date
+known in advance. Data may be available inside an institution but only
+be released later on. In order to facilitate the publication
+process.</p>
+<div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="fu"><a href="../reference/db_release_create.html">db_release_create</a></span><span class="op">(</span><span class="va">con</span>,
+                  id <span class="op">=</span> <span class="st">"jul_2020_air"</span>,
+                  datasets <span class="op">=</span> <span class="st">"ch.zrh_airport"</span>,
+                  title <span class="op">=</span> <span class="st">"Airport Data from Zurich Airport"</span>,
+                  release_date <span class="op">=</span> <span class="st">"2020-07-08"</span>,
+                  target_year <span class="op">=</span> <span class="fl">2020</span>,
+                  target_period <span class="op">=</span> <span class="fl">7</span>,
+                  target_frequency <span class="op">=</span> <span class="fl">12</span>,
+                  note <span class="op">=</span> <span class="st">"Just a test release"</span>,
+                  schema <span class="op">=</span> <span class="st">"tsdb_test"</span>
+                  <span class="op">)</span></code></pre></div>
+<p>In {timeseriesdb}, releases have an id which uniquely identifies the
+release. We recommend to choose a short human readable text identifier.
+Releases relate to a dataset and therefore are assigned at the dataset
+level. This is a good reason to make use of the dataset feature as
+opposed to storing all series in the default set. Releases have a target
+year and target period because the release date itself may not safely
+identify the period it relates to (assume July data get released at the
+beginning of August).</p>
+<p><a href="../reference/db_release_update.html">db_release_update()</a>
+updates a release date and [db_release_cancel(db_release_cancel.html)]
+lets an admin cancel a release. Past releases cannot be cancelled. Note
+that, there are several release related functions that are not
+restricted to admins and are therefore discussed in the function
+reference and the user vignettes.</p>
 </div>
-<div id="access" class="section level2">
-<h2 class="hasAnchor">
-<a href="#access" class="anchor"></a>Access</h2>
-<p>The access concept of {timeseriesdb} relies on revoking all rights to query the data directly and allows users instead to use functions to get the data. The right to run functions on a particular time series is linked to access levels.</p>
-<div id="access-levels" class="section level3">
-<h3 class="hasAnchor">
-<a href="#access-levels" class="anchor"></a>Access Levels</h3>
-<p>{timeseriesdb} can control access at the time series and even at the version level. The basic installation ships with three access levels: public, main and restricted. The idea of the public level is that every users with access to the {timeseriesdb} database schema can read public series. The idea of the ‘main’ level is to give all users inside an organization access to the assigned data. ‘restricted’ is designed to limit access to subgroups within an organization. We guess you see where this is going. By adding further access levels, admins can add more narrow user groups for parts of the data.</p>
-<p><a href="../reference/db_access_level_list.html">db_access_level_list()</a> lists all access levels available for a schema. New levels are created easily. Note also that new levels can be made the default.</p>
-<div class="sourceCode" id="cb4"><html><body><pre class="r"><span class="fu"><a href="../reference/db_access_level_create.html">db_access_level_create</a></span>(<span class="no">con</span>,
-                       <span class="kw">access_level_name</span> <span class="kw">=</span>  <span class="st">"management"</span>,
-                       <span class="kw">access_level_description</span> <span class="kw">=</span> <span class="st">"series only available"</span>,
-                       <span class="kw">access_level_default</span> <span class="kw">=</span> <span class="fl">TRUE</span>,
-                       <span class="kw">schema</span> <span class="kw">=</span> <span class="st">"tsdb_test"</span>
-                       )</pre></body></html></div>
-<p>Obviously only one access level can be ‘default’ at a time. Defaults can be set post creation as well using <a href="../reference/db_access_level_set_default.html">db_access_level_set_default()</a>. To delete levels, run <a href="../reference/db_access_level_delete.html">db_access_level_delete()</a>.</p>
+<div class="section level2">
+<h2 id="access">Access<a class="anchor" aria-label="anchor" href="#access"></a>
+</h2>
+<p>The access concept of {timeseriesdb} relies on revoking all rights to
+query the data directly and allows users instead to use functions to get
+the data. The right to run functions on a particular time series is
+linked to access levels.</p>
+<div class="section level3">
+<h3 id="access-levels">Access Levels<a class="anchor" aria-label="anchor" href="#access-levels"></a>
+</h3>
+<p>{timeseriesdb} can control access at the time series and even at the
+version level. The basic installation ships with three access levels:
+public, main and restricted. The idea of the public level is that every
+users with access to the {timeseriesdb} database schema can read public
+series. The idea of the ‘main’ level is to give all users inside an
+organization access to the assigned data. ‘restricted’ is designed to
+limit access to subgroups within an organization. We guess you see where
+this is going. By adding further access levels, admins can add more
+narrow user groups for parts of the data.</p>
+<p><a href="../reference/db_access_level_list.html">db_access_level_list()</a>
+lists all access levels available for a schema. New levels are created
+easily. Note also that new levels can be made the default.</p>
+<div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="fu"><a href="../reference/db_access_level_create.html">db_access_level_create</a></span><span class="op">(</span><span class="va">con</span>, 
+                       access_level_name <span class="op">=</span>  <span class="st">"management"</span>,
+                       access_level_description <span class="op">=</span> <span class="st">"series only available"</span>,
+                       access_level_default <span class="op">=</span> <span class="cn">TRUE</span>,
+                       schema <span class="op">=</span> <span class="st">"tsdb_test"</span>
+                       <span class="op">)</span></code></pre></div>
+<p>Obviously only one access level can be ‘default’ at a time. Defaults
+can be set post creation as well using <a href="../reference/db_access_level_set_default.html">db_access_level_set_default()</a>.
+To delete levels, run <a href="../reference/db_access_level_delete.html">db_access_level_delete()</a>.</p>
 </div>
-<div id="assigning-access" class="section level3">
-<h3 class="hasAnchor">
-<a href="#assigning-access" class="anchor"></a>Assigning Access</h3>
-<p>To assign an access level to a single time series use <a href="../reference/db_ts_change_access.html">db_ts_change_access()</a>, to assign an access level to an entire dataset, i.e., to all series in a set, use <a href="../reference/db_dataset_change_access.html">db_dataset_change_access()</a>.</p>
+<div class="section level3">
+<h3 id="assigning-access">Assigning Access<a class="anchor" aria-label="anchor" href="#assigning-access"></a>
+</h3>
+<p>To assign an access level to a single time series use <a href="../reference/db_ts_change_access.html">db_ts_change_access()</a>,
+to assign an access level to an entire dataset, i.e., to all series in a
+set, use <a href="../reference/db_dataset_change_access.html">db_dataset_change_access()</a>.</p>
 </div>
 </div>
   </div>
@@ -205,11 +269,14 @@
 
 
       <footer><div class="copyright">
-  <p>Developed by Matthias Bannert, Severin Thöni.</p>
+  <p></p>
+<p>Developed by Matthias Bannert, Severin Thöni.</p>
 </div>
 
 <div class="pkgdown">
-  <p>Site built with <a href="https://pkgdown.r-lib.org/">pkgdown</a> 1.5.1.</p>
+  <p></p>
+<p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a>
+2.0.2.</p>
 </div>
 
       </footer>
@@ -217,6 +284,8 @@
 
   
 
+
+  
 
   </body>
 </html>

@@ -19,6 +19,8 @@
 <![endif]-->
 </head>
 <body data-spy="scroll" data-target="#toc">
+    
+
     <div class="container template-article">
       <header><div class="navbar navbar-default navbar-fixed-top" role="navigation">
   <div class="container">
@@ -31,23 +33,17 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">timeseriesdb</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">1.0</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">1.0.0-1.1.2</span>
       </span>
     </div>
 
     <div id="navbar" class="navbar-collapse collapse">
       <ul class="nav navbar-nav">
 <li>
-  <a href="../index.html">
-    <span class="fas fa fas fa-home fa-lg"></span>
-     
-  </a>
-</li>
-<li>
   <a href="../reference/index.html">Reference</a>
 </li>
 <li class="dropdown">
-  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
     Articles
      
     <span class="caret"></span>
@@ -76,8 +72,8 @@
       </ul>
 <ul class="nav navbar-nav navbar-right">
 <li>
-  <a href="https://github.com/mbannert/timeseriesdb/">
-    <span class="fab fa fab fa-github fa-lg"></span>
+  <a href="https://github.com/mbannert/timeseriesdb/" class="external-link">
+    <span class="fab fa-github fa-lg"></span>
      
   </a>
 </li>
@@ -95,134 +91,205 @@
   <div class="col-md-9 contents">
     <div class="page-header toc-ignore">
       <h1 data-toc-skip>Advanced Usage</h1>
-                        <h4 class="author">Matthias Bannert and Severin Thöni</h4>
             
-            <h4 class="date">2020-09-09</h4>
       
-      <small class="dont-index">Source: <a href="https://github.com/mbannert/timeseriesdb/blob/master/vignettes/a02_advanced_usage.Rmd"><code>vignettes/a02_advanced_usage.Rmd</code></a></small>
+      <small class="dont-index">Source: <a href="https://github.com/mbannert/timeseriesdb/blob/HEAD/vignettes/a02_advanced_usage.Rmd" class="external-link"><code>vignettes/a02_advanced_usage.Rmd</code></a></small>
       <div class="hidden name"><code>a02_advanced_usage.Rmd</code></div>
 
     </div>
 
     
     
-<div id="starting-point" class="section level2">
-<h2 class="hasAnchor">
-<a href="#starting-point" class="anchor"></a>Starting Point</h2>
-<p>We assume you are past the basics and R, {timeseriesdb} and PostgreSQL are up and running. (<em>For the remainder of this guide we assume PostgreSQL runs on a local docker container accessible via port 1111.</em>)</p>
+<div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/mbannert/timeseriesdb" class="external-link">timeseriesdb</a></span><span class="op">)</span></code></pre></div>
+<div class="section level2">
+<h2 id="starting-point">Starting Point<a class="anchor" aria-label="anchor" href="#starting-point"></a>
+</h2>
+<p>We assume you are past the basics and R, {timeseriesdb} and
+PostgreSQL are up and running. (<em>For the remainder of this guide we
+assume PostgreSQL runs on a local docker container accessible via port
+1111.</em>)</p>
 </div>
-<div id="versioning-of-time-series-vintages" class="section level2">
-<h2 class="hasAnchor">
-<a href="#versioning-of-time-series-vintages" class="anchor"></a>Versioning of Time Series (Vintages)</h2>
-<p>A core feature of {timeseriesdb} is the ability to store vintages, i.e., different versions of time series. The package was created with official and economic statistics in mind, so data revisions and the ability to evaluate forecasts play an important role in the package design. Hence {timeseriesdb} versions every time series it stores by default.</p>
-<p>Let’s assume <code>baro_2019m10</code> is a time series published in October 2019 and <code>baro_2019m11</code> is yet another version of the very same time series. We can simply store</p>
-<div class="sourceCode" id="cb1"><html><body><pre class="r"><span class="fu"><a href="https://rdrr.io/r/utils/data.html">data</a></span>(<span class="st">"kof_ts"</span>)
-<span class="fu"><a href="../reference/db_ts_store.html">db_ts_store</a></span>(<span class="no">con</span>,
-                  <span class="fu"><a href="https://rdrr.io/r/base/list.html">list</a></span>(<span class="kw">ch.kof.barometer</span> <span class="kw">=</span> <span class="no">kof_ts</span>$<span class="no">baro_2019m10</span>),
-                  <span class="kw">valid_from</span><span class="kw">=</span><span class="st">"2019-10-30"</span>,
-                  <span class="kw">schema</span> <span class="kw">=</span> <span class="st">"tsdb_test"</span>)
+<div class="section level2">
+<h2 id="versioning-of-time-series-vintages">Versioning of Time Series (Vintages)<a class="anchor" aria-label="anchor" href="#versioning-of-time-series-vintages"></a>
+</h2>
+<p>A core feature of {timeseriesdb} is the ability to store vintages,
+i.e., different versions of time series. The package was created with
+official and economic statistics in mind, so data revisions and the
+ability to evaluate forecasts play an important role in the package
+design. Hence {timeseriesdb} versions every time series it stores by
+default.</p>
+<p>Let’s assume <code>baro_2019m10</code> is a time series published in
+October 2019 and <code>baro_2019m11</code> is yet another version of the
+very same time series. We can simply store</p>
+<div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="fu"><a href="https://rdrr.io/r/utils/data.html" class="external-link">data</a></span><span class="op">(</span><span class="st">"kof_ts"</span><span class="op">)</span>
+<span class="fu"><a href="../reference/db_ts_store.html">db_ts_store</a></span><span class="op">(</span><span class="va">con</span>,
+                  <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>ch.kof.barometer <span class="op">=</span> <span class="va">kof_ts</span><span class="op">$</span><span class="va">baro_2019m10</span><span class="op">)</span>,
+                  valid_from<span class="op">=</span><span class="st">"2019-10-30"</span>,
+                  schema <span class="op">=</span> <span class="st">"tsdb_test"</span><span class="op">)</span>
 
-<span class="fu"><a href="../reference/db_ts_store.html">db_ts_store</a></span>(<span class="no">con</span>,
-                  <span class="fu"><a href="https://rdrr.io/r/base/list.html">list</a></span>(<span class="kw">ch.kof.barometer</span> <span class="kw">=</span> <span class="no">kof_ts</span>$<span class="no">baro_2019m11</span>),
-                  <span class="kw">valid_from</span><span class="kw">=</span><span class="st">"2019-11-30"</span>,
-                  <span class="kw">schema</span> <span class="kw">=</span> <span class="st">"tsdb_test"</span>)</pre></body></html></div>
+<span class="fu"><a href="../reference/db_ts_store.html">db_ts_store</a></span><span class="op">(</span><span class="va">con</span>,
+                  <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>ch.kof.barometer <span class="op">=</span> <span class="va">kof_ts</span><span class="op">$</span><span class="va">baro_2019m11</span><span class="op">)</span>,
+                  valid_from<span class="op">=</span><span class="st">"2019-11-30"</span>,
+                  schema <span class="op">=</span> <span class="st">"tsdb_test"</span><span class="op">)</span></code></pre></div>
 <p>and read them under the same key.</p>
-<div class="sourceCode" id="cb2"><html><body><pre class="r"><span class="fu"><a href="../reference/db_ts_read.html">db_ts_read</a></span>(<span class="no">con</span>, <span class="st">"ch.kof.barometer"</span>,
-                 <span class="kw">schema</span> <span class="kw">=</span> <span class="st">"tsdb_test"</span>)</pre></body></html></div>
-<p>Note how the default validity (today per <code><a href="https://rdrr.io/r/base/Sys.time.html">Sys.Date()</a></code>) is used when <code>valid_on</code> is not specified. You can also get read the entire history which returns a list of time series that contains version of time series. List elements will be named according validity thresholds.</p>
-<div class="sourceCode" id="cb3"><html><body><pre class="r"><span class="no">tsl</span> <span class="kw">&lt;-</span> <span class="fu"><a href="../reference/db_ts_read_history.html">db_ts_read_history</a></span>(<span class="no">con</span>,<span class="st">"ch.kof.barometer"</span>,
-                                <span class="kw">schema</span> <span class="kw">=</span> <span class="st">"tsdb_test"</span>)</pre></body></html></div>
+<div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="fu"><a href="../reference/db_ts_read.html">db_ts_read</a></span><span class="op">(</span><span class="va">con</span>, <span class="st">"ch.kof.barometer"</span>,
+                 schema <span class="op">=</span> <span class="st">"tsdb_test"</span><span class="op">)</span></code></pre></div>
+<p>Note how the default validity (today per <code><a href="https://rdrr.io/r/base/Sys.time.html" class="external-link">Sys.Date()</a></code>) is
+used when <code>valid_on</code> is not specified. You can also get read
+the entire history which returns a list of time series that contains
+version of time series. List elements will be named according validity
+thresholds.</p>
+<div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="va">tsl</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/db_ts_read_history.html">db_ts_read_history</a></span><span class="op">(</span><span class="va">con</span>,<span class="st">"ch.kof.barometer"</span>,
+                                schema <span class="op">=</span> <span class="st">"tsdb_test"</span><span class="op">)</span></code></pre></div>
 </div>
-<div id="datasets" class="section level2">
-<h2 class="hasAnchor">
-<a href="#datasets" class="anchor"></a>Datasets</h2>
-<p>Make sure the time series you want to register and set itself are actually around. Creating sets is an admin level function. Assigning series to a dataset is <em>not</em> a vintage level operation, it applies to all versions of a series. This is why time series are assigned to the ‘default’ schema at first when they are stored and can be moved later on.</p>
-<div class="sourceCode" id="cb4"><html><body><pre class="r"><span class="fu"><a href="../reference/db_ts_assign_dataset.html">db_ts_assign_dataset</a></span>(<span class="no">con</span>,
-                  <span class="kw">ts_keys</span> <span class="kw">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span>(<span class="st">"ch.zrh_airport.arrival.total"</span>,
-                              <span class="st">"ch.zrh_airport.departure.total"</span>),
-                  <span class="kw">set_name</span> <span class="kw">=</span> <span class="st">"ch.zrh_airport"</span>,
-                  <span class="kw">schema</span> <span class="kw">=</span> <span class="st">"tsdb_test"</span>)</pre></body></html></div>
-<p><strong>Note</strong> that there is no such thing as remove time series from dataset. Either you delete a time series entirely or you assign it to another dataset. Think of a registry similar to a software registry.</p>
+<div class="section level2">
+<h2 id="datasets">Datasets<a class="anchor" aria-label="anchor" href="#datasets"></a>
+</h2>
+<p>Make sure the time series you want to register and set itself are
+actually around. Creating sets is an admin level function. Assigning
+series to a dataset is <em>not</em> a vintage level operation, it
+applies to all versions of a series. This is why time series are
+assigned to the ‘default’ schema at first when they are stored and can
+be moved later on.</p>
+<div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="fu"><a href="../reference/db_ts_assign_dataset.html">db_ts_assign_dataset</a></span><span class="op">(</span><span class="va">con</span>,
+                  ts_keys <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"ch.zrh_airport.arrival.total"</span>,
+                              <span class="st">"ch.zrh_airport.departure.total"</span><span class="op">)</span>,
+                  set_name <span class="op">=</span> <span class="st">"ch.zrh_airport"</span>,
+                  schema <span class="op">=</span> <span class="st">"tsdb_test"</span><span class="op">)</span></code></pre></div>
+<p><strong>Note</strong> that there is no such thing as remove time
+series from dataset. Either you delete a time series entirely or you
+assign it to another dataset. Think of a registry similar to a software
+registry.</p>
 <p>To see all keys registered in a dataset simply call:</p>
-<div class="sourceCode" id="cb5"><html><body><pre class="r"><span class="fu">db_get_dataset_keys</span>(<span class="no">con</span>, <span class="st">"ch.zrh_airport"</span>, <span class="kw">schema</span> <span class="kw">=</span> <span class="st">"tsdb_test"</span>)</pre></body></html></div>
-<p>To do the opposite, that is, find out which dataset series are assigned to, run:</p>
-<div class="sourceCode" id="cb6"><html><body><pre class="r"><span class="fu">db_get_dataset_id</span>(<span class="no">con</span>, <span class="st">"ch.zrh_airport.arrival.total"</span>,
-                  <span class="kw">schema</span> <span class="kw">=</span> <span class="st">"tsdb_test"</span>)</pre></body></html></div>
-<p>With <a href="../reference/db_dataset_read_ts.html">db_dataset_read_ts()</a> you can read all time series from a given dataset.</p>
+<div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="fu">db_get_dataset_keys</span><span class="op">(</span><span class="va">con</span>, <span class="st">"ch.zrh_airport"</span>, schema <span class="op">=</span> <span class="st">"tsdb_test"</span><span class="op">)</span></code></pre></div>
+<p>To do the opposite, that is, find out which dataset series are
+assigned to, run:</p>
+<div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="fu">db_get_dataset_id</span><span class="op">(</span><span class="va">con</span>, <span class="st">"ch.zrh_airport.arrival.total"</span>,
+                  schema <span class="op">=</span> <span class="st">"tsdb_test"</span><span class="op">)</span></code></pre></div>
+<p>With <a href="../reference/db_dataset_read_ts.html">db_dataset_read_ts()</a> you
+can read all time series from a given dataset.</p>
 </div>
-<div id="release-management" class="section level2">
-<h2 class="hasAnchor">
-<a href="#release-management" class="anchor"></a>Release Management</h2>
-<div class="sourceCode" id="cb7"><html><body><pre class="r"><span class="fu">db_list_releases</span>(<span class="no">con</span>, <span class="kw">include_past</span> <span class="kw">=</span> <span class="no">T</span>, <span class="kw">schema</span> <span class="kw">=</span> <span class="st">"tsdb_test"</span>)</pre></body></html></div>
-<p>Cancelling a future release is simply a matter of calling <a href="../reference/db_release_cancel.html">db_release_cancel()</a>. Cancellation of past releases is not possible, but release can be updated with <a href="../reference/db_release_update.html">db_release_update()</a>. Also you can easily query the latest release</p>
-<div class="sourceCode" id="cb8"><html><body><pre class="r"><span class="fu">db_get_latest_release_for_set</span>(<span class="no">con</span>, <span class="st">"ch.zrh_airport"</span>,<span class="kw">schema</span> <span class="kw">=</span> <span class="st">"tsdb_test"</span>)</pre></body></html></div>
-<p>Similarily use <a href="../reference/db_dataset_next_release">db_dataset_next_release()</a> to get the next upcoming release.</p>
+<div class="section level2">
+<h2 id="release-management">Release Management<a class="anchor" aria-label="anchor" href="#release-management"></a>
+</h2>
+<div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="fu">db_list_releases</span><span class="op">(</span><span class="va">con</span>, include_past <span class="op">=</span> <span class="cn">T</span>, schema <span class="op">=</span> <span class="st">"tsdb_test"</span><span class="op">)</span></code></pre></div>
+<p>Cancelling a future release is simply a matter of calling <a href="../reference/db_release_cancel.html">db_release_cancel()</a>.
+Cancellation of past releases is not possible, but release can be
+updated with <a href="../reference/db_release_update.html">db_release_update()</a>. Also
+you can easily query the latest release</p>
+<div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="fu">db_get_latest_release_for_set</span><span class="op">(</span><span class="va">con</span>, <span class="st">"ch.zrh_airport"</span>,schema <span class="op">=</span> <span class="st">"tsdb_test"</span><span class="op">)</span></code></pre></div>
+<p>Similarily use <a href="../reference/db_dataset_next_release">db_dataset_next_release()</a>
+to get the next upcoming release.</p>
 </div>
-<div id="collections" class="section level2">
-<h2 class="hasAnchor">
-<a href="#collections" class="anchor"></a>Collections</h2>
-<p>Collections are another concept introduced in v1.0.. Collections are user specific compositions of time series identifiers. Users of earlier versions of time series may think of this functionality as ‘sets’. To avoid any confusion, let’s be clear about the new terminology here:</p>
+<div class="section level2">
+<h2 id="collections">Collections<a class="anchor" aria-label="anchor" href="#collections"></a>
+</h2>
+<p>Collections are another concept introduced in v1.0.. Collections are
+user specific compositions of time series identifiers. Users of earlier
+versions of time series may think of this functionality as ‘sets’. To
+avoid any confusion, let’s be clear about the new terminology here:</p>
 <ul>
-<li><p>datasets = registration of time series into global datasets. This happens typically at the admin level. Time series are unique ACROSS datasets.</p></li>
-<li><p>collection = playlist are like user specific bookmarks. A time series can part of multiple collections, users can have multiple collections. The purpose of collections is to be able to re-visit a selection of time series after updates etc, e.g., to update time series visualizations.</p></li>
+<li><p>datasets = registration of time series into global datasets. This
+happens typically at the admin level. Time series are unique ACROSS
+datasets.</p></li>
+<li><p>collection = playlist are like user specific bookmarks. A time
+series can part of multiple collections, users can have multiple
+collections. The purpose of collections is to be able to re-visit a
+selection of time series after updates etc, e.g., to update time series
+visualizations.</p></li>
 </ul>
-<div class="sourceCode" id="cb9"><html><body><pre class="r"><span class="fu">db_collection_add</span>(<span class="no">con</span>,
-                  <span class="kw">collection_name</span> <span class="kw">=</span> <span class="st">"demo_collect"</span>,
-                  <span class="kw">keys</span> <span class="kw">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span>(<span class="st">"ch.zrh_airport.arrival.total"</span>,
-                           <span class="st">"AirPassengers"</span>),
-                  <span class="kw">description</span> <span class="kw">=</span> <span class="st">"Flying Around Now and Then"</span>,
-                  <span class="kw">schema</span> <span class="kw">=</span> <span class="st">"tsdb_test"</span>)</pre></body></html></div>
-<p>You can remove keys from a collection using <a href="../reference/db_collection_remove_ts.html">db_collection_remove_ts()</a> and delete an entire collection with <a href="../reference/db_collection_delete">db_collection_delete()</a>.</p>
+<div class="sourceCode" id="cb10"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="fu">db_collection_add</span><span class="op">(</span><span class="va">con</span>, 
+                  collection_name <span class="op">=</span> <span class="st">"demo_collect"</span>,
+                  keys <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"ch.zrh_airport.arrival.total"</span>,
+                           <span class="st">"AirPassengers"</span><span class="op">)</span>,
+                  description <span class="op">=</span> <span class="st">"Flying Around Now and Then"</span>,
+                  schema <span class="op">=</span> <span class="st">"tsdb_test"</span><span class="op">)</span></code></pre></div>
+<p>You can remove keys from a collection using <a href="../reference/db_collection_remove_ts.html">db_collection_remove_ts()</a>
+and delete an entire collection with <a href="../reference/db_collection_delete">db_collection_delete()</a>.</p>
 </div>
-<div id="advanced-meta-information" class="section level2">
-<h2 class="hasAnchor">
-<a href="#advanced-meta-information" class="anchor"></a>Advanced Meta Information</h2>
-<p>Context aware data description is one of the core aims of {timeseriesdb}. Meta information done properly can quickly become a complex topic: descriptions can be assigned at different levels. Descriptions can be language agnostic or language specific. Moreover with versioned time series descriptions can also be specific to a particular version of a time series.</p>
-<div id="multi-language-data-descriptions" class="section level3">
-<h3 class="hasAnchor">
-<a href="#multi-language-data-descriptions" class="anchor"></a>Multi Language Data Descriptions</h3>
-<p>Simply create meta information objects for each language, similar to the fashion we’ve seen in the <a href="a01_basic_usage.html">Basic Usage</a> article. Meta information objects can hold descriptions for one or more time series. Make sure you do NOT change the language within one object.</p>
-<div class="sourceCode" id="cb10"><html><body><pre class="r"><span class="no">de</span> <span class="kw">&lt;-</span> <span class="fu">create_tsmeta</span>(
-  <span class="kw">ch.zrh_airport.arrival.total</span> <span class="kw">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html">list</a></span>(
-    <span class="kw">provider</span> <span class="kw">=</span> <span class="st">"Flughafen Zürich"</span>,
-    <span class="kw">description</span> <span class="kw">=</span> <span class="st">"Eine deutschsprachige Beschreibung"</span>
-  )
-)
+<div class="section level2">
+<h2 id="advanced-meta-information">Advanced Meta Information<a class="anchor" aria-label="anchor" href="#advanced-meta-information"></a>
+</h2>
+<p>Context aware data description is one of the core aims of
+{timeseriesdb}. Meta information done properly can quickly become a
+complex topic: descriptions can be assigned at different levels.
+Descriptions can be language agnostic or language specific. Moreover
+with versioned time series descriptions can also be specific to a
+particular version of a time series.</p>
+<div class="section level3">
+<h3 id="multi-language-data-descriptions">Multi Language Data Descriptions<a class="anchor" aria-label="anchor" href="#multi-language-data-descriptions"></a>
+</h3>
+<p>Simply create meta information objects for each language, similar to
+the fashion we’ve seen in the <a href="a01_basic_usage.html">Basic
+Usage</a> article. Meta information objects can hold descriptions for
+one or more time series. Make sure you do NOT change the language within
+one object.</p>
+<div class="sourceCode" id="cb11"><pre class="downlit sourceCode r">
+<code class="sourceCode R">
+<span class="va">de</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/create_tsmeta.html">create_tsmeta</a></span><span class="op">(</span>
+  ch.zrh_airport.arrival.total <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>
+    provider <span class="op">=</span> <span class="st">"Flughafen Zürich"</span>,
+    description <span class="op">=</span> <span class="st">"Eine deutschsprachige Beschreibung"</span>
+  <span class="op">)</span>
+<span class="op">)</span>
 
-<span class="no">en</span> <span class="kw">&lt;-</span> <span class="fu">create_tsmeta</span>(
-  <span class="kw">ch.zrh_airport.arrival.total</span> <span class="kw">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html">list</a></span>(
-    <span class="kw">provider</span> <span class="kw">=</span> <span class="st">"Zurich Airport"</span>,
-    <span class="kw">description</span> <span class="kw">=</span> <span class="st">"An English speaking description"</span>
-  )
-)
+<span class="va">en</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/create_tsmeta.html">create_tsmeta</a></span><span class="op">(</span>
+  ch.zrh_airport.arrival.total <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>
+    provider <span class="op">=</span> <span class="st">"Zurich Airport"</span>,
+    description <span class="op">=</span> <span class="st">"An English speaking description"</span>
+  <span class="op">)</span>
+<span class="op">)</span>
 
 
 
-<span class="fu">db_store_ts_metadata</span>(<span class="no">con</span>,
-                     <span class="kw">metadata</span> <span class="kw">=</span> <span class="no">de</span>,
-                     <span class="kw">valid_from</span> <span class="kw">=</span> <span class="fu"><a href="https://rdrr.io/r/base/Sys.time.html">Sys.Date</a></span>(),
-                     <span class="kw">locale</span> <span class="kw">=</span> <span class="st">"de"</span>,
-                     <span class="kw">schema</span> <span class="kw">=</span> <span class="st">"tsdb_test"</span>)
+<span class="fu">db_store_ts_metadata</span><span class="op">(</span><span class="va">con</span>,
+                     metadata <span class="op">=</span> <span class="va">de</span>,
+                     valid_from <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/Sys.time.html" class="external-link">Sys.Date</a></span><span class="op">(</span><span class="op">)</span>,
+                     locale <span class="op">=</span> <span class="st">"de"</span>,
+                     schema <span class="op">=</span> <span class="st">"tsdb_test"</span><span class="op">)</span>
 
-<span class="fu">db_store_ts_metadata</span>(<span class="no">con</span>,
-                     <span class="kw">metadata</span> <span class="kw">=</span> <span class="no">en</span>,
-                     <span class="kw">valid_from</span> <span class="kw">=</span> <span class="fu"><a href="https://rdrr.io/r/base/Sys.time.html">Sys.Date</a></span>(),
-                     <span class="kw">locale</span> <span class="kw">=</span> <span class="st">"en"</span>,
-                     <span class="kw">schema</span> <span class="kw">=</span> <span class="st">"tsdb_test"</span>)</pre></body></html></div>
-<p>Retrieving the information is just as simple, let’s get the English description…</p>
-<div class="sourceCode" id="cb11"><html><body><pre class="r"><span class="fu">db_read_ts_metadata</span>(<span class="no">con</span>, <span class="st">"ch.zrh_airport.arrival.total"</span>,
-                    <span class="kw">locale</span> <span class="kw">=</span> <span class="st">"en"</span>,
-                    <span class="kw">valid_on</span> <span class="kw">=</span> <span class="fu"><a href="https://rdrr.io/r/base/Sys.time.html">Sys.Date</a></span>(),
-                    <span class="kw">schema</span> <span class="kw">=</span> <span class="st">"tsdb_test"</span>)</pre></body></html></div>
+<span class="fu">db_store_ts_metadata</span><span class="op">(</span><span class="va">con</span>,
+                     metadata <span class="op">=</span> <span class="va">en</span>,
+                     valid_from <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/Sys.time.html" class="external-link">Sys.Date</a></span><span class="op">(</span><span class="op">)</span>,
+                     locale <span class="op">=</span> <span class="st">"en"</span>,
+                     schema <span class="op">=</span> <span class="st">"tsdb_test"</span><span class="op">)</span></code></pre></div>
+<p>Retrieving the information is just as simple, let’s get the English
+description…</p>
+<div class="sourceCode" id="cb12"><pre class="downlit sourceCode r">
+<code class="sourceCode R">
+<span class="fu">db_read_ts_metadata</span><span class="op">(</span><span class="va">con</span>, <span class="st">"ch.zrh_airport.arrival.total"</span>,
+                    locale <span class="op">=</span> <span class="st">"en"</span>,
+                    valid_on <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/Sys.time.html" class="external-link">Sys.Date</a></span><span class="op">(</span><span class="op">)</span>,
+                    schema <span class="op">=</span> <span class="st">"tsdb_test"</span><span class="op">)</span></code></pre></div>
 </div>
-<div id="levels-of-assignment" class="section level3">
-<h3 class="hasAnchor">
-<a href="#levels-of-assignment" class="anchor"></a>Levels of Assignment</h3>
-<p>Meta descriptions can be assigned at various levels. Descriptions either belong to a <em>dataset</em>, to a <em>time series</em> or two a <em>vintage of a time series</em>. Meta information is only loosely coupled to vintages of time series, because in most usecases meta descriptions do not change every time there is a data revision. So by simply not updating unchanged descriptions when data are revised / updated, we allow descriptions to last for multiple versions of a time series.</p>
-<div class="sourceCode" id="cb12"><html><body><pre class="r"><span class="fu">db_get_metadata_validity</span>(<span class="no">con</span>, <span class="st">"ch.zrh_airport.arrival.total"</span>,
-                         <span class="kw">locale</span> <span class="kw">=</span> <span class="st">"de"</span>,
-                         <span class="kw">schema</span> <span class="kw">=</span> <span class="st">"tsdb_test"</span>)</pre></body></html></div>
-<p>helps to get and overview find out since when meta information is valid. Note that dataset level meta information can currently only be assigned when the dataset is created and is not versioned.</p>
+<div class="section level3">
+<h3 id="levels-of-assignment">Levels of Assignment<a class="anchor" aria-label="anchor" href="#levels-of-assignment"></a>
+</h3>
+<p>Meta descriptions can be assigned at various levels. Descriptions
+either belong to a <em>dataset</em>, to a <em>time series</em> or two a
+<em>vintage of a time series</em>. Meta information is only loosely
+coupled to vintages of time series, because in most usecases meta
+descriptions do not change every time there is a data revision. So by
+simply not updating unchanged descriptions when data are revised /
+updated, we allow descriptions to last for multiple versions of a time
+series.</p>
+<div class="sourceCode" id="cb13"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="fu">db_get_metadata_validity</span><span class="op">(</span><span class="va">con</span>, <span class="st">"ch.zrh_airport.arrival.total"</span>, 
+                         locale <span class="op">=</span> <span class="st">"de"</span>,
+                         schema <span class="op">=</span> <span class="st">"tsdb_test"</span><span class="op">)</span></code></pre></div>
+<p>helps to get and overview find out since when meta information is
+valid. Note that dataset level meta information can currently only be
+assigned when the dataset is created and is not versioned.</p>
 </div>
 </div>
   </div>
@@ -238,11 +305,14 @@
 
 
       <footer><div class="copyright">
-  <p>Developed by Matthias Bannert, Severin Thöni.</p>
+  <p></p>
+<p>Developed by Matthias Bannert, Severin Thöni.</p>
 </div>
 
 <div class="pkgdown">
-  <p>Site built with <a href="https://pkgdown.r-lib.org/">pkgdown</a> 1.5.1.</p>
+  <p></p>
+<p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a>
+2.0.2.</p>
 </div>
 
       </footer>
@@ -250,6 +320,8 @@
 
   
 
+
+  
 
   </body>
 </html>

@@ -29,7 +29,7 @@ the most convenient setup for testing purposes if you're familiar with docker.
 However, docker know-how is not a prerequisite for running and installing 
 {timeseriesdb} by any means. 
 
-## Installation of the R Packge
+## Installation of the R Package
 
 Installation of the {timeseriesdb} R package is as straight forward as for any other R package
 

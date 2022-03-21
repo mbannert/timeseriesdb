@@ -1,7 +1,4 @@
 # And now for something completely tricky... *liberty bell*
-
-context("db_ts_read")
-
 tsl_state_0 <- list(
   rts1 = ts(rep(1.9, 10), 2019, frequency = 4)
 )

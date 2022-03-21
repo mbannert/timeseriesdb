@@ -1,5 +1,3 @@
-context("access levels")
-
 if(is_test_db_reachable()) {
   con_admin <- connect_to_test_db()
   con_reader <- connect_to_test_db("dev_reader_main")

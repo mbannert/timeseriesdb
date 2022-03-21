@@ -12,7 +12,7 @@
 
 {timeseriesdb}  ... 
 
-- is lite weight but powerful: version
+- is lite weight but powerful: multi-language meta information, versioning of time series, ...
 - built entirely based on license cost free open source components.
 - tailored to the needs of Official and Economic Statistics
 - administration friendly, extendable access rights management

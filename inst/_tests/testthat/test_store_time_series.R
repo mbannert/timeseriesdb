@@ -17,9 +17,8 @@ ts <- tsl$ts1
 xts <- xts::as.xts(ts)
 
 # store time series from lists  ##########################
-context("db_ts_store.tslist")
-
 test_that("it calls through to store_records", {
+  
   store_recs <- mock()
   with_mock(
     # https://github.com/r-lib/testthat/issues/734#issuecomment-377367516

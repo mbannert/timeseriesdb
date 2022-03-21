@@ -79,7 +79,7 @@ db_ts_store.tslist <- function(con,
                                pre_release_access = NULL,
                                schema = "timeseries"){
   if(length(x) == 0) {
-    warning("Ts list is empty. This is a no-op.")
+    warning("Empty tslist. No series could be stored.")
     return(list())
   }
 
