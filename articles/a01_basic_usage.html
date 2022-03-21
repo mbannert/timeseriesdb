@@ -19,6 +19,8 @@
 <![endif]-->
 </head>
 <body data-spy="scroll" data-target="#toc">
+    
+
     <div class="container template-article">
       <header><div class="navbar navbar-default navbar-fixed-top" role="navigation">
   <div class="container">
@@ -31,23 +33,17 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">timeseriesdb</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">1.0</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">1.0.0-1.1.2</span>
       </span>
     </div>
 
     <div id="navbar" class="navbar-collapse collapse">
       <ul class="nav navbar-nav">
 <li>
-  <a href="../index.html">
-    <span class="fas fa fas fa-home fa-lg"></span>
-     
-  </a>
-</li>
-<li>
   <a href="../reference/index.html">Reference</a>
 </li>
 <li class="dropdown">
-  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
     Articles
      
     <span class="caret"></span>
@@ -76,8 +72,8 @@
       </ul>
 <ul class="nav navbar-nav navbar-right">
 <li>
-  <a href="https://github.com/mbannert/timeseriesdb/">
-    <span class="fab fa fab fa-github fa-lg"></span>
+  <a href="https://github.com/mbannert/timeseriesdb/" class="external-link">
+    <span class="fab fa-github fa-lg"></span>
      
   </a>
 </li>
@@ -95,107 +91,155 @@
   <div class="col-md-9 contents">
     <div class="page-header toc-ignore">
       <h1 data-toc-skip>Basic Usage</h1>
-            <h3 class="subtitle">Getting Started</h3>
-                        <h4 class="author">Matthias Bannert and Severin Thöni</h4>
             
-            <h4 class="date">2020-09-09</h4>
       
-      <small class="dont-index">Source: <a href="https://github.com/mbannert/timeseriesdb/blob/master/vignettes/a01_basic_usage.Rmd"><code>vignettes/a01_basic_usage.Rmd</code></a></small>
+      <small class="dont-index">Source: <a href="https://github.com/mbannert/timeseriesdb/blob/HEAD/vignettes/a01_basic_usage.Rmd" class="external-link"><code>vignettes/a01_basic_usage.Rmd</code></a></small>
       <div class="hidden name"><code>a01_basic_usage.Rmd</code></div>
 
     </div>
 
     
     
-<div id="starting-point" class="section level2">
-<h2 class="hasAnchor">
-<a href="#starting-point" class="anchor"></a>Starting Point</h2>
-<p>This guide assumes you have installed the {timeseriesdb} R package and a local PostgreSQL client library successfully. We also assume that you have a PostgreSQL database running somewhere that you can connect to. (<em>For the remainder of this guide we assume PostgreSQL runs on a local docker container accessible via port 1111.</em>)</p>
+<div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/mbannert/timeseriesdb" class="external-link">timeseriesdb</a></span><span class="op">)</span></code></pre></div>
+<div class="section level2">
+<h2 id="starting-point">Starting Point<a class="anchor" aria-label="anchor" href="#starting-point"></a>
+</h2>
+<p>This guide assumes you have installed the {timeseriesdb} R package
+and a local PostgreSQL client library successfully. We also assume that
+you have a PostgreSQL database running somewhere that you can connect
+to. (<em>For the remainder of this guide we assume PostgreSQL runs on a
+local docker container accessible via port 1111.</em>)</p>
 </div>
-<div id="general-note" class="section level2">
-<h2 class="hasAnchor">
-<a href="#general-note" class="anchor"></a>General Note</h2>
-<p>In {timeseriesdb}, functions to interact with the database use the <code>db_</code> prefix. Basic read and store functions are an exception to this rule as they should be easy to find front and center. As opposed to that more complex, less common operations rather ask for organization in a group functions.</p>
+<div class="section level2">
+<h2 id="general-note">General Note<a class="anchor" aria-label="anchor" href="#general-note"></a>
+</h2>
+<p>In {timeseriesdb}, functions to interact with the database use the
+<code>db_</code> prefix. Basic read and store functions are an exception
+to this rule as they should be easy to find front and center. As opposed
+to that more complex, less common operations rather ask for organization
+in a group functions.</p>
 </div>
-<div id="create-a-database-connection" class="section level2">
-<h2 class="hasAnchor">
-<a href="#create-a-database-connection" class="anchor"></a>Create a Database Connection</h2>
-<p>No matter whether you want to read or write, you’ll need a database connection. {timeseriesdb} offers a simple wrapper function around {DBI}’s more universal <code>dbConnect</code>:</p>
-<div class="sourceCode" id="cb1"><html><body><pre class="r"><span class="no">con</span> <span class="kw">&lt;-</span> <span class="fu"><a href="../reference/db_connection_create.html">db_connection_create</a></span>(
-  <span class="kw">dbname</span> <span class="kw">=</span> <span class="st">"postgres"</span>,
-  <span class="kw">user</span> <span class="kw">=</span> <span class="st">"dev_admin"</span>,
-  <span class="kw">host</span> <span class="kw">=</span> <span class="st">"localhost"</span>,
-  <span class="kw">passwd</span> <span class="kw">=</span> <span class="st">"dev_admin"</span>,
-  <span class="kw">port</span> <span class="kw">=</span> <span class="fl">1111</span>
-)</pre></body></html></div>
-<p>The resulting PostgreSQL connection object can be passed on to all of {timeseriesdb}’s database interaction functions.</p>
+<div class="section level2">
+<h2 id="create-a-database-connection">Create a Database Connection<a class="anchor" aria-label="anchor" href="#create-a-database-connection"></a>
+</h2>
+<p>No matter whether you want to read or write, you’ll need a database
+connection. {timeseriesdb} offers a simple wrapper function around
+{DBI}’s more universal <code>dbConnect</code>:</p>
+<div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="va">con</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/timeseriesdb/man/db_connection_create.html" class="external-link">db_connection_create</a></span><span class="op">(</span>
+  dbname <span class="op">=</span> <span class="st">"postgres"</span>,
+  user <span class="op">=</span> <span class="st">"dev_admin"</span>,
+  host <span class="op">=</span> <span class="st">"localhost"</span>,
+  passwd <span class="op">=</span> <span class="st">"dev_admin"</span>,
+  port <span class="op">=</span> <span class="fl">1111</span>
+<span class="op">)</span></code></pre></div>
+<p>The resulting PostgreSQL connection object can be passed on to all of
+{timeseriesdb}’s database interaction functions.</p>
 </div>
-<div id="store-time-series" class="section level2">
-<h2 class="hasAnchor">
-<a href="#store-time-series" class="anchor"></a>Store Time Series</h2>
-<p>Let’s take two time series from the {datasets} R package that ships with R (monthly AirPassengers, JohnsonJohnson quarterly earnings per share) and put them into a named list. The {timeseriesdb} R package uses lists of time series or long format time series <code>data.tables</code> to store one or more time series into PostgreSQL.</p>
-<div class="sourceCode" id="cb2"><html><body><pre class="r"><span class="no">tsl</span> <span class="kw">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html">list</a></span>(<span class="kw">AirPassengers</span> <span class="kw">=</span> <span class="no">AirPassengers</span>,
-            <span class="kw">JohnsonJohnson</span> <span class="kw">=</span> <span class="no">JohnsonJohnson</span>)
-<span class="fu"><a href="../reference/db_ts_store.html">db_ts_store</a></span>(<span class="no">con</span>, <span class="no">tsl</span>, <span class="st">"main"</span>,
-                  <span class="kw">schema</span> <span class="kw">=</span> <span class="st">"tsdb_test"</span>)</pre></body></html></div>
+<div class="section level2">
+<h2 id="store-time-series">Store Time Series<a class="anchor" aria-label="anchor" href="#store-time-series"></a>
+</h2>
+<p>Let’s take two time series from the {datasets} R package that ships
+with R (monthly AirPassengers, JohnsonJohnson quarterly earnings per
+share) and put them into a named list. The {timeseriesdb} R package uses
+lists of time series or long format time series <code>data.tables</code>
+to store one or more time series into PostgreSQL.</p>
+<div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="va">tsl</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>
+  AirPassengers <span class="op">=</span> <span class="va">AirPassengers</span>,
+  JohnsonJohnson <span class="op">=</span> <span class="va">JohnsonJohnson</span>
+<span class="op">)</span>
+<span class="fu"><a href="https://rdrr.io/pkg/timeseriesdb/man/db_ts_store.html" class="external-link">db_ts_store</a></span><span class="op">(</span><span class="va">con</span>, <span class="va">tsl</span>, <span class="st">"main"</span>,
+  schema <span class="op">=</span> <span class="st">"tsdb_test"</span>
+<span class="op">)</span></code></pre></div>
 </div>
-<div id="read-time-series" class="section level2">
-<h2 class="hasAnchor">
-<a href="#read-time-series" class="anchor"></a>Read Time Series</h2>
-<p>Now let’s read the series we have just stored to the database into R again. Note that <code>db_ts_read</code> returns a list of time series whose elements’ names are the time series keys (unique identifiers) from the database. In this case example we use our <a href="https://cran.r-project.org/package=tstools">{tstools}</a> package to visualize both series.</p>
-<div class="sourceCode" id="cb3"><html><body><pre class="r"><span class="no">out</span> <span class="kw">&lt;-</span> <span class="fu"><a href="../reference/db_ts_read.html">db_ts_read</a></span>(<span class="no">con</span>, <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span>(<span class="st">"JohnsonJohnson"</span>,
-                               <span class="st">"AirPassengers"</span>),
-                        <span class="kw">schema</span> <span class="kw">=</span> <span class="st">"tsdb_test"</span>)
+<div class="section level2">
+<h2 id="read-time-series">Read Time Series<a class="anchor" aria-label="anchor" href="#read-time-series"></a>
+</h2>
+<p>Now let’s read the series we have just stored to the database into R
+again. Note that <code>db_ts_read</code> returns a list of time series
+whose elements’ names are the time series keys (unique identifiers) from
+the database. In this case example we use our <a href="https://cran.r-project.org/package=tstools" class="external-link">{tstools}</a> package
+to visualize both series.</p>
+<div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
+<code class="sourceCode R">
+<span class="va">out</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/timeseriesdb/man/db_ts_read.html" class="external-link">db_ts_read</a></span><span class="op">(</span><span class="va">con</span>, <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span>
+  <span class="st">"JohnsonJohnson"</span>,
+  <span class="st">"AirPassengers"</span>
+<span class="op">)</span>,
+schema <span class="op">=</span> <span class="st">"tsdb_test"</span>
+<span class="op">)</span>
 
-<span class="fu"><a href="https://rdrr.io/r/base/library.html">library</a></span>(<span class="no">tstools</span>)
-<span class="fu"><a href="https://rdrr.io/pkg/tstools/man/tsplot.html">tsplot</a></span>(<span class="kw">AirPassengers</span> <span class="kw">=</span> <span class="no">out</span>$<span class="no">AirPassengers</span>,
-       <span class="kw">tsr</span> <span class="kw">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html">list</a></span>(<span class="kw">JohnsonJohnson</span> <span class="kw">=</span> <span class="no">out</span>$<span class="no">JohnsonJohnson</span>))</pre></body></html></div>
-<p><img src="a01_basic_usage_files/figure-html/unnamed-chunk-4-1.png" width="700"></p>
+<span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va">tstools</span><span class="op">)</span>
+<span class="fu"><a href="https://rdrr.io/pkg/tstools/man/tsplot.html" class="external-link">tsplot</a></span><span class="op">(</span>
+  AirPassengers <span class="op">=</span> <span class="va">out</span><span class="op">$</span><span class="va">AirPassengers</span>,
+  tsr <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>JohnsonJohnson <span class="op">=</span> <span class="va">out</span><span class="op">$</span><span class="va">JohnsonJohnson</span><span class="op">)</span>
+<span class="op">)</span></code></pre></div>
+<p><img src="a01_basic_usage_files/figure-html/unnamed-chunk-5-1.png" width="700"></p>
 </div>
-<div id="basic-metadata" class="section level2">
-<h2 class="hasAnchor">
-<a href="#basic-metadata" class="anchor"></a>Basic Metadata</h2>
-<p>In {timeseriesdb}, the most basic way to store data descriptions is to assign non-translated (unlocalized) meta information at the time series level. In order to store meta information to the database, lets first create a <code>tsmeta</code> object in R.</p>
-<div class="sourceCode" id="cb4"><html><body><pre class="r"><span class="co">#library(timeseriesdb)</span>
-<span class="kw pkg">devtools</span><span class="kw ns">::</span><span class="fu"><a href="https://rdrr.io/pkg/devtools/man/load_all.html">load_all</a></span>()</pre></body></html></div>
-<pre><code>## Loading timeseriesdb</code></pre>
-<div class="sourceCode" id="cb6"><html><body><pre class="r"><span class="no">tsm</span> <span class="kw">&lt;-</span> <span class="fu">create_tsmeta</span>(
-  <span class="kw">JohnsonJohnson</span> <span class="kw">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html">list</a></span>(
-    <span class="kw">title</span> <span class="kw">=</span> <span class="st">"Historical Quarterly earnings (dollars) per Johnson &amp; Johnson share"</span>,
-    <span class="kw">source</span> <span class="kw">=</span> <span class="st">"Shumway, R. H. and Stoffer, D. S. (2000) Time Series Analysis and its Applications. Second Edition. Springer. Example 1.1"</span>
-  ),
-  <span class="kw">AirPassengers</span> <span class="kw">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html">list</a></span>(
-    <span class="kw">title</span> <span class="kw">=</span> <span class="st">"The classic Box &amp; Jenkins airline data. Monthly totals of international airline passengers"</span>,
-    <span class="kw">source</span> <span class="kw">=</span> <span class="st">"Box, G. E. P., Jenkins, G. M. and Reinsel, G. C. (1976) Time Series Analysis, Forecasting and Control. Third Edition. Holden-Day. Series G."</span>
-  )
-)
+<div class="section level2">
+<h2 id="basic-metadata">Basic Metadata<a class="anchor" aria-label="anchor" href="#basic-metadata"></a>
+</h2>
+<p>In {timeseriesdb}, the most basic way to store data descriptions is
+to assign non-translated (unlocalized) meta information at the time
+series level. In order to store meta information to the database, lets
+first create a <code>tsmeta</code> object in R.</p>
+<div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/mbannert/timeseriesdb" class="external-link">timeseriesdb</a></span><span class="op">)</span>
+<span class="va">tsm</span> <span class="op">&lt;-</span> <span class="fu">create_tsmeta</span><span class="op">(</span>
+  JohnsonJohnson <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>
+    title <span class="op">=</span> <span class="st">"Historical Quarterly earnings (dollars) per Johnson &amp; Johnson share"</span>,
+    source <span class="op">=</span> <span class="st">"Shumway, R. H. and Stoffer, D. S. (2000) Time Series Analysis and its Applications. Second Edition. Springer. Example 1.1"</span>
+  <span class="op">)</span>,
+  AirPassengers <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>
+    title <span class="op">=</span> <span class="st">"The classic Box &amp; Jenkins airline data. Monthly totals of international airline passengers"</span>,
+    source <span class="op">=</span> <span class="st">"Box, G. E. P., Jenkins, G. M. and Reinsel, G. C. (1976) Time Series Analysis, Forecasting and Control. Third Edition. Holden-Day. Series G."</span>
+  <span class="op">)</span>
+<span class="op">)</span>
 
-<span class="no">tsm</span></pre></body></html></div>
-<pre><code>## Object of class tsmeta
-## $JohnsonJohnson
-## Object of class meta
-## title : Historical Quarterly earnings (dollars) per Johnson &amp; Johnson share
-## source: Shumway, R. H. and Stoffer, D. S. (2000) Time Series Analysis and its Applications. Second Edition. Springer. Example 1.1
-## 
-## $AirPassengers
-## Object of class meta
-## title : The classic Box &amp; Jenkins airline data. Monthly totals of international airline passengers
-## source: Box, G. E. P., Jenkins, G. M. and Reinsel, G. C. (1976) Time Series Analysis, Forecasting and Control. Third Edition. Holden-Day. Series G.</code></pre>
+<span class="va">tsm</span>
+<span class="co">#&gt; Object of class tsmeta</span>
+<span class="co">#&gt; $JohnsonJohnson</span>
+<span class="co">#&gt; Object of class meta</span>
+<span class="co">#&gt; title : Historical Quarterly earnings (dollars) per Johnson &amp; Johnson share</span>
+<span class="co">#&gt; source: Shumway, R. H. and Stoffer, D. S. (2000) Time Series Analysis and its Applications. Second Edition. Springer. Example 1.1</span>
+<span class="co">#&gt; </span>
+<span class="co">#&gt; $AirPassengers</span>
+<span class="co">#&gt; Object of class meta</span>
+<span class="co">#&gt; title : The classic Box &amp; Jenkins airline data. Monthly totals of international airline passengers</span>
+<span class="co">#&gt; source: Box, G. E. P., Jenkins, G. M. and Reinsel, G. C. (1976) Time Series Analysis, Forecasting and Control. Third Edition. Holden-Day. Series G.</span></code></pre></div>
 <p>Now, pass on the <code>tsmeta</code> object to the database.</p>
-<div class="sourceCode" id="cb8"><html><body><pre class="r"><span class="fu">db_store_ts_metadata</span>(<span class="no">con</span>,
-                     <span class="no">tsm</span>,
-                     <span class="kw">valid_from</span> <span class="kw">=</span> <span class="fu"><a href="https://rdrr.io/r/base/Sys.time.html">Sys.Date</a></span>(),
-                     <span class="kw">schema</span> <span class="kw">=</span> <span class="st">"tsdb_test"</span>)</pre></body></html></div>
-<p>Note that the default locale for the write operation is NULL. This means there is only one language and data descriptions are not translated to different languages. If you want to learn how to add localized meta information or meta information at the vintage or dataset level, please read the <a href="a02_advanced_usage.html">advanced usage vignette</a>.</p>
+<div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
+<code class="sourceCode R">
+<span class="fu">db_store_ts_metadata</span><span class="op">(</span><span class="va">con</span>,
+  <span class="va">tsm</span>,
+  valid_from <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/Sys.time.html" class="external-link">Sys.Date</a></span><span class="op">(</span><span class="op">)</span>,
+  schema <span class="op">=</span> <span class="st">"tsdb_test"</span>
+<span class="op">)</span></code></pre></div>
+<p>Note that the default locale for the write operation is NULL. This
+means there is only one language and data descriptions are not
+translated to different languages. If you want to learn how to add
+localized meta information or meta information at the vintage or dataset
+level, please read the <a href="a02_advanced_usage.html">advanced usage
+vignette</a>.</p>
 <p>Reading the data from the database is just as easy:</p>
-<div class="sourceCode" id="cb9"><html><body><pre class="r"><span class="no">tsm</span> <span class="kw">&lt;-</span> <span class="fu">db_read_ts_metadata</span>(<span class="no">con</span>, <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span>(<span class="st">"JohnsonJohnson"</span>,
-                           <span class="st">"AirPassengers"</span>),
-                    <span class="kw">schema</span> <span class="kw">=</span> <span class="st">"tsdb_test"</span>)</pre></body></html></div>
+<div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="va">tsm</span> <span class="op">&lt;-</span> <span class="fu">db_read_ts_metadata</span><span class="op">(</span><span class="va">con</span>, <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span>
+  <span class="st">"JohnsonJohnson"</span>,
+  <span class="st">"AirPassengers"</span>
+<span class="op">)</span>,
+schema <span class="op">=</span> <span class="st">"tsdb_test"</span>
+<span class="op">)</span></code></pre></div>
 </div>
-<div id="advanced-use" class="section level2">
-<h2 class="hasAnchor">
-<a href="#advanced-use" class="anchor"></a>Advanced Use</h2>
-<p>{timeseriesdb} offers a plethora of features beyond mere storage of time series and their descriptions: {timeseriesdb} can keep track of different versions of the same time series (vintages), group time series into datasets, store user specific collection of series, manage access on time series level and manage release dates.</p>
+<div class="section level2">
+<h2 id="advanced-use">Advanced Use<a class="anchor" aria-label="anchor" href="#advanced-use"></a>
+</h2>
+<p>{timeseriesdb} offers a plethora of features beyond mere storage of
+time series and their descriptions: {timeseriesdb} can keep track of
+different versions of the same time series (vintages), group time series
+into datasets, store user specific collection of series, manage access
+on time series level and manage release dates.</p>
 <p>The learn more about these advanced features read the <a href="a02_advanced_usage.html">advanced usage vignette</a>.</p>
 </div>
   </div>
@@ -211,11 +255,14 @@
 
 
       <footer><div class="copyright">
-  <p>Developed by Matthias Bannert, Severin Thöni.</p>
+  <p></p>
+<p>Developed by Matthias Bannert, Severin Thöni.</p>
 </div>
 
 <div class="pkgdown">
-  <p>Site built with <a href="https://pkgdown.r-lib.org/">pkgdown</a> 1.5.1.</p>
+  <p></p>
+<p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a>
+2.0.2.</p>
 </div>
 
       </footer>
@@ -223,6 +270,8 @@
 
   
 
+
+  
 
   </body>
 </html>

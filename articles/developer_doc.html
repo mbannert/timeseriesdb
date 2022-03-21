@@ -19,6 +19,8 @@
 <![endif]-->
 </head>
 <body data-spy="scroll" data-target="#toc">
+    
+
     <div class="container template-article">
       <header><div class="navbar navbar-default navbar-fixed-top" role="navigation">
   <div class="container">
@@ -31,23 +33,17 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">timeseriesdb</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">1.0</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">1.0.0-1.1.2</span>
       </span>
     </div>
 
     <div id="navbar" class="navbar-collapse collapse">
       <ul class="nav navbar-nav">
 <li>
-  <a href="../index.html">
-    <span class="fas fa fas fa-home fa-lg"></span>
-     
-  </a>
-</li>
-<li>
   <a href="../reference/index.html">Reference</a>
 </li>
 <li class="dropdown">
-  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
     Articles
      
     <span class="caret"></span>
@@ -76,8 +72,8 @@
       </ul>
 <ul class="nav navbar-nav navbar-right">
 <li>
-  <a href="https://github.com/mbannert/timeseriesdb/">
-    <span class="fab fa fab fa-github fa-lg"></span>
+  <a href="https://github.com/mbannert/timeseriesdb/" class="external-link">
+    <span class="fab fa-github fa-lg"></span>
      
   </a>
 </li>
@@ -95,38 +91,75 @@
   <div class="col-md-9 contents">
     <div class="page-header toc-ignore">
       <h1 data-toc-skip>Developer Documentation</h1>
-                        <h4 class="author">Matthias Bannert and Severin Thöni</h4>
             
-            <h4 class="date">2020-09-09</h4>
       
-      <small class="dont-index">Source: <a href="https://github.com/mbannert/timeseriesdb/blob/master/vignettes/developer_doc.Rmd"><code>vignettes/developer_doc.Rmd</code></a></small>
+      <small class="dont-index">Source: <a href="https://github.com/mbannert/timeseriesdb/blob/HEAD/vignettes/developer_doc.Rmd" class="external-link"><code>vignettes/developer_doc.Rmd</code></a></small>
       <div class="hidden name"><code>developer_doc.Rmd</code></div>
 
     </div>
 
     
     
-<div id="general-overview" class="section level2">
-<h2 class="hasAnchor">
-<a href="#general-overview" class="anchor"></a>General Overview</h2>
+<div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/mbannert/timeseriesdb" class="external-link">timeseriesdb</a></span><span class="op">)</span></code></pre></div>
+<div class="section level2">
+<h2 id="general-overview">General Overview<a class="anchor" aria-label="anchor" href="#general-overview"></a>
+</h2>
 <p><img src="timeseriesdb_1_0.png"></p>
-<p>The <em>vintages</em> table is the main table that keeps all the different versions of a time series. The <em>catalog</em> table holds the stem of a time series identified by <em>ts_key</em>. These stems do not hold any observational values but provide links to <em>datasets</em> specific descriptions as well as time series specific meta information. This avoids redundancy and fosters searching keys by regular expressions in case the <em>vintages</em> table is hash partitioned. <em>Collections</em> allow users to create sets of time series identifiers (keys) in similar fashion as playlists in music apps. Tables with an <em>md_</em> prefix store meta information at different levels. By having multiple tables the user can choose whether meta information needs to be versioned, too.</p>
-<p>The following sections describe the actions behind standard write and read processes. Due to the fact that not only a time series itself is stored but versions of it as well as comprehensive data descriptions, multiple tables are affected.</p>
+<p>The <em>vintages</em> table is the main table that keeps all the
+different versions of a time series. The <em>catalog</em> table holds
+the stem of a time series identified by <em>ts_key</em>. These stems do
+not hold any observational values but provide links to <em>datasets</em>
+specific descriptions as well as time series specific meta information.
+This avoids redundancy and fosters searching keys by regular expressions
+in case the <em>vintages</em> table is hash partitioned.
+<em>Collections</em> allow users to create sets of time series
+identifiers (keys) in similar fashion as playlists in music apps. Tables
+with an <em>md_</em> prefix store meta information at different levels.
+By having multiple tables the user can choose whether meta information
+needs to be versioned, too.</p>
+<p>The following sections describe the actions behind standard write and
+read processes. Due to the fact that not only a time series itself is
+stored but versions of it as well as comprehensive data descriptions,
+multiple tables are affected.</p>
 </div>
-<div id="storing-new-time-series" class="section level2">
-<h2 class="hasAnchor">
-<a href="#storing-new-time-series" class="anchor"></a>Storing New Time Series</h2>
-<p>If an entirely new series is stored it belongs to the <em>default</em> dataset unless specified otherwise. Because a catalog entry for the stem does not exist yet, a new <em>ts_key</em> is inserted into the catalog.</p>
-<p>Once a <em>ts_key</em> is created a first version is inserted into the <em>timeseries_main</em> table. The first version is valid from the current <code><a href="https://rdrr.io/r/base/Sys.time.html">Sys.Date()</a></code> until an open end.</p>
+<div class="section level2">
+<h2 id="storing-new-time-series">Storing New Time Series<a class="anchor" aria-label="anchor" href="#storing-new-time-series"></a>
+</h2>
+<p>If an entirely new series is stored it belongs to the
+<em>default</em> dataset unless specified otherwise. Because a catalog
+entry for the stem does not exist yet, a new <em>ts_key</em> is inserted
+into the catalog.</p>
+<p>Once a <em>ts_key</em> is created a first version is inserted into
+the <em>timeseries_main</em> table. The first version is valid from the
+current <code><a href="https://rdrr.io/r/base/Sys.time.html" class="external-link">Sys.Date()</a></code> until an open end.</p>
 </div>
-<div id="adding-a-new-vintage-version-to-an-existing-time-series" class="section level2">
-<h2 class="hasAnchor">
-<a href="#adding-a-new-vintage-version-to-an-existing-time-series" class="anchor"></a>Adding a New Vintage (Version) to an Existing Time Series</h2>
-<p>In case a <em>ts_key</em> already exists in the time series catalog it is <strong>NOT</strong> updated. This is major change compared to previous versions of {timeseriesdb} in which versions were not kept by default. With {timeseriesdb} &gt; 1.0 the stem will not be modified. Instead a new version of the time series will be added to the <em>timeseries_main</em> table.</p>
-<div id="internal-time-series-storage-format-ts-json" class="section level3">
-<h3 class="hasAnchor">
-<a href="#internal-time-series-storage-format-ts-json" class="anchor"></a>Internal Time Series Storage Format (ts json)</h3>
-<p>{timeseriesdb} stores time series themselves in a single json cell. It does so to minimize the number of records because in economic statistics (as opposed to IoT applications), users are looking for an entire time series in a relatively large catalog (as opposed to few series with many observations). Previous versions of {timeseriesdb} relied on a PostgreSQL key value pair storage called <code>hstore</code> which was replaced by the more common, DBMS agnostic <code>json</code> format. The two main reasons for the switch from <code>hstore</code> to <code>json</code> format was that order is not guaranteed in <code>hstore</code> key value pairs and serialization of json is very common and available for many libraries. By using JSON inside a RDBMS, {timeseriesdb} useses the best of both worlds: JSON to minimize the number of records and relations to provide comprehensive data descriptions in multiple languages.</p>
+<div class="section level2">
+<h2 id="adding-a-new-vintage-version-to-an-existing-time-series">Adding a New Vintage (Version) to an Existing Time Series<a class="anchor" aria-label="anchor" href="#adding-a-new-vintage-version-to-an-existing-time-series"></a>
+</h2>
+<p>In case a <em>ts_key</em> already exists in the time series catalog
+it is <strong>NOT</strong> updated. This is major change compared to
+previous versions of {timeseriesdb} in which versions were not kept by
+default. With {timeseriesdb} &gt; 1.0 the stem will not be modified.
+Instead a new version of the time series will be added to the
+<em>timeseries_main</em> table.</p>
+<div class="section level3">
+<h3 id="internal-time-series-storage-format-ts-json">Internal Time Series Storage Format (ts json)<a class="anchor" aria-label="anchor" href="#internal-time-series-storage-format-ts-json"></a>
+</h3>
+<p>{timeseriesdb} stores time series themselves in a single json cell.
+It does so to minimize the number of records because in economic
+statistics (as opposed to IoT applications), users are looking for an
+entire time series in a relatively large catalog (as opposed to few
+series with many observations). Previous versions of {timeseriesdb}
+relied on a PostgreSQL key value pair storage called <code>hstore</code>
+which was replaced by the more common, DBMS agnostic <code>json</code>
+format. The two main reasons for the switch from <code>hstore</code> to
+<code>json</code> format was that order is not guaranteed in
+<code>hstore</code> key value pairs and serialization of json is very
+common and available for many libraries. By using JSON inside a RDBMS,
+{timeseriesdb} useses the best of both worlds: JSON to minimize the
+number of records and relations to provide comprehensive data
+descriptions in multiple languages.</p>
 <pre><code> {
     "frequency": null,
     "time": ["2003-03-01", "2004-03-01", "2005-03-01", "2006-03-01", "2007-03-01", "2008-03-01", "2008-06-01", "2008-09-01", "2008-12-01", "2009-03-01", "2009-06-01", "2009-09-01", "2009-12-01", "2010-03-01", "2010-06-01", "2010-09-01", "2010-12-01", "2011-03-01", "2011-06-01", "2011-09-01", "2011-12-01", "2012-03-01", "2012-06-01", "2012-09-01", "2012-12-01", "2013-03-01", "2013-06-01", "2013-09-01", "2013-12-01", "2014-03-01", "2014-06-01", "2014-09-01", "2014-12-01", "2015-03-01", "2015-06-01", "2015-09-01", "2015-12-01", "2016-03-01", "2016-06-01", "2016-09-01", "2016-12-01", "2017-03-01", "2017-06-01", "2017-09-01", "2017-12-01", "2018-03-01", "2018-06-01", "2018-09-01", "2018-12-01", "2019-03-01", "2019-06-01", "2019-09-01", "2019-12-01", "2020-03-01"],
@@ -134,10 +167,16 @@
  }</code></pre>
 </div>
 </div>
-<div id="access-management" class="section level2">
-<h2 class="hasAnchor">
-<a href="#access-management" class="anchor"></a>Access Management</h2>
-<p>{timeseriesdb}’s access management relies on the idea that users cannot directly issue SQL queries to the database. {timeseriesdb} uses SECURITY DEFINER functions which are executed as the owner of the function. The owner of the function is a privileged user that is allowed to do advanced stuff, but only within the scope of the function. This way access to the time series data can be managed at a very fine grained level.</p>
+<div class="section level2">
+<h2 id="access-management">Access Management<a class="anchor" aria-label="anchor" href="#access-management"></a>
+</h2>
+<p>{timeseriesdb}’s access management relies on the idea that users
+cannot directly issue SQL queries to the database. {timeseriesdb} uses
+SECURITY DEFINER functions which are executed as the owner of the
+function. The owner of the function is a privileged user that is allowed
+to do advanced stuff, but only within the scope of the function. This
+way access to the time series data can be managed at a very fine grained
+level.</p>
 </div>
   </div>
 
@@ -152,11 +191,14 @@
 
 
       <footer><div class="copyright">
-  <p>Developed by Matthias Bannert, Severin Thöni.</p>
+  <p></p>
+<p>Developed by Matthias Bannert, Severin Thöni.</p>
 </div>
 
 <div class="pkgdown">
-  <p>Site built with <a href="https://pkgdown.r-lib.org/">pkgdown</a> 1.5.1.</p>
+  <p></p>
+<p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a>
+2.0.2.</p>
 </div>
 
       </footer>
@@ -164,6 +206,8 @@
 
   
 
+
+  
 
   </body>
 </html>
