@@ -5,6 +5,7 @@
 [![metacran downloads](https://cranlogs.r-pkg.org/badges/timeseriesdb)](https://cran.r-project.org/package=timeseriesdb)
 [![license](https://img.shields.io/badge/license-gplv3-lightgrey.svg)](https://choosealicense.com/)
 
+-> [GitHub Pages Documentation Site](https://mbannert.github.io/timeseriesdb) <- 
 
 {timeseriesdb} maps R time series objects to PostgreSQL database relations for permanent storage. Instead of writing time series to spreadsheet files or .RData files on disk, {timeseriesdb} uses a set of PostgreSQL relations which allows to store data alongside extensive, multi-lingual meta information in context aware fashion. {timeseriesdb} was designed with official statistics in mind: It can keep track of various versions of the same time series to handle data revisions, e.g., in the case of GDP data. 
 
