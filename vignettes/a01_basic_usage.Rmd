@@ -68,7 +68,7 @@ db_ts_store(con, tsl, "main",
 Now let's read the series we have just stored to the database into R again. 
 Note that `db_ts_read` returns a list of time series whose elements' names
 are the time series keys (unique identifiers) from the database. In this case
-example we use our [{tstools}](https://cran.r-project.org/package=tstools) package to visualize both series. 
+example we use our [{dygraphs}](https://cran.r-project.org/package=dygraphs) package to visualize both series. 
  
 ```{r, eval=FALSE}
 
@@ -79,23 +79,23 @@ out <- db_ts_read(con, c(
 schema = "tsdb_test"
 )
 
-library(tstools)
-tsplot(
-  AirPassengers = out$AirPassengers,
-  tsr = list(JohnsonJohnson = out$JohnsonJohnson)
-)
+library(dygraphs)
+library(xts)
+xts_for_viz <- do.call("cbind",lapply(out,as.xts))
+dygraph(xts_for_viz) %>% 
+  dySeries("JohnsonJohnson", axis="y2")
 ```
 
 ```{r,echo=FALSE,message=FALSE, warning=FALSE}
-library(tstools)
 out <- list(
   AirPassengers = AirPassengers,
   JohnsonJohnson = JohnsonJohnson
 )
-tsplot(
-  AirPassengers = out$AirPassengers,
-  tsr = list(JohnsonJohnson = out$JohnsonJohnson)
-)
+library(dygraphs)
+library(xts)
+xts_for_viz <- do.call("cbind",lapply(out,as.xts))
+dygraph(xts_for_viz) %>% 
+  dySeries("JohnsonJohnson", axis="y2")
 ```
 
 

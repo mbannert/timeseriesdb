@@ -231,7 +231,8 @@ db_call_function <- function(con,
   if(fname %in% names(res)) {
     res[[fname]] # query returns value (e.g. JSON) -> unwrap the value
   } else {
-    if(class(res) == "data.frame") {
+    # CRAN check on R-devel suggested this instead if class(res)
+    if(inherits(res,"data.frame")) {
       as.data.table(res) # query returns table -> just return as data.table
     } else {
       res

@@ -26,7 +26,7 @@
 
 ## Quick Start Guide
 
-Make sure you followed the [installation notes](articles/installation_guide.html) to make sure all components of the
+Make sure you followed the [installation notes](https://mbannert.github.io/timeseriesdb/articles/installation_guide.html) to make sure all components of the
 {timeseriesdb} were installed properly: PostgreSQL, necessary PostgreSQL extension, 
 R as well as the {timeseriesdb} R package. 
 
