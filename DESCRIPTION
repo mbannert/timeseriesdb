@@ -20,11 +20,9 @@ Suggests:
     rstudioapi,
     dygraphs,
     rmarkdown,
-    testthat (>= 3.0.0),
-    covr,
     knitr
 VignetteBuilder: knitr
-Date: 2020-08-17
+Date: 2022-03-23
 License: GPL-3
 URL: https://github.com/mbannert/timeseriesdb
 BugReports: https://github.com/mbannert/timeseriesdb/issues

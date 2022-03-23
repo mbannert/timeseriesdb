@@ -5,7 +5,7 @@
 [![metacran downloads](https://cranlogs.r-pkg.org/badges/timeseriesdb)](https://cran.r-project.org/package=timeseriesdb)
 [![license](https://img.shields.io/badge/license-gplv3-lightgrey.svg)](https://choosealicense.com/)
 
--> [GitHub Pages Documentation Site](https://mbannert.github.io/timeseriesdb) <- 
+-> [GitHub Pages Documentation Site](https://mbannert.github.io/timeseriesdb/) <- 
 
 {timeseriesdb} maps R time series objects to PostgreSQL database relations for permanent storage. Instead of writing time series to spreadsheet files or .RData files on disk, {timeseriesdb} uses a set of PostgreSQL relations which allows to store data alongside extensive, multi-lingual meta information in context aware fashion. {timeseriesdb} was designed with official statistics in mind: It can keep track of various versions of the same time series to handle data revisions, e.g., in the case of GDP data. 
 
@@ -58,13 +58,16 @@ dbDisconnect(con)
 ### Read Data into a list of R time Series object
 
 ```
-con <- dbConnect(Postgres(),
-                "dev_writer", "localhost",
-                 1111, "dev_writer",
-                "postgres")
+con <- db_connection_create(
+  dbname = "postgres",
+  user = "dev_admin",
+  host = "localhost",
+  passwd = "dev_admin",
+  port = 1111
+)
 
 tsl <- db_read_ts(connection, c("some_ts_id","another_ts_id"))
-dbDisconnect(con)
+db_connection_close(con)
 ```
 
 ### Advanced Features

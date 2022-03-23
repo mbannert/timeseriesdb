@@ -144,7 +144,7 @@ print.tsmeta <- function(x, ...) {
 
 #' Store Time Series Metadata to PostgreSQL
 #'
-#' The most basic way to store meta information is to assign non-translated (unlocalized) descriptions, but it also can be stored in different languages (localized) using the parameter \strong{locale}. See also \href{http://mbannert.github.io/timeseriesdb/articles/a01_basic_usage.html#basic-metadata}{basic usage}.
+#' The most basic way to store meta information is to assign non-translated (unlocalized) descriptions, but it also can be stored in different languages (localized) using the parameter \strong{locale}. See also \href{https://mbannert.github.io/timeseriesdb/articles/a01_basic_usage.html#basic-metadata}{basic usage}.
 #'
 #'
 #' @param metadata object of class tsmeta that contains the metadata to be stored.
