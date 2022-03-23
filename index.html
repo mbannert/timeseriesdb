@@ -161,13 +161,16 @@ more about the use of {timeseriesdb}, read the vignette articles.</p>
 <div class="section level3">
 <h3 id="read-data-into-a-list-of-r-time-series-object">Read Data into a list of R time Series object<a class="anchor" aria-label="anchor" href="#read-data-into-a-list-of-r-time-series-object"></a>
 </h3>
-<pre><code><span class="va">con</span> <span class="op">&lt;-</span> <span class="fu">dbConnect</span><span class="op">(</span><span class="fu">Postgres</span><span class="op">(</span><span class="op">)</span>,
-                <span class="st">"dev_writer"</span>, <span class="st">"localhost"</span>,
-                 <span class="fl">1111</span>, <span class="st">"dev_writer"</span>,
-                <span class="st">"postgres"</span><span class="op">)</span>
+<pre><code><span class="va">con</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/db_connection_create.html">db_connection_create</a></span><span class="op">(</span>
+  dbname <span class="op">=</span> <span class="st">"postgres"</span>,
+  user <span class="op">=</span> <span class="st">"dev_admin"</span>,
+  host <span class="op">=</span> <span class="st">"localhost"</span>,
+  passwd <span class="op">=</span> <span class="st">"dev_admin"</span>,
+  port <span class="op">=</span> <span class="fl">1111</span>
+<span class="op">)</span>
 
 <span class="va">tsl</span> <span class="op">&lt;-</span> <span class="fu">db_read_ts</span><span class="op">(</span><span class="va">connection</span>, <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"some_ts_id"</span>,<span class="st">"another_ts_id"</span><span class="op">)</span><span class="op">)</span>
-<span class="fu">dbDisconnect</span><span class="op">(</span><span class="va">con</span><span class="op">)</span></code></pre>
+<span class="fu"><a href="reference/db_connection_close.html">db_connection_close</a></span><span class="op">(</span><span class="va">con</span><span class="op">)</span></code></pre>
 </div>
 <div class="section level3">
 <h3 id="advanced-features">Advanced Features<a class="anchor" aria-label="anchor" href="#advanced-features"></a>
