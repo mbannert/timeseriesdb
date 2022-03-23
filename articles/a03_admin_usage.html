@@ -140,14 +140,14 @@ assigned to existing datasets by ordinary users with write access.</p>
 <span class="va">arr</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/kofdata/man/get_time_series.html" class="external-link">get_time_series</a></span><span class="op">(</span><span class="st">"ch.zrh_airport.arrival.total"</span><span class="op">)</span>
 <span class="va">dep</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/kofdata/man/get_time_series.html" class="external-link">get_time_series</a></span><span class="op">(</span><span class="st">"ch.zrh_airport.departure.total"</span><span class="op">)</span>
 
-<span class="fu"><a href="https://rdrr.io/pkg/timeseriesdb/man/db_ts_store.html" class="external-link">db_ts_store</a></span><span class="op">(</span><span class="va">con</span>, <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="va">arr</span>,<span class="va">dep</span><span class="op">)</span>, schema <span class="op">=</span> <span class="st">"tsdb_test"</span><span class="op">)</span>
+<span class="fu"><a href="../reference/db_ts_store.html">db_ts_store</a></span><span class="op">(</span><span class="va">con</span>, <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="va">arr</span>,<span class="va">dep</span><span class="op">)</span>, schema <span class="op">=</span> <span class="st">"tsdb_test"</span><span class="op">)</span>
 
-<span class="fu"><a href="https://rdrr.io/pkg/timeseriesdb/man/db_dataset_create.html" class="external-link">db_dataset_create</a></span><span class="op">(</span><span class="va">con</span>, <span class="st">"ch.zrh_airport"</span>,
+<span class="fu"><a href="../reference/db_dataset_create.html">db_dataset_create</a></span><span class="op">(</span><span class="va">con</span>, <span class="st">"ch.zrh_airport"</span>,
                   set_description <span class="op">=</span> <span class="st">"Arrivals and Departures ZH Airport"</span>,
                   schema <span class="op">=</span> <span class="st">"tsdb_test"</span><span class="op">)</span>
 
 <span class="co"># see, the new dataset is there... </span>
-<span class="fu"><a href="https://rdrr.io/pkg/timeseriesdb/man/db_dataset_list.html" class="external-link">db_dataset_list</a></span><span class="op">(</span><span class="va">con</span>, schema <span class="op">=</span> <span class="st">"tsdb_test"</span><span class="op">)</span></code></pre></div>
+<span class="fu"><a href="../reference/db_dataset_list.html">db_dataset_list</a></span><span class="op">(</span><span class="va">con</span>, schema <span class="op">=</span> <span class="st">"tsdb_test"</span><span class="op">)</span></code></pre></div>
 <p>Apparently, the dataset is empty. We need to assign some time series
 first.</p>
 </div>
@@ -161,7 +161,7 @@ information associated to the dataset AND the time series. A deleted
 dataset CANNOT by restored. The only way to get a deleted dataset back
 is a PostgreSQL level backup outside of {timeseriesdb}.</p>
 <div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="fu"><a href="https://rdrr.io/pkg/timeseriesdb/man/db_dataset_delete.html" class="external-link">db_dataset_delete</a></span><span class="op">(</span><span class="va">con</span>, <span class="st">"dataset_name"</span>, schema <span class="op">=</span> <span class="st">"tsdb_test"</span><span class="op">)</span></code></pre></div>
+<code class="sourceCode R"><span class="fu"><a href="../reference/db_dataset_delete.html">db_dataset_delete</a></span><span class="op">(</span><span class="va">con</span>, <span class="st">"dataset_name"</span>, schema <span class="op">=</span> <span class="st">"tsdb_test"</span><span class="op">)</span></code></pre></div>
 <p>Note, datasets can only be deleted interactively as you have to
 confirm the deletion of a dataset by typing its name to the console.</p>
 </div>
@@ -189,7 +189,7 @@ known in advance. Data may be available inside an institution but only
 be released later on. In order to facilitate the publication
 process.</p>
 <div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="fu"><a href="https://rdrr.io/pkg/timeseriesdb/man/db_release_create.html" class="external-link">db_release_create</a></span><span class="op">(</span><span class="va">con</span>,
+<code class="sourceCode R"><span class="fu"><a href="../reference/db_release_create.html">db_release_create</a></span><span class="op">(</span><span class="va">con</span>,
                   id <span class="op">=</span> <span class="st">"jul_2020_air"</span>,
                   datasets <span class="op">=</span> <span class="st">"ch.zrh_airport"</span>,
                   title <span class="op">=</span> <span class="st">"Airport Data from Zurich Airport"</span>,
@@ -238,7 +238,7 @@ narrow user groups for parts of the data.</p>
 lists all access levels available for a schema. New levels are created
 easily. Note also that new levels can be made the default.</p>
 <div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="fu"><a href="https://rdrr.io/pkg/timeseriesdb/man/db_access_level_create.html" class="external-link">db_access_level_create</a></span><span class="op">(</span><span class="va">con</span>, 
+<code class="sourceCode R"><span class="fu"><a href="../reference/db_access_level_create.html">db_access_level_create</a></span><span class="op">(</span><span class="va">con</span>, 
                        access_level_name <span class="op">=</span>  <span class="st">"management"</span>,
                        access_level_description <span class="op">=</span> <span class="st">"series only available"</span>,
                        access_level_default <span class="op">=</span> <span class="cn">TRUE</span>,

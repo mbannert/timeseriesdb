@@ -124,18 +124,18 @@ October 2019 and <code>baro_2019m11</code> is yet another version of the
 very same time series. We can simply store</p>
 <div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="fu"><a href="https://rdrr.io/r/utils/data.html" class="external-link">data</a></span><span class="op">(</span><span class="st">"kof_ts"</span><span class="op">)</span>
-<span class="fu"><a href="https://rdrr.io/pkg/timeseriesdb/man/db_ts_store.html" class="external-link">db_ts_store</a></span><span class="op">(</span><span class="va">con</span>,
+<span class="fu"><a href="../reference/db_ts_store.html">db_ts_store</a></span><span class="op">(</span><span class="va">con</span>,
                   <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>ch.kof.barometer <span class="op">=</span> <span class="va">kof_ts</span><span class="op">$</span><span class="va">baro_2019m10</span><span class="op">)</span>,
                   valid_from<span class="op">=</span><span class="st">"2019-10-30"</span>,
                   schema <span class="op">=</span> <span class="st">"tsdb_test"</span><span class="op">)</span>
 
-<span class="fu"><a href="https://rdrr.io/pkg/timeseriesdb/man/db_ts_store.html" class="external-link">db_ts_store</a></span><span class="op">(</span><span class="va">con</span>,
+<span class="fu"><a href="../reference/db_ts_store.html">db_ts_store</a></span><span class="op">(</span><span class="va">con</span>,
                   <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>ch.kof.barometer <span class="op">=</span> <span class="va">kof_ts</span><span class="op">$</span><span class="va">baro_2019m11</span><span class="op">)</span>,
                   valid_from<span class="op">=</span><span class="st">"2019-11-30"</span>,
                   schema <span class="op">=</span> <span class="st">"tsdb_test"</span><span class="op">)</span></code></pre></div>
 <p>and read them under the same key.</p>
 <div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="fu"><a href="https://rdrr.io/pkg/timeseriesdb/man/db_ts_read.html" class="external-link">db_ts_read</a></span><span class="op">(</span><span class="va">con</span>, <span class="st">"ch.kof.barometer"</span>,
+<code class="sourceCode R"><span class="fu"><a href="../reference/db_ts_read.html">db_ts_read</a></span><span class="op">(</span><span class="va">con</span>, <span class="st">"ch.kof.barometer"</span>,
                  schema <span class="op">=</span> <span class="st">"tsdb_test"</span><span class="op">)</span></code></pre></div>
 <p>Note how the default validity (today per <code><a href="https://rdrr.io/r/base/Sys.time.html" class="external-link">Sys.Date()</a></code>) is
 used when <code>valid_on</code> is not specified. You can also get read
@@ -143,7 +143,7 @@ the entire history which returns a list of time series that contains
 version of time series. List elements will be named according validity
 thresholds.</p>
 <div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="va">tsl</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/timeseriesdb/man/db_ts_read_history.html" class="external-link">db_ts_read_history</a></span><span class="op">(</span><span class="va">con</span>,<span class="st">"ch.kof.barometer"</span>,
+<code class="sourceCode R"><span class="va">tsl</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/db_ts_read_history.html">db_ts_read_history</a></span><span class="op">(</span><span class="va">con</span>,<span class="st">"ch.kof.barometer"</span>,
                                 schema <span class="op">=</span> <span class="st">"tsdb_test"</span><span class="op">)</span></code></pre></div>
 </div>
 <div class="section level2">
@@ -156,7 +156,7 @@ applies to all versions of a series. This is why time series are
 assigned to the ‘default’ schema at first when they are stored and can
 be moved later on.</p>
 <div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="fu"><a href="https://rdrr.io/pkg/timeseriesdb/man/db_ts_assign_dataset.html" class="external-link">db_ts_assign_dataset</a></span><span class="op">(</span><span class="va">con</span>,
+<code class="sourceCode R"><span class="fu"><a href="../reference/db_ts_assign_dataset.html">db_ts_assign_dataset</a></span><span class="op">(</span><span class="va">con</span>,
                   ts_keys <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"ch.zrh_airport.arrival.total"</span>,
                               <span class="st">"ch.zrh_airport.departure.total"</span><span class="op">)</span>,
                   set_name <span class="op">=</span> <span class="st">"ch.zrh_airport"</span>,
@@ -236,14 +236,14 @@ one or more time series. Make sure you do NOT change the language within
 one object.</p>
 <div class="sourceCode" id="cb11"><pre class="downlit sourceCode r">
 <code class="sourceCode R">
-<span class="va">de</span> <span class="op">&lt;-</span> <span class="fu">create_tsmeta</span><span class="op">(</span>
+<span class="va">de</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/create_tsmeta.html">create_tsmeta</a></span><span class="op">(</span>
   ch.zrh_airport.arrival.total <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>
     provider <span class="op">=</span> <span class="st">"Flughafen Zürich"</span>,
     description <span class="op">=</span> <span class="st">"Eine deutschsprachige Beschreibung"</span>
   <span class="op">)</span>
 <span class="op">)</span>
 
-<span class="va">en</span> <span class="op">&lt;-</span> <span class="fu">create_tsmeta</span><span class="op">(</span>
+<span class="va">en</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/create_tsmeta.html">create_tsmeta</a></span><span class="op">(</span>
   ch.zrh_airport.arrival.total <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>
     provider <span class="op">=</span> <span class="st">"Zurich Airport"</span>,
     description <span class="op">=</span> <span class="st">"An English speaking description"</span>

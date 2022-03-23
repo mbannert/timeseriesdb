@@ -195,15 +195,15 @@ above:</p>
 the database backend from R is just a matter of:</p>
 <div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/mbannert/timeseriesdb" class="external-link">timeseriesdb</a></span><span class="op">)</span>
-<span class="va">con</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/timeseriesdb/man/db_connection_create.html" class="external-link">db_connection_create</a></span><span class="op">(</span><span class="st">"yourdbname"</span>,
+<span class="va">con</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/db_connection_create.html">db_connection_create</a></span><span class="op">(</span><span class="st">"yourdbname"</span>,
                             user <span class="op">=</span> <span class="st">"tsdb_admin"</span>,
                             host <span class="op">=</span> <span class="st">"localhost"</span><span class="op">)</span>
-<span class="fu"><a href="https://rdrr.io/pkg/timeseriesdb/man/install_timeseriesdb.html" class="external-link">install_timeseriesdb</a></span><span class="op">(</span><span class="va">con</span><span class="op">)</span></code></pre></div>
+<span class="fu"><a href="../reference/install_timeseriesdb.html">install_timeseriesdb</a></span><span class="op">(</span><span class="va">con</span><span class="op">)</span></code></pre></div>
 <p>YAY! You’re all set up. Store a time series to your fresh new
 database.</p>
 <div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="va">tsl</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>AirPassengers <span class="op">=</span> <span class="va">AirPassengers</span><span class="op">)</span>
-<span class="fu"><a href="https://rdrr.io/pkg/timeseriesdb/man/db_ts_store.html" class="external-link">db_ts_store</a></span><span class="op">(</span><span class="va">con</span>, <span class="va">tsl</span><span class="op">)</span></code></pre></div>
+<span class="fu"><a href="../reference/db_ts_store.html">db_ts_store</a></span><span class="op">(</span><span class="va">con</span>, <span class="va">tsl</span><span class="op">)</span></code></pre></div>
 </div>
 <div class="section level2">
 <h2 id="docker-development-setup">Docker Development Setup<a class="anchor" aria-label="anchor" href="#docker-development-setup"></a>
@@ -222,7 +222,7 @@ This will fire up a docker container based on a postgresql:latest docker
 image and set up {timeseriesdb} so you could connect to the database
 running inside the container like this:</p>
 <div class="sourceCode" id="cb11"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="va">con</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/timeseriesdb/man/db_connection_create.html" class="external-link">db_connection_create</a></span><span class="op">(</span>
+<code class="sourceCode R"><span class="va">con</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/db_connection_create.html">db_connection_create</a></span><span class="op">(</span>
   dbname <span class="op">=</span> <span class="st">"postgres"</span>,
   user <span class="op">=</span> <span class="st">"dev_admin"</span>,
   host <span class="op">=</span> <span class="st">"localhost"</span>,
