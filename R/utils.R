@@ -109,7 +109,8 @@ db_connection_create <- function(dbname,
                           line_no = 1,
                           passwd_from_env = FALSE,
                           connection_description = "timeseriesdb",
-                          port = 5432){
+                          port = 5432,
+                          ...){
   if(passwd_from_env){
     env_name <- passwd
     passwd <- Sys.getenv(env_name)
@@ -151,7 +152,8 @@ db_connection_create <- function(dbname,
             host = unname(host),
             password = unname(passwd),
             port = unname(port),
-            options = options)
+            options = options,
+            ...)
 }
 
 
