@@ -24,11 +24,6 @@ db_ts_read <- function(con,
                              schema = "timeseries",
                              chunksize = 10000) {
 
-  # RPostgres plays nicer with NA than with NULL
-  if(is.null(valid_on)) {
-    valid_on <- NA
-  }
-
   keys_unique <- unique(ts_keys)
 
   if(length(keys_unique) != length(ts_keys)) {
@@ -43,7 +38,12 @@ db_ts_read <- function(con,
                           {
                             res <- dbSendQuery(con, sprintf("select * from %sts_read_raw(%s, %s)",
                                                      dbQuoteIdentifier(con, Id(schema = schema)),
-                                                     dbQuoteLiteral(con, valid_on),
+                                                     # If we want to use the default CURRENT_DATE, pass a literal NULL
+                                                     if(is.null(valid_on) | is.na(valid_on)) {
+                                                       "NULL"
+                                                      } else {
+                                                        dbQuoteLiteral(con, valid_on)
+                                                      },
                                                      dbQuoteLiteral(con, respect_release_date)))
                             tsl <- get_tsl_from_res(res, chunksize)
                             dbClearResult(res)
@@ -142,9 +142,6 @@ db_dataset_read_ts <- function(con,
                                         respect_release_date = FALSE,
                                         schema = "timeseries",
                                         chunksize = 10000) {
-  if(is.null(valid_on)) {
-    valid_on <- NA
-  }
 
 
   db_with_temp_table(con,
@@ -156,7 +153,12 @@ db_dataset_read_ts <- function(con,
               {
                 res <- dbSendQuery(con, sprintf("SELECT * FROM %sts_read_dataset_raw(%s, %s)",
                                                 dbQuoteIdentifier(con, Id(schema = schema)),
-                                                dbQuoteLiteral(con, valid_on),
+                                                # If we want to use the default CURRENT_DATE, pass a literal NULL
+                                                if(is.null(valid_on) | is.na(valid_on)) {
+                                                  "NULL"
+                                                } else {
+                                                  dbQuoteLiteral(con, valid_on)
+                                                },
                                                 dbQuoteLiteral(con, respect_release_date)))
 
                 tsl <- get_tsl_from_res(res, chunksize)
@@ -212,16 +214,16 @@ db_collection_read_ts <- function(con,
                                   schema = "timeseries",
                                   chunksize = 10000) {
 
-  if(is.null(valid_on)) {
-    valid_on <- NA
-  }
-
-
   res <- dbSendQuery(con, sprintf("SELECT * FROM %sts_read_collection_raw(%s, %s, %s, %s)",
                                   dbQuoteIdentifier(con, Id(schema = schema)),
                                   dbQuoteLiteral(con, collection_name),
                                   dbQuoteLiteral(con, collection_owner),
-                                  dbQuoteLiteral(con, valid_on),
+                                  # If we want to use the default CURRENT_DATE, pass a literal NULL
+                                  if(is.null(valid_on) | is.na(valid_on)) {
+                                    "NULL"
+                                  } else {
+                                    dbQuoteLiteral(con, valid_on)
+                                  },
                                   dbQuoteLiteral(con, respect_release_date)))
 
   tsl <- get_tsl_from_res(res, chunksize)
