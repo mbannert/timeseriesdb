@@ -127,7 +127,7 @@ Now, pass on the `tsmeta` object to the database.
 
 ```{r, eval=FALSE}
 
-db_store_ts_metadata(con,
+db_metadata_store(con,
   tsm,
   valid_from = Sys.Date(),
   schema = "tsdb_test"
@@ -142,7 +142,7 @@ Reading the data from the database is just as easy:
 
 
 ```{r, eval=FALSE}
-tsm <- db_read_ts_metadata(con, c(
+tsm <- db_metadata_read(con, c(
   "JohnsonJohnson",
   "AirPassengers"
 ),
