@@ -26,7 +26,7 @@ db_ts_read <- function(con,
 
   # RPostgres plays nicer with NA than with NULL
   if(is.null(valid_on)) {
-    valid_on <- NA
+    valid_on <- as.Date(NA)
   }
 
   keys_unique <- unique(ts_keys)
