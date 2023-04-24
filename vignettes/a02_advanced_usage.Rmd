@@ -89,14 +89,14 @@ Think of a registry similar to a software registry.
 To see all keys registered in a dataset simply call:
 
 ```{r, eval=FALSE}
-db_get_dataset_keys(con, "ch.zrh_airport", schema = "tsdb_test")
+db_dataset_get_keys(con, "ch.zrh_airport", schema = "tsdb_test")
 ```
 
 To do the opposite, that is, find out which dataset series are assigned to, run:
 
 
 ```{r, eval=FALSE}
-db_get_dataset_id(con, "ch.zrh_airport.arrival.total",
+db_ts_get_dataset(con, "ch.zrh_airport.arrival.total",
                   schema = "tsdb_test")
 ```
 
@@ -105,7 +105,7 @@ With [db_dataset_read_ts()](../reference/db_dataset_read_ts.html) you can read a
 ## Release Management
 
 ```{r, eval=FALSE}
-db_list_releases(con, include_past = T, schema = "tsdb_test")
+db_release_list(con, include_past = T, schema = "tsdb_test")
 ```
 
 Cancelling a future release is simply a matter of calling [db_release_cancel()](../reference/db_release_cancel.html). 
@@ -113,10 +113,10 @@ Cancellation of past releases is not possible, but release can be updated with [
 
 
 ```{r, eval=FALSE}
-db_get_latest_release_for_set(con, "ch.zrh_airport",schema = "tsdb_test")
+db_dataset_get_latest_release(con, "ch.zrh_airport",schema = "tsdb_test")
 ```
 
-Similarily use [db_dataset_next_release()](../reference/db_dataset_next_release) to get the next upcoming
+Similarily use [db_dataset_get_next_release()](../reference/db_dataset_get_next_release) to get the next upcoming
 release. 
 
 
@@ -134,9 +134,9 @@ collections is to be able to re-visit a selection of time series after updates e
 e.g., to update time series visualizations.
 
 ```{r, eval = FALSE}
-db_collection_add(con, 
+db_collection_add_ts(con, 
                   collection_name = "demo_collect",
-                  keys = c("ch.zrh_airport.arrival.total",
+                  ts_keys = c("ch.zrh_airport.arrival.total",
                            "AirPassengers"),
                   description = "Flying Around Now and Then",
                   schema = "tsdb_test")
@@ -211,7 +211,7 @@ db_read_ts_metadata(con, "ch.zrh_airport.arrival.total",
 ### Levels of Assignment
 
 Meta descriptions can be assigned at various levels. Descriptions
-either belong to a *dataset*, to a *time series* or two a *vintage of a time series*.
+either belong to a *dataset*, to a *time series* or to a *vintage of a time series*.
 Meta information is only loosely coupled to vintages of time
 series, because in most usecases meta descriptions do not change every time 
 there is a data revision. So by simply not updating unchanged descriptions when 
@@ -219,7 +219,7 @@ data are revised / updated, we allow descriptions to last for multiple versions 
 a time series. 
 
 ```{r, eval=FALSE}
-db_get_metadata_validity(con, "ch.zrh_airport.arrival.total", 
+db_meta_get_latest_validity(con, "ch.zrh_airport.arrival.total", 
                          locale = "de",
                          schema = "tsdb_test")
 ```
