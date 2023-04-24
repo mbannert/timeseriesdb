@@ -126,7 +126,7 @@ Collections are another concept introduced in v1.0.. Collections are user specif
 functionality as 'sets'. To avoid any confusion, let's be clear about the new terminology here: 
 
 - datasets = registration of time series into global datasets. This happens typically
-at the admin level. Time series are unique ACROSS datasets.
+at the admin level (see  [admin usage vignette](../articles/a03_admin_usage)). Time series are unique ACROSS datasets.
 
 - collection = playlist are like user specific bookmarks. A time series can part of 
 multiple collections, users can have multiple collections. The purpose of
