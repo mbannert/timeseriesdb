@@ -51,7 +51,7 @@ tsl <- list(ts1 = ts(rnorm(100), frequency = 12,
                      start = 2002),
             ts2 = ts(rnorm(100), frequency = 12,
                      start = 2001))
-db_store_ts(connection, tsl)
+db_ts_store(connection, tsl)
 dbDisconnect(con)
 ```
 
