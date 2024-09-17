@@ -42,7 +42,7 @@ db_ts_read <- function(con,
                           regex,
                           {
                             res <- dbSendQuery(con, sprintf("select * from %sts_read_raw(%s, %s)",
-                                                     dbQuoteIdentifier(con, Id(schema = schema)),
+                                                     dbQuoteIdentifier(con, schema),
                                                      dbQuoteLiteral(con, valid_on),
                                                      dbQuoteLiteral(con, respect_release_date)))
                             tsl <- get_tsl_from_res(res, chunksize)
